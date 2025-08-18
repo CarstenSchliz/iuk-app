@@ -7,8 +7,8 @@ const URLS_TO_CACHE = [
   "./manifest.json",
   "./css/styles.css",   // falls du ein CSS hast
   "./js/app.js",        // falls du ein JS hast
-  "./assets/icon-192.png",
-  "./assets/icon-512.png"
+  "./assets/iuk-192.png",
+  "./assets/iuk-512.png"
 ];
 
 // Install: Cache initial laden
