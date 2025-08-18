@@ -1,59 +1,135 @@
 <!DOCTYPE html>
 <html lang="de">
+<!DOCTYPE html>
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Meine PWA</title>
-
-  <!-- Manifest für Installierbarkeit -->
+  <title>DRK Lernwelt</title>
   <link rel="manifest" href="manifest.json" />
-
-  <!-- Farbe der Statusleiste (Android) -->
   <meta name="theme-color" content="#317EFB" />
 
-  <!-- iOS: Vollbild + Statusbar -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-
   <style>
+    /* Farben nach Vorgaben */
+    :root {
+      --drk-rot: rgb(230,0,5);
+      --softrot: rgb(228,100,80);
+      --dunkelrot: rgb(165,30,15);
+
+      --dunkelblau: rgb(0,45,85);
+      --mittelblau: rgb(0,140,205);
+      --volltonblau: rgb(34,117,208);
+      --hellblau: rgb(235,245,255);
+
+      --dunkelgrau: rgb(85,79,74);
+      --mittelgrau: rgb(180,180,180);
+      --hellgrau: rgb(239,238,234);
+    }
+
     body {
       margin: 0;
-      font-family: system-ui, sans-serif;
+      font-family: "Open Sans", Arial, sans-serif;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      text-align: center;
-      background: #f5f5f5;
+      background: var(--hellgrau);
     }
-    h1 {
+
+    .login-container {
+      display: flex;
+      flex-direction: row;
+      background: var(--hellblau);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      overflow: hidden;
+      max-width: 800px;
+      width: 90%;
+    }
+
+    .login-image {
+      flex: 1;
+      background: url("./assets/iuk-lernwelt.png") center/cover no-repeat;
+    }
+
+    .login-form {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: white;
+    }
+
+    .login-form h1 {
+      color: var(--softrot);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
       font-size: 1.8rem;
-      color: #317EFB;
     }
-    p {
-      font-size: 1.1rem;
-      max-width: 90%;
+
+    .login-form label {
+      font-size: 0.9rem;
+      color: var(--dunkelgrau);
+      margin-bottom: 0.3rem;
+      display: block;
     }
-    button {
-      margin-top: 1.5rem;
-      padding: 0.8rem 1.2rem;
+
+    .login-form input {
+      padding: 0.8rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid var(--mittelgrau);
+      border-radius: 8px;
       font-size: 1rem;
+    }
+
+    .login-form input:focus {
+      outline: none;
+      border-color: var(--mittelblau);
+      box-shadow: 0 0 4px rgba(0,140,205,0.4);
+    }
+
+    .login-form button {
+      padding: 0.9rem;
+      background: var(--dunkelblau);
+      color: white;
       border: none;
       border-radius: 8px;
-      background: #317EFB;
-      color: white;
+      font-size: 1.1rem;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
-    button:active {
-      background: #255bb5;
+
+    .login-form button:hover {
+      background: var(--mittelblau);
+    }
+
+    @media (max-width: 700px) {
+      .login-container {
+        flex-direction: column;
+      }
+      .login-image {
+        height: 200px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Hallo Smartphone 🚀</h1>
-  <p>Dies ist meine minimalistische PWA – optimiert für Mobilgeräte.</p>
-  <button onclick="alert('Button funktioniert!')">Test-Button</button>
+  <div class="login-container">
+    <div class="login-image"></div>
+    <div class="login-form">
+      <h1>Willkommen zur IuK Lernwelt</h1>
+      <form>
+        <label for="email">E-Mail-Adresse</label>
+        <input type="email" id="email" placeholder="E-Mail eingeben" required />
+
+        <label for="password">Passwort</label>
+        <input type="password" id="password" placeholder="Passwort eingeben" required />
+
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
 
   <script>
     if ("serviceWorker" in navigator) {
@@ -62,7 +138,16 @@
         .then(() => console.log("Service Worker registriert"))
         .catch((err) => console.error("SW-Fehler:", err));
     }
+
+    // Test-Login-Handler (kannst du später mit echter Logik ersetzen)
+    document.querySelector("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Login erfolgreich! (Demo)");
+      // hier könntest du zur App weiterleiten, z. B. window.location.href = "app.html";
+    });
   </script>
 </body>
+</html>
+
 </html>
 
