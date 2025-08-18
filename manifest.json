@@ -1,12 +1,12 @@
 {
-  "name": "Meine PWA",
-  "short_name": "PWA",
+  "name": "IuK Lernwelt",
+  "short_name": "IuK",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#317EFB",
+  "background_color": "#002D55",
+  "theme_color": "#002D55",
   "icons": [
     {
       "src": "assets/iuk-192.png",
