@@ -7,7 +7,7 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
 
-  <!-- Font Awesome für Icons -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
@@ -17,6 +17,7 @@
       --hellblau: rgb(235,245,255);
       --dunkelgrau: rgb(85,79,74);
       --mittelgrau: rgb(180,180,180);
+      --hellgrau: rgb(239,238,234);
     }
 
     body {
@@ -26,7 +27,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, var(--dunkelblau), var(--softrot));
+      background: var(--hellgrau);
       padding: 2rem 1rem;
       box-sizing: border-box;
     }
@@ -34,24 +35,30 @@
     .login-container {
       display: flex;
       flex-direction: row;
-      background: rgba(255, 255, 255, 0.2); /* halbtransparent */
-      backdrop-filter: blur(12px); /* Glas-Effekt */
-      -webkit-backdrop-filter: blur(12px); /* Safari iOS */
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-radius: 20px;
       border: 1px solid rgba(255,255,255,0.3);
       box-shadow: 0 8px 25px rgba(0,0,0,0.25);
       overflow: hidden;
-      max-width: 650px;
-      max-height: 520px;
+      max-width: 700px;
       width: 100%;
       animation: fadeIn 0.6s ease;
-      color: white; /* Standardtext weiß wegen Hintergrund */
     }
 
     .login-image {
       flex: 1;
-      background: url("./assets/iuk-lernwelt-512.png") center/contain no-repeat;
-      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem; /* sorgt dafür, dass Bild nicht klebt */
+    }
+
+    .login-image img {
+      max-width: 100%;
+      max-height: 90%;
+      object-fit: contain;
     }
 
     .login-form {
@@ -60,10 +67,11 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      background: transparent;
     }
 
     .login-form h1 {
-      color: white;
+      color: var(--softrot);
       font-weight: 600;
       margin-bottom: 1rem;
       font-size: 1.5rem;
@@ -72,12 +80,11 @@
 
     .login-form label {
       font-size: 0.9rem;
-      color: #f0f0f0;
+      color: var(--dunkelgrau);
       margin-bottom: 0.3rem;
       display: block;
     }
 
-    /* Eingabefelder */
     .input-wrapper {
       position: relative;
       margin-bottom: 1rem;
@@ -86,22 +93,18 @@
     .input-wrapper input {
       width: 100%;
       padding: 0.7rem 2.2rem 0.7rem 0.7rem;
-      border: 1px solid rgba(255,255,255,0.5);
+      border: 1px solid var(--mittelgrau);
       border-radius: 8px;
       font-size: 1rem;
       box-sizing: border-box;
-      background: rgba(255,255,255,0.2);
-      color: white;
-    }
-
-    .input-wrapper input::placeholder {
-      color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.7);
     }
 
     .input-wrapper input:focus {
       outline: none;
       border-color: var(--softrot);
-      box-shadow: 0 0 6px rgba(228,100,80,0.6);
+      box-shadow: 0 0 4px rgba(228,100,80,0.4);
+      background: white;
     }
 
     .toggle-password {
@@ -110,16 +113,10 @@
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      color: rgba(255,255,255,0.8);
+      color: var(--dunkelgrau);
       font-size: 1rem;
-      line-height: 1;
     }
 
-    .toggle-password:hover {
-      color: white;
-    }
-
-    /* Login-Button */
     .login-form button {
       padding: 0.7rem;
       background: var(--dunkelblau);
@@ -142,7 +139,10 @@
         max-height: none;
       }
       .login-image {
-        height: 140px;
+        height: auto;
+      }
+      .login-image img {
+        max-height: 200px; /* auf Handy begrenzt */
       }
     }
 
@@ -154,9 +154,11 @@
 </head>
 <body>
   <div class="login-container">
-    <div class="login-image"></div>
+    <div class="login-image">
+      <img src="./assets/iuk-lernwelt-512.png" alt="IuK Lernwelt Logo">
+    </div>
     <div class="login-form">
-      <h1>Herzlich Willkommen in deinerIuK Lernwelt</h1>
+      <h1>Herzlich Willkommen in deiner IuK Lernwelt</h1>
       <form>
         <label for="email">E-Mail-Adresse</label>
         <div class="input-wrapper">
@@ -175,14 +177,12 @@
   </div>
 
   <script>
+    // Service Worker
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("./service-worker.js")
-        .then(() => console.log("Service Worker registriert"))
-        .catch((err) => console.error("SW-Fehler:", err));
+      navigator.serviceWorker.register("./service-worker.js");
     }
 
-    // Passwort sichtbar/unsichtbar toggeln
+    // Passwort-Icon
     const togglePw = document.querySelector(".toggle-password i");
     const pwInput = document.getElementById("password");
 
