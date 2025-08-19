@@ -51,7 +51,7 @@
     }
 
     .logo-row img:first-child {
-      max-height: 120px; /* DRK-Logo größer */
+      max-height: 140px; /* DRK-Logo größer */
     }
 
     .logo-row img:last-child {
@@ -60,7 +60,7 @@
 
     h1 {
       color: var(--mittelblau);
-      font-size: 1rem;
+      font-size: 1.2rem; /* größer */
       font-weight: bold;
       margin: 0 0 1.5rem 0;
       white-space: nowrap;
@@ -73,8 +73,8 @@
     }
 
     .form-group input {
-      width: 100%;
-      border: 2px solid var(--mittelblau);
+      width: 100%; /* so breit wie Button */
+      border: 2px solid var(--dunkelgrau); /* grau statt blau */
       border-radius: 8px;
       padding: 1rem 0.8rem 0.5rem 2.5rem;
       font-size: 1rem;
@@ -83,8 +83,8 @@
     }
 
     .form-group input:focus {
-      border-color: var(--dunkelblau);
-      box-shadow: 0 0 6px rgba(0,45,85,0.4);
+      border-color: var(--mittelgrau);
+      box-shadow: 0 0 6px rgba(85,79,74,0.4);
     }
 
     .form-group label {
@@ -100,13 +100,12 @@
       padding: 0 0.2rem;
     }
 
-    /* Effekt: Label nach oben, wenn Input aktiv oder befüllt */
+    /* Effekt: Label bleibt im Feld drin, nicht darüber */
     .form-group input:focus + label,
     .form-group input:not(:placeholder-shown) + label {
-      top: -0.6rem;
-      left: 2.3rem;
+      top: 0.2rem;
       font-size: 0.75rem;
-      color: var(--mittelblau);
+      color: var(--dunkelgrau);
     }
 
     .form-group i {
@@ -115,7 +114,7 @@
       left: 0.6rem;
       transform: translateY(-50%);
       font-size: 1.2rem;
-      color: var(--mittelblau);
+      color: var(--dunkelgrau);
     }
 
     button.login-btn {
