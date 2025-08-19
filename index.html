@@ -45,11 +45,11 @@
       justify-content: center;
       align-items: center;
       gap: 2rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
 
     .logo-row img:first-child {
-      max-height: 160px; /* DRK-Logo nochmal größer */
+      max-height: 160px; /* DRK-Logo größer */
     }
 
     .logo-row img:last-child {
@@ -58,10 +58,18 @@
 
     h1 {
       color: var(--mittelblau);
-      font-size: 1.25rem; /* größer */
+      font-size: 1.2rem;
       font-weight: bold;
-      margin: 0 0 1.5rem 0;
-      white-space: nowrap;
+      margin: 0 auto 0.3rem auto; 
+      width: 100%;   /* volle Breite */
+      text-align: center;
+      white-space: normal;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--dunkelgrau);
+      margin-bottom: 1.5rem;
     }
 
     .form-group {
@@ -71,8 +79,8 @@
     }
 
     .form-group input {
-      width: 100%; /* exakt so breit wie Button */
-      border: 1px solid var(--dunkelgrau); /* dünner, grau */
+      width: 100%;
+      border: 1px solid var(--dunkelgrau);
       border-radius: 6px;
       padding: 0.9rem 0.8rem 0.5rem 2.5rem;
       font-size: 1rem;
@@ -180,6 +188,7 @@
     </div>
 
     <h1>Herzlich Willkommen in deiner IuK Lernwelt</h1>
+    <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
 
     <form onsubmit="event.preventDefault(); window.location.href='app.html';">
       <!-- Mail -->
@@ -191,7 +200,7 @@
 
       <!-- Passwort -->
       <div class="form-group">
-        <i class="bi bi-lock"></i> <!-- klassisches Schloss -->
+        <i class="bi bi-lock"></i>
         <input type="password" id="password" placeholder=" " required>
         <label for="password">Passwort</label>
       </div>
