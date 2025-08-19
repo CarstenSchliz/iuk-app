@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>IuK Lernwelt – App</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#002D55" />
-  <!-- Font Awesome für Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#002D55">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
     :root {
@@ -21,52 +20,47 @@
       font-family: "Open Sans", Arial, sans-serif;
       display: flex;
       height: 100vh;
+      background: var(--hellgrau);
       overflow: hidden;
     }
 
     /* Sidebar */
     .sidebar {
-      width: 260px;
-      background: var(--dunkelblau);
+      background: rgba(0, 45, 85, 0.85); /* Glas Blau */
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       color: white;
+      width: 260px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 1rem;
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      transform: translateX(0);
-      transition: transform 0.35s ease-in-out;
-      z-index: 200;
+      padding: 1.5rem 1rem;
+      box-sizing: border-box;
     }
 
     .profile {
       text-align: center;
       margin-bottom: 2rem;
-      cursor: pointer;
     }
 
     .profile img {
       width: 100px;
-      aspect-ratio: 1 / 1;   /* fix gegen Ellipse */
+      aspect-ratio: 1/1;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid white;
       display: block;
-      margin: 0 auto;
+      margin: 0 auto 0.8rem auto;
+      background: #ccc;
     }
 
     .profile h2 {
-      margin: 0.5rem 0 0;
-      font-size: 1.1rem;
-      font-weight: bold;
+      margin: 0;
+      font-size: 1.2rem;
     }
 
     .profile p {
       margin: 0;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: #ddd;
     }
 
@@ -75,237 +69,147 @@
     }
 
     .menu button {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
       width: 100%;
-      padding: 0.7rem 1rem;
-      margin-bottom: 0.5rem;
-      background: none;
+      padding: 0.6rem 1rem;
+      background: transparent;
       border: none;
       color: white;
-      text-align: left;
       font-size: 1rem;
       cursor: pointer;
-      border-radius: 6px;
+      text-align: left;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
       transition: background 0.2s;
     }
 
-    .menu button:hover,
-    .menu button.active {
-      background: var(--softrot);
-    }
-
-    .bottom {
-      font-size: 0.8rem;
-      color: #ccc;
-      text-align: center;
-      margin-top: 0.5rem;
+    .menu button:hover {
+      background: rgba(255,255,255,0.15);
     }
 
     .logout {
-      margin-top: 1rem;
-      margin-bottom: 0.8rem;
-      padding: 0.6rem;
-      background: #a51e0f;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      width: 100%;
-      cursor: pointer;
-      transition: background 0.2s;
+      margin-top: auto;
+      margin-bottom: 0.8rem; /* Abstand zur Version */
     }
 
-    .logout:hover {
-      background: #8b1a0d;
+    .version {
+      font-size: 0.8rem;
+      text-align: center;
+      color: #ccc;
     }
 
-    /* Hauptbereich */
-    .main {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      margin-left: 260px;
-      transition: margin-left 0.3s ease;
-    }
-
+    /* Content */
     .content {
       flex-grow: 1;
       background: var(--hellgrau);
-      padding: 2.5rem 3rem;
+      padding: 2rem 3rem;
       overflow-y: auto;
     }
 
     @media (min-width: 769px) {
       .content {
-        padding-left: 5rem;  /* mehr Luft zum Menüband */
+        padding-left: 5rem; /* Abstand vom Menüband */
         padding-right: 3rem;
       }
     }
 
-    .content h1 {
-      color: var(--softrot);
-    }
-
-    /* Header (Mobile) */
-    .header {
-      background: var(--dunkelblau);
-      color: white;
-      padding: 1rem;
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .menu-toggle {
-      font-size: 1.8rem;
-      cursor: pointer;
-    }
-
-    /* Overlay */
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.4);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 100;
-    }
-
-    .overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* Responsive */
     @media (max-width: 768px) {
       .sidebar {
-        transform: translateX(-100%);
+        position: fixed;
+        left: -260px;
+        top: 0;
+        height: 100%;
+        transition: left 0.3s;
+        z-index: 1000;
       }
       .sidebar.active {
-        transform: translateX(0);
+        left: 0;
       }
-      .main {
-        margin-left: 0;
+      .menu-toggle {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        font-size: 1.5rem;
+        background: var(--dunkelblau);
+        color: white;
+        border: none;
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+        cursor: pointer;
+        z-index: 1100;
       }
-      .header {
-        display: flex;
+      .content {
+        padding: 5rem 1.5rem 2rem 1.5rem;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Mobile Menu Button -->
+  <button class="menu-toggle" id="menuToggle">
+    <i class="bi bi-list"></i>
+  </button>
+
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
-    <div>
-      <div class="profile" id="profile">
-        <img src="https://via.placeholder.com/90" alt="Profilbild" id="profileImg">
-        <input type="file" id="fileInput" accept="image/*" style="display:none">
-        <h2 id="userName">Max Mustermann</h2>
-        <p id="userRole">Administrator</p>
-      </div>
-      <div class="menu">
-        <button data-section="daten" class="active"><i class="fa-solid fa-user"></i> Persönliche Daten</button>
-        <button data-section="zugang"><i class="fa-solid fa-key"></i> Zugangsvoraussetzungen</button>
-        <button data-section="dashboard"><i class="fa-solid fa-chart-bar"></i> Dashboard</button>
-        <button data-section="module"><i class="fa-solid fa-book"></i> Lernmodule</button>
-        <button data-section="materialien"><i class="fa-solid fa-folder"></i> Lernmaterialien</button>
-        <button data-section="verwaltung"><i class="fa-solid fa-users"></i> Benutzerverwaltung</button>
-      </div>
+    <div class="profile">
+      <img src="assets/profile-placeholder.png" alt="Profilbild" id="profileImg">
+      <input type="file" id="profileUpload" accept="image/*" style="display:none;">
+      <h2>Max Mustermann</h2>
+      <p>Teilnehmer</p>
     </div>
-    <div>
-      <button class="logout" onclick="window.location.href='index.html'">
-        <i class="fa-solid fa-right-from-bracket"></i> Logout
-      </button>
-      <div class="bottom">Version 1.0.0</div>
+
+    <div class="menu">
+      <button data-page="persoenlich"><i class="bi bi-person"></i> Persönliche Daten</button>
+      <button data-page="zugang"><i class="bi bi-key"></i> Zugangsvoraussetzungen</button>
+      <button data-page="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
+      <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
+      <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
+      <button data-page="benutzer"><i class="bi bi-people"></i> Benutzerverwaltung</button>
     </div>
+
+    <button class="logout"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    <div class="version">Version 1.0.0</div>
   </div>
 
-  <!-- Overlay -->
-  <div class="overlay" id="overlay"></div>
-
-  <!-- Main -->
-  <div class="main">
-    <div class="header">
-      <span class="menu-toggle" id="menuToggle">☰</span>
-      <span>IuK Lernwelt</span>
-    </div>
-    <div class="content" id="content">
-      <h1>Willkommen in der IuK Lernwelt</h1>
-      <p>Bitte wähle links einen Menüpunkt aus.</p>
-    </div>
+  <!-- Content -->
+  <div class="content" id="content">
+    <h1>Willkommen in der IuK Lernwelt</h1>
+    <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
   </div>
 
   <script>
-    const buttons = document.querySelectorAll(".menu button");
-    const content = document.getElementById("content");
+    // Sidebar Toggle
+    const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const toggleBtn = document.getElementById("menuToggle");
-    const profile = document.getElementById("profile");
-    const fileInput = document.getElementById("fileInput");
-    const profileImg = document.getElementById("profileImg");
+    menuToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+    });
 
-    const userName = document.getElementById("userName").innerText;
-    const storageKey = `profileImage_${userName}`;
-
-    const sections = {
-      daten: "<h1>Persönliche Daten</h1><p>Hier erscheinen deine persönlichen Daten.</p>",
-      zugang: "<h1>Zugangsvoraussetzungen</h1><p>Hier findest du die Zugangsvoraussetzungen.</p>",
-      dashboard: "<h1>Dashboard</h1><p>Übersicht über deinen Lernfortschritt.</p>",
-      module: "<h1>Lernmodule</h1><p>Liste der Lernmodule.</p>",
-      materialien: "<h1>Lernmaterialien</h1><p>Hier findest du Materialien zum Download.</p>",
-      verwaltung: "<h1>Benutzerverwaltung</h1><p>Hier kannst du Benutzer verwalten.</p>",
-    };
-
+    // Content Wechsel
+    const content = document.getElementById("content");
+    const buttons = document.querySelectorAll(".menu button");
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
-        buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const section = btn.getAttribute("data-section");
-        content.innerHTML = sections[section];
-
-        if (window.innerWidth <= 768) {
-          sidebar.classList.remove("active");
-          overlay.classList.remove("active");
-        }
+        const page = btn.getAttribute("data-page");
+        content.innerHTML = "<h2>" + btn.innerText + "</h2><p>Inhalt für " + btn.innerText + " kommt hier hin.</p>";
+        sidebar.classList.remove("active"); // schließt Sidebar auf Mobile
       });
     });
 
-    profile.addEventListener("click", () => {
-      fileInput.click();
-    });
-
-    fileInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
+    // Profilbild Upload
+    const profileImg = document.getElementById("profileImg");
+    const profileUpload = document.getElementById("profileUpload");
+    profileImg.addEventListener("click", () => profileUpload.click());
+    profileUpload.addEventListener("change", (event) => {
+      const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function(event) {
-          profileImg.src = event.target.result;
-          localStorage.setItem(storageKey, event.target.result);
-        };
+        reader.onload = e => profileImg.src = e.target.result;
         reader.readAsDataURL(file);
       }
-    });
-
-    window.addEventListener("DOMContentLoaded", () => {
-      const savedImage = localStorage.getItem(storageKey);
-      if (savedImage) {
-        profileImg.src = savedImage;
-      }
-    });
-
-    toggleBtn.addEventListener("click", () => {
-      sidebar.classList.add("active");
-      overlay.classList.add("active");
-    });
-
-    overlay.addEventListener("click", () => {
-      sidebar.classList.remove("active");
-      overlay.classList.remove("active");
     });
   </script>
 </body>
