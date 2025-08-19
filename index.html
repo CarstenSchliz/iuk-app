@@ -6,187 +6,112 @@
   <title>IuK Lernwelt – Login</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
-
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
     :root {
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
-      --hellblau: rgb(235,245,255);
-      --dunkelgrau: rgb(85,79,74);
-      --mittelgrau: rgb(180,180,180);
       --hellgrau: rgb(239,238,234);
     }
 
     body {
       margin: 0;
       font-family: "Open Sans", Arial, sans-serif;
+      background: var(--hellgrau);
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      background: var(--hellgrau);
-      padding: 2rem 1rem;
-      box-sizing: border-box;
+      height: 100vh;
     }
 
     .login-container {
-      display: flex;
-      flex-direction: row;
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.3);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-      overflow: hidden;
-      max-width: 700px;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       width: 100%;
-      animation: fadeIn 0.6s ease;
-    }
-
-    .login-image {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-
-    .login-image img {
-      max-width: 100%;
-      max-height: 90%;
-      object-fit: contain;
-    }
-
-    .login-form {
-      flex: 1;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .login-form h1 {
-      color: var(--softrot);
-      font-weight: 600;
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
+      max-width: 360px;
       text-align: center;
     }
 
-    .login-form label {
-      font-size: 0.9rem;
-      color: var(--dunkelgrau);
-      margin-bottom: 0.3rem;
-      display: block;
-    }
-
-    .input-wrapper {
-      position: relative;
+    .login-container img {
+      max-width: 100px;
       margin-bottom: 1rem;
     }
 
-    .input-wrapper input {
+    h1 {
+      color: var(--softrot);
+      margin-bottom: 1.5rem;
+      font-size: 1.4rem;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 1.2rem;
+    }
+
+    .input-group input {
       width: 100%;
-      padding: 0.7rem 2.2rem 0.7rem 0.7rem;
-      border: 1px solid var(--mittelgrau);
+      padding: 0.75rem;
+      border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 1rem;
       box-sizing: border-box;
-      background: rgba(255,255,255,0.7);
     }
 
-    .input-wrapper input:focus {
-      outline: none;
-      border-color: var(--softrot);
-      box-shadow: 0 0 4px rgba(228,100,80,0.4);
-      background: white;
-    }
-
-    .toggle-password {
+    .input-group .toggle-password {
       position: absolute;
-      right: 10px;
       top: 50%;
+      right: 12px;
       transform: translateY(-50%);
       cursor: pointer;
-      color: var(--dunkelgrau);
-      font-size: 1rem;
+      color: #888;
     }
 
-    .login-form button {
-      padding: 0.7rem;
+    button {
+      width: 100%;
+      padding: 0.8rem;
       background: var(--dunkelblau);
-      color: white;
       border: none;
       border-radius: 8px;
+      color: white;
       font-size: 1rem;
       cursor: pointer;
-      transition: transform 0.15s ease, background 0.3s ease;
+      transition: background 0.2s ease;
     }
 
-    .login-form button:hover {
-      background: var(--softrot);
-      transform: scale(1.03);
-    }
-
-    @media (max-width: 700px) {
-      .login-container {
-        flex-direction: column;
-      }
-      .login-image img {
-        max-height: 200px;
-      }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    button:hover {
+      background: rgb(0,35,65);
     }
   </style>
 </head>
 <body>
   <div class="login-container">
-    <div class="login-image">
-      <img src="./assets/iuk-lernwelt-512.png" alt="IuK Lernwelt Logo">
-    </div>
-    <div class="login-form">
-      <h1>Herzlich Willkommen in deiner IuK Lernwelt</h1>
-      <form id="loginForm">
-        <label for="email">E-Mail-Adresse</label>
-        <div class="input-wrapper">
-          <input type="email" id="email" placeholder="E-Mail eingeben" required />
-        </div>
-
-        <label for="password">Passwort</label>
-        <div class="input-wrapper">
-          <input type="password" id="password" placeholder="Passwort eingeben" required />
-          <span class="toggle-password"><i class="fa-solid fa-eye"></i></span>
-        </div>
-
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <img src="assets/iuk-lernwelt-512.png" alt="IuK Lernwelt">
+    <h1>Herzlich Willkommen in deiner IuK Lernwelt</h1>
+    <form onsubmit="event.preventDefault(); window.location.href='app.html';">
+      <div class="input-group">
+        <input type="email" placeholder="E-Mail-Adresse" required>
+      </div>
+      <div class="input-group">
+        <input type="password" id="password" placeholder="Passwort" required>
+        <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+      </div>
+      <button type="submit">Login</button>
+    </form>
   </div>
 
   <script>
-    // Passwort-Icon
-    const togglePw = document.querySelector(".toggle-password i");
-    const pwInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
 
-    togglePw.addEventListener("click", () => {
-      const isPassword = pwInput.type === "password";
-      pwInput.type = isPassword ? "text" : "password";
-      togglePw.classList.toggle("fa-eye");
-      togglePw.classList.toggle("fa-eye-slash");
-    });
+    togglePassword.addEventListener("click", () => {
+      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+      passwordInput.setAttribute("type", type);
 
-    // Fake-Login → Weiterleitung zur App
-    document.getElementById("loginForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      window.location.href = "app.html";
+      togglePassword.classList.toggle("fa-eye");
+      togglePassword.classList.toggle("fa-eye-slash");
     });
   </script>
 </body>
