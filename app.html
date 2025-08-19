@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>IuK Lernwelt – App</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#002D55" />
+
+  <style>
+    :root {
+      --softrot: rgb(228,100,80);
+      --dunkelblau: rgb(0,45,85);
+      --hellblau: rgb(235,245,255);
+      --dunkelgrau: rgb(85,79,74);
+      --mittelgrau: rgb(180,180,180);
+      --hellgrau: rgb(239,238,234);
+    }
+
+    body {
+      margin: 0;
+      font-family: "Open Sans", Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: var(--dunkelblau);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1rem;
+    }
+
+    .profile {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+
+    .profile h2 {
+      margin: 0.5rem 0 0;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .profile p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #ddd;
+    }
+
+    .menu {
+      flex-grow: 1;
+    }
+
+    .menu button {
+      display: block;
+      width: 100%;
+      padding: 0.7rem 1rem;
+      margin-bottom: 0.5rem;
+      background: none;
+      border: none;
+      color: white;
+      text-align: left;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .menu button:hover,
+    .menu button.active {
+      background: var(--softrot);
+    }
+
+    .bottom {
+      font-size: 0.8rem;
+      color: #ccc;
+      text-align: center;
+    }
+
+    .logout {
+      margin-top: 0.5rem;
+      padding: 0.6rem;
+      background: #a51e0f;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .content {
+      flex-grow: 1;
+      background: var(--hellgrau);
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .content h1 {
+      color: var(--softrot);
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div>
+      <div class="profile">
+        <img src="https://via.placeholder.com/80" alt="Profilbild">
+        <h2>Max Mustermann</h2>
+        <p>Administrator</p>
+      </div>
+      <div class="menu">
+        <button data-section="daten" class="active">📋 Persönliche Daten</button>
+        <button data-section="zugang">🔑 Zugangsvoraussetzungen</button>
+        <button data-section="dashboard">📊 Dashboard</button>
+        <button data-section="module">📚 Lernmodule</button>
+        <button data-section="materialien">📂 Lernmaterialien</button>
+        <button data-section="verwaltung">👥 Benutzerverwaltung</button>
+      </div>
+    </div>
+    <div>
+      <button class="logout" onclick="window.location.href='index.html'">🚪 Logout</button>
+      <div class="bottom">Version 1.0.0</div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+    <h1>Willkommen in der IuK Lernwelt</h1>
+    <p>Bitte wähle links einen Menüpunkt aus.</p>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll(".menu button");
+    const content = document.getElementById("content");
+
+    const sections = {
+      daten: "<h1>Persönliche Daten</h1><p>Hier erscheinen deine persönlichen Daten.</p>",
+      zugang: "<h1>Zugangsvoraussetzungen</h1><p>Hier findest du die Zugangsvoraussetzungen.</p>",
+      dashboard: "<h1>Dashboard</h1><p>Übersicht über deinen Lernfortschritt.</p>",
+      module: "<h1>Lernmodule</h1><p>Liste der Lernmodule.</p>",
+      materialien: "<h1>Lernmaterialien</h1><p>Hier findest du Materialien zum Download.</p>",
+      verwaltung: "<h1>Benutzerverwaltung</h1><p>Hier kannst du Benutzer verwalten.</p>",
+    };
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const section = btn.getAttribute("data-section");
+        content.innerHTML = sections[section];
+      });
+    });
+  </script>
+</body>
+</html>
