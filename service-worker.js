@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwa-cache-v15";   // <--- hier hochgezählt
+const CACHE_NAME = "pwa-cache-v16";   // <--- hier hochgezählt
 
 const URLS_TO_CACHE = [
   "./",
