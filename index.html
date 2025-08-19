@@ -35,12 +35,9 @@
     }
 
     .login-box {
-      background: rgba(255, 255, 255, 0.7); /* Glas-Effekt in Weiß */
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: #ffffff; /* Reines Weiß, deckend */
       padding: 2rem;
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.5);
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
       max-width: 400px;
       width: 100%;
@@ -61,35 +58,56 @@
     }
 
     h1 {
-      color: var(--mittelblau); /* blau */
+      color: var(--mittelblau);
       font-size: 1.4rem;
       font-weight: bold;
-      margin: 0 0 1rem 0;
+      margin: 0 0 1.5rem 0;
+      white-space: nowrap; /* Alles in einer Zeile */
     }
 
-    .input-group {
-      display: flex;
-      align-items: center;
+    /* ---- Input Felder im Material Style ---- */
+    .form-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 1rem 2.5rem 0.5rem 2.5rem;
       border: 1px solid var(--mittelgrau);
       border-radius: 8px;
-      background: rgba(255,255,255,0.8);
-      margin-bottom: 1rem;
-      padding: 0 0.5rem;
-    }
-
-    .input-group i {
-      margin-right: 0.5rem;
-      color: var(--dunkelgrau);
-      font-size: 1.1rem;
-    }
-
-    .input-group input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      padding: 0.8rem;
+      background: rgba(255,255,255,0.95);
       font-size: 1rem;
       outline: none;
+    }
+
+    .form-group label {
+      position: absolute;
+      top: 0.4rem;
+      left: 2.5rem;
+      font-size: 0.8rem;
+      color: var(--dunkelgrau);
+      pointer-events: none;
+    }
+
+    .form-group i {
+      position: absolute;
+      top: 50%;
+      left: 0.8rem;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: var(--dunkelgrau);
+    }
+
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 0.8rem;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--dunkelgrau);
     }
 
     button.login-btn {
@@ -109,19 +127,25 @@
     }
 
     .links {
-      margin-top: 1.8rem;
+      margin-top: 2rem;
       font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .links .section {
+      margin-bottom: 2rem; /* Abstand zwischen Blöcken */
     }
 
     .links span {
       display: block;
-      margin-top: 0.8rem;
+      margin-bottom: 0.3rem;
+      color: var(--dunkelgrau);
     }
 
     .links a {
       display: block;
-      margin: 1.2rem 0; /* noch größerer Abstand */
       text-decoration: none;
+      margin-top: 0.3rem;
     }
 
     .links a.register {
@@ -142,25 +166,37 @@
       <img src="assets/iuk-lernwelt.png" alt="IuK Lernwelt Logo">
     </div>
 
-    <h1>Herzlich Willkommen<br>in deiner IuK Lernwelt</h1>
+    <h1>Herzlich Willkommen in deiner IuK Lernwelt</h1>
 
     <form onsubmit="event.preventDefault(); window.location.href='app.html';">
-      <div class="input-group">
-        <input type="email" placeholder="E-Mail-Adresse" required>
+      <!-- Mail -->
+      <div class="form-group">
+        <i class="bi bi-envelope"></i>
+        <label for="email">E-Mail-Adresse</label>
+        <input type="email" id="email" required>
       </div>
-      <div class="input-group">
-        <i class="bi bi-eye toggle-password" id="togglePassword"></i>
+
+      <!-- Passwort -->
+      <div class="form-group">
         <i class="bi bi-lock"></i>
-        <input type="password" id="password" placeholder="Passwort" required>
+        <label for="password">Passwort</label>
+        <input type="password" id="password" required>
+        <i class="bi bi-eye toggle-password" id="togglePassword"></i>
       </div>
+
       <button type="submit" class="login-btn">Anmelden</button>
     </form>
 
     <div class="links">
-      <span>Ich habe noch keinen Zugang</span>
-      <a href="#" class="register">Jetzt registrieren!</a>
-      <span>Passwort vergessen?</span>
-      <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
+      <div class="section">
+        <span>Ich habe noch keinen Zugang</span>
+        <a href="#" class="register">Jetzt registrieren!</a>
+      </div>
+
+      <div class="section">
+        <span>Passwort vergessen?</span>
+        <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
+      </div>
     </div>
   </div>
 
