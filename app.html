@@ -17,7 +17,7 @@
 
     body {
       margin: 0;
-      font-family: "Open Sans", Arial, sans-serif;
+      font-family: Arial, sans-serif;
       display: flex;
       height: 100vh;
       background: var(--hellgrau);
@@ -26,7 +26,7 @@
 
     /* Sidebar */
     .sidebar {
-      background: rgba(0, 45, 85, 0.85); /* Glas Blau */
+      background: rgba(0, 45, 85, 0.9); /* Glas-Effekt mit DRK-Dunkelblau */
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       color: white;
@@ -91,7 +91,23 @@
 
     .logout {
       margin-top: auto;
-      margin-bottom: 0.8rem; /* Abstand zur Version */
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      transition: background 0.2s;
+    }
+
+    .logout:hover {
+      background: rgba(255,255,255,0.15);
     }
 
     .version {
@@ -110,7 +126,7 @@
 
     @media (min-width: 769px) {
       .content {
-        padding-left: 5rem; /* Abstand vom Menüband */
+        padding-left: 5rem; 
         padding-right: 3rem;
       }
     }
@@ -170,7 +186,7 @@
       <button data-page="benutzer"><i class="bi bi-people"></i> Benutzerverwaltung</button>
     </div>
 
-    <button class="logout"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    <button class="logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
     <div class="version">Version 1.0.0</div>
   </div>
 
@@ -195,7 +211,7 @@
       btn.addEventListener("click", () => {
         const page = btn.getAttribute("data-page");
         content.innerHTML = "<h2>" + btn.innerText + "</h2><p>Inhalt für " + btn.innerText + " kommt hier hin.</p>";
-        sidebar.classList.remove("active"); // schließt Sidebar auf Mobile
+        sidebar.classList.remove("active"); 
       });
     });
 
@@ -210,6 +226,12 @@
         reader.onload = e => profileImg.src = e.target.result;
         reader.readAsDataURL(file);
       }
+    });
+
+    // Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", () => {
+      window.location.href = "index.html";
     });
   </script>
 </body>
