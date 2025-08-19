@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>IuK Lernwelt</title>
+  <title>IuK Lernwelt – Login</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
 
@@ -52,7 +52,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem; /* sorgt dafür, dass Bild nicht klebt */
+      padding: 1rem;
     }
 
     .login-image img {
@@ -67,7 +67,6 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      background: transparent;
     }
 
     .login-form h1 {
@@ -136,13 +135,9 @@
     @media (max-width: 700px) {
       .login-container {
         flex-direction: column;
-        max-height: none;
-      }
-      .login-image {
-        height: auto;
       }
       .login-image img {
-        max-height: 200px; /* auf Handy begrenzt */
+        max-height: 200px;
       }
     }
 
@@ -159,7 +154,7 @@
     </div>
     <div class="login-form">
       <h1>Herzlich Willkommen in deiner IuK Lernwelt</h1>
-      <form>
+      <form id="loginForm">
         <label for="email">E-Mail-Adresse</label>
         <div class="input-wrapper">
           <input type="email" id="email" placeholder="E-Mail eingeben" required />
@@ -177,11 +172,6 @@
   </div>
 
   <script>
-    // Service Worker
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./service-worker.js");
-    }
-
     // Passwort-Icon
     const togglePw = document.querySelector(".toggle-password i");
     const pwInput = document.getElementById("password");
@@ -193,10 +183,10 @@
       togglePw.classList.toggle("fa-eye-slash");
     });
 
-    // Demo-Login
-    document.querySelector("form").addEventListener("submit", (e) => {
+    // Fake-Login → Weiterleitung zur App
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("Login erfolgreich! (Demo)");
+      window.location.href = "app.html";
     });
   </script>
 </body>
