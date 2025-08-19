@@ -25,47 +25,54 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      background: var(--hellgrau, #f5f5f5);
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--dunkelblau), var(--softrot));
+      padding: 2rem 1rem;
+      box-sizing: border-box;
     }
 
     .login-container {
       display: flex;
       flex-direction: row;
-      background: var(--hellblau);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      background: rgba(255, 255, 255, 0.2); /* halbtransparent */
+      backdrop-filter: blur(12px); /* Glas-Effekt */
+      -webkit-backdrop-filter: blur(12px); /* Safari iOS */
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
       overflow: hidden;
-      max-width: 800px;
-      width: 90%;
+      max-width: 650px;
+      max-height: 520px;
+      width: 100%;
+      animation: fadeIn 0.6s ease;
+      color: white; /* Standardtext weiß wegen Hintergrund */
     }
 
     .login-image {
       flex: 1;
-      background: var(--hellblau) url("./assets/iuk-lernwelt-512.png") center/contain no-repeat;
-      min-height: 250px;
+      background: url("./assets/iuk-lernwelt-512.png") center/contain no-repeat;
+      min-height: 180px;
     }
 
     .login-form {
       flex: 1;
-      padding: 2rem;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      background: white;
     }
 
     .login-form h1 {
-      color: var(--softrot);
+      color: white;
       font-weight: 600;
-      margin-bottom: 1.5rem;
-      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
       text-align: center;
     }
 
     .login-form label {
       font-size: 0.9rem;
-      color: var(--dunkelgrau);
+      color: #f0f0f0;
       margin-bottom: 0.3rem;
       display: block;
     }
@@ -73,22 +80,28 @@
     /* Eingabefelder */
     .input-wrapper {
       position: relative;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
     }
 
     .input-wrapper input {
       width: 100%;
-      padding: 0.8rem 2.5rem 0.8rem 0.8rem; /* rechts Platz fürs Icon */
-      border: 1px solid var(--mittelgrau);
+      padding: 0.7rem 2.2rem 0.7rem 0.7rem;
+      border: 1px solid rgba(255,255,255,0.5);
       border-radius: 8px;
       font-size: 1rem;
       box-sizing: border-box;
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .input-wrapper input::placeholder {
+      color: rgba(255,255,255,0.7);
     }
 
     .input-wrapper input:focus {
       outline: none;
       border-color: var(--softrot);
-      box-shadow: 0 0 4px rgba(228,100,80,0.4);
+      box-shadow: 0 0 6px rgba(228,100,80,0.6);
     }
 
     .toggle-password {
@@ -97,38 +110,45 @@
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      color: var(--dunkelgrau);
+      color: rgba(255,255,255,0.8);
       font-size: 1rem;
       line-height: 1;
     }
 
     .toggle-password:hover {
-      color: var(--softrot);
+      color: white;
     }
 
     /* Login-Button */
     .login-form button {
-      padding: 0.9rem;
+      padding: 0.7rem;
       background: var(--dunkelblau);
       color: white;
       border: none;
       border-radius: 8px;
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: transform 0.15s ease, background 0.3s ease;
     }
 
     .login-form button:hover {
       background: var(--softrot);
+      transform: scale(1.03);
     }
 
     @media (max-width: 700px) {
       .login-container {
         flex-direction: column;
+        max-height: none;
       }
       .login-image {
-        height: 200px;
+        height: 140px;
       }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -136,7 +156,7 @@
   <div class="login-container">
     <div class="login-image"></div>
     <div class="login-form">
-      <h1>Herzlich Willkommen</h1>
+      <h1>Herzlich Willkommen in deinerIuK Lernwelt</h1>
       <form>
         <label for="email">E-Mail-Adresse</label>
         <div class="input-wrapper">
