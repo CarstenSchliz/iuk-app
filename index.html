@@ -6,7 +6,6 @@
   <title>IuK Lernwelt – Login</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
-  <!-- Bootstrap Icons (für Passwort-Auge) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
@@ -23,17 +22,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh; /* statt height fix */
+      box-sizing: border-box;
+      padding: 1rem;
     }
 
     .login-container {
-      background: white;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
       width: 100%;
       max-width: 360px;
       text-align: center;
+      margin: auto; /* sorgt für symmetrisch mittig */
     }
 
     .welcome-block {
@@ -42,15 +47,17 @@
 
     .welcome-block img {
       display: block;
-      margin: 0 auto 0.5rem auto;
+      margin: 0 auto 0.8rem auto;
+      width: 140px; /* Bild bleibt statisch */
+      height: auto;
     }
 
     .welcome-block h1 {
       color: var(--softrot);
-      font-size: 1.4rem; /* wieder größer */
+      font-size: 2rem; /* größer als vorher */
+      font-weight: bold;
       margin: 0;
-      display: inline-block; /* für Breitenmessung */
-      text-align: center;
+      line-height: 1.3;
     }
 
     .input-group {
@@ -61,10 +68,11 @@
     .input-group input {
       width: 100%;
       padding: 0.75rem;
-      border: 1px solid #ccc;
+      border: 1px solid rgba(255,255,255,0.6);
       border-radius: 8px;
       font-size: 1rem;
       box-sizing: border-box;
+      background: rgba(255,255,255,0.5);
     }
 
     .input-group .toggle-password {
@@ -73,7 +81,7 @@
       right: 12px;
       transform: translateY(-50%);
       cursor: pointer;
-      color: #666;
+      color: #333;
       font-size: 1.1rem;
     }
 
@@ -98,14 +106,16 @@
   <div class="login-container">
     <div class="welcome-block">
       <img src="assets/iuk-lernwelt-512.png" alt="IuK Lernwelt" id="welcomeImg">
-      <h1 id="welcomeText">Herzlich Willkommen<br>in deiner IuK Lernwelt</h1>
+      <h1>Herzlich Willkommen<br>in deiner IuK Lernwelt</h1>
     </div>
     <form onsubmit="event.preventDefault(); window.location.href='app.html';">
       <div class="input-group">
-        <input type="email" placeholder="E-Mail-Adresse" required>
+        <input type="email" placeholder="E-Mail-Adresse" required 
+               inputmode="email" autocomplete="username">
       </div>
       <div class="input-group">
-        <input type="password" id="password" placeholder="Passwort" required>
+        <input type="password" id="password" placeholder="Passwort" required
+               autocomplete="current-password">
         <i class="bi bi-eye toggle-password" id="togglePassword"></i>
       </div>
       <button type="submit">Login</button>
@@ -113,7 +123,6 @@
   </div>
 
   <script>
-    // Passwort-Auge
     const togglePassword = document.getElementById("togglePassword");
     const passwordInput = document.getElementById("password");
     togglePassword.addEventListener("click", () => {
@@ -121,13 +130,6 @@
       passwordInput.setAttribute("type", type);
       togglePassword.classList.toggle("bi-eye");
       togglePassword.classList.toggle("bi-eye-slash");
-    });
-
-    // Bildbreite = Textbreite
-    window.addEventListener("DOMContentLoaded", () => {
-      const welcomeText = document.getElementById("welcomeText");
-      const welcomeImg = document.getElementById("welcomeImg");
-      welcomeImg.style.width = welcomeText.offsetWidth + "px";
     });
   </script>
 </body>
