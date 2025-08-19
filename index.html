@@ -29,7 +29,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh; /* immer mittig */
+      height: 100vh;
     }
 
     .login-box {
@@ -50,17 +50,20 @@
       margin-bottom: 1.5rem;
     }
 
-    .logo-row img {
+    .logo-row img:first-child {
+      max-height: 120px; /* DRK-Logo größer */
+    }
+
+    .logo-row img:last-child {
       max-height: 100px;
-      width: auto;
     }
 
     h1 {
       color: var(--mittelblau);
       font-size: 1rem;
       font-weight: bold;
-      margin: 0 0 1.2rem 0;
-      white-space: nowrap; /* immer in einer Zeile */
+      margin: 0 0 1.5rem 0;
+      white-space: nowrap;
     }
 
     .form-group {
@@ -71,21 +74,39 @@
 
     .form-group input {
       width: 100%;
-      border: none;
-      border-bottom: 1px solid var(--mittelgrau);
-      padding: 1.2rem 0.8rem 0.4rem 2.5rem; /* Platz für Label + Icon */
+      border: 2px solid var(--mittelblau);
+      border-radius: 8px;
+      padding: 1rem 0.8rem 0.5rem 2.5rem;
       font-size: 1rem;
-      background: transparent;
       outline: none;
+      background: transparent;
+    }
+
+    .form-group input:focus {
+      border-color: var(--dunkelblau);
+      box-shadow: 0 0 6px rgba(0,45,85,0.4);
     }
 
     .form-group label {
       position: absolute;
-      top: 0.3rem;
+      top: 50%;
       left: 2.5rem;
-      font-size: 0.75rem;
+      transform: translateY(-50%);
+      font-size: 1rem;
       color: var(--dunkelgrau);
       pointer-events: none;
+      transition: 0.2s ease all;
+      background: #fff;
+      padding: 0 0.2rem;
+    }
+
+    /* Effekt: Label nach oben, wenn Input aktiv oder befüllt */
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label {
+      top: -0.6rem;
+      left: 2.3rem;
+      font-size: 0.75rem;
+      color: var(--mittelblau);
     }
 
     .form-group i {
@@ -93,8 +114,8 @@
       top: 50%;
       left: 0.6rem;
       transform: translateY(-50%);
-      font-size: 1rem;
-      color: var(--dunkelgrau);
+      font-size: 1.2rem;
+      color: var(--mittelblau);
     }
 
     button.login-btn {
@@ -109,17 +130,15 @@
       cursor: pointer;
       margin-top: 0.5rem;
       transition: all 0.25s ease;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
     }
 
     button.login-btn:hover {
-      background: rgba(230, 0, 5, 0.8); /* leicht transparentes Rot */
+      background: rgba(230, 0, 5, 0.8);
       box-shadow: 0 4px 12px rgba(230, 0, 5, 0.4);
     }
 
     button.login-btn:active {
-      transform: scale(0.97); /* kleiner Klick-Effekt */
+      transform: scale(0.97);
     }
 
     .links {
@@ -168,15 +187,15 @@
       <!-- Mail -->
       <div class="form-group">
         <i class="bi bi-envelope"></i>
+        <input type="email" id="email" placeholder=" " required>
         <label for="email">E-Mail-Adresse</label>
-        <input type="email" id="email" required>
       </div>
 
       <!-- Passwort -->
       <div class="form-group">
-        <i class="bi bi-lock"></i>
+        <i class="bi bi-shield-lock"></i>
+        <input type="password" id="password" placeholder=" " required>
         <label for="password">Passwort</label>
-        <input type="password" id="password" required>
       </div>
 
       <button type="submit" class="login-btn">Anmelden</button>
