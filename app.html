@@ -50,6 +50,7 @@
     .profile {
       text-align: center;
       margin-bottom: 1.5rem;
+      cursor: pointer;
     }
 
     .profile img {
@@ -58,6 +59,11 @@
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid white;
+      transition: transform 0.2s ease;
+    }
+
+    .profile img:hover {
+      transform: scale(1.05);
     }
 
     .profile h2 {
@@ -100,10 +106,12 @@
       font-size: 0.8rem;
       color: #ccc;
       text-align: center;
+      margin-top: 1rem;
     }
 
     .logout {
-      margin-top: 0.5rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem; /* Abstand zur Versionsnummer */
       padding: 0.6rem;
       background: #a51e0f;
       border: none;
@@ -200,10 +208,11 @@
   <!-- Sidebar -->
   <div class="sidebar hidden" id="sidebar">
     <div>
-      <div class="profile">
-        <img src="https://via.placeholder.com/80" alt="Profilbild">
-        <h2>Max Mustermann</h2>
-        <p>Administrator</p>
+      <div class="profile" id="profile">
+        <img src="https://via.placeholder.com/80" alt="Profilbild" id="profileImg">
+        <input type="file" id="fileInput" accept="image/*" style="display:none">
+        <h2 id="userName">Max Mustermann</h2>
+        <p id="userRole">Administrator</p>
       </div>
       <div class="menu">
         <button data-section="daten" class="active">📋 Persönliche Daten</button>
@@ -241,6 +250,13 @@
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
     const toggleBtn = document.getElementById("menuToggle");
+    const profile = document.getElementById("profile");
+    const fileInput = document.getElementById("fileInput");
+    const profileImg = document.getElementById("profileImg");
+
+    // Beispiel: Benutzername als Key
+    const userName = document.getElementById("userName").innerText;
+    const storageKey = `profileImage_${userName}`;
 
     const sections = {
       daten: "<h1>Persönliche Daten</h1><p>Hier erscheinen deine persönlichen Daten.</p>",
@@ -260,7 +276,6 @@
         const section = btn.getAttribute("data-section");
         content.innerHTML = sections[section];
 
-        // Handy: Sidebar schließen nach Auswahl
         if (window.innerWidth <= 768) {
           sidebar.classList.remove("active");
           overlay.classList.remove("active");
@@ -268,13 +283,37 @@
       });
     });
 
-    // Hamburger-Toggle
+    // Profilbild ändern
+    profile.addEventListener("click", () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          profileImg.src = event.target.result;
+          localStorage.setItem(storageKey, event.target.result); // speichern
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Beim Laden gespeichertes Bild einsetzen
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedImage = localStorage.getItem(storageKey);
+      if (savedImage) {
+        profileImg.src = savedImage;
+      }
+    });
+
+    // Hamburger Menü (nur Handy)
     toggleBtn.addEventListener("click", () => {
       sidebar.classList.add("active");
       overlay.classList.add("active");
     });
 
-    // Overlay klick → Sidebar schließen
     overlay.addEventListener("click", () => {
       sidebar.classList.remove("active");
       overlay.classList.remove("active");
