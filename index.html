@@ -26,16 +26,14 @@
       font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
       background: var(--hellgrau);
       margin: 0;
-      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      color: var(--dunkelgrau);
+      height: 100vh; /* immer mittig */
     }
 
     .login-box {
-      background: #ffffff; /* Reines Weiß, deckend */
+      background: #ffffff;
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
@@ -48,24 +46,23 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 1.5rem;
+      gap: 2rem;
       margin-bottom: 1.5rem;
     }
 
     .logo-row img {
-      max-height: 80px;
+      max-height: 100px;
       width: auto;
     }
 
     h1 {
       color: var(--mittelblau);
-      font-size: 1.4rem;
+      font-size: 1rem;
       font-weight: bold;
-      margin: 0 0 1.5rem 0;
-      white-space: nowrap; /* Alles in einer Zeile */
+      margin: 0 0 1.2rem 0;
+      white-space: nowrap; /* immer in einer Zeile */
     }
 
-    /* ---- Input Felder im Material Style ---- */
     .form-group {
       position: relative;
       margin-bottom: 1.5rem;
@@ -74,19 +71,19 @@
 
     .form-group input {
       width: 100%;
-      padding: 1rem 2.5rem 0.5rem 2.5rem;
-      border: 1px solid var(--mittelgrau);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.95);
+      border: none;
+      border-bottom: 1px solid var(--mittelgrau);
+      padding: 1.2rem 0.8rem 0.4rem 2.5rem; /* Platz für Label + Icon */
       font-size: 1rem;
+      background: transparent;
       outline: none;
     }
 
     .form-group label {
       position: absolute;
-      top: 0.4rem;
+      top: 0.3rem;
       left: 2.5rem;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--dunkelgrau);
       pointer-events: none;
     }
@@ -94,46 +91,45 @@
     .form-group i {
       position: absolute;
       top: 50%;
-      left: 0.8rem;
+      left: 0.6rem;
       transform: translateY(-50%);
-      font-size: 1rem;
-      color: var(--dunkelgrau);
-    }
-
-    .toggle-password {
-      position: absolute;
-      top: 50%;
-      right: 0.8rem;
-      transform: translateY(-50%);
-      cursor: pointer;
       font-size: 1rem;
       color: var(--dunkelgrau);
     }
 
     button.login-btn {
       width: 100%;
-      padding: 0.9rem;
+      padding: 0.7rem;
       background: var(--drk-rot);
       border: none;
       border-radius: 8px;
       color: white;
-      font-size: 1rem;
+      font-size: 0.95rem;
+      font-weight: bold;
       cursor: pointer;
       margin-top: 0.5rem;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
 
     button.login-btn:hover {
-      background: var(--dunkelrot);
+      background: rgba(230, 0, 5, 0.8); /* leicht transparentes Rot */
+      box-shadow: 0 4px 12px rgba(230, 0, 5, 0.4);
+    }
+
+    button.login-btn:active {
+      transform: scale(0.97); /* kleiner Klick-Effekt */
     }
 
     .links {
       margin-top: 2rem;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       text-align: center;
     }
 
     .links .section {
-      margin-bottom: 2rem; /* Abstand zwischen Blöcken */
+      margin-bottom: 1.8rem;
     }
 
     .links span {
@@ -181,7 +177,6 @@
         <i class="bi bi-lock"></i>
         <label for="password">Passwort</label>
         <input type="password" id="password" required>
-        <i class="bi bi-eye toggle-password" id="togglePassword"></i>
       </div>
 
       <button type="submit" class="login-btn">Anmelden</button>
@@ -199,16 +194,5 @@
       </div>
     </div>
   </div>
-
-  <script>
-    const togglePassword = document.getElementById("togglePassword");
-    const passwordInput = document.getElementById("password");
-    togglePassword.addEventListener("click", () => {
-      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-      passwordInput.setAttribute("type", type);
-      togglePassword.classList.toggle("bi-eye");
-      togglePassword.classList.toggle("bi-eye-slash");
-    });
-  </script>
 </body>
 </html>
