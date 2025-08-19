@@ -6,8 +6,7 @@
   <title>IuK Lernwelt – Login</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
-  <!-- Font Awesome + Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
@@ -37,23 +36,20 @@
       text-align: center;
     }
 
-    .image-text {
-      display: flex;
-      align-items: flex-end; /* Bild & Text unten bündig */
-      justify-content: center;
-      gap: 1rem;
+    .welcome-block {
       margin-bottom: 1.5rem;
     }
 
-    .image-text img {
-      max-width: 90px;
+    .welcome-block img {
+      display: block;
+      margin: 0 auto 0.5rem auto;
     }
 
-    .image-text h1 {
+    .welcome-block h1 {
       color: var(--softrot);
       font-size: 1.1rem;
       margin: 0;
-      text-align: left;
+      display: inline-block; /* für Breitenmessung */
     }
 
     .input-group {
@@ -99,9 +95,9 @@
 </head>
 <body>
   <div class="login-container">
-    <div class="image-text">
-      <img src="assets/iuk-lernwelt-512.png" alt="IuK Lernwelt">
-      <h1>Herzlich Willkommen<br>in deiner IuK Lernwelt</h1>
+    <div class="welcome-block">
+      <img src="assets/iuk-lernwelt-512.png" alt="IuK Lernwelt" id="welcomeImg">
+      <h1 id="welcomeText">Herzlich Willkommen<br>in deiner IuK Lernwelt</h1>
     </div>
     <form onsubmit="event.preventDefault(); window.location.href='app.html';">
       <div class="input-group">
@@ -116,15 +112,21 @@
   </div>
 
   <script>
+    // Passwort-Auge
     const togglePassword = document.getElementById("togglePassword");
     const passwordInput = document.getElementById("password");
-
     togglePassword.addEventListener("click", () => {
       const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
-
       togglePassword.classList.toggle("bi-eye");
       togglePassword.classList.toggle("bi-eye-slash");
+    });
+
+    // Bildbreite = Textbreite
+    window.addEventListener("DOMContentLoaded", () => {
+      const welcomeText = document.getElementById("welcomeText");
+      const welcomeImg = document.getElementById("welcomeImg");
+      welcomeImg.style.width = welcomeText.offsetWidth + "px";
     });
   </script>
 </body>
