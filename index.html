@@ -12,14 +12,12 @@
     :root {
       --drk-rot: rgb(230,0,5);
       --softrot: rgb(228,100,80);
-      --dunkelrot: rgb(165,30,15);
       --dunkelblau: rgb(0,45,85);
       --mittelblau: rgb(0,140,205);
       --volltonblau: rgb(34,117,208);
-      --hellblau: rgb(235,245,255);
+      --hellgrau: rgb(239,238,234);
       --dunkelgrau: rgb(85,79,74);
       --mittelgrau: rgb(180,180,180);
-      --hellgrau: rgb(239,238,234);
     }
 
     body {
@@ -37,7 +35,7 @@
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      max-width: 400px;
+      max-width: 380px;
       width: 100%;
       text-align: center;
     }
@@ -51,7 +49,7 @@
     }
 
     .logo-row img:first-child {
-      max-height: 140px; /* DRK-Logo größer */
+      max-height: 160px; /* DRK-Logo nochmal größer */
     }
 
     .logo-row img:last-child {
@@ -60,7 +58,7 @@
 
     h1 {
       color: var(--mittelblau);
-      font-size: 1.2rem; /* größer */
+      font-size: 1.25rem; /* größer */
       font-weight: bold;
       margin: 0 0 1.5rem 0;
       white-space: nowrap;
@@ -68,23 +66,24 @@
 
     .form-group {
       position: relative;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
       text-align: left;
     }
 
     .form-group input {
-      width: 100%; /* so breit wie Button */
-      border: 2px solid var(--dunkelgrau); /* grau statt blau */
-      border-radius: 8px;
-      padding: 1rem 0.8rem 0.5rem 2.5rem;
+      width: 100%; /* exakt so breit wie Button */
+      border: 1px solid var(--dunkelgrau); /* dünner, grau */
+      border-radius: 6px;
+      padding: 0.9rem 0.8rem 0.5rem 2.5rem;
       font-size: 1rem;
       outline: none;
       background: transparent;
+      box-sizing: border-box;
     }
 
     .form-group input:focus {
       border-color: var(--mittelgrau);
-      box-shadow: 0 0 6px rgba(85,79,74,0.4);
+      box-shadow: 0 0 4px rgba(85,79,74,0.3);
     }
 
     .form-group label {
@@ -100,10 +99,9 @@
       padding: 0 0.2rem;
     }
 
-    /* Effekt: Label bleibt im Feld drin, nicht darüber */
     .form-group input:focus + label,
     .form-group input:not(:placeholder-shown) + label {
-      top: 0.2rem;
+      top: 0.15rem;
       font-size: 0.75rem;
       color: var(--dunkelgrau);
     }
@@ -122,13 +120,14 @@
       padding: 0.7rem;
       background: var(--drk-rot);
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       color: white;
       font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
       margin-top: 0.5rem;
       transition: all 0.25s ease;
+      box-sizing: border-box;
     }
 
     button.login-btn:hover {
@@ -192,7 +191,7 @@
 
       <!-- Passwort -->
       <div class="form-group">
-        <i class="bi bi-shield-lock"></i>
+        <i class="bi bi-lock"></i> <!-- klassisches Schloss -->
         <input type="password" id="password" placeholder=" " required>
         <label for="password">Passwort</label>
       </div>
