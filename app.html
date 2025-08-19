@@ -6,14 +6,12 @@
   <title>IuK Lernwelt – App</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
     :root {
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
-      --hellblau: rgb(235,245,255);
-      --dunkelgrau: rgb(85,79,74);
-      --mittelgrau: rgb(180,180,180);
       --hellgrau: rgb(239,238,234);
     }
 
@@ -49,13 +47,13 @@
 
     .profile {
       text-align: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       cursor: pointer;
     }
 
     .profile img {
       width: 80px;
-      height: 80px;
+      aspect-ratio: 1/1;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid white;
@@ -106,12 +104,12 @@
       font-size: 0.8rem;
       color: #ccc;
       text-align: center;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
     }
 
     .logout {
       margin-top: 1rem;
-      margin-bottom: 1rem; /* Abstand zur Versionsnummer */
+      margin-bottom: 3rem; /* deutlich mehr Abstand */
       padding: 0.6rem;
       background: #a51e0f;
       border: none;
@@ -132,7 +130,7 @@
       display: flex;
       flex-direction: column;
       width: 100%;
-      margin-left: 260px; /* Platz für Sidebar */
+      margin-left: 260px;
       transition: margin-left 0.3s ease;
     }
 
@@ -152,7 +150,7 @@
       background: var(--dunkelblau);
       color: white;
       padding: 1rem;
-      display: none; /* nur auf Handy */
+      display: none; /* nur Handy */
       align-items: center;
       justify-content: space-between;
     }
@@ -168,7 +166,7 @@
       transform: scale(0.9);
     }
 
-    /* Overlay für Sidebar auf Handy */
+    /* Overlay */
     .overlay {
       position: fixed;
       top: 0;
@@ -215,16 +213,18 @@
         <p id="userRole">Administrator</p>
       </div>
       <div class="menu">
-        <button data-section="daten" class="active">📋 Persönliche Daten</button>
-        <button data-section="zugang">🔑 Zugangsvoraussetzungen</button>
-        <button data-section="dashboard">📊 Dashboard</button>
-        <button data-section="module">📚 Lernmodule</button>
-        <button data-section="materialien">📂 Lernmaterialien</button>
-        <button data-section="verwaltung">👥 Benutzerverwaltung</button>
+        <button data-section="daten" class="active"><i class="fa-solid fa-user"></i> Persönliche Daten</button>
+        <button data-section="zugang"><i class="fa-solid fa-key"></i> Zugangsvoraussetzungen</button>
+        <button data-section="dashboard"><i class="fa-solid fa-chart-bar"></i> Dashboard</button>
+        <button data-section="module"><i class="fa-solid fa-book"></i> Lernmodule</button>
+        <button data-section="materialien"><i class="fa-solid fa-folder"></i> Lernmaterialien</button>
+        <button data-section="verwaltung"><i class="fa-solid fa-users"></i> Benutzerverwaltung</button>
       </div>
     </div>
     <div>
-      <button class="logout" onclick="window.location.href='index.html'">🚪 Logout</button>
+      <button class="logout" onclick="window.location.href='index.html'">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
       <div class="bottom">Version 1.0.0</div>
     </div>
   </div>
@@ -254,7 +254,6 @@
     const fileInput = document.getElementById("fileInput");
     const profileImg = document.getElementById("profileImg");
 
-    // Beispiel: Benutzername als Key
     const userName = document.getElementById("userName").innerText;
     const storageKey = `profileImage_${userName}`;
 
@@ -267,12 +266,10 @@
       verwaltung: "<h1>Benutzerverwaltung</h1><p>Hier kannst du Benutzer verwalten.</p>",
     };
 
-    // Navigation
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         buttons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-
         const section = btn.getAttribute("data-section");
         content.innerHTML = sections[section];
 
@@ -283,7 +280,6 @@
       });
     });
 
-    // Profilbild ändern
     profile.addEventListener("click", () => {
       fileInput.click();
     });
@@ -294,13 +290,12 @@
         const reader = new FileReader();
         reader.onload = function(event) {
           profileImg.src = event.target.result;
-          localStorage.setItem(storageKey, event.target.result); // speichern
+          localStorage.setItem(storageKey, event.target.result);
         };
         reader.readAsDataURL(file);
       }
     });
 
-    // Beim Laden gespeichertes Bild einsetzen
     window.addEventListener("DOMContentLoaded", () => {
       const savedImage = localStorage.getItem(storageKey);
       if (savedImage) {
@@ -308,7 +303,6 @@
       }
     });
 
-    // Hamburger Menü (nur Handy)
     toggleBtn.addEventListener("click", () => {
       sidebar.classList.add("active");
       overlay.classList.add("active");
