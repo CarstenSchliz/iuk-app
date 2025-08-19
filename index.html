@@ -35,13 +35,13 @@
     }
 
     .login-box {
-      background: rgba(255, 255, 255, 0.25); /* Glas */
+      background: rgba(255, 255, 255, 0.7); /* Glas-Effekt in Weiß */
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       padding: 2rem;
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.4);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
       max-width: 400px;
       width: 100%;
       text-align: center;
@@ -56,13 +56,13 @@
     }
 
     .logo-row img {
-      max-height: 80px; /* größer */
+      max-height: 80px;
       width: auto;
     }
 
     h1 {
-      color: var(--softrot);
-      font-size: 1.6rem;
+      color: var(--mittelblau); /* blau */
+      font-size: 1.4rem;
       font-weight: bold;
       margin: 0 0 1rem 0;
     }
@@ -72,7 +72,7 @@
       align-items: center;
       border: 1px solid var(--mittelgrau);
       border-radius: 8px;
-      background: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.8);
       margin-bottom: 1rem;
       padding: 0 0.5rem;
     }
@@ -109,7 +109,7 @@
     }
 
     .links {
-      margin-top: 1.5rem;
+      margin-top: 1.8rem;
       font-size: 0.9rem;
     }
 
@@ -120,7 +120,7 @@
 
     .links a {
       display: block;
-      margin: 0.6rem 0; /* größerer Abstand */
+      margin: 1.2rem 0; /* noch größerer Abstand */
       text-decoration: none;
     }
 
@@ -146,11 +146,11 @@
 
     <form onsubmit="event.preventDefault(); window.location.href='app.html';">
       <div class="input-group">
-        <i class="bi bi-envelope"></i>
         <input type="email" placeholder="E-Mail-Adresse" required>
       </div>
       <div class="input-group">
         <i class="bi bi-eye toggle-password" id="togglePassword"></i>
+        <i class="bi bi-lock"></i>
         <input type="password" id="password" placeholder="Passwort" required>
       </div>
       <button type="submit" class="login-btn">Anmelden</button>
