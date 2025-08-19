@@ -25,6 +25,7 @@
       overflow: hidden;
     }
 
+    /* Sidebar */
     .sidebar {
       width: 260px;
       background: var(--dunkelblau);
@@ -33,6 +34,17 @@
       flex-direction: column;
       justify-content: space-between;
       padding: 1rem;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      transform: translateX(0);
+      transition: transform 0.3s ease;
+      z-index: 200;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
     }
 
     .profile {
@@ -101,6 +113,16 @@
       cursor: pointer;
     }
 
+    /* Hauptbereich */
+    .main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-left: 260px; /* Platz für Sidebar */
+      transition: margin-left 0.3s ease;
+    }
+
     .content {
       flex-grow: 1;
       background: var(--hellgrau);
@@ -111,10 +133,54 @@
     .content h1 {
       color: var(--softrot);
     }
+
+    /* Header mit Hamburger-Menü */
+    .header {
+      background: var(--dunkelblau);
+      color: white;
+      padding: 1rem;
+      display: none; /* nur auf Handy */
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .menu-toggle {
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Overlay für Sidebar auf Handy */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      z-index: 100;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .main {
+        margin-left: 0;
+      }
+      .header {
+        display: flex;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="sidebar">
+  <!-- Sidebar -->
+  <div class="sidebar hidden" id="sidebar">
     <div>
       <div class="profile">
         <img src="https://via.placeholder.com/80" alt="Profilbild">
@@ -136,14 +202,27 @@
     </div>
   </div>
 
-  <div class="content" id="content">
-    <h1>Willkommen in der IuK Lernwelt</h1>
-    <p>Bitte wähle links einen Menüpunkt aus.</p>
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="header">
+      <span class="menu-toggle" id="menuToggle">☰</span>
+      <span>IuK Lernwelt</span>
+    </div>
+    <div class="content" id="content">
+      <h1>Willkommen in der IuK Lernwelt</h1>
+      <p>Bitte wähle links einen Menüpunkt aus.</p>
+    </div>
   </div>
 
   <script>
     const buttons = document.querySelectorAll(".menu button");
     const content = document.getElementById("content");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const toggleBtn = document.getElementById("menuToggle");
 
     const sections = {
       daten: "<h1>Persönliche Daten</h1><p>Hier erscheinen deine persönlichen Daten.</p>",
@@ -154,6 +233,7 @@
       verwaltung: "<h1>Benutzerverwaltung</h1><p>Hier kannst du Benutzer verwalten.</p>",
     };
 
+    // Navigation
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         buttons.forEach(b => b.classList.remove("active"));
@@ -161,7 +241,25 @@
 
         const section = btn.getAttribute("data-section");
         content.innerHTML = sections[section];
+
+        // Handy: Sidebar schließen nach Auswahl
+        if (window.innerWidth <= 768) {
+          sidebar.classList.remove("active");
+          overlay.style.display = "none";
+        }
       });
+    });
+
+    // Hamburger-Toggle
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.add("active");
+      overlay.style.display = "block";
+    });
+
+    // Overlay klick → Sidebar schließen
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      overlay.style.display = "none";
     });
   </script>
 </body>
