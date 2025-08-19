@@ -6,7 +6,9 @@
   <title>IuK Lernwelt – Login</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
+  <!-- Font Awesome + Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
     :root {
@@ -35,15 +37,23 @@
       text-align: center;
     }
 
-    .login-container img {
-      max-width: 100px;
-      margin-bottom: 1rem;
+    .image-text {
+      display: flex;
+      align-items: flex-end; /* Bild & Text unten bündig */
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
 
-    h1 {
+    .image-text img {
+      max-width: 90px;
+    }
+
+    .image-text h1 {
       color: var(--softrot);
-      margin-bottom: 1.5rem;
-      font-size: 1.4rem;
+      font-size: 1.1rem;
+      margin: 0;
+      text-align: left;
     }
 
     .input-group {
@@ -66,7 +76,8 @@
       right: 12px;
       transform: translateY(-50%);
       cursor: pointer;
-      color: #888;
+      color: #666;
+      font-size: 1.1rem;
     }
 
     button {
@@ -88,15 +99,17 @@
 </head>
 <body>
   <div class="login-container">
-    <img src="assets/iuk-lernwelt-512.png" alt="IuK Lernwelt">
-    <h1>Herzlich Willkommen in deiner IuK Lernwelt</h1>
+    <div class="image-text">
+      <img src="assets/iuk-lernwelt-512.png" alt="IuK Lernwelt">
+      <h1>Herzlich Willkommen<br>in deiner IuK Lernwelt</h1>
+    </div>
     <form onsubmit="event.preventDefault(); window.location.href='app.html';">
       <div class="input-group">
         <input type="email" placeholder="E-Mail-Adresse" required>
       </div>
       <div class="input-group">
         <input type="password" id="password" placeholder="Passwort" required>
-        <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+        <i class="bi bi-eye toggle-password" id="togglePassword"></i>
       </div>
       <button type="submit">Login</button>
     </form>
@@ -110,8 +123,8 @@
       const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
 
-      togglePassword.classList.toggle("fa-eye");
-      togglePassword.classList.toggle("fa-eye-slash");
+      togglePassword.classList.toggle("bi-eye");
+      togglePassword.classList.toggle("bi-eye-slash");
     });
   </script>
 </body>
