@@ -52,13 +52,13 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      background: var(--mittelgrau);
+      background: var(--mittelgrau); /* Fallback, falls Bild nicht lädt */
     }
 
     .right img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover; /* Bild füllt komplett */
       display: block;
     }
 
@@ -275,7 +275,8 @@
     </div>
 
     <div class="right">
-      <img src="assets/iuk-icon.png" alt="IuK Icon" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
+      <img src="assets/iuk-icon.png" alt="IuK Icon" 
+           onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
     </div>
   </div>
 </body>
