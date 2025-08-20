@@ -81,7 +81,12 @@
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
       max-width: 380px;
       width: 100%;
+      max-height: 90vh; /* begrenzt auf Bildschirmhöhe */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       text-align: center;
+      box-sizing: border-box;
     }
 
     .logo-top {
@@ -96,7 +101,7 @@
       color: var(--mittelblau);
       font-size: 1.25rem;
       font-weight: bold;
-      margin: 2rem 0 0.6rem 0; /* deutlich mehr Abstand nach oben */
+      margin: 3rem 0 0.6rem 0; /* Überschrift deutlich weiter nach oben */
     }
 
     .subtitle {
@@ -196,15 +201,18 @@
     }
 
     /* Handy hochkant */
-    @media (max-width: 768px) and (orientation: portrait) {
+    @media (max-width: 768px) {
       .container {
         flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
       .right {
         display: none; /* Bild im Handy ausblenden */
       }
       .login-box {
-        max-width: 280px;
+        max-width: 90%;
+        max-height: 85vh;
         padding: 1.2rem;
         margin: auto;
       }
@@ -213,17 +221,21 @@
       }
     }
 
-    /* Handy querformat → Login links, Bild rechts */
+    /* Handy querformat */
     @media (max-width: 1024px) and (orientation: landscape) {
       .container {
-        flex-direction: row;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
       .right {
-        display: none; /* Bild auch im Querformat-Handy ausblenden */
+        display: none; /* Bild auch hier ausblenden */
       }
       .login-box {
-        max-width: 300px;
+        max-width: 70%;
+        max-height: 85vh;
         padding: 1.5rem;
+        margin: auto;
       }
       .logo-top img {
         max-height: 100px;
