@@ -198,7 +198,7 @@
 
   <script type="module">
     import { auth } from "./firebase.js";
-    import { onAuthStateChanged, signOut } 
+    import { onAuthStateChanged, signOut, updateProfile } 
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     // Sidebar Toggle
@@ -208,18 +208,45 @@
       sidebar.classList.toggle("active");
     });
 
-    // Content Wechsel
     const content = document.getElementById("content");
     const buttons = document.querySelectorAll(".menu button");
+
+    // Content-Wechsel inkl. "Persönliche Daten"
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         const page = btn.getAttribute("data-page");
-        content.innerHTML = "<h2>" + btn.innerText + "</h2><p>Inhalt für " + btn.innerText + " kommt hier hin.</p>";
+
+        if (page === "persoenlich") {
+          content.innerHTML = `
+            <h2>Persönliche Daten</h2>
+            <div>
+              <label for="newName">Name ändern:</label><br>
+              <input type="text" id="newName" value="${auth.currentUser?.displayName || ""}" style="padding:0.4rem; width:250px;">
+            </div>
+            <button id="saveName" style="margin-top:1rem; padding:0.5rem 1rem;">Speichern</button>
+          `;
+
+          document.getElementById("saveName").addEventListener("click", async () => {
+            const newName = document.getElementById("newName").value.trim();
+            if (newName) {
+              try {
+                await updateProfile(auth.currentUser, { displayName: newName });
+                document.querySelector(".profile h2").innerText = newName;
+                alert("Name wurde erfolgreich aktualisiert!");
+              } catch (err) {
+                alert("Fehler beim Speichern: " + err.message);
+              }
+            }
+          });
+        } else {
+          content.innerHTML = "<h2>" + btn.innerText + "</h2><p>Inhalt für " + btn.innerText + " kommt hier hin.</p>";
+        }
+
         sidebar.classList.remove("active"); 
       });
     });
 
-    // Profilbild Upload (aktuell nur lokal, später Firebase Storage)
+    // Profilbild Upload (lokal)
     const profileImg = document.getElementById("profileImg");
     const profileUpload = document.getElementById("profileUpload");
     profileImg.addEventListener("click", () => profileUpload.click());
@@ -232,15 +259,19 @@
       }
     });
 
-    // 🔑 Login-Check
+    // Login-Check & Name in Sidebar anzeigen
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        // nicht eingeloggt → zurück zur Login-Seite
         window.location.href = "index.html";
+      } else {
+        const nameElement = document.querySelector(".profile h2");
+        const roleElement = document.querySelector(".profile p");
+        nameElement.innerText = user.displayName || user.email;
+        roleElement.innerText = "Teilnehmer";
       }
     });
 
-    // 🔓 Logout
+    // Logout
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
