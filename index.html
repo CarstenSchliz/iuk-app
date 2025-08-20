@@ -96,7 +96,7 @@
       color: var(--mittelblau);
       font-size: 1.25rem;
       font-weight: bold;
-      margin: 1.2rem 0 0.6rem 0; /* mehr Abstand nach oben, weniger nach unten */
+      margin: 2rem 0 0.6rem 0; /* deutlich mehr Abstand nach oben */
     }
 
     .subtitle {
@@ -201,9 +201,7 @@
         flex-direction: column;
       }
       .right {
-        order: -1;
-        display: block;
-        height: 40%;
+        display: none; /* Bild im Handy ausblenden */
       }
       .login-box {
         max-width: 280px;
@@ -221,7 +219,7 @@
         flex-direction: row;
       }
       .right {
-        display: block;
+        display: none; /* Bild auch im Querformat-Handy ausblenden */
       }
       .login-box {
         max-width: 300px;
