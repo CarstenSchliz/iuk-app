@@ -30,7 +30,6 @@
       align-items: center;
     }
 
-    /* --- Container für PC mit 2 Spalten --- */
     .container {
       display: flex;
       width: 100%;
@@ -43,22 +42,23 @@
       justify-content: center;
       align-items: center;
       background: var(--hellgrau);
+      border-right: 1px solid var(--mittelgrau); /* feine Trennlinie */
+      box-shadow: 4px 0 10px rgba(0,0,0,0.05);   /* edler Schatten-Effekt */
     }
 
     .right {
       flex: 1;
-      background: #111;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
     .right img {
-      max-width: 90%;
-      height: auto;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
-    /* --- Login Box --- */
     .login-box {
       background: #fff;
       padding: 2rem;
@@ -74,12 +74,12 @@
     }
 
     .logo-top img {
-      max-height: 120px; /* DRK Logo */
+      max-height: 150px;
     }
 
     h1 {
       color: var(--mittelblau);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: bold;
       margin-bottom: 0.3rem;
     }
@@ -180,20 +180,19 @@
       color: var(--volltonblau);
     }
 
-    /* --- Handy-Ansicht --- */
     @media (max-width: 768px) {
       .container {
         flex-direction: column;
       }
       .right {
-        display: none; /* rechtes Bild ausblenden */
+        display: none;
       }
       .login-box {
-        max-width: 320px;
-        padding: 1.5rem;
+        max-width: 280px;
+        padding: 1.2rem;
       }
       .logo-top img {
-        max-height: 90px;
+        max-height: 100px;
       }
       h1 {
         font-size: 1rem;
@@ -203,7 +202,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Linke Spalte -->
     <div class="left">
       <div class="login-box">
         <div class="logo-top">
@@ -243,7 +241,6 @@
       </div>
     </div>
 
-    <!-- Rechte Spalte (nur PC) -->
     <div class="right">
       <img src="assets/iuk-icon.png" alt="IuK Icon">
     </div>
