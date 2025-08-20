@@ -51,7 +51,6 @@
       display: block;
       margin: 0 auto 0.8rem auto;
       background: #ccc;
-      cursor: pointer;
     }
 
     .profile h2 {
@@ -86,9 +85,7 @@
       transition: background 0.2s;
     }
 
-    .menu button:hover {
-      background: rgba(255,255,255,0.15);
-    }
+    .menu button:hover { background: rgba(255,255,255,0.15); }
 
     .logout {
       margin-top: auto;
@@ -106,10 +103,7 @@
       padding: 0.6rem 1rem;
       transition: background 0.2s;
     }
-
-    .logout:hover {
-      background: rgba(255,255,255,0.15);
-    }
+    .logout:hover { background: rgba(255,255,255,0.15); }
 
     .version {
       font-size: 0.8rem;
@@ -126,10 +120,7 @@
     }
 
     @media (min-width: 769px) {
-      .content {
-        padding-left: 5rem;
-        padding-right: 3rem;
-      }
+      .content { padding-left: 5rem; padding-right: 3rem; }
     }
 
     @media (max-width: 768px) {
@@ -141,9 +132,7 @@
         transition: left 0.3s;
         z-index: 1000;
       }
-      .sidebar.active {
-        left: 0;
-      }
+      .sidebar.active { left: 0; }
       .menu-toggle {
         position: fixed;
         top: 1rem;
@@ -157,9 +146,7 @@
         cursor: pointer;
         z-index: 1100;
       }
-      .content {
-        padding: 5rem 1.5rem 2rem 1.5rem;
-      }
+      .content { padding: 5rem 1.5rem 2rem 1.5rem; }
     }
   </style>
 </head>
@@ -174,8 +161,8 @@
     <div class="profile">
       <img src="assets/profile-placeholder.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
-      <h2 id="username">Max Mustermann</h2>
-      <p>Teilnehmer</p>
+      <h2 id="userName">Max Mustermann</h2>
+      <p id="userEmail">Teilnehmer</p>
     </div>
 
     <div class="menu">
@@ -198,23 +185,66 @@
   </div>
 
   <script type="module">
-    import { app, auth, storage } from "./firebase.js";
-    import { onAuthStateChanged, signOut, updateProfile } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { ref, uploadBytes, getDownloadURL } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import { app, auth } from "./firebase.js";
+    import { 
+      onAuthStateChanged, 
+      signOut, 
+      updateProfile 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getStorage, ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-    // Sidebar Toggle
-    const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
+    const menuToggle = document.getElementById("menuToggle");
+    const profileImg = document.getElementById("profileImg");
+    const profileUpload = document.getElementById("profileUpload");
+    const userName = document.getElementById("userName");
+    const userEmail = document.getElementById("userEmail");
+    const content = document.getElementById("content");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const storage = getStorage(app);
+
+    // Sidebar toggle
     menuToggle.addEventListener("click", () => {
       sidebar.classList.toggle("active");
     });
 
+    // Auth-Check
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        userEmail.textContent = user.email;
+        userName.textContent = user.displayName || user.email.split("@")[0];
+
+        // Profilbild aus Storage laden
+        try {
+          const imgRef = ref(storage, `profilePictures/${user.uid}.jpg`);
+          const url = await getDownloadURL(imgRef);
+          profileImg.src = url;
+        } catch {
+          profileImg.src = "assets/profile-placeholder.png";
+        }
+      }
+    });
+
+    // Profilbild Upload
+    profileImg.addEventListener("click", () => profileUpload.click());
+    profileUpload.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (file && auth.currentUser) {
+        const imgRef = ref(storage, `profilePictures/${auth.currentUser.uid}.jpg`);
+        await uploadBytes(imgRef, file);
+        const url = await getDownloadURL(imgRef);
+        profileImg.src = url;
+        await updateProfile(auth.currentUser, { photoURL: url });
+      }
+    });
+
     // Content Wechsel
-    const content = document.getElementById("content");
-    const buttons = document.querySelectorAll(".menu button");
-    buttons.forEach(btn => {
+    document.querySelectorAll(".menu button").forEach(btn => {
       btn.addEventListener("click", () => {
         const page = btn.getAttribute("data-page");
         content.innerHTML = "<h2>" + btn.innerText + "</h2><p>Inhalt für " + btn.innerText + " kommt hier hin.</p>";
@@ -222,60 +252,10 @@
       });
     });
 
-    // Profilbild Upload & Speichern im Profil
-    const profileImg = document.getElementById("profileImg");
-    const profileUpload = document.getElementById("profileUpload");
-
-    profileImg.addEventListener("click", () => profileUpload.click());
-
-    profileUpload.addEventListener("change", async (event) => {
-      const file = event.target.files[0];
-      const user = auth.currentUser;
-      if (file && user) {
-        try {
-          const storageRef = ref(storage, "profile-pictures/" + user.uid + ".jpg");
-          await uploadBytes(storageRef, file);
-
-          const url = await getDownloadURL(storageRef);
-
-          // Bild auch ins Firebase User-Profil speichern
-          await updateProfile(user, { photoURL: url });
-
-          // Direkt im UI anzeigen
-          profileImg.src = url + "?t=" + new Date().getTime(); // Cache-Buster
-          alert("Profilbild gespeichert!");
-        } catch (err) {
-          alert("Fehler beim Hochladen: " + err.message);
-        }
-      }
-    });
-
     // Logout
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
+    logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
       window.location.href = "index.html";
-    });
-
-    // Auth-Check + Userdaten laden
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
-        document.getElementById("username").innerText = user.displayName || user.email;
-
-        // Profilbild laden: bevorzugt aus user.photoURL
-        if (user.photoURL) {
-          profileImg.src = user.photoURL + "?t=" + new Date().getTime();
-        } else {
-          try {
-            const storageRef = ref(storage, "profile-pictures/" + user.uid + ".jpg");
-            const url = await getDownloadURL(storageRef);
-            profileImg.src = url + "?t=" + new Date().getTime();
-          } catch {
-            profileImg.src = "assets/profile-placeholder.png"; // Fallback
-          }
-        }
-      }
     });
   </script>
 </body>
