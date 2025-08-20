@@ -52,12 +52,26 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      background: var(--mittelgrau);
     }
 
     .right img {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* statt cover → Bild komplett sichtbar */
+      object-fit: contain;
+      display: block;
+    }
+
+    .fallback {
+      width: 100%;
+      height: 100%;
+      background: #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+      font-size: 1.2rem;
+      font-weight: bold;
     }
 
     .login-box {
@@ -191,11 +205,6 @@
         display: block;
         height: 40%;
       }
-      .right img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
       .login-box {
         max-width: 280px;
         padding: 1.2rem;
@@ -266,7 +275,7 @@
     </div>
 
     <div class="right">
-      <img src="assets/iuk-icon.png" alt="IuK Icon">
+      <img src="assets/iuk-icon.png" alt="IuK Icon" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
     </div>
   </div>
 </body>
