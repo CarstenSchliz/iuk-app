@@ -84,7 +84,7 @@
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      max-width: 500px; /* PC */
+      max-width: 500px;
       width: 100%;
       text-align: center;
       box-sizing: border-box;
@@ -95,7 +95,7 @@
     }
 
     .logo-top img {
-      max-height: 160px; /* PC */
+      max-height: 160px;
     }
 
     h1 {
@@ -155,6 +155,13 @@
       transform: translateY(-50%);
       font-size: 1.2rem;
       color: var(--dunkelgrau);
+    }
+
+    .form-group.has-icon label {
+      left: 2.5rem;
+    }
+    .modal .form-group label {
+      left: 0.8rem;
     }
 
     button.login-btn {
@@ -280,6 +287,24 @@
       background: transparent;
       box-sizing: border-box;
     }
+    .modal-content label {
+      position: absolute;
+      top: 50%;
+      left: 0.8rem;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: var(--dunkelgrau);
+      pointer-events: none;
+      transition: 0.2s ease all;
+      background: #fff;
+      padding: 0 0.2rem;
+    }
+    .modal-content input:focus + label,
+    .modal-content input:not(:placeholder-shown) + label {
+      top: 0.15rem;
+      font-size: 0.75rem;
+      color: var(--dunkelgrau);
+    }
     .modal-content button {
       width: 100%;
       padding: 0.7rem;
@@ -334,12 +359,12 @@
         <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
 
         <form id="login-form">
-          <div class="form-group">
+          <div class="form-group has-icon">
             <i class="bi bi-envelope" aria-hidden="true"></i>
             <input type="email" id="email" placeholder=" " required>
             <label for="email">E-Mail-Adresse</label>
           </div>
-          <div class="form-group">
+          <div class="form-group has-icon">
             <i class="bi bi-lock" aria-hidden="true"></i>
             <input type="password" id="password" placeholder=" " required>
             <label for="password">Passwort</label>
@@ -406,29 +431,9 @@
   <div id="toast"></div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { 
-      getAuth, 
-      signInWithEmailAndPassword, 
-      createUserWithEmailAndPassword, 
-      sendPasswordResetEmail, 
-      sendEmailVerification, 
-      updateProfile 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    // Deine Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
-      authDomain: "iuk-app.firebaseapp.com",
-      projectId: "iuk-app",
-      storageBucket: "iuk-app.firebasestorage.app",
-      messagingSenderId: "759014128178",
-      appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
-      measurementId: "G-ZPD5VPD5TS"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    import { app, auth } from "./firebase.js";
+    import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, updateProfile } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     // Toast Funktion
     function showToast(message, color = "#333") {
@@ -471,7 +476,6 @@
       const password = document.getElementById("password").value;
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        showToast("Login erfolgreich!", "green");
         window.location.href = "app.html";
       } catch (err) {
         showToast(translateFirebaseError(err.code), "red");
@@ -486,17 +490,12 @@
 
     // Registrierung abschicken
     document.getElementById("reg-submit").addEventListener("click", async () => {
-      const name = document.getElementById("reg-name").value;
       const email = document.getElementById("reg-email").value;
       const password = document.getElementById("reg-pass").value;
+      const name = document.getElementById("reg-name").value;
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
-
-        // 🔑 Name speichern
-        await updateProfile(userCred.user, {
-          displayName: name
-        });
-
+        await updateProfile(userCred.user, { displayName: name });
         await sendEmailVerification(userCred.user);
         showToast("Registrierung erfolgreich! Bitte E-Mail bestätigen.", "green");
         document.getElementById("register-modal").style.display = "none";
