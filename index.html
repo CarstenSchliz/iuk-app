@@ -84,7 +84,7 @@
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      max-width: 500px; /* PC */
+      max-width: 500px;
       width: 100%;
       text-align: center;
       box-sizing: border-box;
@@ -95,7 +95,7 @@
     }
 
     .logo-top img {
-      max-height: 160px; /* PC */
+      max-height: 160px;
     }
 
     h1 {
@@ -111,6 +111,7 @@
       margin-bottom: 1.5rem;
     }
 
+    /* === Einheitliche Form-Groups === */
     .form-group {
       position: relative;
       margin-bottom: 1.2rem;
@@ -192,28 +193,58 @@
       margin-top: 0.3rem;
     }
 
-    .links a.register { color: var(--softrot); font-weight: bold; }
-    .links a.forgot { color: var(--volltonblau); }
+    .links a.register {
+      color: var(--softrot);
+      font-weight: bold;
+    }
+
+    .links a.forgot {
+      color: var(--volltonblau);
+    }
 
     /* Handy hochkant */
     @media (max-width: 768px) and (orientation: portrait) {
-      .container { flex-direction: column; width: 100%; height: 100%; }
+      .container {
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
       .right { display: none; }
-      .login-box { width: 90%; margin: auto; padding: 1.5rem; }
-      .logo-top img { max-height: 150px; }
-      h1 { margin: 0.8rem 0 0.5rem 0; }
+      .login-box {
+        width: 90%;
+        margin: auto;
+        padding: 1.5rem;
+      }
+      .logo-top img {
+        max-height: 150px;
+      }
+      h1 {
+        margin: 0.8rem 0 0.5rem 0;
+      }
     }
 
     /* Handy quer */
     @media (max-width: 1024px) and (orientation: landscape) {
-      .container { flex-direction: column; width: 100%; height: 100%; }
+      .container {
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
       .right { display: none; }
-      .login-box { width: 90%; margin: auto; padding: 1.5rem; }
-      .logo-top img { max-height: 120px; }
-      h1 { margin: 0.8rem 0 0.5rem 0; }
+      .login-box {
+        width: 90%;
+        margin: auto;
+        padding: 1.5rem;
+      }
+      .logo-top img {
+        max-height: 120px;
+      }
+      h1 {
+        margin: 0.8rem 0 0.5rem 0;
+      }
     }
 
-    /* === Modal & Toast Zusatzstyles === */
+    /* === Modal & Toast === */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -239,20 +270,15 @@
       font-size: 1.25rem;
       margin: 0.5rem 0 1.2rem 0;
     }
-    .modal-content .form-group label {
-      left: 0.8rem; /* 🔧 Fix: Label nicht mehr am unteren Rand */
+
+    /* Einheitliche Inputs auch in Modals */
+    .modal .form-group input {
+      padding-left: 0.8rem; /* kein Icon */
     }
-    .modal-content input {
-      width: 100%;
-      border: 1px solid var(--mittelgrau);
-      border-radius: 6px;
-      padding: 0.9rem 0.8rem 0.5rem 0.8rem;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      outline: none;
-      background: transparent;
-      box-sizing: border-box;
+    .modal .form-group label {
+      left: 0.8rem;
     }
+
     .modal-content button {
       width: 100%;
       padding: 0.7rem;
@@ -263,8 +289,15 @@
       cursor: pointer;
       margin-top: 0.5rem;
     }
-    .modal-content button.primary { background: var(--drk-rot); color: white; }
-    .modal-content button.close { background: var(--mittelgrau); color: white; }
+    .modal-content button.primary {
+      background: var(--drk-rot);
+      color: white;
+    }
+    .modal-content button.close {
+      background: var(--mittelgrau);
+      color: white;
+    }
+
     #toast {
       visibility: hidden;
       min-width: 250px;
@@ -282,7 +315,11 @@
       opacity: 0;
       transition: opacity 0.5s, bottom 0.5s;
     }
-    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
   </style>
 </head>
 <body>
@@ -366,13 +403,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { 
-      getAuth, 
-      signInWithEmailAndPassword, 
-      createUserWithEmailAndPassword, 
-      sendPasswordResetEmail, 
-      sendEmailVerification 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     // Firebase Config
     const firebaseConfig = {
@@ -397,19 +429,28 @@
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
-    // Fehlertexte
+    // Fehlertexte übersetzen
     function translateFirebaseError(errorCode) {
       switch (errorCode) {
-        case "auth/invalid-email": return "Die eingegebene E-Mail-Adresse ist ungültig.";
-        case "auth/user-disabled": return "Dieses Konto wurde deaktiviert.";
-        case "auth/user-not-found": return "Es existiert kein Benutzer mit dieser E-Mail.";
+        case "auth/invalid-email":
+          return "Die eingegebene E-Mail-Adresse ist ungültig.";
+        case "auth/user-disabled":
+          return "Dieses Konto wurde deaktiviert.";
+        case "auth/user-not-found":
+          return "Es existiert kein Benutzer mit dieser E-Mail.";
         case "auth/wrong-password":
-        case "auth/invalid-credential": return "Das eingegebene Passwort ist falsch.";
-        case "auth/email-already-in-use": return "Diese E-Mail-Adresse wird bereits verwendet.";
-        case "auth/weak-password": return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
-        case "auth/missing-password": return "Bitte geben Sie ein Passwort ein.";
-        case "auth/network-request-failed": return "Netzwerkfehler – bitte Internetverbindung prüfen.";
-        default: return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
+        case "auth/invalid-credential":
+          return "Das eingegebene Passwort ist falsch.";
+        case "auth/email-already-in-use":
+          return "Diese E-Mail-Adresse wird bereits verwendet.";
+        case "auth/weak-password":
+          return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
+        case "auth/missing-password":
+          return "Bitte geben Sie ein Passwort ein.";
+        case "auth/network-request-failed":
+          return "Netzwerkfehler – bitte Internetverbindung prüfen.";
+        default:
+          return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
       }
     }
 
@@ -427,13 +468,13 @@
       }
     });
 
-    // Registrierung öffnen
+    // Registrierung Modal öffnen
     document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("register-modal").style.display = "flex";
     });
 
-    // Registrierung absenden
+    // Registrierung abschicken
     document.getElementById("reg-submit").addEventListener("click", async () => {
       const email = document.getElementById("reg-email").value;
       const password = document.getElementById("reg-pass").value;
@@ -447,13 +488,13 @@
       }
     });
 
-    // Passwort Reset öffnen
+    // Passwort-Reset Modal öffnen
     document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("reset-modal").style.display = "flex";
     });
 
-    // Passwort Reset absenden
+    // Passwort-Reset abschicken
     document.getElementById("reset-submit").addEventListener("click", async () => {
       const email = document.getElementById("reset-email").value;
       try {
@@ -465,7 +506,7 @@
       }
     });
 
-    // Close Buttons in Modals
+    // Close Buttons
     document.querySelectorAll(".modal .close").forEach(btn => {
       btn.addEventListener("click", () => {
         btn.closest(".modal").style.display = "none";
