@@ -1,8 +1,9 @@
 // firebase.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// Deine zentrale Config
+// Deine Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
   authDomain: "iuk-app.firebaseapp.com",
@@ -13,8 +14,6 @@ const firebaseConfig = {
   measurementId: "G-ZPD5VPD5TS"
 };
 
-// App initialisieren
-const app = initializeApp(firebaseConfig);
-
-// Auth exportieren
+export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
