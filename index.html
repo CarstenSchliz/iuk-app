@@ -410,17 +410,27 @@
     const auth = getAuth(app);
 
     // Fehlerübersetzer
-    function translateFirebaseError(errorCode) {
-      switch (errorCode) {
-        case "auth/invalid-email": return "Die eingegebene E-Mail-Adresse ist ungültig.";
-        case "auth/user-disabled": return "Dieses Konto wurde deaktiviert.";
-        case "auth/user-not-found": return "Es existiert kein Benutzer mit dieser E-Mail.";
-        case "auth/wrong-password": return "Das eingegebene Passwort ist falsch.";
-        case "auth/email-already-in-use": return "Diese E-Mail-Adresse wird bereits verwendet.";
-        case "auth/weak-password": return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
-        case "auth/missing-password": return "Bitte geben Sie ein Passwort ein.";
-        case "auth/network-request-failed": return "Netzwerkfehler – bitte Internetverbindung prüfen.";
-        default: return "Ein unbekannter Fehler ist aufgetreten.";
+function translateFirebaseError(errorCode) {
+  switch (errorCode) {
+    case "auth/invalid-email":
+      return "Die eingegebene E-Mail-Adresse ist ungültig.";
+    case "auth/user-disabled":
+      return "Dieses Konto wurde deaktiviert.";
+    case "auth/user-not-found":
+      return "Es existiert kein Benutzer mit dieser E-Mail.";
+    case "auth/wrong-password":
+    case "auth/invalid-credential":
+      return "Das eingegebene Passwort ist falsch.";
+    case "auth/email-already-in-use":
+      return "Diese E-Mail-Adresse wird bereits verwendet.";
+    case "auth/weak-password":
+      return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
+    case "auth/missing-password":
+      return "Bitte geben Sie ein Passwort ein.";
+    case "auth/network-request-failed":
+      return "Netzwerkfehler – bitte Internetverbindung prüfen.";
+    default:
+      return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
       }
     }
 
