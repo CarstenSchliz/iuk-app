@@ -74,25 +74,15 @@
       font-weight: bold;
     }
 
-    .login-wrapper {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-    }
-
     .login-box {
       background: #fff;
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      width: 100%;
       max-width: 500px; /* PC-Version */
+      width: 100%;
+      text-align: center;
       box-sizing: border-box;
-      transform-origin: top center; /* wichtig für dynamisches Shrinking */
     }
 
     .logo-top {
@@ -107,7 +97,7 @@
       color: var(--mittelblau);
       font-size: 1.25rem;
       font-weight: bold;
-      margin: 0.3rem 0 0.6rem 0; /* direkt unter dem Logo */
+      margin: 0.3rem 0 0.6rem 0;
     }
 
     .subtitle {
@@ -206,52 +196,101 @@
       color: var(--volltonblau);
     }
 
-    /* Rechtsbild auf Handy ausblenden */
+    /* Mobile / Tablet dynamisch anpassen */
     @media (max-width: 1024px) {
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+
       .right { display: none; }
+
+      .login-box {
+        max-width: 95%;
+        padding: 2vh;
+      }
+
+      .logo-top img {
+        max-height: 20vh;
+      }
+
+      h1 {
+        font-size: 2.5vh;
+        margin: 1vh 0 0.5vh 0;
+      }
+
+      .subtitle {
+        font-size: 1.8vh;
+        margin-bottom: 2vh;
+      }
+
+      .form-group input {
+        font-size: 2vh;
+        padding: 1.5vh 1vh 1vh 2.5rem;
+      }
+
+      button.login-btn {
+        font-size: 2vh;
+        padding: 1.5vh;
+      }
+
+      .links {
+        margin-top: 2vh;
+        font-size: 1.6vh;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="left">
-      <div class="login-wrapper">
-        <div class="login-box">
-          <div class="logo-top">
-            <img src="assets/drk-icon.png" alt="DRK Logo">
+      <div class="login-box">
+        <div class="logo-top">
+          <img src="assets/drk-icon.png" alt="DRK Logo">
+        </div>
+
+        <h1>Willkommen in der IuK Lernwelt</h1>
+        <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
+
+        <form onsubmit="event.preventDefault(); window.location.href='app.html';">
+          <div class="form-group">
+            <i class="bi bi-envelope" aria-hidden="true"></i>
+            <input type="email" id="email" placeholder=" " required>
+            <label for="email">E-Mail-Adresse</label>
           </div>
 
-          <h1>Willkommen in der IuK Lernwelt</h1>
-          <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
+          <div class="form-group">
+            <i class="bi bi-lock" aria-hidden="true"></i>
+            <input type="password" id="password" placeholder=" " required>
+            <label for="password">Passwort</label>
+          </div>
 
-          <form onsubmit="event.preventDefault(); window.location.href='app.html';">
-            <div class="form-group">
-              <i class="bi bi-envelope" aria-hidden="true"></i>
-              <input type="email" id="email" placeholder=" " required>
-              <label for="email">E-Mail-Adresse</label>
-            </div>
+          <button type="submit" class="login-btn" aria-label="Anmelden">
+            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Anmelden
+          </button>
+        </form>
 
-            <div class="form-group">
-              <i class="bi bi-lock" aria-hidden="true"></i>
-              <input type="password" id="password" placeholder=" " required>
-              <label for="password">Passwort</label>
-            </div>
+        <div class="links">
+          <div class="section">
+            <span>Ich habe noch keinen Zugang</span>
+            <a href="#" class="register">Jetzt registrieren!</a>
+          </div>
 
-            <button type="submit" class="login-btn" aria-label="Anmelden">
-              <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Anmelden
-            </button>
-          </form>
-
-          <div class="links">
-            <div class="section">
-              <span>Ich habe noch keinen Zugang</span>
-              <a href="#" class="register">Jetzt registrieren!</a>
-            </div>
-
-            <div class="section">
-              <span>Passwort vergessen?</span>
-              <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
-            </div>
+          <div class="section">
+            <span>Passwort vergessen?</span>
+            <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
           </div>
         </div>
       </div>
@@ -262,26 +301,5 @@
            onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
     </div>
   </div>
-
-  <script>
-    function scaleLoginBox() {
-      const box = document.querySelector('.login-box');
-      if (!box) return;
-
-      const wrapperHeight = window.innerHeight;
-      const boxHeight = box.scrollHeight;
-
-      let scale = 1;
-      if (boxHeight > wrapperHeight) {
-        scale = wrapperHeight / boxHeight;
-      }
-
-      box.style.transform = `scale(${scale})`;
-    }
-
-    window.addEventListener('resize', scaleLoginBox);
-    window.addEventListener('orientationchange', scaleLoginBox);
-    window.addEventListener('load', scaleLoginBox);
-  </script>
 </body>
 </html>
