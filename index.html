@@ -131,6 +131,7 @@
     .form-group label {
       position: absolute;
       top: 50%;
+      left: 2.5rem;
       transform: translateY(-50%);
       font-size: 1rem;
       color: var(--dunkelgrau);
@@ -138,16 +139,6 @@
       transition: 0.2s ease all;
       background: #fff;
       padding: 0 0.2rem;
-    }
-
-    /* Login-Felder mit Icon */
-    .form-group.has-icon label {
-      left: 2.5rem;
-    }
-
-    /* Modal-Felder ohne Icon */
-    .modal .form-group label {
-      left: 0.8rem;
     }
 
     .form-group input:focus + label,
@@ -226,6 +217,9 @@
       .logo-top img {
         max-height: 150px;
       }
+      h1 {
+        margin: 0.8rem 0 0.5rem 0;
+      }
     }
 
     /* Handy quer */
@@ -243,6 +237,9 @@
       }
       .logo-top img {
         max-height: 120px;
+      }
+      h1 {
+        margin: 0.8rem 0 0.5rem 0;
       }
     }
 
@@ -336,15 +333,16 @@
         <h1>Willkommen in der IuK Lernwelt</h1>
         <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
 
-        <form id="login-form">
-          <div class="form-group has-icon">
+        <!-- Login-Formular mit Autofill -->
+        <form id="login-form" autocomplete="on">
+          <div class="form-group">
             <i class="bi bi-envelope" aria-hidden="true"></i>
-            <input type="email" id="email" placeholder=" " required>
+            <input type="email" id="email" name="username" autocomplete="username" placeholder=" " required>
             <label for="email">E-Mail-Adresse</label>
           </div>
-          <div class="form-group has-icon">
+          <div class="form-group">
             <i class="bi bi-lock" aria-hidden="true"></i>
-            <input type="password" id="password" placeholder=" " required>
+            <input type="password" id="password" name="current-password" autocomplete="current-password" placeholder=" " required>
             <label for="password">Passwort</label>
           </div>
           <button type="submit" class="login-btn" aria-label="Anmelden">
@@ -376,15 +374,11 @@
     <div class="modal-content">
       <h2>Registrieren</h2>
       <div class="form-group">
-        <input type="text" id="reg-name" placeholder=" " required>
-        <label for="reg-name">Name</label>
-      </div>
-      <div class="form-group">
-        <input type="email" id="reg-email" placeholder=" " required>
+        <input type="email" id="reg-email" name="username" autocomplete="username" placeholder=" " required>
         <label for="reg-email">E-Mail-Adresse</label>
       </div>
       <div class="form-group">
-        <input type="password" id="reg-pass" placeholder=" " required>
+        <input type="password" id="reg-pass" name="new-password" autocomplete="new-password" placeholder=" " required>
         <label for="reg-pass">Passwort</label>
       </div>
       <button id="reg-submit" class="primary">Registrieren</button>
@@ -397,7 +391,7 @@
     <div class="modal-content">
       <h2>Passwort zurücksetzen</h2>
       <div class="form-group">
-        <input type="email" id="reset-email" placeholder=" " required>
+        <input type="email" id="reset-email" name="username" autocomplete="username" placeholder=" " required>
         <label for="reset-email">E-Mail-Adresse</label>
       </div>
       <button id="reset-submit" class="primary">Zurücksetzen</button>
@@ -409,14 +403,22 @@
   <div id="toast"></div>
 
   <script type="module">
-    import { app, auth } from "./firebase.js";
-    import { 
-      signInWithEmailAndPassword, 
-      createUserWithEmailAndPassword, 
-      sendPasswordResetEmail, 
-      sendEmailVerification,
-      updateProfile 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
+      authDomain: "iuk-app.firebaseapp.com",
+      projectId: "iuk-app",
+      storageBucket: "iuk-app.firebasestorage.app",
+      messagingSenderId: "759014128178",
+      appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
+      measurementId: "G-ZPD5VPD5TS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
     // Toast Funktion
     function showToast(message, color = "#333") {
@@ -427,28 +429,18 @@
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
-    // Fehlertexte übersetzen
     function translateFirebaseError(errorCode) {
       switch (errorCode) {
-        case "auth/invalid-email":
-          return "Die eingegebene E-Mail-Adresse ist ungültig.";
-        case "auth/user-disabled":
-          return "Dieses Konto wurde deaktiviert.";
-        case "auth/user-not-found":
-          return "Es existiert kein Benutzer mit dieser E-Mail.";
+        case "auth/invalid-email": return "Die eingegebene E-Mail-Adresse ist ungültig.";
+        case "auth/user-disabled": return "Dieses Konto wurde deaktiviert.";
+        case "auth/user-not-found": return "Es existiert kein Benutzer mit dieser E-Mail.";
         case "auth/wrong-password":
-        case "auth/invalid-credential":
-          return "Das eingegebene Passwort ist falsch.";
-        case "auth/email-already-in-use":
-          return "Diese E-Mail-Adresse wird bereits verwendet.";
-        case "auth/weak-password":
-          return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
-        case "auth/missing-password":
-          return "Bitte geben Sie ein Passwort ein.";
-        case "auth/network-request-failed":
-          return "Netzwerkfehler – bitte Internetverbindung prüfen.";
-        default:
-          return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
+        case "auth/invalid-credential": return "Das eingegebene Passwort ist falsch.";
+        case "auth/email-already-in-use": return "Diese E-Mail-Adresse wird bereits verwendet.";
+        case "auth/weak-password": return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
+        case "auth/missing-password": return "Bitte geben Sie ein Passwort ein.";
+        case "auth/network-request-failed": return "Netzwerkfehler – bitte Internetverbindung prüfen.";
+        default: return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
       }
     }
 
@@ -474,12 +466,10 @@
 
     // Registrierung abschicken
     document.getElementById("reg-submit").addEventListener("click", async () => {
-      const name = document.getElementById("reg-name").value;
       const email = document.getElementById("reg-email").value;
       const password = document.getElementById("reg-pass").value;
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(userCred.user, { displayName: name });
         await sendEmailVerification(userCred.user);
         showToast("Registrierung erfolgreich! Bitte E-Mail bestätigen.", "green");
         document.getElementById("register-modal").style.display = "none";
@@ -506,7 +496,7 @@
       }
     });
 
-    // Close-Buttons in den Modals
+    // Close-Buttons
     document.querySelectorAll(".modal .close").forEach(btn => {
       btn.addEventListener("click", () => {
         btn.closest(".modal").style.display = "none";
