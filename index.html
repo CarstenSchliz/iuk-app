@@ -84,7 +84,7 @@
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      max-width: 500px; /* PC-Version */
+      max-width: 500px; /* PC */
       width: 100%;
       text-align: center;
       box-sizing: border-box;
@@ -214,8 +214,12 @@
         margin: auto;
         padding: 1.5rem;
       }
-      .logo-top img { max-height: 150px; }
-      h1 { margin: 0.8rem 0 0.5rem 0; }
+      .logo-top img {
+        max-height: 150px;
+      }
+      h1 {
+        margin: 0.8rem 0 0.5rem 0;
+      }
     }
 
     /* Handy quer */
@@ -231,11 +235,15 @@
         margin: auto;
         padding: 1.5rem;
       }
-      .logo-top img { max-height: 120px; }
-      h1 { margin: 0.8rem 0 0.5rem 0; }
+      .logo-top img {
+        max-height: 120px;
+      }
+      h1 {
+        margin: 0.8rem 0 0.5rem 0;
+      }
     }
 
-    /* --- Modals wie Login-Box --- */
+    /* === Modal & Toast Zusatzstyles === */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -282,10 +290,14 @@
       cursor: pointer;
       margin-top: 0.5rem;
     }
-    .modal-content button.primary { background: var(--drk-rot); color: white; }
-    .modal-content button.close { background: var(--mittelgrau); color: white; }
-
-    /* --- Toast --- */
+    .modal-content button.primary {
+      background: var(--drk-rot);
+      color: white;
+    }
+    .modal-content button.close {
+      background: var(--mittelgrau);
+      color: white;
+    }
     #toast {
       visibility: hidden;
       min-width: 250px;
@@ -317,8 +329,10 @@
         <div class="logo-top">
           <img src="assets/drk-icon.png" alt="DRK Logo">
         </div>
+
         <h1>Willkommen in der IuK Lernwelt</h1>
         <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
+
         <form id="login-form">
           <div class="form-group">
             <i class="bi bi-envelope" aria-hidden="true"></i>
@@ -334,6 +348,7 @@
             <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Anmelden
           </button>
         </form>
+
         <div class="links">
           <div class="section">
             <span>Ich habe noch keinen Zugang</span>
@@ -346,16 +361,21 @@
         </div>
       </div>
     </div>
+
     <div class="right">
       <img src="assets/iuk-icon.png" alt="IuK Icon" 
            onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
     </div>
   </div>
 
-  <!-- Registrierung Modal -->
+  <!-- Registrierung -->
   <div id="register-modal" class="modal">
     <div class="modal-content">
       <h2>Registrieren</h2>
+      <div class="form-group">
+        <input type="text" id="reg-name" placeholder=" " required>
+        <label for="reg-name">Vollständiger Name</label>
+      </div>
       <div class="form-group">
         <input type="email" id="reg-email" placeholder=" " required>
         <label for="reg-email">E-Mail-Adresse</label>
@@ -369,7 +389,7 @@
     </div>
   </div>
 
-  <!-- Passwort Reset Modal -->
+  <!-- Passwort zurücksetzen -->
   <div id="reset-modal" class="modal">
     <div class="modal-content">
       <h2>Passwort zurücksetzen</h2>
@@ -385,17 +405,18 @@
   <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- Firebase & Funktionen -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { 
       getAuth, 
       signInWithEmailAndPassword, 
       createUserWithEmailAndPassword, 
-      sendPasswordResetEmail,
-      sendEmailVerification 
+      sendPasswordResetEmail, 
+      sendEmailVerification, 
+      updateProfile 
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+    // Deine Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
       authDomain: "iuk-app.firebaseapp.com",
@@ -409,31 +430,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Fehlerübersetzer
-function translateFirebaseError(errorCode) {
-  switch (errorCode) {
-    case "auth/invalid-email":
-      return "Die eingegebene E-Mail-Adresse ist ungültig.";
-    case "auth/user-disabled":
-      return "Dieses Konto wurde deaktiviert.";
-    case "auth/user-not-found":
-      return "Es existiert kein Benutzer mit dieser E-Mail.";
-    case "auth/wrong-password":
-    case "auth/invalid-credential":
-      return "Das eingegebene Passwort ist falsch.";
-    case "auth/email-already-in-use":
-      return "Diese E-Mail-Adresse wird bereits verwendet.";
-    case "auth/weak-password":
-      return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
-    case "auth/missing-password":
-      return "Bitte geben Sie ein Passwort ein.";
-    case "auth/network-request-failed":
-      return "Netzwerkfehler – bitte Internetverbindung prüfen.";
-    default:
-      return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
-      }
-    }
-
     // Toast Funktion
     function showToast(message, color = "#333") {
       const toast = document.getElementById("toast");
@@ -443,17 +439,38 @@ function translateFirebaseError(errorCode) {
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
+    // Fehlertexte übersetzen
+    function translateFirebaseError(errorCode) {
+      switch (errorCode) {
+        case "auth/invalid-email":
+          return "Die eingegebene E-Mail-Adresse ist ungültig.";
+        case "auth/user-disabled":
+          return "Dieses Konto wurde deaktiviert.";
+        case "auth/user-not-found":
+          return "Es existiert kein Benutzer mit dieser E-Mail.";
+        case "auth/wrong-password":
+        case "auth/invalid-credential":
+          return "Das eingegebene Passwort ist falsch.";
+        case "auth/email-already-in-use":
+          return "Diese E-Mail-Adresse wird bereits verwendet.";
+        case "auth/weak-password":
+          return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
+        case "auth/missing-password":
+          return "Bitte geben Sie ein Passwort ein.";
+        case "auth/network-request-failed":
+          return "Netzwerkfehler – bitte Internetverbindung prüfen.";
+        default:
+          return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
+      }
+    }
+
     // Login
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       try {
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        if (!cred.user.emailVerified) {
-          showToast("Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse!", "red");
-          return;
-        }
+        await signInWithEmailAndPassword(auth, email, password);
         showToast("Login erfolgreich!", "green");
         window.location.href = "app.html";
       } catch (err) {
@@ -461,7 +478,7 @@ function translateFirebaseError(errorCode) {
       }
     });
 
-    // Registrierung öffnen
+    // Registrierung Modal öffnen
     document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("register-modal").style.display = "flex";
@@ -469,37 +486,44 @@ function translateFirebaseError(errorCode) {
 
     // Registrierung abschicken
     document.getElementById("reg-submit").addEventListener("click", async () => {
+      const name = document.getElementById("reg-name").value;
       const email = document.getElementById("reg-email").value;
       const password = document.getElementById("reg-pass").value;
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+        // 🔑 Name speichern
+        await updateProfile(userCred.user, {
+          displayName: name
+        });
+
         await sendEmailVerification(userCred.user);
-        showToast("Registrierung erfolgreich! Bitte bestätigen Sie Ihre E-Mail-Adresse.", "green");
+        showToast("Registrierung erfolgreich! Bitte E-Mail bestätigen.", "green");
         document.getElementById("register-modal").style.display = "none";
       } catch (err) {
         showToast(translateFirebaseError(err.code), "red");
       }
     });
 
-    // Passwort Reset öffnen
+    // Passwort-Reset Modal öffnen
     document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("reset-modal").style.display = "flex";
     });
 
-    // Passwort Reset abschicken
+    // Passwort-Reset abschicken
     document.getElementById("reset-submit").addEventListener("click", async () => {
       const email = document.getElementById("reset-email").value;
       try {
         await sendPasswordResetEmail(auth, email);
-        showToast("E-Mail zum Zurücksetzen verschickt!", "green");
+        showToast("E-Mail zum Zurücksetzen wurde verschickt!", "green");
         document.getElementById("reset-modal").style.display = "none";
       } catch (err) {
         showToast(translateFirebaseError(err.code), "red");
       }
     });
 
-    // Modal schließen
+    // Close-Buttons in den Modals
     document.querySelectorAll(".modal .close").forEach(btn => {
       btn.addEventListener("click", () => {
         btn.closest(".modal").style.display = "none";
