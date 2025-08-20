@@ -20,16 +20,11 @@
       --mittelgrau: rgb(180,180,180);
     }
 
-    html, body {
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
+    body {
       font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
       background: var(--hellgrau);
-    }
-
-    body {
+      margin: 0;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -84,25 +79,29 @@
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      max-width: 500px; /* PC-Version */
+      max-width: 500px; /* breiter für PC */
       width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       text-align: center;
       box-sizing: border-box;
     }
 
     .logo-top {
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.8rem;
     }
 
     .logo-top img {
-      max-height: 160px; /* PC */
+      max-height: 160px;
     }
 
     h1 {
       color: var(--mittelblau);
       font-size: 1.25rem;
       font-weight: bold;
-      margin: 0.3rem 0 0.6rem 0;
+      margin: 1rem 0 0.6rem 0;
     }
 
     .subtitle {
@@ -202,53 +201,127 @@
     }
 
     /* Handy hochkant */
-    @media (max-width: 768px) and (orientation: portrait) {
+    @media (max-width: 768px) {
       .container {
         flex-direction: column;
-        width: 100%;
-        height: 100%;
+        justify-content: center;
+        align-items: center;
       }
-
-      .right { display: none; }
-
+      .right {
+        display: none;
+      }
       .login-box {
-        width: 90%;
+        max-width: 90%;
+        max-height: 90vh;
+        padding: 1.2rem;
         margin: auto;
-        padding: 1.5rem;
       }
-
       .logo-top img {
-        max-height: 150px; /* größer hochkant */
+        max-height: 140px;
       }
-
       h1 {
-        margin: 0.8rem 0 0.5rem 0;
+        margin-top: 0.3rem;
       }
     }
 
-    /* Handy quer */
+    /* Handy querformat */
     @media (max-width: 1024px) and (orientation: landscape) {
       .container {
         flex-direction: column;
-        width: 100%;
-        height: 100%;
+        justify-content: center;
+        align-items: center;
       }
-
-      .right { display: none; }
-
+      .right {
+        display: none;
+      }
       .login-box {
-        width: 90%;
-        margin: auto;
+        max-width: 80%;
+        max-height: 85vh;
         padding: 1.5rem;
+        margin: auto;
       }
-
       .logo-top img {
-        max-height: 120px; /* etwas kleiner quer */
+        max-height: 120px;
       }
-
       h1 {
-        margin: 0.8rem 0 0.5rem 0;
+        margin-top: 0.3rem;
       }
+    }
+
+    /* Modals */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+      color: var(--mittelblau);
+    }
+    .modal-content input {
+      display: block;
+      width: 100%;
+      margin: 0.6rem 0;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: 1px solid var(--mittelgrau);
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    .modal-content button {
+      margin: 0.5rem;
+      padding: 0.7rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .modal-content button#reg-submit,
+    .modal-content button#reset-submit {
+      background: var(--drk-rot);
+      color: white;
+    }
+    .modal-content button.close {
+      background: var(--mittelgrau);
+      color: white;
+    }
+
+    /* Toast */
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      margin-left: -125px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 2000;
+      left: 50%;
+      bottom: 30px;
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity 0.5s, bottom 0.5s;
+    }
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
     }
   </style>
 </head>
@@ -263,7 +336,7 @@
         <h1>Willkommen in der IuK Lernwelt</h1>
         <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
 
-        <form onsubmit="event.preventDefault(); window.location.href='app.html';">
+        <form id="login-form">
           <div class="form-group">
             <i class="bi bi-envelope" aria-hidden="true"></i>
             <input type="email" id="email" placeholder=" " required>
@@ -300,5 +373,117 @@
            onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
     </div>
   </div>
+
+  <!-- Registrierung Modal -->
+  <div id="register-modal" class="modal">
+    <div class="modal-content">
+      <h2>Registrieren</h2>
+      <input type="email" id="reg-email" placeholder="E-Mail" required>
+      <input type="password" id="reg-pass" placeholder="Passwort (min. 6 Zeichen)" required>
+      <button id="reg-submit">Registrieren</button>
+      <button class="close">Abbrechen</button>
+    </div>
+  </div>
+
+  <!-- Passwort Reset Modal -->
+  <div id="reset-modal" class="modal">
+    <div class="modal-content">
+      <h2>Passwort zurücksetzen</h2>
+      <input type="email" id="reset-email" placeholder="E-Mail" required>
+      <button id="reset-submit">Zurücksetzen</button>
+      <button class="close">Abbrechen</button>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast"></div>
+
+  <!-- Firebase SDKs laden -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // Deine Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
+      authDomain: "iuk-app.firebaseapp.com",
+      projectId: "iuk-app",
+      storageBucket: "iuk-app.firebasestorage.app",
+      messagingSenderId: "759014128178",
+      appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
+      measurementId: "G-ZPD5VPD5TS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Toast Funktion
+    function showToast(message, color = "#333") {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.style.backgroundColor = color;
+      toast.className = "show";
+      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+    }
+
+    // Login
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showToast("Login erfolgreich!", "green");
+        window.location.href = "app.html";
+      } catch (err) {
+        showToast("Login fehlgeschlagen: " + err.message, "red");
+      }
+    });
+
+    // Registrierung Modal öffnen
+    document.querySelector(".register").addEventListener("click", (e) => {
+      e.preventDefault();
+      document.getElementById("register-modal").style.display = "flex";
+    });
+
+    // Registrierung abschicken
+    document.getElementById("reg-submit").addEventListener("click", async () => {
+      const email = document.getElementById("reg-email").value;
+      const password = document.getElementById("reg-pass").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        showToast("Registrierung erfolgreich! Jetzt anmelden.", "green");
+        document.getElementById("register-modal").style.display = "none";
+      } catch (err) {
+        showToast("Registrierung fehlgeschlagen: " + err.message, "red");
+      }
+    });
+
+    // Passwort Reset Modal öffnen
+    document.querySelector(".forgot").addEventListener("click", (e) => {
+      e.preventDefault();
+      document.getElementById("reset-modal").style.display = "flex";
+    });
+
+    // Passwort Reset abschicken
+    document.getElementById("reset-submit").addEventListener("click", async () => {
+      const email = document.getElementById("reset-email").value;
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showToast("E-Mail zum Zurücksetzen verschickt!", "green");
+        document.getElementById("reset-modal").style.display = "none";
+      } catch (err) {
+        showToast("Fehler: " + err.message, "red");
+      }
+    });
+
+    // Close Buttons
+    document.querySelectorAll(".modal .close").forEach(btn => {
+      btn.addEventListener("click", () => {
+        btn.closest(".modal").style.display = "none";
+      });
+    });
+  </script>
 </body>
 </html>
