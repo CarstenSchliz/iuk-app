@@ -97,20 +97,20 @@
 
     h1 {
       color: var(--mittelblau);
-      font-size: 1.4rem;
+      font-size: 1.6rem;   /* etwas größer */
       font-weight: bold;
-      margin: 1rem 0 1rem 0;  /* gleicher Abstand oben & unten */
+      margin: 2rem 0 0.5rem 0;  /* DEUTLICH mehr Abstand nach oben, wenig nach unten */
     }
 
     .subtitle {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--dunkelgrau);
-      margin: 0 0 1.5rem 0;  /* Abstand nur nach unten */
+      margin: 0 0 2rem 0; /* mehr Abstand nach unten, damit Block klar getrennt ist */
     }
 
     .form-group {
       position: relative;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.5rem;
       text-align: left;
       width: 100%;
     }
@@ -119,8 +119,8 @@
       width: 100%;
       border: 1px solid var(--mittelgrau);
       border-radius: 6px;
-      padding: 0.9rem 0.8rem 0.5rem 2.5rem;
-      font-size: 1rem;
+      **padding: 1.2rem 0.8rem 0.8rem 2.5rem;** /* HÖHER machen */
+      font-size: 1.1rem;  /* größere Schrift */
       outline: none;
       background: transparent;
       box-sizing: border-box;
@@ -141,8 +141,8 @@
 
     .form-group input:focus + label,
     .form-group input:not(:placeholder-shown) + label {
-      top: 0.15rem;
-      font-size: 0.75rem;
+      top: 0.2rem;
+      font-size: 0.8rem;
       color: var(--dunkelgrau);
     }
 
@@ -151,26 +151,26 @@
       top: 50%;
       left: 0.6rem;
       transform: translateY(-50%);
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       color: var(--dunkelgrau);
     }
 
     button.login-btn {
       width: 100%;
-      padding: 0.9rem;   /* wieder größer */
+      **padding: 1.2rem;**   /* größer */
       background: var(--drk-rot);
       border: none;
       border-radius: 6px;
       color: white;
-      font-size: 1rem;   /* wieder größer */
+      font-size: 1.1rem;   /* größere Schrift */
       font-weight: bold;
       cursor: pointer;
-      margin-top: 0.8rem;
+      margin-top: 1rem;
     }
 
     .links {
       margin-top: 2rem;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       text-align: center;
     }
 
@@ -197,41 +197,6 @@
 
     .links a.forgot {
       color: var(--volltonblau);
-    }
-
-    @media (max-width: 768px) and (orientation: portrait) {
-      .container {
-        flex-direction: column;
-      }
-      .right {
-        order: -1;
-        display: block;
-        height: 40%;
-      }
-      .login-box {
-        max-width: 280px;
-        padding: 1.2rem;
-        margin: auto;
-      }
-      .logo-top img {
-        max-height: 100px;
-      }
-    }
-
-    @media (max-width: 1024px) and (orientation: landscape) {
-      .container {
-        flex-direction: row;
-      }
-      .right {
-        display: block;
-      }
-      .login-box {
-        max-width: 300px;
-        padding: 1.5rem;
-      }
-      .logo-top img {
-        max-height: 100px;
-      }
     }
   </style>
 </head>
@@ -277,7 +242,7 @@
     </div>
 
     <div class="right">
-      <img src="assets/iuk-icon.png" alt="IuK Icon" 
+      <img src="assets/iuk-icon.png" alt="IuK Icon"
            onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
     </div>
   </div>
