@@ -82,10 +82,14 @@
       max-width: 380px;
       width: 100%;
       text-align: center;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .logo-top {
-      margin-bottom: 0.8rem;
+      margin-bottom: 1rem;
     }
 
     .logo-top img {
@@ -94,21 +98,22 @@
 
     h1 {
       color: var(--mittelblau);
-      font-size: 1.25rem;
+      font-size: 1.4rem;   /* größer */
       font-weight: bold;
-      margin: 1.2rem 0 0.6rem 0; /* mehr Abstand nach oben, weniger nach unten */
+      margin: 0.5rem 0;    /* enger am Logo */
     }
 
     .subtitle {
       font-size: 0.85rem;
       color: var(--dunkelgrau);
-      margin-bottom: 1.5rem;
+      margin: 0.5rem 0 1.5rem 0; /* gleichmäßiger Abstand */
     }
 
     .form-group {
       position: relative;
       margin-bottom: 1.2rem;
       text-align: left;
+      width: 100%;
     }
 
     .form-group input {
