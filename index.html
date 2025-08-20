@@ -131,7 +131,6 @@
     .form-group label {
       position: absolute;
       top: 50%;
-      left: 2.5rem;
       transform: translateY(-50%);
       font-size: 1rem;
       color: var(--dunkelgrau);
@@ -139,6 +138,16 @@
       transition: 0.2s ease all;
       background: #fff;
       padding: 0 0.2rem;
+    }
+
+    /* Login-Felder mit Icon */
+    .form-group.has-icon label {
+      left: 2.5rem;
+    }
+
+    /* Modal-Felder ohne Icon */
+    .modal .form-group label {
+      left: 0.8rem;
     }
 
     .form-group input:focus + label,
@@ -155,13 +164,6 @@
       transform: translateY(-50%);
       font-size: 1.2rem;
       color: var(--dunkelgrau);
-    }
-
-    .form-group.has-icon label {
-      left: 2.5rem;
-    }
-    .modal .form-group label {
-      left: 0.8rem;
     }
 
     button.login-btn {
@@ -224,9 +226,6 @@
       .logo-top img {
         max-height: 150px;
       }
-      h1 {
-        margin: 0.8rem 0 0.5rem 0;
-      }
     }
 
     /* Handy quer */
@@ -244,9 +243,6 @@
       }
       .logo-top img {
         max-height: 120px;
-      }
-      h1 {
-        margin: 0.8rem 0 0.5rem 0;
       }
     }
 
@@ -286,24 +282,6 @@
       outline: none;
       background: transparent;
       box-sizing: border-box;
-    }
-    .modal-content label {
-      position: absolute;
-      top: 50%;
-      left: 0.8rem;
-      transform: translateY(-50%);
-      font-size: 1rem;
-      color: var(--dunkelgrau);
-      pointer-events: none;
-      transition: 0.2s ease all;
-      background: #fff;
-      padding: 0 0.2rem;
-    }
-    .modal-content input:focus + label,
-    .modal-content input:not(:placeholder-shown) + label {
-      top: 0.15rem;
-      font-size: 0.75rem;
-      color: var(--dunkelgrau);
     }
     .modal-content button {
       width: 100%;
@@ -399,7 +377,7 @@
       <h2>Registrieren</h2>
       <div class="form-group">
         <input type="text" id="reg-name" placeholder=" " required>
-        <label for="reg-name">Vollständiger Name</label>
+        <label for="reg-name">Name</label>
       </div>
       <div class="form-group">
         <input type="email" id="reg-email" placeholder=" " required>
@@ -432,8 +410,13 @@
 
   <script type="module">
     import { app, auth } from "./firebase.js";
-    import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, updateProfile } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { 
+      signInWithEmailAndPassword, 
+      createUserWithEmailAndPassword, 
+      sendPasswordResetEmail, 
+      sendEmailVerification,
+      updateProfile 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     // Toast Funktion
     function showToast(message, color = "#333") {
@@ -476,6 +459,7 @@
       const password = document.getElementById("password").value;
       try {
         await signInWithEmailAndPassword(auth, email, password);
+        showToast("Login erfolgreich!", "green");
         window.location.href = "app.html";
       } catch (err) {
         showToast(translateFirebaseError(err.code), "red");
@@ -490,9 +474,9 @@
 
     // Registrierung abschicken
     document.getElementById("reg-submit").addEventListener("click", async () => {
+      const name = document.getElementById("reg-name").value;
       const email = document.getElementById("reg-email").value;
       const password = document.getElementById("reg-pass").value;
-      const name = document.getElementById("reg-name").value;
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(userCred.user, { displayName: name });
