@@ -214,9 +214,7 @@
         margin: auto;
         padding: 1.5rem;
       }
-      .logo-top img {
-        max-height: 150px;
-      }
+      .logo-top img { max-height: 150px; }
       h1 { margin: 0.8rem 0 0.5rem 0; }
     }
 
@@ -233,9 +231,7 @@
         margin: auto;
         padding: 1.5rem;
       }
-      .logo-top img {
-        max-height: 120px;
-      }
+      .logo-top img { max-height: 120px; }
       h1 { margin: 0.8rem 0 0.5rem 0; }
     }
 
@@ -265,15 +261,13 @@
       font-size: 1.25rem;
       margin: 0.5rem 0 1.2rem 0;
     }
-    .modal-content .form-group {
-      margin-bottom: 1.2rem;
-    }
     .modal-content input {
       width: 100%;
       border: 1px solid var(--mittelgrau);
       border-radius: 6px;
       padding: 0.9rem 0.8rem 0.5rem 0.8rem;
       font-size: 1rem;
+      margin-bottom: 1rem;
       outline: none;
       background: transparent;
       box-sizing: border-box;
@@ -288,14 +282,8 @@
       cursor: pointer;
       margin-top: 0.5rem;
     }
-    .modal-content button.primary {
-      background: var(--drk-rot);
-      color: white;
-    }
-    .modal-content button.close {
-      background: var(--mittelgrau);
-      color: white;
-    }
+    .modal-content button.primary { background: var(--drk-rot); color: white; }
+    .modal-content button.close { background: var(--mittelgrau); color: white; }
 
     /* --- Toast --- */
     #toast {
@@ -421,6 +409,21 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    // Fehlerübersetzer
+    function translateFirebaseError(errorCode) {
+      switch (errorCode) {
+        case "auth/invalid-email": return "Die eingegebene E-Mail-Adresse ist ungültig.";
+        case "auth/user-disabled": return "Dieses Konto wurde deaktiviert.";
+        case "auth/user-not-found": return "Es existiert kein Benutzer mit dieser E-Mail.";
+        case "auth/wrong-password": return "Das eingegebene Passwort ist falsch.";
+        case "auth/email-already-in-use": return "Diese E-Mail-Adresse wird bereits verwendet.";
+        case "auth/weak-password": return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
+        case "auth/missing-password": return "Bitte geben Sie ein Passwort ein.";
+        case "auth/network-request-failed": return "Netzwerkfehler – bitte Internetverbindung prüfen.";
+        default: return "Ein unbekannter Fehler ist aufgetreten.";
+      }
+    }
+
     // Toast Funktion
     function showToast(message, color = "#333") {
       const toast = document.getElementById("toast");
@@ -444,7 +447,7 @@
         showToast("Login erfolgreich!", "green");
         window.location.href = "app.html";
       } catch (err) {
-        showToast("Login fehlgeschlagen: " + err.message, "red");
+        showToast(translateFirebaseError(err.code), "red");
       }
     });
 
@@ -461,10 +464,10 @@
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCred.user);
-        showToast("Registrierung erfolgreich! Bitte E-Mail bestätigen.", "green");
+        showToast("Registrierung erfolgreich! Bitte bestätigen Sie Ihre E-Mail-Adresse.", "green");
         document.getElementById("register-modal").style.display = "none";
       } catch (err) {
-        showToast("Registrierung fehlgeschlagen: " + err.message, "red");
+        showToast(translateFirebaseError(err.code), "red");
       }
     });
 
@@ -482,7 +485,7 @@
         showToast("E-Mail zum Zurücksetzen verschickt!", "green");
         document.getElementById("reset-modal").style.display = "none";
       } catch (err) {
-        showToast("Fehler: " + err.message, "red");
+        showToast(translateFirebaseError(err.code), "red");
       }
     });
 
