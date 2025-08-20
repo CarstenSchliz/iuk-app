@@ -208,22 +208,16 @@
         width: 100%;
         height: 100%;
       }
-
       .right { display: none; }
-
       .login-box {
         width: 90%;
         margin: auto;
         padding: 1.5rem;
       }
-
       .logo-top img {
-        max-height: 150px; /* größer hochkant */
+        max-height: 150px;
       }
-
-      h1 {
-        margin: 0.8rem 0 0.5rem 0;
-      }
+      h1 { margin: 0.8rem 0 0.5rem 0; }
     }
 
     /* Handy quer */
@@ -233,25 +227,19 @@
         width: 100%;
         height: 100%;
       }
-
       .right { display: none; }
-
       .login-box {
         width: 90%;
         margin: auto;
         padding: 1.5rem;
       }
-
       .logo-top img {
-        max-height: 120px; /* etwas kleiner quer */
+        max-height: 120px;
       }
-
-      h1 {
-        margin: 0.8rem 0 0.5rem 0;
-      }
+      h1 { margin: 0.8rem 0 0.5rem 0; }
     }
 
-    /* --- Modals --- */
+    /* --- Modals wie Login-Box --- */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -265,36 +253,42 @@
     .modal-content {
       background: #fff;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-      text-align: center;
-      max-width: 400px;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      max-width: 500px;
       width: 90%;
+      text-align: center;
+      box-sizing: border-box;
     }
     .modal-content h2 {
-      margin-top: 0;
       color: var(--mittelblau);
+      font-size: 1.25rem;
+      margin: 0.5rem 0 1.2rem 0;
+    }
+    .modal-content .form-group {
+      margin-bottom: 1.2rem;
     }
     .modal-content input {
-      display: block;
       width: 100%;
-      margin: 0.6rem 0;
-      padding: 0.8rem;
-      font-size: 1rem;
       border: 1px solid var(--mittelgrau);
       border-radius: 6px;
+      padding: 0.9rem 0.8rem 0.5rem 0.8rem;
+      font-size: 1rem;
+      outline: none;
+      background: transparent;
       box-sizing: border-box;
     }
     .modal-content button {
-      margin: 0.5rem;
-      padding: 0.7rem 1.2rem;
+      width: 100%;
+      padding: 0.7rem;
       border: none;
       border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: bold;
       cursor: pointer;
-      font-size: 1rem;
+      margin-top: 0.5rem;
     }
-    .modal-content button#reg-submit,
-    .modal-content button#reset-submit {
+    .modal-content button.primary {
       background: var(--drk-rot);
       color: white;
     }
@@ -335,34 +329,28 @@
         <div class="logo-top">
           <img src="assets/drk-icon.png" alt="DRK Logo">
         </div>
-
         <h1>Willkommen in der IuK Lernwelt</h1>
         <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
-
         <form id="login-form">
           <div class="form-group">
             <i class="bi bi-envelope" aria-hidden="true"></i>
             <input type="email" id="email" placeholder=" " required>
             <label for="email">E-Mail-Adresse</label>
           </div>
-
           <div class="form-group">
             <i class="bi bi-lock" aria-hidden="true"></i>
             <input type="password" id="password" placeholder=" " required>
             <label for="password">Passwort</label>
           </div>
-
           <button type="submit" class="login-btn" aria-label="Anmelden">
             <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Anmelden
           </button>
         </form>
-
         <div class="links">
           <div class="section">
             <span>Ich habe noch keinen Zugang</span>
             <a href="#" class="register">Jetzt registrieren!</a>
           </div>
-
           <div class="section">
             <span>Passwort vergessen?</span>
             <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
@@ -370,7 +358,6 @@
         </div>
       </div>
     </div>
-
     <div class="right">
       <img src="assets/iuk-icon.png" alt="IuK Icon" 
            onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
@@ -381,9 +368,15 @@
   <div id="register-modal" class="modal">
     <div class="modal-content">
       <h2>Registrieren</h2>
-      <input type="email" id="reg-email" placeholder="E-Mail" required>
-      <input type="password" id="reg-pass" placeholder="Passwort (min. 6 Zeichen)" required>
-      <button id="reg-submit">Registrieren</button>
+      <div class="form-group">
+        <input type="email" id="reg-email" placeholder=" " required>
+        <label for="reg-email">E-Mail-Adresse</label>
+      </div>
+      <div class="form-group">
+        <input type="password" id="reg-pass" placeholder=" " required>
+        <label for="reg-pass">Passwort</label>
+      </div>
+      <button id="reg-submit" class="primary">Registrieren</button>
       <button class="close">Abbrechen</button>
     </div>
   </div>
@@ -392,8 +385,11 @@
   <div id="reset-modal" class="modal">
     <div class="modal-content">
       <h2>Passwort zurücksetzen</h2>
-      <input type="email" id="reset-email" placeholder="E-Mail" required>
-      <button id="reset-submit">Zurücksetzen</button>
+      <div class="form-group">
+        <input type="email" id="reset-email" placeholder=" " required>
+        <label for="reset-email">E-Mail-Adresse</label>
+      </div>
+      <button id="reset-submit" class="primary">Zurücksetzen</button>
       <button class="close">Abbrechen</button>
     </div>
   </div>
@@ -404,8 +400,13 @@
   <!-- Firebase & Funktionen -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      createUserWithEmailAndPassword, 
+      sendPasswordResetEmail,
+      sendEmailVerification 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
@@ -435,7 +436,11 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        if (!cred.user.emailVerified) {
+          showToast("Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse!", "red");
+          return;
+        }
         showToast("Login erfolgreich!", "green");
         window.location.href = "app.html";
       } catch (err) {
@@ -443,7 +448,7 @@
       }
     });
 
-    // Registrierung Modal öffnen
+    // Registrierung öffnen
     document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("register-modal").style.display = "flex";
@@ -454,15 +459,16 @@
       const email = document.getElementById("reg-email").value;
       const password = document.getElementById("reg-pass").value;
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        showToast("Registrierung erfolgreich! Jetzt anmelden.", "green");
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(userCred.user);
+        showToast("Registrierung erfolgreich! Bitte E-Mail bestätigen.", "green");
         document.getElementById("register-modal").style.display = "none";
       } catch (err) {
         showToast("Registrierung fehlgeschlagen: " + err.message, "red");
       }
     });
 
-    // Passwort Reset Modal öffnen
+    // Passwort Reset öffnen
     document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("reset-modal").style.display = "flex";
@@ -480,7 +486,7 @@
       }
     });
 
-    // Alle Close-Buttons
+    // Modal schließen
     document.querySelectorAll(".modal .close").forEach(btn => {
       btn.addEventListener("click", () => {
         btn.closest(".modal").style.display = "none";
