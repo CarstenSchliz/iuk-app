@@ -24,14 +24,43 @@
       font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
       background: var(--hellgrau);
       margin: 0;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
     }
 
+    /* --- Container für PC mit 2 Spalten --- */
+    .container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .left {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--hellgrau);
+    }
+
+    .right {
+      flex: 1;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .right img {
+      max-width: 90%;
+      height: auto;
+    }
+
+    /* --- Login Box --- */
     .login-box {
-      background: #ffffff;
+      background: #fff;
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
@@ -40,30 +69,19 @@
       text-align: center;
     }
 
-    .logo-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 2rem;
+    .logo-top {
       margin-bottom: 1rem;
     }
 
-    .logo-row img:first-child {
-      max-height: 160px; /* DRK-Logo größer */
-    }
-
-    .logo-row img:last-child {
-      max-height: 100px;
+    .logo-top img {
+      max-height: 120px; /* DRK Logo */
     }
 
     h1 {
       color: var(--mittelblau);
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: bold;
-      margin: 0 auto 0.3rem auto; 
-      width: 100%;   /* volle Breite */
-      text-align: center;
-      white-space: normal;
+      margin-bottom: 0.3rem;
     }
 
     .subtitle {
@@ -80,18 +98,13 @@
 
     .form-group input {
       width: 100%;
-      border: 1px solid var(--dunkelgrau);
+      border: 1px solid var(--mittelgrau);
       border-radius: 6px;
       padding: 0.9rem 0.8rem 0.5rem 2.5rem;
       font-size: 1rem;
       outline: none;
       background: transparent;
       box-sizing: border-box;
-    }
-
-    .form-group input:focus {
-      border-color: var(--mittelgrau);
-      box-shadow: 0 0 4px rgba(85,79,74,0.3);
     }
 
     .form-group label {
@@ -134,17 +147,6 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 0.5rem;
-      transition: all 0.25s ease;
-      box-sizing: border-box;
-    }
-
-    button.login-btn:hover {
-      background: rgba(230, 0, 5, 0.8);
-      box-shadow: 0 4px 12px rgba(230, 0, 5, 0.4);
-    }
-
-    button.login-btn:active {
-      transform: scale(0.97);
     }
 
     .links {
@@ -177,47 +179,73 @@
     .links a.forgot {
       color: var(--volltonblau);
     }
+
+    /* --- Handy-Ansicht --- */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .right {
+        display: none; /* rechtes Bild ausblenden */
+      }
+      .login-box {
+        max-width: 320px;
+        padding: 1.5rem;
+      }
+      .logo-top img {
+        max-height: 90px;
+      }
+      h1 {
+        font-size: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <!-- Logos nebeneinander -->
-    <div class="logo-row">
-      <img src="assets/drk-icon.png" alt="DRK Logo">
-      <img src="assets/iuk-lernwelt.png" alt="IuK Lernwelt Logo">
+  <div class="container">
+    <!-- Linke Spalte -->
+    <div class="left">
+      <div class="login-box">
+        <div class="logo-top">
+          <img src="assets/drk-icon.png" alt="DRK Logo">
+        </div>
+
+        <h1>Herzlich Willkommen in deiner IuK Lernwelt</h1>
+        <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
+
+        <form onsubmit="event.preventDefault(); window.location.href='app.html';">
+          <div class="form-group">
+            <i class="bi bi-envelope"></i>
+            <input type="email" id="email" placeholder=" " required>
+            <label for="email">E-Mail-Adresse</label>
+          </div>
+
+          <div class="form-group">
+            <i class="bi bi-lock"></i>
+            <input type="password" id="password" placeholder=" " required>
+            <label for="password">Passwort</label>
+          </div>
+
+          <button type="submit" class="login-btn"><i class="bi bi-box-arrow-in-right"></i> Anmelden</button>
+        </form>
+
+        <div class="links">
+          <div class="section">
+            <span>Ich habe noch keinen Zugang</span>
+            <a href="#" class="register">Jetzt registrieren!</a>
+          </div>
+
+          <div class="section">
+            <span>Passwort vergessen?</span>
+            <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <h1>Herzlich Willkommen in deiner IuK Lernwelt</h1>
-    <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
-
-    <form onsubmit="event.preventDefault(); window.location.href='app.html';">
-      <!-- Mail -->
-      <div class="form-group">
-        <i class="bi bi-envelope"></i>
-        <input type="email" id="email" placeholder=" " required>
-        <label for="email">E-Mail-Adresse</label>
-      </div>
-
-      <!-- Passwort -->
-      <div class="form-group">
-        <i class="bi bi-lock"></i>
-        <input type="password" id="password" placeholder=" " required>
-        <label for="password">Passwort</label>
-      </div>
-
-      <button type="submit" class="login-btn">Anmelden</button>
-    </form>
-
-    <div class="links">
-      <div class="section">
-        <span>Ich habe noch keinen Zugang</span>
-        <a href="#" class="register">Jetzt registrieren!</a>
-      </div>
-
-      <div class="section">
-        <span>Passwort vergessen?</span>
-        <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
-      </div>
+    <!-- Rechte Spalte (nur PC) -->
+    <div class="right">
+      <img src="assets/iuk-icon.png" alt="IuK Icon">
     </div>
   </div>
 </body>
