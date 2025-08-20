@@ -67,19 +67,35 @@
       display: block;
     }
 
+    .fallback {
+      width: 100%;
+      height: 100%;
+      background: #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
     .login-box {
       background: #fff;
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      max-width: 500px;
+      max-width: 500px; /* PC */
       width: 100%;
       text-align: center;
       box-sizing: border-box;
     }
 
+    .logo-top {
+      margin-bottom: 0.5rem;
+    }
+
     .logo-top img {
-      max-height: 140px;
+      max-height: 160px; /* PC */
     }
 
     h1 {
@@ -109,6 +125,7 @@
       font-size: 1rem;
       outline: none;
       background: transparent;
+      box-sizing: border-box;
     }
 
     .form-group label {
@@ -159,6 +176,10 @@
       text-align: center;
     }
 
+    .links .section {
+      margin-bottom: 1.8rem;
+    }
+
     .links span {
       display: block;
       margin-bottom: 0.3rem;
@@ -171,15 +192,28 @@
       margin-top: 0.3rem;
     }
 
-    .links a.register {
-      color: var(--softrot);
-      font-weight: bold;
+    .links a.register { color: var(--softrot); font-weight: bold; }
+    .links a.forgot { color: var(--volltonblau); }
+
+    /* Handy hochkant */
+    @media (max-width: 768px) and (orientation: portrait) {
+      .container { flex-direction: column; width: 100%; height: 100%; }
+      .right { display: none; }
+      .login-box { width: 90%; margin: auto; padding: 1.5rem; }
+      .logo-top img { max-height: 150px; }
+      h1 { margin: 0.8rem 0 0.5rem 0; }
     }
 
-    .links a.forgot {
-      color: var(--volltonblau);
+    /* Handy quer */
+    @media (max-width: 1024px) and (orientation: landscape) {
+      .container { flex-direction: column; width: 100%; height: 100%; }
+      .right { display: none; }
+      .login-box { width: 90%; margin: auto; padding: 1.5rem; }
+      .logo-top img { max-height: 120px; }
+      h1 { margin: 0.8rem 0 0.5rem 0; }
     }
 
+    /* === Modal & Toast Zusatzstyles === */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -194,6 +228,7 @@
       background: #fff;
       padding: 2rem;
       border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
       max-width: 500px;
       width: 90%;
       text-align: center;
@@ -204,6 +239,9 @@
       font-size: 1.25rem;
       margin: 0.5rem 0 1.2rem 0;
     }
+    .modal-content .form-group label {
+      left: 0.8rem; /* 🔧 Fix: Label nicht mehr am unteren Rand */
+    }
     .modal-content input {
       width: 100%;
       border: 1px solid var(--mittelgrau);
@@ -213,6 +251,7 @@
       margin-bottom: 1rem;
       outline: none;
       background: transparent;
+      box-sizing: border-box;
     }
     .modal-content button {
       width: 100%;
@@ -226,7 +265,6 @@
     }
     .modal-content button.primary { background: var(--drk-rot); color: white; }
     .modal-content button.close { background: var(--mittelgrau); color: white; }
-
     #toast {
       visibility: hidden;
       min-width: 250px;
@@ -244,11 +282,7 @@
       opacity: 0;
       transition: opacity 0.5s, bottom 0.5s;
     }
-    #toast.show {
-      visibility: visible;
-      opacity: 1;
-      bottom: 50px;
-    }
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
   </style>
 </head>
 <body>
@@ -264,37 +298,36 @@
 
         <form id="login-form">
           <div class="form-group">
-            <i class="bi bi-envelope"></i>
+            <i class="bi bi-envelope" aria-hidden="true"></i>
             <input type="email" id="email" placeholder=" " required>
             <label for="email">E-Mail-Adresse</label>
           </div>
           <div class="form-group">
-            <i class="bi bi-lock"></i>
+            <i class="bi bi-lock" aria-hidden="true"></i>
             <input type="password" id="password" placeholder=" " required>
             <label for="password">Passwort</label>
           </div>
-          <button type="submit" class="login-btn">
-            <i class="bi bi-box-arrow-in-right"></i> Anmelden
+          <button type="submit" class="login-btn" aria-label="Anmelden">
+            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Anmelden
           </button>
         </form>
 
-        <div style="margin-top:1rem;">
-          <button type="button" id="btnPasskeyLogin" class="login-btn" style="background:var(--volltonblau);">
-            <i class="bi bi-fingerprint"></i> Mit Face ID / Fingerprint anmelden
-          </button>
-        </div>
-
         <div class="links">
-          <span>Ich habe noch keinen Zugang</span>
-          <a href="#" class="register">Jetzt registrieren!</a>
-          <span>Passwort vergessen?</span>
-          <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
+          <div class="section">
+            <span>Ich habe noch keinen Zugang</span>
+            <a href="#" class="register">Jetzt registrieren!</a>
+          </div>
+          <div class="section">
+            <span>Passwort vergessen?</span>
+            <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="right">
-      <img src="assets/iuk-icon.png" alt="IuK Icon">
+      <img src="assets/iuk-icon.png" alt="IuK Icon" 
+           onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
     </div>
   </div>
 
@@ -302,10 +335,14 @@
   <div id="register-modal" class="modal">
     <div class="modal-content">
       <h2>Registrieren</h2>
-      <input type="email" id="reg-email" placeholder=" " required>
-      <label for="reg-email">E-Mail-Adresse</label>
-      <input type="password" id="reg-pass" placeholder=" " required>
-      <label for="reg-pass">Passwort</label>
+      <div class="form-group">
+        <input type="email" id="reg-email" placeholder=" " required>
+        <label for="reg-email">E-Mail-Adresse</label>
+      </div>
+      <div class="form-group">
+        <input type="password" id="reg-pass" placeholder=" " required>
+        <label for="reg-pass">Passwort</label>
+      </div>
       <button id="reg-submit" class="primary">Registrieren</button>
       <button class="close">Abbrechen</button>
     </div>
@@ -315,101 +352,124 @@
   <div id="reset-modal" class="modal">
     <div class="modal-content">
       <h2>Passwort zurücksetzen</h2>
-      <input type="email" id="reset-email" placeholder=" " required>
-      <label for="reset-email">E-Mail-Adresse</label>
+      <div class="form-group">
+        <input type="email" id="reset-email" placeholder=" " required>
+        <label for="reset-email">E-Mail-Adresse</label>
+      </div>
       <button id="reset-submit" class="primary">Zurücksetzen</button>
       <button class="close">Abbrechen</button>
     </div>
   </div>
 
+  <!-- Toast -->
   <div id="toast"></div>
 
   <script type="module">
-    import { app, auth } from "./firebase.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { 
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      sendPasswordResetEmail,
-      sendEmailVerification,
-      signInWithPasskey,
-      createPasskeyForUser
+      getAuth, 
+      signInWithEmailAndPassword, 
+      createUserWithEmailAndPassword, 
+      sendPasswordResetEmail, 
+      sendEmailVerification 
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    function showToast(msg, color="#333") {
-      const t=document.getElementById("toast");
-      t.innerText=msg; t.style.background=color;
-      t.className="show";
-      setTimeout(()=>{t.className=t.className.replace("show","");},3000);
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
+      authDomain: "iuk-app.firebaseapp.com",
+      projectId: "iuk-app",
+      storageBucket: "iuk-app.firebasestorage.app",
+      messagingSenderId: "759014128178",
+      appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
+      measurementId: "G-ZPD5VPD5TS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Toast
+    function showToast(message, color = "#333") {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.style.backgroundColor = color;
+      toast.className = "show";
+      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
-    function translateError(code) {
-      switch(code) {
-        case "auth/invalid-email": return "Ungültige E-Mail-Adresse.";
-        case "auth/user-not-found": return "Benutzer existiert nicht.";
-        case "auth/wrong-password": return "Falsches Passwort.";
-        case "auth/email-already-in-use": return "E-Mail bereits vergeben.";
-        default: return "Fehler: "+code;
+    // Fehlertexte
+    function translateFirebaseError(errorCode) {
+      switch (errorCode) {
+        case "auth/invalid-email": return "Die eingegebene E-Mail-Adresse ist ungültig.";
+        case "auth/user-disabled": return "Dieses Konto wurde deaktiviert.";
+        case "auth/user-not-found": return "Es existiert kein Benutzer mit dieser E-Mail.";
+        case "auth/wrong-password":
+        case "auth/invalid-credential": return "Das eingegebene Passwort ist falsch.";
+        case "auth/email-already-in-use": return "Diese E-Mail-Adresse wird bereits verwendet.";
+        case "auth/weak-password": return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
+        case "auth/missing-password": return "Bitte geben Sie ein Passwort ein.";
+        case "auth/network-request-failed": return "Netzwerkfehler – bitte Internetverbindung prüfen.";
+        default: return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
       }
     }
 
-    // Automatisch versuchen: Face ID Login
-    window.addEventListener("load", async () => {
+    // Login
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
       try {
-        await signInWithPasskey(auth);
-        window.location.href="app.html";
-      } catch(err) {
-        console.log("Face ID nicht verfügbar:", err.message);
+        await signInWithEmailAndPassword(auth, email, password);
+        showToast("Login erfolgreich!", "green");
+        window.location.href = "app.html";
+      } catch (err) {
+        showToast(translateFirebaseError(err.code), "red");
       }
     });
 
-    // Klassisches Login
-    document.getElementById("login-form").addEventListener("submit", async (e)=>{
+    // Registrierung öffnen
+    document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
-      try {
-        await signInWithEmailAndPassword(auth, email.value, password.value);
-        window.location.href="app.html";
-      } catch(err) {
-        showToast(translateError(err.code),"red");
-      }
+      document.getElementById("register-modal").style.display = "flex";
     });
 
-    // Manuelles Face ID Login Button
-    document.getElementById("btnPasskeyLogin").addEventListener("click", async ()=>{
+    // Registrierung absenden
+    document.getElementById("reg-submit").addEventListener("click", async () => {
+      const email = document.getElementById("reg-email").value;
+      const password = document.getElementById("reg-pass").value;
       try {
-        await signInWithPasskey(auth);
-        window.location.href="app.html";
-      } catch(err){showToast("Face ID fehlgeschlagen","red");}
-    });
-
-    // Registrierung
-    document.querySelector(".register").addEventListener("click", e=>{
-      e.preventDefault();
-      document.getElementById("register-modal").style.display="flex";
-    });
-    document.getElementById("reg-submit").addEventListener("click", async ()=>{
-      try {
-        const userCred=await createUserWithEmailAndPassword(auth,reg-email.value,reg-pass.value);
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCred.user);
-        showToast("Registriert! Bestätigungs-Mail prüfen.","green");
-        document.getElementById("register-modal").style.display="none";
-      } catch(err){showToast(translateError(err.code),"red");}
+        showToast("Registrierung erfolgreich! Bitte E-Mail bestätigen.", "green");
+        document.getElementById("register-modal").style.display = "none";
+      } catch (err) {
+        showToast(translateFirebaseError(err.code), "red");
+      }
     });
 
-    // Passwort Reset
-    document.querySelector(".forgot").addEventListener("click", e=>{
+    // Passwort Reset öffnen
+    document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
-      document.getElementById("reset-modal").style.display="flex";
-    });
-    document.getElementById("reset-submit").addEventListener("click", async ()=>{
-      try{
-        await sendPasswordResetEmail(auth,reset-email.value);
-        showToast("Mail verschickt.","green");
-        document.getElementById("reset-modal").style.display="none";
-      }catch(err){showToast(translateError(err.code),"red");}
+      document.getElementById("reset-modal").style.display = "flex";
     });
 
-    document.querySelectorAll(".modal .close").forEach(btn=>{
-      btn.addEventListener("click",()=>btn.closest(".modal").style.display="none");
+    // Passwort Reset absenden
+    document.getElementById("reset-submit").addEventListener("click", async () => {
+      const email = document.getElementById("reset-email").value;
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showToast("E-Mail zum Zurücksetzen wurde verschickt!", "green");
+        document.getElementById("reset-modal").style.display = "none";
+      } catch (err) {
+        showToast(translateFirebaseError(err.code), "red");
+      }
+    });
+
+    // Close Buttons in Modals
+    document.querySelectorAll(".modal .close").forEach(btn => {
+      btn.addEventListener("click", () => {
+        btn.closest(".modal").style.display = "none";
+      });
     });
   </script>
 </body>
