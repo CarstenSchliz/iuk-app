@@ -199,7 +199,7 @@
 
   <script type="module">
     import { app, auth, storage } from "./firebase.js";
-    import { onAuthStateChanged, signOut } 
+    import { onAuthStateChanged, signOut, updateProfile } 
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { ref, uploadBytes, getDownloadURL } 
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
@@ -222,10 +222,12 @@
       });
     });
 
-    // Profilbild Upload
+    // Profilbild Upload & Speichern im Profil
     const profileImg = document.getElementById("profileImg");
     const profileUpload = document.getElementById("profileUpload");
+
     profileImg.addEventListener("click", () => profileUpload.click());
+
     profileUpload.addEventListener("change", async (event) => {
       const file = event.target.files[0];
       const user = auth.currentUser;
@@ -235,8 +237,13 @@
           await uploadBytes(storageRef, file);
 
           const url = await getDownloadURL(storageRef);
+
+          // Bild auch ins Firebase User-Profil speichern
+          await updateProfile(user, { photoURL: url });
+
+          // Direkt im UI anzeigen
           profileImg.src = url + "?t=" + new Date().getTime(); // Cache-Buster
-          alert("Profilbild erfolgreich hochgeladen!");
+          alert("Profilbild gespeichert!");
         } catch (err) {
           alert("Fehler beim Hochladen: " + err.message);
         }
@@ -256,13 +263,17 @@
       } else {
         document.getElementById("username").innerText = user.displayName || user.email;
 
-        // Bild aus Storage laden
-        try {
-          const storageRef = ref(storage, "profile-pictures/" + user.uid + ".jpg");
-          const url = await getDownloadURL(storageRef);
-          profileImg.src = url + "?t=" + new Date().getTime();
-        } catch {
-          profileImg.src = "assets/profile-placeholder.png"; // Fallback
+        // Profilbild laden: bevorzugt aus user.photoURL
+        if (user.photoURL) {
+          profileImg.src = user.photoURL + "?t=" + new Date().getTime();
+        } else {
+          try {
+            const storageRef = ref(storage, "profile-pictures/" + user.uid + ".jpg");
+            const url = await getDownloadURL(storageRef);
+            profileImg.src = url + "?t=" + new Date().getTime();
+          } catch {
+            profileImg.src = "assets/profile-placeholder.png"; // Fallback
+          }
         }
       }
     });
