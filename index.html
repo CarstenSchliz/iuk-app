@@ -95,7 +95,7 @@
     }
 
     .logo-top img {
-      max-height: 160px;
+      max-height: 160px; /* PC */
     }
 
     h1 {
@@ -201,13 +201,8 @@
       color: var(--volltonblau);
     }
 
-    /* Handy hochkant & quer */
-    @media (max-width: 1024px) {
-      body, html {
-        height: 100%;
-        width: 100%;
-      }
-
+    /* Handy hochkant */
+    @media (max-width: 768px) and (orientation: portrait) {
       .container {
         flex-direction: column;
         width: 100%;
@@ -217,14 +212,38 @@
       .right { display: none; }
 
       .login-box {
-        width: 90%;          /* fast gesamte Bildschirmbreite */
-        max-width: 500px;    /* aber nicht größer als PC-Version */
+        width: 90%;
         margin: auto;
         padding: 1.5rem;
       }
 
       .logo-top img {
-        max-height: 100px;   /* Logo kleiner */
+        max-height: 150px; /* größer hochkant */
+      }
+
+      h1 {
+        margin: 0.8rem 0 0.5rem 0;
+      }
+    }
+
+    /* Handy quer */
+    @media (max-width: 1024px) and (orientation: landscape) {
+      .container {
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+      }
+
+      .right { display: none; }
+
+      .login-box {
+        width: 90%;
+        margin: auto;
+        padding: 1.5rem;
+      }
+
+      .logo-top img {
+        max-height: 120px; /* etwas kleiner quer */
       }
 
       h1 {
