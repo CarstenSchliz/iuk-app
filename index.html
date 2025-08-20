@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>IuK Lernwelt – Login</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#002D55">
@@ -79,7 +79,7 @@
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      max-width: 380px;
+      max-width: 380px; /* Standard */
       width: 100%;
       max-height: 90vh;
       display: flex;
@@ -90,7 +90,7 @@
     }
 
     .logo-top {
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.5rem;
     }
 
     .logo-top img {
@@ -101,7 +101,7 @@
       color: var(--mittelblau);
       font-size: 1.25rem;
       font-weight: bold;
-      margin: 1.2rem 0 0.6rem 0; /* näher am Logo */
+      margin: 0.3rem 0 0.6rem 0; /* direkt unter dem Logo */
     }
 
     .subtitle {
@@ -202,50 +202,66 @@
 
     /* Handy hochkant */
     @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+      body {
         height: auto;
-        padding: 1rem;
+        min-height: 100vh;
       }
-      .right {
-        display: none;
-      }
-      .login-box {
-        max-width: 100%;
-        max-height: none;
-        width: 100%;
-        padding: 1.2rem;
-        margin: auto;
-        box-sizing: border-box;
-      }
-      .logo-top img {
-        max-height: 100px;
-      }
-    }
-
-    /* Handy querformat */
-    @media (max-width: 1024px) and (orientation: landscape) {
       .container {
         flex-direction: column;
         justify-content: flex-start;
         align-items: center;
         height: auto;
         padding: 1rem;
+        box-sizing: border-box;
       }
       .right {
         display: none;
       }
       .login-box {
         max-width: 100%;
-        max-height: none;
         width: 100%;
         padding: 1.5rem;
         margin: auto;
+        box-sizing: border-box;
       }
       .logo-top img {
-        max-height: 80px;
+        max-height: 140px; /* größer am Handy */
+      }
+    }
+
+    /* Handy querformat */
+    @media (max-width: 1024px) and (orientation: landscape) {
+      body {
+        height: auto;
+        min-height: 100vh;
+      }
+      .container {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        height: auto;
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+      .right {
+        display: none;
+      }
+      .login-box {
+        max-width: 100%;
+        width: 100%;
+        padding: 1.5rem;
+        margin: auto;
+        box-sizing: border-box;
+      }
+      .logo-top img {
+        max-height: 120px; /* quer auch größer */
+      }
+    }
+
+    /* PC / große Bildschirme */
+    @media (min-width: 1025px) {
+      .login-box {
+        max-width: 500px; /* breiter nur auf PC */
       }
     }
   </style>
