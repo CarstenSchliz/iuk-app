@@ -81,7 +81,7 @@
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
       max-width: 380px;
       width: 100%;
-      max-height: 90vh; /* begrenzt auf Bildschirmhöhe */
+      max-height: 90vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -101,7 +101,7 @@
       color: var(--mittelblau);
       font-size: 1.25rem;
       font-weight: bold;
-      margin: 3rem 0 0.6rem 0; /* Überschrift deutlich weiter nach oben */
+      margin: 1.2rem 0 0.6rem 0; /* näher am Logo */
     }
 
     .subtitle {
@@ -206,15 +206,19 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        height: auto;
+        padding: 1rem;
       }
       .right {
-        display: none; /* Bild im Handy ausblenden */
+        display: none;
       }
       .login-box {
-        max-width: 90%;
-        max-height: 85vh;
+        max-width: 100%;
+        max-height: none;
+        width: 100%;
         padding: 1.2rem;
         margin: auto;
+        box-sizing: border-box;
       }
       .logo-top img {
         max-height: 100px;
@@ -225,20 +229,23 @@
     @media (max-width: 1024px) and (orientation: landscape) {
       .container {
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
+        height: auto;
+        padding: 1rem;
       }
       .right {
-        display: none; /* Bild auch hier ausblenden */
+        display: none;
       }
       .login-box {
-        max-width: 70%;
-        max-height: 85vh;
+        max-width: 100%;
+        max-height: none;
+        width: 100%;
         padding: 1.5rem;
         margin: auto;
       }
       .logo-top img {
-        max-height: 100px;
+        max-height: 80px;
       }
     }
   </style>
@@ -256,18 +263,20 @@
 
         <form onsubmit="event.preventDefault(); window.location.href='app.html';">
           <div class="form-group">
-            <i class="bi bi-envelope"></i>
+            <i class="bi bi-envelope" aria-hidden="true"></i>
             <input type="email" id="email" placeholder=" " required>
             <label for="email">E-Mail-Adresse</label>
           </div>
 
           <div class="form-group">
-            <i class="bi bi-lock"></i>
+            <i class="bi bi-lock" aria-hidden="true"></i>
             <input type="password" id="password" placeholder=" " required>
             <label for="password">Passwort</label>
           </div>
 
-          <button type="submit" class="login-btn"><i class="bi bi-box-arrow-in-right"></i> Anmelden</button>
+          <button type="submit" class="login-btn" aria-label="Anmelden">
+            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Anmelden
+          </button>
         </form>
 
         <div class="links">
