@@ -74,19 +74,25 @@
       font-weight: bold;
     }
 
+    .login-wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
     .login-box {
       background: #fff;
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      max-width: 380px; /* Standard */
       width: 100%;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      text-align: center;
+      max-width: 500px; /* PC-Version */
       box-sizing: border-box;
+      transform-origin: top center; /* wichtig für dynamisches Shrinking */
     }
 
     .logo-top {
@@ -200,110 +206,52 @@
       color: var(--volltonblau);
     }
 
-    /* Handy hochkant */
-    @media (max-width: 768px) {
-      body {
-        height: auto;
-        min-height: 100vh;
-      }
-      .container {
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        height: auto;
-        padding: 1rem;
-        box-sizing: border-box;
-      }
-      .right {
-        display: none;
-      }
-      .login-box {
-        max-width: 100%;
-        width: 100%;
-        padding: 1.5rem;
-        margin: auto;
-        box-sizing: border-box;
-      }
-      .logo-top img {
-        max-height: 140px; /* größer am Handy */
-      }
-    }
-
-    /* Handy querformat */
-    @media (max-width: 1024px) and (orientation: landscape) {
-      body {
-        height: auto;
-        min-height: 100vh;
-      }
-      .container {
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        height: auto;
-        padding: 1rem;
-        box-sizing: border-box;
-      }
-      .right {
-        display: none;
-      }
-      .login-box {
-        max-width: 100%;
-        width: 100%;
-        padding: 1.5rem;
-        margin: auto;
-        box-sizing: border-box;
-      }
-      .logo-top img {
-        max-height: 120px; /* quer auch größer */
-      }
-    }
-
-    /* PC / große Bildschirme */
-    @media (min-width: 1025px) {
-      .login-box {
-        max-width: 500px; /* breiter nur auf PC */
-      }
+    /* Rechtsbild auf Handy ausblenden */
+    @media (max-width: 1024px) {
+      .right { display: none; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="left">
-      <div class="login-box">
-        <div class="logo-top">
-          <img src="assets/drk-icon.png" alt="DRK Logo">
-        </div>
-
-        <h1>Willkommen in der IuK Lernwelt</h1>
-        <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
-
-        <form onsubmit="event.preventDefault(); window.location.href='app.html';">
-          <div class="form-group">
-            <i class="bi bi-envelope" aria-hidden="true"></i>
-            <input type="email" id="email" placeholder=" " required>
-            <label for="email">E-Mail-Adresse</label>
+      <div class="login-wrapper">
+        <div class="login-box">
+          <div class="logo-top">
+            <img src="assets/drk-icon.png" alt="DRK Logo">
           </div>
 
-          <div class="form-group">
-            <i class="bi bi-lock" aria-hidden="true"></i>
-            <input type="password" id="password" placeholder=" " required>
-            <label for="password">Passwort</label>
-          </div>
+          <h1>Willkommen in der IuK Lernwelt</h1>
+          <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
 
-          <button type="submit" class="login-btn" aria-label="Anmelden">
-            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Anmelden
-          </button>
-        </form>
+          <form onsubmit="event.preventDefault(); window.location.href='app.html';">
+            <div class="form-group">
+              <i class="bi bi-envelope" aria-hidden="true"></i>
+              <input type="email" id="email" placeholder=" " required>
+              <label for="email">E-Mail-Adresse</label>
+            </div>
 
-        <div class="links">
-          <div class="section">
-            <span>Ich habe noch keinen Zugang</span>
-            <a href="#" class="register">Jetzt registrieren!</a>
-          </div>
+            <div class="form-group">
+              <i class="bi bi-lock" aria-hidden="true"></i>
+              <input type="password" id="password" placeholder=" " required>
+              <label for="password">Passwort</label>
+            </div>
 
-          <div class="section">
-            <span>Passwort vergessen?</span>
-            <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
+            <button type="submit" class="login-btn" aria-label="Anmelden">
+              <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Anmelden
+            </button>
+          </form>
+
+          <div class="links">
+            <div class="section">
+              <span>Ich habe noch keinen Zugang</span>
+              <a href="#" class="register">Jetzt registrieren!</a>
+            </div>
+
+            <div class="section">
+              <span>Passwort vergessen?</span>
+              <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
+            </div>
           </div>
         </div>
       </div>
@@ -314,5 +262,26 @@
            onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
     </div>
   </div>
+
+  <script>
+    function scaleLoginBox() {
+      const box = document.querySelector('.login-box');
+      if (!box) return;
+
+      const wrapperHeight = window.innerHeight;
+      const boxHeight = box.scrollHeight;
+
+      let scale = 1;
+      if (boxHeight > wrapperHeight) {
+        scale = wrapperHeight / boxHeight;
+      }
+
+      box.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', scaleLoginBox);
+    window.addEventListener('orientationchange', scaleLoginBox);
+    window.addEventListener('load', scaleLoginBox);
+  </script>
 </body>
 </html>
