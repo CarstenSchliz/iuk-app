@@ -26,7 +26,7 @@
 
     /* Sidebar */
     .sidebar {
-      background: rgba(0, 45, 85, 0.9); /* Glas-Effekt mit DRK-Dunkelblau */
+      background: rgba(0, 45, 85, 0.9);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       color: white;
@@ -196,7 +196,11 @@
     <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
   </div>
 
-  <script>
+  <script type="module">
+    import { auth } from "./firebase.js";
+    import { onAuthStateChanged, signOut } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
     // Sidebar Toggle
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
@@ -215,7 +219,7 @@
       });
     });
 
-    // Profilbild Upload
+    // Profilbild Upload (aktuell nur lokal, später Firebase Storage)
     const profileImg = document.getElementById("profileImg");
     const profileUpload = document.getElementById("profileUpload");
     profileImg.addEventListener("click", () => profileUpload.click());
@@ -228,9 +232,18 @@
       }
     });
 
-    // Logout
+    // 🔑 Login-Check
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // nicht eingeloggt → zurück zur Login-Seite
+        window.location.href = "index.html";
+      }
+    });
+
+    // 🔓 Logout
     const logoutBtn = document.getElementById("logoutBtn");
-    logoutBtn.addEventListener("click", () => {
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
       window.location.href = "index.html";
     });
   </script>
