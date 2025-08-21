@@ -7,14 +7,14 @@
     <!-- Persönliche Daten -->
     <div class="card">
       <h3><i class="bi bi-person"></i> Persönliche Daten</h3>
+
+      <!-- Profilbild -->
+      <div class="profile-avatar">
+        <img id="avatarPreview" src="assets/avatar-default.png" alt="Avatar">
+        <input type="file" id="avatarUpload" accept="image/*">
+      </div>
+
       <form id="profileForm">
-
-        <!-- Profilbild -->
-        <div class="avatar-upload">
-          <img id="profileImagePreview" src="../assets/avatar-default.png" alt="Profilbild" class="avatar">
-          <input type="file" id="profileImageInput" accept="image/*">
-        </div>
-
         <!-- Name -->
         <div class="form-group floating">
           <input type="text" id="name" placeholder=" ">
@@ -48,12 +48,8 @@
 
         <!-- Buttons -->
         <div class="form-actions">
-          <button type="button" id="backBtn" class="btn-secondary">
-            ← Zurück
-          </button>
-          <button type="submit" class="btn-primary">
-            <i class="bi bi-save"></i> Speichern
-          </button>
+          <button type="button" id="backBtn" class="btn-secondary">← Zurück</button>
+          <button type="submit" class="btn-primary"><i class="bi bi-save"></i> Speichern</button>
         </div>
         <div id="profileMsg" class="form-msg"></div>
       </form>
@@ -75,9 +71,7 @@
     <div class="card">
       <h3><i class="bi bi-palette"></i> Erscheinungsbild</h3>
       <p>Aktuelles Theme: <span id="themeLabel">Hell</span></p>
-      <button id="themeToggle" class="btn-accent">
-        🌙 Zu Dunkelmodus wechseln
-      </button>
+      <button id="themeToggle" class="btn-accent">🌙 Zu Dunkelmodus wechseln</button>
     </div>
 
     <!-- Sicherheit -->
@@ -85,9 +79,7 @@
       <h3><i class="bi bi-shield-lock"></i> Sicherheit</h3>
       <p>Zwei-Faktor-Authentifizierung (2FA)</p>
       <p class="hint">Schützen Sie Ihr Konto mit einer zusätzlichen Sicherheitsebene.</p>
-      <button class="btn-primary">
-        <i class="bi bi-lock"></i> 2FA aktivieren
-      </button>
+      <button class="btn-primary"><i class="bi bi-lock"></i> 2FA aktivieren</button>
     </div>
   </div>
 </div>
@@ -107,7 +99,9 @@
     grid-template-columns: 2fr 1fr;
     gap: 1.5rem;
   }
-  @media(max-width: 768px){ .settings-grid { grid-template-columns: 1fr; } }
+  @media(max-width: 768px){
+    .settings-grid { grid-template-columns: 1fr; }
+  }
 
   .card {
     background: var(--card-bg, #fff);
@@ -116,25 +110,34 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     margin-bottom: 1.5rem;
   }
-
   .card h3 { color: var(--hellblau); margin-top: 0; margin-bottom: 1rem; }
 
-  /* Avatar Upload */
-  .avatar-upload { text-align: center; margin-bottom: 1rem; }
-  .avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; }
-  #profileImageInput { margin-top: 0.5rem; }
+  .profile-avatar {
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    margin-bottom:1rem;
+  }
+  .profile-avatar img {
+    width:64px; height:64px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid var(--hellgrau);
+  }
 
-  /* Floating Label */
   .form-group.floating { position: relative; margin-bottom: 1.5rem; }
   .form-group.floating input {
     width: 100%; padding: 1rem 0.75rem 0.25rem 0.75rem;
     border: 1px solid #ccc; border-radius: 8px;
-    background: transparent; font-size: 1rem; box-sizing: border-box;
+    background: transparent; font-size: 1rem;
+    box-sizing: border-box;
   }
   .form-group.floating label {
-    position: absolute; top: 50%; left: 0.75rem; transform: translateY(-50%);
-    color: #777; font-size: 0.95rem; transition: all 0.2s ease;
-    pointer-events: none; background: var(--card-bg, #fff); padding: 0 0.25rem;
+    position: absolute; top: 50%; left: 0.75rem;
+    transform: translateY(-50%);
+    color: #777; font-size: 0.95rem;
+    transition: all 0.2s ease; pointer-events: none;
+    background: var(--card-bg, #fff); padding: 0 0.25rem;
   }
   .form-group.floating input:focus + label,
   .form-group.floating input:not(:placeholder-shown) + label {
@@ -150,9 +153,9 @@
   .btn-primary, .btn-secondary, .btn-accent {
     padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer;
   }
-  .btn-primary { background: var(--dunkelblau); color: #fff; }
+  .btn-primary { background: var(--dunkelblau); color:#fff; }
   .btn-secondary { background:#eee; }
-  .btn-accent  { background: var(--dunkelblau); color: #fff; }
+  .btn-accent  { background: var(--dunkelblau); color:#fff; }
 
   .form-msg { margin-top:0.5rem; font-weight:bold; }
   .list { list-style:none; padding:0; margin:0; }
@@ -160,50 +163,51 @@
   .hint { font-size:0.9rem; color:#555; }
 
   /* Darkmode */
-  body.dark { --card-bg: #1e1e1e; color:#f0f0f0; background:#121212; }
+  body.dark {
+    --card-bg: #1e1e1e; color:#f0f0f0; background:#121212;
+  }
   body.dark input { background:#2a2a2a; color:#f0f0f0; border:1px solid #555; }
   body.dark small { color:#aaa; }
   body.dark .form-group.floating label { background: #1e1e1e; }
 </style>
 
 <script type="module">
-  import { auth, updateUserProfile, uploadProfileImage, observeAuthState } 
-    from "../js/firebase.js";
+  import { auth, observeAuthState, updateUserProfile, uploadProfileImage, getUserData } from "../js/firebase.js";
 
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
+  const avatarUpload = document.getElementById("avatarUpload");
+  const avatarPreview = document.getElementById("avatarPreview");
   const profileForm = document.getElementById("profileForm");
   const profileMsg = document.getElementById("profileMsg");
   const backBtn = document.getElementById("backBtn");
+
   const sidebarName = document.getElementById("userName");
+  const sidebarAvatar = document.getElementById("userAvatar");
 
-  const profileImagePreview = document.getElementById("profileImagePreview");
-  const profileImageInput = document.getElementById("profileImageInput");
-
-  // === User laden ===
-  observeAuthState((user) => {
+  // User laden
+  observeAuthState(async (user) => {
     if (user) {
       emailField.value = user.email || "";
       nameField.value = user.displayName || "";
+
+      // Sidebar Name
       if (sidebarName) sidebarName.textContent = user.displayName || user.email.split("@")[0];
-      profileImagePreview.src = user.photoURL || "../assets/avatar-default.png";
+
+      // Avatar laden
+      const data = await getUserData(user.uid);
+      if (data && data.photoURL) {
+        avatarPreview.src = data.photoURL;
+        if (sidebarAvatar) sidebarAvatar.src = data.photoURL;
+      }
     }
   });
 
-  // === Name + Bild speichern ===
+  // Profil speichern
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const user = auth.currentUser;
-    if (!user) return;
-
     try {
-      let photoURL = user.photoURL;
-      if (profileImageInput.files.length > 0) {
-        photoURL = await uploadProfileImage(profileImageInput.files[0]);
-        profileImagePreview.src = photoURL;
-      }
-
-      await updateUserProfile(nameField.value, photoURL);
+      await updateUserProfile(nameField.value);
       if (sidebarName) sidebarName.textContent = nameField.value;
       profileMsg.style.color = "green";
       profileMsg.textContent = "✅ Änderungen gespeichert!";
@@ -213,12 +217,26 @@
     }
   });
 
-  // === Zurück → Dashboard ===
+  // Avatar hochladen
+  avatarUpload.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const url = await uploadProfileImage(file);
+        avatarPreview.src = url;
+        if (sidebarAvatar) sidebarAvatar.src = url;
+      } catch (err) {
+        alert("Fehler beim Hochladen: " + err.message);
+      }
+    }
+  });
+
+  // Zurück
   backBtn.addEventListener("click", () => {
     window.location.hash = "#dashboard";
   });
 
-  // === Theme Toggle ===
+  // Darkmode Toggle
   const themeBtn = document.getElementById("themeToggle");
   const themeLabel = document.getElementById("themeLabel");
 
