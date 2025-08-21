@@ -2,304 +2,163 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IuK Lernwelt – App</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#002D55">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="profile">
+        <img id="profileImg" src="assets/avatar-default.png" alt="Profil" class="profile-img">
+        <p id="userName">Lädt...</p>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
+          <li><a href="#kurse"><i class="bi bi-journal-bookmark"></i> Kurse</a></li>
+          <li><a href="#material"><i class="bi bi-folder"></i> Material</a></li>
+          <li><a href="#chat"><i class="bi bi-chat-dots"></i> Chat</a></li>
+          <li><a href="#persoenlich"><i class="bi bi-person"></i> Persönlich</a></li>
+          <li><a href="#logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main id="mainContent">
+      <h1>Willkommen in deiner IuK Lernwelt</h1>
+      <p>Bitte wähle eine Funktion aus dem Menü links.</p>
+    </main>
+  </div>
 
   <style>
-    :root {
-      --softrot: rgb(228,100,80);
-      --dunkelblau: rgb(0,45,85);
-      --hellblau: rgb(100,160,220);
-      --hellgrau: rgb(239,238,234);
+    body {
+      margin:0;
+      font-family:Arial, sans-serif;
+      background: var(--body-bg, #f9f9f9);
+      color: var(--body-color, #333);
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      background: var(--hellgrau);
-      overflow: hidden;
-      transition: background 0.3s, color 0.3s;
+    .app-layout {
+      display:flex;
+      height:100vh;
     }
 
     /* Sidebar */
     .sidebar {
-      background: #fff;
-      color: #000;
-      width: 260px;
-      display: flex;
-      flex-direction: column;
-      padding: 1.5rem 1rem;
-      box-sizing: border-box;
-      transition: background 0.3s, color 0.3s;
+      width:250px;
+      background:#fff;
+      color:#000;
+      display:flex;
+      flex-direction:column;
+      border-right:1px solid #ddd;
+    }
+    .sidebar .profile {
+      text-align:center;
+      padding:1rem;
+    }
+    .profile-img {
+      width:80px;
+      height:80px;
+      border-radius:50%;
+      object-fit:cover;
+      margin-bottom:0.5rem;
+    }
+    .sidebar nav ul {
+      list-style:none;
+      margin:0;
+      padding:0;
+    }
+    .sidebar nav ul li {
+      border-bottom:1px solid #eee;
+    }
+    .sidebar nav ul li a {
+      display:block;
+      padding:0.8rem 1rem;
+      text-decoration:none;
+      color:#000;
+    }
+    .sidebar nav ul li a:hover {
+      background:var(--hellblau, #cce0f5);
     }
 
-    .profile {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .profile img {
-      width: 100px;
-      aspect-ratio: 1/1;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--dunkelblau);
-      display: block;
-      margin: 0 auto 0.8rem auto;
-      background: #ccc;
-      cursor: pointer;
-    }
-
-    .profile h2 {
-      margin: 0;
-      font-size: 1.2rem;
-    }
-
-    .profile p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .menu {
-      flex-grow: 1;
-    }
-
-    .menu button {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      width: 100%;
-      padding: 0.6rem 1rem;
-      background: transparent;
-      border: none;
-      color: #000;
-      font-size: 1rem;
-      cursor: pointer;
-      text-align: left;
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
-      transition: background 0.2s;
-    }
-
-    .menu button:hover {
-      background: var(--hellblau);
-      color: #fff;
-    }
-
-    .menu button.active {
-      background: var(--dunkelblau);
-      color: #fff;
-    }
-
-    .logout {
-      margin-top: auto;
-      margin-bottom: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      background: transparent;
-      border: none;
-      color: #000;
-      font-size: 1rem;
-      cursor: pointer;
-      text-align: left;
-      border-radius: 8px;
-      padding: 0.6rem 1rem;
-      transition: background 0.2s;
-    }
-
-    .logout:hover {
-      background: var(--hellblau);
-      color: #fff;
-    }
-
-    .version {
-      font-size: 0.8rem;
-      text-align: center;
-      color: #666;
-    }
-
-    /* Content */
-    .content {
-      flex-grow: 1;
-      background: var(--hellgrau);
-      padding: 2rem 3rem;
-      overflow-y: auto;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        position: fixed;
-        left: -260px;
-        top: 0;
-        height: 100%;
-        transition: left 0.3s;
-        z-index: 1000;
-      }
-      .sidebar.active {
-        left: 0;
-      }
-      .menu-toggle {
-        position: fixed;
-        top: 1rem;
-        left: 1rem;
-        font-size: 1.5rem;
-        background: var(--dunkelblau);
-        color: white;
-        border: none;
-        padding: 0.5rem 0.8rem;
-        border-radius: 8px;
-        cursor: pointer;
-        z-index: 1100;
-      }
-      .content {
-        padding: 5rem 1.5rem 2rem 1.5rem;
-      }
+    /* Main */
+    main {
+      flex:1;
+      padding:2rem;
+      overflow-y:auto;
     }
 
     /* Darkmode */
     body.dark {
-      background: #121212;
-      color: #f0f0f0;
+      --body-bg:#121212;
+      --body-color:#f0f0f0;
     }
     body.dark .sidebar {
-      background: #1e1e1e;
-      color: #f0f0f0;
+      background:#1e1e1e;
+      color:#fff;
     }
-    body.dark .menu button,
-    body.dark .logout {
-      color: #f0f0f0;
+    body.dark .sidebar nav ul li a {
+      color:#fff;
     }
-    body.dark .menu button:hover,
-    body.dark .logout:hover {
-      background: var(--hellblau);
-      color: #fff;
-    }
-    body.dark .content {
-      background: #121212;
-      color: #f0f0f0;
+    body.dark .sidebar nav ul li a:hover {
+      background:#2a2a2a;
     }
   </style>
-</head>
-<body>
-  <!-- Mobile Menu Button -->
-  <button class="menu-toggle" id="menuToggle">
-    <i class="bi bi-list"></i>
-  </button>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <div class="profile">
-      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
-      <input type="file" id="profileUpload" accept="image/*" style="display:none;">
-      <h2 id="userName">Lädt...</h2>
-      <p>Teilnehmer</p>
-    </div>
-
-    <div class="menu">
-      <button data-page="persoenlich"><i class="bi bi-person"></i> Persönliche Daten</button>
-      <button data-page="zugang"><i class="bi bi-key"></i> Zugangsvoraussetzungen</button>
-      <button data-page="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
-      <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
-      <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
-      <button data-page="benutzer"><i class="bi bi-people"></i> Benutzerverwaltung</button>
-    </div>
-
-    <button class="logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
-    <div class="version">Version 1.0.0</div>
-  </div>
-
-  <!-- Content -->
-  <div class="content" id="content">
-    <h1>Willkommen in der IuK Lernwelt</h1>
-    <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
-  </div>
-
-  <!-- Firebase / Auth -->
   <script type="module">
-    import { auth, logout, observeAuthState } from "./js/firebase.js";
-    import { 
-      updateProfile, onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-    import { 
-      getStorage, ref, uploadBytes, getDownloadURL 
-    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
+    import { auth, logout } from "./js/firebase.js";
+    import { onAuthStateChanged } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    const menuToggle   = document.getElementById("menuToggle");
-    const sidebar      = document.getElementById("sidebar");
-    const content      = document.getElementById("content");
-    const buttons      = document.querySelectorAll(".menu button");
-    const profileImg   = document.getElementById("profileImg");
-    const profileUpload= document.getElementById("profileUpload");
-    const logoutBtn    = document.getElementById("logoutBtn");
-    const userName     = document.getElementById("userName");
+    const userNameEl = document.getElementById("userName");
+    const userImgEl = document.getElementById("profileImg");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-    const storage = getStorage();
-
-    // Sidebar Toggle
-    menuToggle.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
-    });
-
-    // Content Wechsel
-    async function loadPage(page) {
-      try {
-        const res = await fetch(`views/${page}.html`);
-        if (!res.ok) throw new Error("Seite nicht gefunden");
-        const html = await res.text();
-        content.innerHTML = html;
-      } catch (err) {
-        content.innerHTML = `<h2>Fehler</h2><p>${err.message}</p>`;
-      }
-    }
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const page = btn.getAttribute("data-page");
-        loadPage(page);
-        sidebar.classList.remove("active");
-        buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-      });
-    });
-
-    // Profilbild Upload
-    profileImg.addEventListener("click", () => profileUpload.click());
-    profileUpload.addEventListener("change", async (event) => {
-      const file = event.target.files[0];
-      const user = auth.currentUser;
-      if (file && user) {
-        const storageRef = ref(storage, `profilePics/${user.uid}.jpg`);
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-        await updateProfile(user, { photoURL: url });
-        profileImg.src = url;
+    // Userdaten in Sidebar laden
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userNameEl.textContent = user.displayName || user.email.split("@")[0];
+        if (user.photoURL) {
+          userImgEl.src = user.photoURL;
+        } else {
+          userImgEl.src = "assets/avatar-default.png";
+        }
+      } else {
+        userNameEl.textContent = "Nicht eingeloggt";
+        userImgEl.src = "assets/avatar-default.png";
       }
     });
 
     // Logout
-    logoutBtn.addEventListener("click", async () => {
+    logoutBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
       await logout();
       window.location.href = "index.html";
     });
 
-    // Login-Check + Userdaten
-    observeAuthState(user => {
-      if (user) {
-        userName.textContent = user.displayName || user.email.split("@")[0];
-        profileImg.src = user.photoURL || "assets/avatar-default.png";
-      } else {
-        window.location.href = "index.html";
+    // Router: Hash Navigation
+    window.addEventListener("hashchange", loadPage);
+    async function loadPage(){
+      const hash = window.location.hash.substring(1);
+      if(!hash){
+        document.getElementById("mainContent").innerHTML = "<h1>Willkommen</h1>";
+        return;
       }
-    });
+      try {
+        const resp = await fetch(`pages/${hash}.html`);
+        const html = await resp.text();
+        document.getElementById("mainContent").innerHTML = html;
+      } catch(err){
+        document.getElementById("mainContent").innerHTML = "<h1>❌ Seite nicht gefunden</h1>";
+      }
+    }
+    loadPage();
 
-    // === DARKMODE GLOBAL ===
+    // Darkmode initialisieren
     function setTheme(mode){
       if(mode==="dark"){
         document.body.classList.add("dark");
@@ -310,11 +169,6 @@
       }
     }
     setTheme(localStorage.getItem("theme") || "light");
-
-    // Darkmode auch auf Unterseiten steuerbar
-    window.addEventListener("storage", (e) => {
-      if (e.key === "theme") setTheme(e.newValue);
-    });
   </script>
 </body>
 </html>
