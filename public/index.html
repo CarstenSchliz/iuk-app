@@ -111,7 +111,6 @@
       margin-bottom: 1.5rem;
     }
 
-    /* === Einheitliche Form-Groups === */
     .form-group {
       position: relative;
       margin-bottom: 1.2rem;
@@ -244,7 +243,7 @@
       }
     }
 
-    /* === Modal & Toast === */
+    /* === Modal & Toast Zusatzstyles === */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -270,15 +269,38 @@
       font-size: 1.25rem;
       margin: 0.5rem 0 1.2rem 0;
     }
-
-    /* Einheitliche Inputs auch in Modals */
-    .modal .form-group input {
-      padding-left: 0.8rem; /* kein Icon */
+    .modal-content .form-group {
+      margin-bottom: 1.2rem;
+      text-align: left;
     }
-    .modal .form-group label {
-      left: 0.8rem;
+    .modal-content .form-group input {
+      width: 100%;
+      border: 1px solid var(--mittelgrau);
+      border-radius: 6px;
+      padding: 0.9rem 0.8rem 0.5rem 0.8rem;
+      font-size: 1rem;
+      outline: none;
+      background: transparent;
+      box-sizing: border-box;
     }
-
+    .modal-content .form-group label {
+      position: absolute;
+      top: 50%;
+      left: 0.9rem;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: var(--dunkelgrau);
+      pointer-events: none;
+      transition: 0.2s ease all;
+      background: #fff;
+      padding: 0 0.2rem;
+    }
+    .modal-content .form-group input:focus + label,
+    .modal-content .form-group input:not(:placeholder-shown) + label {
+      top: 0.15rem;
+      font-size: 0.75rem;
+      color: var(--dunkelgrau);
+    }
     .modal-content button {
       width: 100%;
       padding: 0.7rem;
@@ -297,7 +319,6 @@
       background: var(--mittelgrau);
       color: white;
     }
-
     #toast {
       visibility: hidden;
       min-width: 250px;
@@ -401,117 +422,7 @@
   <!-- Toast -->
   <div id="toast"></div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
-      authDomain: "iuk-app.firebaseapp.com",
-      projectId: "iuk-app",
-      storageBucket: "iuk-app.firebasestorage.app",
-      messagingSenderId: "759014128178",
-      appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
-      measurementId: "G-ZPD5VPD5TS"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    // Toast
-    function showToast(message, color = "#333") {
-      const toast = document.getElementById("toast");
-      toast.innerText = message;
-      toast.style.backgroundColor = color;
-      toast.className = "show";
-      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-    }
-
-    // Fehlertexte übersetzen
-    function translateFirebaseError(errorCode) {
-      switch (errorCode) {
-        case "auth/invalid-email":
-          return "Die eingegebene E-Mail-Adresse ist ungültig.";
-        case "auth/user-disabled":
-          return "Dieses Konto wurde deaktiviert.";
-        case "auth/user-not-found":
-          return "Es existiert kein Benutzer mit dieser E-Mail.";
-        case "auth/wrong-password":
-        case "auth/invalid-credential":
-          return "Das eingegebene Passwort ist falsch.";
-        case "auth/email-already-in-use":
-          return "Diese E-Mail-Adresse wird bereits verwendet.";
-        case "auth/weak-password":
-          return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
-        case "auth/missing-password":
-          return "Bitte geben Sie ein Passwort ein.";
-        case "auth/network-request-failed":
-          return "Netzwerkfehler – bitte Internetverbindung prüfen.";
-        default:
-          return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
-      }
-    }
-
-    // Login
-    document.getElementById("login-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        showToast("Login erfolgreich!", "green");
-        window.location.href = "app.html";
-      } catch (err) {
-        showToast(translateFirebaseError(err.code), "red");
-      }
-    });
-
-    // Registrierung Modal öffnen
-    document.querySelector(".register").addEventListener("click", (e) => {
-      e.preventDefault();
-      document.getElementById("register-modal").style.display = "flex";
-    });
-
-    // Registrierung abschicken
-    document.getElementById("reg-submit").addEventListener("click", async () => {
-      const email = document.getElementById("reg-email").value;
-      const password = document.getElementById("reg-pass").value;
-      try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(userCred.user);
-        showToast("Registrierung erfolgreich! Bitte E-Mail bestätigen.", "green");
-        document.getElementById("register-modal").style.display = "none";
-      } catch (err) {
-        showToast(translateFirebaseError(err.code), "red");
-      }
-    });
-
-    // Passwort-Reset Modal öffnen
-    document.querySelector(".forgot").addEventListener("click", (e) => {
-      e.preventDefault();
-      document.getElementById("reset-modal").style.display = "flex";
-    });
-
-    // Passwort-Reset abschicken
-    document.getElementById("reset-submit").addEventListener("click", async () => {
-      const email = document.getElementById("reset-email").value;
-      try {
-        await sendPasswordResetEmail(auth, email);
-        showToast("E-Mail zum Zurücksetzen wurde verschickt!", "green");
-        document.getElementById("reset-modal").style.display = "none";
-      } catch (err) {
-        showToast(translateFirebaseError(err.code), "red");
-      }
-    });
-
-    // Close Buttons
-    document.querySelectorAll(".modal .close").forEach(btn => {
-      btn.addEventListener("click", () => {
-        btn.closest(".modal").style.display = "none";
-      });
-    });
-  </script>
+  <!-- Firebase Code ausgelagert -->
+  <script type="module" src="js/firebase.js"></script>
 </body>
 </html>
