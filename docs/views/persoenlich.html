@@ -9,6 +9,13 @@
       <h3><i class="bi bi-person"></i> Persönliche Daten</h3>
       <form id="profileForm">
 
+        <!-- Profilbild -->
+        <div class="form-group" style="text-align:center;">
+          <img id="profileImg" src="assets/avatar-default.png" 
+               alt="Profilbild" style="width:100px;border-radius:50%;cursor:pointer;">
+          <input type="file" id="profileUpload" accept="image/*" style="display:none;">
+        </div>
+
         <!-- Name -->
         <div class="form-group floating">
           <input type="text" id="name" placeholder=" ">
@@ -228,39 +235,70 @@
 </style>
 
 <script type="module">
-  import { auth, updateUserProfile } from "../js/firebase.js";
-  import { onAuthStateChanged } 
-    from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { auth } from "../js/firebase.js";
+  import { 
+    onAuthStateChanged, 
+    updateProfile 
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { 
+    getStorage, ref, uploadBytes, getDownloadURL 
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
 
-  const emailField = document.getElementById("email");
-  const nameField = document.getElementById("name");
-  const profileForm = document.getElementById("profileForm");
-  const profileMsg = document.getElementById("profileMsg");
-  const backBtn = document.getElementById("backBtn");
-  const sidebarName = document.getElementById("userName");
+  const emailField   = document.getElementById("email");
+  const nameField    = document.getElementById("name");
+  const profileImg   = document.getElementById("profileImg");
+  const profileUpload= document.getElementById("profileUpload");
+  const profileForm  = document.getElementById("profileForm");
+  const profileMsg   = document.getElementById("profileMsg");
+  const backBtn      = document.getElementById("backBtn");
+  const sidebarName  = document.getElementById("userName");
+  const themeBtn     = document.getElementById("themeToggle");
+  const themeLabel   = document.getElementById("themeLabel");
 
-  // Userdaten laden
-  onAuthStateChanged(auth, (user) => {
+  const storage = getStorage();
+  let currentUser;
+
+  // Benutzer laden
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
-      emailField.value = user.email || "";      // ✅ E-Mail ins Feld
-      nameField.value = user.displayName || ""; // ✅ Name ins Feld
+      currentUser = user;
+      emailField.value = user.email || "";
+      nameField.value  = user.displayName || "";
+      profileImg.src   = user.photoURL || "assets/avatar-default.png";
       if (sidebarName) sidebarName.textContent = user.displayName || user.email.split("@")[0];
     }
   });
 
-  // Name speichern + Sidebar aktualisieren
+  // Profilbild Upload
+  profileImg.addEventListener("click", () => profileUpload.click());
+  profileUpload.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentUser) return;
+    try {
+      const storageRef = ref(storage, `profilePics/${currentUser.uid}.jpg`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+
+      await updateProfile(currentUser, { photoURL: url });
+      profileImg.src = url;
+      profileMsg.style.color = "green";
+      profileMsg.textContent = "✅ Profilbild aktualisiert!";
+    } catch (err) {
+      profileMsg.style.color = "red";
+      profileMsg.textContent = "❌ Fehler: " + err.message;
+    }
+  });
+
+  // Name speichern
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const user = auth.currentUser;
-    const newName = nameField.value;
-
+    if (!currentUser) return;
     try {
-      if (user) {
-        await updateUserProfile(user, { displayName: newName });
-        if (sidebarName) sidebarName.textContent = newName;
-        profileMsg.style.color = "green";
-        profileMsg.textContent = "✅ Änderungen gespeichert!";
-      }
+      await updateProfile(currentUser, { displayName: nameField.value });
+      await currentUser.reload();
+      sidebarName.textContent = currentUser.displayName || currentUser.email.split("@")[0];
+      profileMsg.style.color = "green";
+      profileMsg.textContent = "✅ Änderungen gespeichert!";
     } catch (err) {
       profileMsg.style.color = "red";
       profileMsg.textContent = "❌ Fehler: " + err.message;
@@ -273,9 +311,6 @@
   });
 
   // Theme Toggle
-  const themeBtn = document.getElementById("themeToggle");
-  const themeLabel = document.getElementById("themeLabel");
-
   function setTheme(mode){
     if(mode==="dark"){
       document.body.classList.add("dark");
@@ -289,11 +324,8 @@
       localStorage.setItem("theme","light");
     }
   }
-
-  // Initial setzen
   setTheme(localStorage.getItem("theme") || "light");
 
-  // Toggle
   if(themeBtn){
     themeBtn.addEventListener("click", () => {
       if(document.body.classList.contains("dark")){
