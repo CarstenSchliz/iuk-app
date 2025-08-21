@@ -2,18 +2,18 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>IuK Lernwelt – App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="manifest" href="../manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#002D55">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
   <style>
     :root {
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
       --hellgrau: rgb(239,238,234);
-      --sidebar-width: 260px;
     }
 
     body {
@@ -22,230 +22,288 @@
       display: flex;
       height: 100vh;
       background: var(--hellgrau);
-      color: #222;
-      transition: background 0.3s, color 0.3s;
+      overflow: hidden;
     }
 
-    /* Sidebar */
+    /* Sidebar Weiß-Layout */
     .sidebar {
-      width: var(--sidebar-width);
       background: #fff;
-      padding: 1.5rem;
-      box-shadow: 2px 0 6px rgba(0,0,0,0.1);
+      color: #000;
+      width: 260px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      padding: 1.5rem 1rem;
+      box-sizing: border-box;
     }
 
-    .sidebar header {
+    .profile {
       text-align: center;
-    }
-    .sidebar img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin-bottom: 0.5rem;
-    }
-    .sidebar h2 {
-      font-size: 1.1rem;
-      margin: 0;
-      color: var(--dunkelblau);
+      margin-bottom: 2rem;
     }
 
-    nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 2rem 0;
-    }
-    nav li {
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
+    .profile img {
+      width: 100px;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #000;
+      display: block;
+      margin: 0 auto 0.8rem auto;
+      background: #ccc;
       cursor: pointer;
-      margin-bottom: 0.5rem;
-      color: #000;
-      transition: background 0.2s;
     }
-    nav li:hover {
+
+    .profile h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #000;
+    }
+
+    .profile p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    .menu {
+      flex-grow: 1;
+    }
+
+    .menu button {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.6rem 1rem;
+      background: transparent;
+      border: none;
+      color: #000;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .menu button:hover,
+    .menu button.active,
+    .logout:hover {
       background: var(--hellblau);
       color: #fff;
     }
-    nav li.active {
-      background: var(--dunkelblau);
-      color: #fff;
+
+    .logout {
+      margin-top: auto;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: transparent;
+      border: none;
+      color: #000;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      transition: background 0.2s, color 0.2s;
     }
 
-    .sidebar footer {
-      font-size: 0.85rem;
+    .version {
+      font-size: 0.8rem;
+      text-align: center;
       color: #555;
     }
 
-    /* Main Content */
+    /* Content */
     .content {
-      flex: 1;
-      padding: 2rem;
+      flex-grow: 1;
+      background: var(--hellgrau);
+      padding: 2rem 3rem;
       overflow-y: auto;
     }
 
-    /* Karten */
-    .card {
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 1.5rem;
-    }
-
-    .page-title {
-      color: var(--softrot);
-      margin-bottom: 1.5rem;
-    }
-
-    /* Darkmode */
-    body.dark {
-      background: #121212;
-      color: #eee;
-    }
-    body.dark .sidebar {
-      background: #1f1f1f;
-      color: #eee;
-    }
-    body.dark nav li {
-      color: #eee;
-    }
-    body.dark nav li:hover {
-      background: var(--hellblau);
-      color: #fff;
-    }
-    body.dark .card {
-      background: #1e1e1e;
-      color: #eee;
-    }
-
-    /* Loader */
-    #loader {
-      text-align: center;
-      padding: 2rem;
-      font-size: 1.2rem;
-      color: var(--dunkelblau);
-    }
-
-    /* Buttons */
-    .btn {
-      padding: 0.6rem 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .btn-primary { background: var(--dunkelblau); color: #fff; }
-    .btn-secondary { background: #eee; }
-    .btn-accent { background: var(--hellblau); color: #fff; }
-  </style>
-</head>
-<body>
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <header>
-      <img id="userAvatar" src="../assets/avatar-default.png" alt="Avatar">
-      <h2 id="userName">Lädt...</h2>
-    </header>
-
-    <nav>
-      <ul>
-        <li data-view="dashboard" class="active"><i class="bi bi-house"></i> Dashboard</li>
-        <li data-view="persoenlich"><i class="bi bi-person"></i> Persönlich</li>
-        <li data-view="verwaltung"><i class="bi bi-people"></i> Benutzerverwaltung</li>
-        <li data-view="hilfe"><i class="bi bi-question-circle"></i> Hilfe</li>
-      </ul>
-    </nav>
-
-    <footer>
-      <button id="themeToggle" class="btn btn-accent">🌙 Dunkelmodus</button>
-      <br><br>
-      <button id="logoutBtn" class="btn btn-secondary"><i class="bi bi-box-arrow-right"></i> Logout</button>
-    </footer>
-  </aside>
-
-  <!-- Content -->
-  <main class="content">
-    <div id="loader">⏳ Lädt...</div>
-    <div id="view-container"></div>
-  </main>
-
-  <script type="module">
-    import { auth, logout, observeAuthState } from "../js/firebase.js";
-    import { onAuthStateChanged } 
-      from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-
-    const viewContainer = document.getElementById("view-container");
-    const loader = document.getElementById("loader");
-    const navItems = document.querySelectorAll("nav li");
-    const userName = document.getElementById("userName");
-    const userAvatar = document.getElementById("userAvatar");
-    const themeBtn = document.getElementById("themeToggle");
-
-    // Routing: View laden
-    async function loadView(view){
-      loader.style.display = "block";
-      viewContainer.innerHTML = "";
-      try {
-        const res = await fetch(`../views/${view}.html`);
-        const html = await res.text();
-        viewContainer.innerHTML = html;
-      } catch (err) {
-        viewContainer.innerHTML = "<p>⚠️ Fehler beim Laden</p>";
-      } finally {
-        loader.style.display = "none";
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        height: 100%;
+        transition: left 0.3s;
+        z-index: 1000;
+      }
+      .sidebar.active {
+        left: 0;
+      }
+      .menu-toggle {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        font-size: 1.5rem;
+        background: var(--dunkelblau);
+        color: white;
+        border: none;
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+        cursor: pointer;
+        z-index: 1100;
+      }
+      .content {
+        padding: 5rem 1.5rem 2rem 1.5rem;
       }
     }
 
-    // Navigation click
-    navItems.forEach(item => {
-      item.addEventListener("click", () => {
-        navItems.forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
-        loadView(item.dataset.view);
+    /* Darkmode (global) */
+    body.dark {
+      background: #0d0d0d;
+      color: #f5f5f5;
+    }
+    body.dark .sidebar {
+      background: #1a1a1a;
+      color: #f5f5f5;
+    }
+    body.dark .sidebar .menu button,
+    body.dark .sidebar .logout {
+      color: #f5f5f5;
+    }
+    body.dark .sidebar .menu button:hover,
+    body.dark .sidebar .menu button.active,
+    body.dark .sidebar .logout:hover {
+      background: var(--hellblau);
+      color: #fff;
+    }
+    body.dark .profile h2,
+    body.dark .profile p {
+      color: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Menu Button -->
+  <button class="menu-toggle" id="menuToggle">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="profile">
+      <img src="assets/profile-placeholder.png" alt="Profilbild" id="profileImg">
+      <input type="file" id="profileUpload" accept="image/*" style="display:none;">
+      <h2 id="userName">Lädt...</h2>
+      <p>Teilnehmer</p>
+    </div>
+
+    <div class="menu">
+      <button data-page="persoenlich"><i class="bi bi-person"></i> Persönliche Daten</button>
+      <button data-page="zugang"><i class="bi bi-key"></i> Zugangsvoraussetzungen</button>
+      <button data-page="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
+      <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
+      <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
+      <button data-page="benutzer"><i class="bi bi-people"></i> Benutzerverwaltung</button>
+    </div>
+
+    <button class="logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    <div class="version">Version 1.0.0</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content" id="content">
+    <h1>Willkommen in der IuK Lernwelt</h1>
+    <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
+  </div>
+
+  <!-- Firebase / Auth -->
+  <script type="module">
+    import { auth, logout, observeAuthState } from "./js/firebase.js";
+
+    // Sidebar Toggle
+    const menuToggle = document.getElementById("menuToggle");
+    const sidebar = document.getElementById("sidebar");
+    menuToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+    });
+
+    // Content Wechsel mit externen Views
+    const content = document.getElementById("content");
+    const buttons = document.querySelectorAll(".menu button");
+
+    async function loadPage(page) {
+      try {
+        const res = await fetch(`views/${page}.html`);
+        if (!res.ok) throw new Error("Seite nicht gefunden");
+        const html = await res.text();
+        content.innerHTML = html;
+
+        // Skripte aus geladenem View ausführen
+        content.querySelectorAll("script").forEach(oldScript => {
+          const newScript = document.createElement("script");
+          if (oldScript.type) newScript.type = oldScript.type;
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          content.appendChild(newScript);
+        });
+      } catch (err) {
+        content.innerHTML = `<h2>Fehler</h2><p>${err.message}</p>`;
+      }
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const page = btn.getAttribute("data-page");
+        loadPage(page);
+        sidebar.classList.remove("active");
+
+        // aktives Menü hervorheben
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
       });
     });
 
-    // Initial Dashboard
-    loadView("dashboard");
-
-    // Userdaten
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        userName.textContent = user.displayName || user.email.split("@")[0];
-        if (user.photoURL) {
-          userAvatar.src = user.photoURL;
-        }
+    // Profilbild Upload (noch lokal, später Firebase Storage)
+    const profileImg = document.getElementById("profileImg");
+    const profileUpload = document.getElementById("profileUpload");
+    profileImg.addEventListener("click", () => profileUpload.click());
+    profileUpload.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => profileImg.src = e.target.result;
+        reader.readAsDataURL(file);
       }
     });
 
     // Logout
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", async () => {
       await logout();
-      window.location.href = "../index.html";
+      window.location.href = "index.html";
     });
 
-    // Theme Toggle
-    function setTheme(mode){
-      if(mode==="dark"){
-        document.body.classList.add("dark");
-        themeBtn.textContent = "☀️ Hellmodus";
-        localStorage.setItem("theme","dark");
+    // Login-Check + Userdaten
+    const userName = document.getElementById("userName");
+    observeAuthState(user => {
+      if (user) {
+        userName.textContent = user.displayName || user.email.split("@")[0];
       } else {
-        document.body.classList.remove("dark");
-        themeBtn.textContent = "🌙 Dunkelmodus";
-        localStorage.setItem("theme","light");
+        window.location.href = "index.html";
       }
+    });
+
+    // Darkmode Handling zentral
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
     }
-
-    setTheme(localStorage.getItem("theme") || "light");
-
-    themeBtn.addEventListener("click", () => {
-      if(document.body.classList.contains("dark")){
-        setTheme("light");
+    window.addEventListener("toggleTheme", () => {
+      if (document.body.classList.contains("dark")) {
+        document.body.classList.remove("dark");
+        localStorage.setItem("theme", "light");
       } else {
-        setTheme("dark");
+        document.body.classList.add("dark");
+        localStorage.setItem("theme", "dark");
       }
     });
   </script>
