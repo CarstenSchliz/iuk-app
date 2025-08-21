@@ -1,7 +1,7 @@
 // public/js/firebase.js
-// Firebase Setup & Auth-Funktionen + Storage
+// Firebase Setup & Auth-Funktionen ausgelagert
 
-// === Firebase Module laden ===
+// Importiere Firebase Module
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
   getAuth, 
@@ -16,19 +16,28 @@ import {
   updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import { 
-  getStorage, 
-  ref, 
-  uploadBytes, 
-  getDownloadURL 
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
 
 // === Deine Firebase Config ===
 const firebaseConfig = {
   apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
   authDomain: "iuk-app.firebaseapp.com",
   projectId: "iuk-app",
-  storageBucket: "iuk-app.firebasestorage.app",
+  storageBucket: "iuk-app.appspot.com", // Korrigiert!
   messagingSenderId: "759014128178",
   appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
   measurementId: "G-ZPD5VPD5TS"
@@ -36,12 +45,13 @@ const firebaseConfig = {
 
 // === Initialisieren ===
 const app = initializeApp(firebaseConfig);
-
 export const auth = getAuth(app);
+export const db = getFirestore(app);
 export const storage = getStorage(app);
 
 // Persistenz: User bleibt eingeloggt (auch nach Reload)
 setPersistence(auth, browserLocalPersistence);
+
 
 // === Hilfsfunktion: Fehlertexte übersetzen ===
 export function translateFirebaseError(errorCode) {
@@ -68,6 +78,7 @@ export function translateFirebaseError(errorCode) {
   }
 }
 
+
 // === Auth Funktionen ===
 export async function login(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
@@ -76,6 +87,16 @@ export async function login(email, password) {
 export async function register(email, password) {
   const userCred = await createUserWithEmailAndPassword(auth, email, password);
   await sendEmailVerification(userCred.user);
+
+  // User-Dokument in Firestore anlegen
+  await setDoc(doc(db, "users", userCred.user.uid), {
+    email,
+    displayName: "",
+    phone: "",
+    mobile: "",
+    photoURL: ""
+  });
+
   return userCred;
 }
 
@@ -87,23 +108,71 @@ export async function logout() {
   return signOut(auth);
 }
 
-// === State Observer ===
-// Kann in app.html genutzt werden, um zu prüfen ob jemand eingeloggt ist
-export function observeAuthState(callback) {
-  onAuthStateChanged(auth, callback);
+
+// === Profil aktualisieren ===
+export async function updateUserProfile(data) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Kein Nutzer eingeloggt");
+
+  // Firebase Auth updaten
+  if (data.displayName) {
+    await updateProfile(user, { displayName: data.displayName });
+  }
+
+  // Firestore updaten
+  const userRef = doc(db, "users", user.uid);
+  await updateDoc(userRef, {
+    displayName: data.displayName || user.displayName,
+    phone: data.phone || "",
+    mobile: data.mobile || "",
+    photoURL: data.photoURL || user.photoURL || ""
+  });
 }
 
-// === Profil aktualisieren (Name / Foto) ===
-export async function updateUserProfile(updates) {
-  if (auth.currentUser) {
-    await updateProfile(auth.currentUser, updates);
-  }
-}
 
 // === Profilbild hochladen ===
 export async function uploadProfileImage(file) {
-  if (!auth.currentUser) throw new Error("Kein Benutzer eingeloggt");
-  const fileRef = ref(storage, `profileImages/${auth.currentUser.uid}.jpg`);
-  await uploadBytes(fileRef, file);
-  return await getDownloadURL(fileRef);
+  const user = auth.currentUser;
+  if (!user) throw new Error("Kein Nutzer eingeloggt");
+
+  const storageRef = ref(storage, `profileImages/${user.uid}.jpg`);
+  await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(storageRef);
+
+  // Profil aktualisieren
+  await updateProfile(user, { photoURL: downloadURL });
+
+  // Firestore auch updaten
+  const userRef = doc(db, "users", user.uid);
+  await updateDoc(userRef, { photoURL: downloadURL });
+
+  return downloadURL;
+}
+
+
+// === State Observer ===
+// Kann in app.html genutzt werden, um zu prüfen ob jemand eingeloggt ist
+export function observeAuthState(callback) {
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // Firestore Daten holen
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      let data = {};
+      if (docSnap.exists()) {
+        data = docSnap.data();
+      }
+
+      callback({
+        uid: user.uid,
+        email: user.email,
+        displayName: data.displayName || user.displayName || "",
+        phone: data.phone || "",
+        mobile: data.mobile || "",
+        photoURL: data.photoURL || user.photoURL || ""
+      });
+    } else {
+      callback(null);
+    }
+  });
 }
