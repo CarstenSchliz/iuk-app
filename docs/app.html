@@ -12,6 +12,7 @@
     :root {
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
+      --hellblau: rgb(100,160,220);
       --hellgrau: rgb(239,238,234);
     }
 
@@ -24,12 +25,10 @@
       overflow: hidden;
     }
 
-    /* Sidebar */
+    /* Sidebar Weiß-Layout */
     .sidebar {
-      background: rgba(0, 45, 85, 0.9);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      color: white;
+      background: #fff;
+      color: #000;
       width: 260px;
       display: flex;
       flex-direction: column;
@@ -47,7 +46,7 @@
       aspect-ratio: 1/1;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid white;
+      border: 2px solid #000;
       display: block;
       margin: 0 auto 0.8rem auto;
       background: #ccc;
@@ -57,12 +56,13 @@
     .profile h2 {
       margin: 0;
       font-size: 1.2rem;
+      color: #000;
     }
 
     .profile p {
       margin: 0;
       font-size: 0.9rem;
-      color: #ddd;
+      color: #333;
     }
 
     .menu {
@@ -77,21 +77,20 @@
       padding: 0.6rem 1rem;
       background: transparent;
       border: none;
-      color: white;
+      color: #000;
       font-size: 1rem;
       cursor: pointer;
       text-align: left;
       border-radius: 8px;
       margin-bottom: 0.5rem;
-      transition: background 0.2s;
+      transition: background 0.2s, color 0.2s;
     }
 
-    .menu button:hover {
-      background: rgba(255,255,255,0.15);
-    }
-
-    .menu button.active {
-      background: rgba(255,255,255,0.25);
+    .menu button:hover,
+    .menu button.active,
+    .logout:hover {
+      background: var(--hellblau);
+      color: #fff;
     }
 
     .logout {
@@ -102,23 +101,19 @@
       gap: 0.75rem;
       background: transparent;
       border: none;
-      color: white;
+      color: #000;
       font-size: 1rem;
       cursor: pointer;
       text-align: left;
       border-radius: 8px;
       padding: 0.6rem 1rem;
-      transition: background 0.2s;
-    }
-
-    .logout:hover {
-      background: rgba(255,255,255,0.15);
+      transition: background 0.2s, color 0.2s;
     }
 
     .version {
       font-size: 0.8rem;
       text-align: center;
-      color: #ccc;
+      color: #555;
     }
 
     /* Content */
@@ -157,6 +152,30 @@
       .content {
         padding: 5rem 1.5rem 2rem 1.5rem;
       }
+    }
+
+    /* Darkmode (global) */
+    body.dark {
+      background: #0d0d0d;
+      color: #f5f5f5;
+    }
+    body.dark .sidebar {
+      background: #1a1a1a;
+      color: #f5f5f5;
+    }
+    body.dark .sidebar .menu button,
+    body.dark .sidebar .logout {
+      color: #f5f5f5;
+    }
+    body.dark .sidebar .menu button:hover,
+    body.dark .sidebar .menu button.active,
+    body.dark .sidebar .logout:hover {
+      background: var(--hellblau);
+      color: #fff;
+    }
+    body.dark .profile h2,
+    body.dark .profile p {
+      color: #f5f5f5;
     }
   </style>
 </head>
@@ -215,6 +234,18 @@
         if (!res.ok) throw new Error("Seite nicht gefunden");
         const html = await res.text();
         content.innerHTML = html;
+
+        // Skripte aus geladenem View ausführen
+        content.querySelectorAll("script").forEach(oldScript => {
+          const newScript = document.createElement("script");
+          if (oldScript.type) newScript.type = oldScript.type;
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          content.appendChild(newScript);
+        });
       } catch (err) {
         content.innerHTML = `<h2>Fehler</h2><p>${err.message}</p>`;
       }
@@ -256,11 +287,23 @@
     const userName = document.getElementById("userName");
     observeAuthState(user => {
       if (user) {
-        // Wenn eingeloggt
         userName.textContent = user.displayName || user.email.split("@")[0];
       } else {
-        // Wenn ausgeloggt → zurück zum Login
         window.location.href = "index.html";
+      }
+    });
+
+    // Darkmode Handling zentral
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+    }
+    window.addEventListener("toggleTheme", () => {
+      if (document.body.classList.contains("dark")) {
+        document.body.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      } else {
+        document.body.classList.add("dark");
+        localStorage.setItem("theme", "dark");
       }
     });
   </script>
