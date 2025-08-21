@@ -1,7 +1,8 @@
 // public/js/firebase.js
-// Firebase Setup & Auth-Funktionen ausgelagert
+// Firebase Setup & Auth + Firestore Funktionen
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+// === Importiere Firebase Module ===
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
   getAuth, 
   setPersistence,
@@ -13,7 +14,22 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // === Deine Firebase Config ===
 const firebaseConfig = {
@@ -29,32 +45,25 @@ const firebaseConfig = {
 // === Initialisieren ===
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
 
-// Persistenz: User bleibt eingeloggt
+// Persistenz: User bleibt eingeloggt (auch nach Reload)
 setPersistence(auth, browserLocalPersistence);
 
 // === Hilfsfunktion: Fehlertexte übersetzen ===
 export function translateFirebaseError(errorCode) {
   switch (errorCode) {
-    case "auth/invalid-email":
-      return "Die eingegebene E-Mail-Adresse ist ungültig.";
-    case "auth/user-disabled":
-      return "Dieses Konto wurde deaktiviert.";
-    case "auth/user-not-found":
-      return "Es existiert kein Benutzer mit dieser E-Mail.";
+    case "auth/invalid-email": return "Die eingegebene E-Mail-Adresse ist ungültig.";
+    case "auth/user-disabled": return "Dieses Konto wurde deaktiviert.";
+    case "auth/user-not-found": return "Es existiert kein Benutzer mit dieser E-Mail.";
     case "auth/wrong-password":
-    case "auth/invalid-credential":
-      return "Das eingegebene Passwort ist falsch.";
-    case "auth/email-already-in-use":
-      return "Diese E-Mail-Adresse wird bereits verwendet.";
-    case "auth/weak-password":
-      return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
-    case "auth/missing-password":
-      return "Bitte geben Sie ein Passwort ein.";
-    case "auth/network-request-failed":
-      return "Netzwerkfehler – bitte Internetverbindung prüfen.";
-    default:
-      return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
+    case "auth/invalid-credential": return "Das eingegebene Passwort ist falsch.";
+    case "auth/email-already-in-use": return "Diese E-Mail-Adresse wird bereits verwendet.";
+    case "auth/weak-password": return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
+    case "auth/missing-password": return "Bitte geben Sie ein Passwort ein.";
+    case "auth/network-request-failed": return "Netzwerkfehler – bitte Internetverbindung prüfen.";
+    default: return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
   }
 }
 
@@ -66,6 +75,15 @@ export async function login(email, password) {
 export async function register(email, password) {
   const userCred = await createUserWithEmailAndPassword(auth, email, password);
   await sendEmailVerification(userCred.user);
+  // Firestore-Dokument anlegen
+  await setDoc(doc(db, "users", userCred.user.uid), {
+    email: email,
+    name: "",
+    mobile: "",
+    phone: "",
+    role: "Teilnehmer",
+    avatarUrl: ""
+  });
   return userCred;
 }
 
@@ -82,7 +100,23 @@ export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
 
-// === Neues Update für Profildaten ===
-export async function updateUserProfile(user, data) {
-  return updateProfile(user, data);
+// === Firestore-Helfer ===
+export async function getUserData(uid) {
+  const docRef = doc(db, "users", uid);
+  const snap = await getDoc(docRef);
+  return snap.exists() ? snap.data() : null;
+}
+
+export async function updateUserData(uid, data) {
+  const docRef = doc(db, "users", uid);
+  await updateDoc(docRef, data);
+}
+
+// === Avatar Upload ===
+export async function uploadAvatar(uid, file) {
+  const storageRef = ref(storage, `avatars/${uid}.png`);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+  await updateUserData(uid, { avatarUrl: url });
+  return url;
 }
