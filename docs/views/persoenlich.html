@@ -92,14 +92,6 @@
     --dunkelblau: rgb(0,45,85);
     --hellblau: rgb(100,160,220);
     --hellgrau: rgb(239,238,234);
-
-    --card-bg: #fff;
-    --text-color: #000;
-  }
-
-  body.dark {
-    --card-bg: #1e1e1e;
-    --text-color: #f0f0f0;
   }
 
   .page-title {
@@ -119,13 +111,11 @@
   }
 
   .card {
-    background: var(--card-bg);
-    color: var(--text-color);
+    background: var(--card-bg, #fff);
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     margin-bottom: 1.5rem;
-    transition: background 0.3s, color 0.3s;
   }
 
   .card h3 {
@@ -147,7 +137,6 @@
     background: transparent;
     font-size: 1rem;
     box-sizing: border-box;
-    color: var(--text-color);
   }
   .form-group.floating label {
     position: absolute;
@@ -158,7 +147,7 @@
     font-size: 0.95rem;
     transition: all 0.2s ease;
     pointer-events: none;
-    background: var(--card-bg);
+    background: var(--card-bg, #fff);
     padding: 0 0.25rem;
   }
   .form-group.floating input:focus + label,
@@ -220,38 +209,55 @@
     font-size:0.9rem;
     color:#555;
   }
+
+  /* Darkmode Variablen */
+  body.dark {
+    --card-bg: #1e1e1e;
+    color:#f0f0f0;
+    background:#121212;
+  }
+  body.dark input {
+    background:#2a2a2a;
+    color:#f0f0f0;
+    border:1px solid #555;
+  }
+  body.dark small { color:#aaa; }
+  body.dark .form-group.floating label {
+    background: #1e1e1e;
+  }
 </style>
 
 <script type="module">
   import { auth, updateUserProfile } from "../js/firebase.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
   const profileForm = document.getElementById("profileForm");
   const profileMsg = document.getElementById("profileMsg");
   const backBtn = document.getElementById("backBtn");
-
-  // Sidebar Name holen
   const sidebarName = document.getElementById("userName");
 
   // Userdaten laden
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      emailField.value = user.email || "";
-      nameField.value = user.displayName || "";
+      emailField.value = user.email || "";      // ✅ E-Mail ins Feld
+      nameField.value = user.displayName || ""; // ✅ Name ins Feld
       if (sidebarName) sidebarName.textContent = user.displayName || user.email.split("@")[0];
     }
   });
 
-  // Name speichern
+  // Name speichern + Sidebar aktualisieren
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
+    const newName = nameField.value;
+
     try {
       if (user) {
-        await updateUserProfile(user, { displayName: nameField.value });
-        if (sidebarName) sidebarName.textContent = nameField.value;
+        await updateUserProfile(user, { displayName: newName });
+        if (sidebarName) sidebarName.textContent = newName;
         profileMsg.style.color = "green";
         profileMsg.textContent = "✅ Änderungen gespeichert!";
       }
