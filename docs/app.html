@@ -2,192 +2,282 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>IuK Lernwelt – App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#002D55">
-</head>
-<body>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-  <!-- App Layout -->
-  <div class="app-container">
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <img id="userAvatar" src="assets/avatar-default.png" alt="Avatar">
-        <span id="userName">Lädt...</span>
-      </div>
-      <nav>
-        <ul>
-          <li><a href="#dashboard" class="active"><i class="bi bi-house"></i> Dashboard</a></li>
-          <li><a href="#persoenlich"><i class="bi bi-person"></i> Persönlich</a></li>
-          <li><a href="#lernwelt"><i class="bi bi-book"></i> Lernwelt</a></li>
-          <li><a href="#hilfe"><i class="bi bi-question-circle"></i> Hilfe</a></li>
-          <li><a href="#logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-        </ul>
-      </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main id="mainContent">
-      <h1>Willkommen in der IuK Lernwelt</h1>
-      <p>Wähle links einen Menüpunkt aus.</p>
-    </main>
-  </div>
-
-  <!-- Darkmode Klasse -->
   <style>
+    :root {
+      --softrot: rgb(228,100,80);
+      --dunkelblau: rgb(0,45,85);
+      --hellgrau: rgb(239,238,234);
+    }
+
     body {
-      margin:0;
-      font-family:sans-serif;
-      background:#f4f4f4;
-      color:#333;
-      display:flex;
-      height:100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      background: var(--hellgrau);
+      overflow: hidden;
     }
 
-    .app-container {
-      display:flex;
-      flex:1;
-    }
-
+    /* Sidebar */
     .sidebar {
-      width:220px;
-      background:#fff;
-      border-right:1px solid #ddd;
-      display:flex;
-      flex-direction:column;
+      background: rgba(0, 45, 85, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: white;
+      width: 260px;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1rem;
+      box-sizing: border-box;
     }
 
-    .sidebar-header {
-      padding:1rem;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      border-bottom:1px solid #ddd;
+    .profile {
+      text-align: center;
+      margin-bottom: 2rem;
     }
 
-    .sidebar-header img {
-      width:70px;
-      height:70px;
-      border-radius:50%;
-      object-fit:cover;
-      margin-bottom:0.5rem;
+    .profile img {
+      width: 100px;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+      display: block;
+      margin: 0 auto 0.8rem auto;
+      background: #ccc;
+      cursor: pointer;
     }
 
-    .sidebar-header span {
-      font-weight:bold;
+    .profile h2 {
+      margin: 0;
+      font-size: 1.2rem;
     }
 
-    .sidebar nav ul {
-      list-style:none;
-      margin:0;
-      padding:0;
-      flex:1;
+    .profile p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #ddd;
     }
 
-    .sidebar nav ul li a {
-      display:block;
-      padding:0.75rem 1rem;
-      text-decoration:none;
-      color:#000;
+    .menu {
+      flex-grow: 1;
     }
 
-    .sidebar nav ul li a:hover,
-    .sidebar nav ul li a.active {
-      background:rgb(100,160,220);
-      color:#fff;
+    .menu button {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.6rem 1rem;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s;
     }
 
-    main {
-      flex:1;
-      padding:2rem;
-      overflow-y:auto;
+    .menu button:hover {
+      background: rgba(255,255,255,0.15);
     }
 
-    /* Darkmode */
-    body.dark {
-      background:#121212;
-      color:#f0f0f0;
+    .menu button.active {
+      background: rgba(255,255,255,0.25);
     }
-    body.dark .sidebar {
-      background:#1e1e1e;
-      border-color:#333;
+
+    .logout {
+      margin-top: auto;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      transition: background 0.2s;
     }
-    body.dark .sidebar nav ul li a {
-      color:#f0f0f0;
+
+    .logout:hover {
+      background: rgba(255,255,255,0.15);
     }
-    body.dark .sidebar nav ul li a:hover,
-    body.dark .sidebar nav ul li a.active {
-      background:rgb(100,160,220);
-      color:#fff;
+
+    .version {
+      font-size: 0.8rem;
+      text-align: center;
+      color: #ccc;
+    }
+
+    /* Content */
+    .content {
+      flex-grow: 1;
+      background: var(--hellgrau);
+      padding: 2rem 3rem;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        height: 100%;
+        transition: left 0.3s;
+        z-index: 1000;
+      }
+      .sidebar.active {
+        left: 0;
+      }
+      .menu-toggle {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        font-size: 1.5rem;
+        background: var(--dunkelblau);
+        color: white;
+        border: none;
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+        cursor: pointer;
+        z-index: 1100;
+      }
+      .content {
+        padding: 5rem 1.5rem 2rem 1.5rem;
+      }
     }
   </style>
+</head>
+<body>
+  <!-- Mobile Menu Button -->
+  <button class="menu-toggle" id="menuToggle">
+    <i class="bi bi-list"></i>
+  </button>
 
-  <!-- Scripts -->
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="profile">
+      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
+      <input type="file" id="profileUpload" accept="image/*" style="display:none;">
+      <h2 id="userName">Lädt...</h2>
+      <p id="userEmail"></p>
+    </div>
+
+    <div class="menu">
+      <button data-page="persoenlich"><i class="bi bi-person"></i> Persönliche Daten</button>
+      <button data-page="zugang"><i class="bi bi-key"></i> Zugangsvoraussetzungen</button>
+      <button data-page="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
+      <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
+      <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
+      <button data-page="benutzer"><i class="bi bi-people"></i> Benutzerverwaltung</button>
+    </div>
+
+    <button class="logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    <div class="version">Version 1.0.0</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content" id="content">
+    <h1>Willkommen in der IuK Lernwelt</h1>
+    <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
+  </div>
+
+  <!-- Firebase / Auth -->
   <script type="module">
-    import { auth, observeAuthState, logout } from "./js/firebase.js";
+    import { 
+      auth, 
+      logout, 
+      observeAuthState, 
+      uploadProfileImage, 
+      loadUserProfile 
+    } from "./js/firebase.js";
 
-    const mainContent = document.getElementById("mainContent");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const sidebarLinks = document.querySelectorAll(".sidebar nav ul li a");
-    const userNameEl = document.getElementById("userName");
-    const userAvatarEl = document.getElementById("userAvatar");
+    // Sidebar Toggle
+    const menuToggle = document.getElementById("menuToggle");
+    const sidebar = document.getElementById("sidebar");
+    menuToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+    });
 
-    // === Routing ===
-    async function loadPage(hash){
-      const page = hash.replace("#","");
-      if(!page || page==="dashboard"){
-        mainContent.innerHTML = "<h1>Dashboard</h1><p>Willkommen zurück!</p>";
-        setActive("#dashboard");
-        return;
-      }
-      if(page==="logout"){
-        await logout();
-        window.location.href="index.html";
-        return;
-      }
+    // Content Wechsel
+    const content = document.getElementById("content");
+    const buttons = document.querySelectorAll(".menu button");
+
+    async function loadPage(page) {
       try {
-        const res = await fetch(`pages/${page}.html`);
+        const res = await fetch(`views/${page}.html`);
+        if (!res.ok) throw new Error("Seite nicht gefunden");
         const html = await res.text();
-        mainContent.innerHTML = html;
-        setActive("#"+page);
-      } catch(err){
-        mainContent.innerHTML = "<h2>❌ Seite nicht gefunden</h2>";
+        content.innerHTML = html;
+      } catch (err) {
+        content.innerHTML = `<h2>Fehler</h2><p>${err.message}</p>`;
       }
     }
 
-    function setActive(hash){
-      sidebarLinks.forEach(link=>{
-        if(link.getAttribute("href")===hash){
-          link.classList.add("active");
-        } else {
-          link.classList.remove("active");
-        }
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const page = btn.getAttribute("data-page");
+        loadPage(page);
+        sidebar.classList.remove("active");
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
       });
-    }
+    });
 
-    window.addEventListener("hashchange", ()=>loadPage(location.hash));
-    loadPage(location.hash || "#dashboard");
-
-    // === Sidebar User Info ===
-    observeAuthState((user)=>{
-      if(user){
-        userNameEl.textContent = user.displayName || user.email.split("@")[0];
-        userAvatarEl.src = user.photoURL || "assets/avatar-default.png";
-      } else {
-        userNameEl.textContent = "Gast";
-        userAvatarEl.src = "assets/avatar-default.png";
+    // Profilbild Upload
+    const profileImg = document.getElementById("profileImg");
+    const profileUpload = document.getElementById("profileUpload");
+    profileImg.addEventListener("click", () => profileUpload.click());
+    profileUpload.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        try {
+          const url = await uploadProfileImage(file);
+          profileImg.src = url;
+        } catch (err) {
+          alert("Fehler beim Hochladen: " + err.message);
+        }
       }
     });
 
-    // === Darkmode laden ===
-    if(localStorage.getItem("theme")==="dark"){
-      document.body.classList.add("dark");
-    }
+    // Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", async () => {
+      await logout();
+      window.location.href = "index.html";
+    });
+
+    // Login-Check + Userdaten laden
+    const userName = document.getElementById("userName");
+    const userEmail = document.getElementById("userEmail");
+
+    observeAuthState(async (user) => {
+      if (user) {
+        userName.textContent = user.displayName || user.email.split("@")[0];
+        userEmail.textContent = user.email;
+
+        // Firestore Profil laden (falls vorhanden)
+        const data = await loadUserProfile(user.uid);
+        if (data) {
+          if (data.displayName) userName.textContent = data.displayName;
+          if (data.photoURL) profileImg.src = data.photoURL;
+        }
+      } else {
+        window.location.href = "index.html";
+      }
+    });
   </script>
 </body>
 </html>
