@@ -1,16 +1,17 @@
-// public/js/firebase.js
-// Firebase Setup & Auth + Firestore Funktionen
+// ==========================
+// Firebase Setup & Funktionen
+// ==========================
 
-// === Importiere Firebase Module ===
+// Imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getAuth, 
+import {
+  getAuth,
   setPersistence,
   browserLocalPersistence,
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  sendPasswordResetEmail, 
-  sendEmailVerification, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  sendEmailVerification,
   signOut,
   onAuthStateChanged,
   updateProfile
@@ -31,7 +32,7 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// === Deine Firebase Config ===
+// === Firebase Config ===
 const firebaseConfig = {
   apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
   authDomain: "iuk-app.firebaseapp.com",
@@ -48,10 +49,12 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-// Persistenz: User bleibt eingeloggt (auch nach Reload)
+// Persistenz: User bleibt eingeloggt
 setPersistence(auth, browserLocalPersistence);
 
-// === Hilfsfunktion: Fehlertexte übersetzen ===
+// ==========================
+// Hilfsfunktion: Fehlertexte
+// ==========================
 export function translateFirebaseError(errorCode) {
   switch (errorCode) {
     case "auth/invalid-email": return "Die eingegebene E-Mail-Adresse ist ungültig.";
@@ -67,23 +70,26 @@ export function translateFirebaseError(errorCode) {
   }
 }
 
-// === Auth Funktionen ===
+// ==========================
+// Auth Funktionen
+// ==========================
 export async function login(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
 }
 
 export async function register(email, password) {
   const userCred = await createUserWithEmailAndPassword(auth, email, password);
-  await sendEmailVerification(userCred.user);
-  // Firestore-Dokument anlegen
+
+  // Standard-Dokument in Firestore anlegen
   await setDoc(doc(db, "users", userCred.user.uid), {
     email: email,
     name: "",
-    mobile: "",
     phone: "",
-    role: "Teilnehmer",
+    mobile: "",
     avatarUrl: ""
   });
+
+  await sendEmailVerification(userCred.user);
   return userCred;
 }
 
@@ -95,28 +101,40 @@ export async function logout() {
   return signOut(auth);
 }
 
-// === State Observer ===
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
 
-// === Firestore-Helfer ===
+// ==========================
+// Firestore Funktionen
+// ==========================
 export async function getUserData(uid) {
-  const docRef = doc(db, "users", uid);
-  const snap = await getDoc(docRef);
-  return snap.exists() ? snap.data() : null;
+  const refDoc = doc(db, "users", uid);
+  const snapshot = await getDoc(refDoc);
+  return snapshot.exists() ? snapshot.data() : null;
 }
 
 export async function updateUserData(uid, data) {
-  const docRef = doc(db, "users", uid);
-  await updateDoc(docRef, data);
+  const refDoc = doc(db, "users", uid);
+  await updateDoc(refDoc, data);
 }
 
-// === Avatar Upload ===
-export async function uploadAvatar(uid, file) {
-  const storageRef = ref(storage, `avatars/${uid}.png`);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-  await updateUserData(uid, { avatarUrl: url });
+// ==========================
+// Profil Funktionen
+// ==========================
+export async function updateUserName(user, newName) {
+  // 1. Auth-Profil aktualisieren
+  await updateProfile(user, { displayName: newName });
+  // 2. Firestore aktualisieren
+  await updateUserData(user.uid, { name: newName });
+}
+
+export async function uploadAvatar(user, file) {
+  const avatarRef = ref(storage, `avatars/${user.uid}.png`);
+  await uploadBytes(avatarRef, file);
+  const url = await getDownloadURL(avatarRef);
+
+  // Firestore aktualisieren
+  await updateUserData(user.uid, { avatarUrl: url });
   return url;
 }
