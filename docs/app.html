@@ -14,6 +14,18 @@
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
       --hellgrau: rgb(239,238,234);
+
+      --sidebar-bg: #fff;
+      --sidebar-text: #000;
+      --sidebar-hover: var(--hellblau);
+      --content-bg: var(--hellgrau);
+    }
+
+    body.dark {
+      --sidebar-bg: #1e1e1e;
+      --sidebar-text: #f0f0f0;
+      --sidebar-hover: #333d55;
+      --content-bg: #121212;
     }
 
     body {
@@ -21,19 +33,21 @@
       font-family: Arial, sans-serif;
       display: flex;
       height: 100vh;
-      background: var(--hellgrau);
+      background: var(--content-bg);
       overflow: hidden;
+      color: var(--sidebar-text);
     }
 
-    /* Sidebar Weiß-Layout */
+    /* Sidebar */
     .sidebar {
-      background: #fff;
-      color: #000;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
       width: 260px;
       display: flex;
       flex-direction: column;
       padding: 1.5rem 1rem;
       box-sizing: border-box;
+      transition: background 0.3s, color 0.3s;
     }
 
     .profile {
@@ -46,7 +60,7 @@
       aspect-ratio: 1/1;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #000;
+      border: 2px solid var(--sidebar-text);
       display: block;
       margin: 0 auto 0.8rem auto;
       background: #ccc;
@@ -56,13 +70,12 @@
     .profile h2 {
       margin: 0;
       font-size: 1.2rem;
-      color: #000;
     }
 
     .profile p {
       margin: 0;
       font-size: 0.9rem;
-      color: #333;
+      opacity: 0.7;
     }
 
     .menu {
@@ -77,7 +90,7 @@
       padding: 0.6rem 1rem;
       background: transparent;
       border: none;
-      color: #000;
+      color: var(--sidebar-text);
       font-size: 1rem;
       cursor: pointer;
       text-align: left;
@@ -86,9 +99,12 @@
       transition: background 0.2s, color 0.2s;
     }
 
-    .menu button:hover,
-    .menu button.active,
-    .logout:hover {
+    .menu button:hover {
+      background: var(--sidebar-hover);
+      color: #fff;
+    }
+
+    .menu button.active {
       background: var(--hellblau);
       color: #fff;
     }
@@ -101,7 +117,7 @@
       gap: 0.75rem;
       background: transparent;
       border: none;
-      color: #000;
+      color: var(--sidebar-text);
       font-size: 1rem;
       cursor: pointer;
       text-align: left;
@@ -110,18 +126,24 @@
       transition: background 0.2s, color 0.2s;
     }
 
+    .logout:hover {
+      background: var(--sidebar-hover);
+      color: #fff;
+    }
+
     .version {
       font-size: 0.8rem;
       text-align: center;
-      color: #555;
+      opacity: 0.6;
     }
 
     /* Content */
     .content {
       flex-grow: 1;
-      background: var(--hellgrau);
+      background: var(--content-bg);
       padding: 2rem 3rem;
       overflow-y: auto;
+      transition: background 0.3s, color 0.3s;
     }
 
     @media (max-width: 768px) {
@@ -130,7 +152,7 @@
         left: -260px;
         top: 0;
         height: 100%;
-        transition: left 0.3s;
+        transition: left 0.3s, background 0.3s;
         z-index: 1000;
       }
       .sidebar.active {
@@ -152,30 +174,6 @@
       .content {
         padding: 5rem 1.5rem 2rem 1.5rem;
       }
-    }
-
-    /* Darkmode (global) */
-    body.dark {
-      background: #0d0d0d;
-      color: #f5f5f5;
-    }
-    body.dark .sidebar {
-      background: #1a1a1a;
-      color: #f5f5f5;
-    }
-    body.dark .sidebar .menu button,
-    body.dark .sidebar .logout {
-      color: #f5f5f5;
-    }
-    body.dark .sidebar .menu button:hover,
-    body.dark .sidebar .menu button.active,
-    body.dark .sidebar .logout:hover {
-      background: var(--hellblau);
-      color: #fff;
-    }
-    body.dark .profile h2,
-    body.dark .profile p {
-      color: #f5f5f5;
     }
   </style>
 </head>
@@ -234,18 +232,6 @@
         if (!res.ok) throw new Error("Seite nicht gefunden");
         const html = await res.text();
         content.innerHTML = html;
-
-        // Skripte aus geladenem View ausführen
-        content.querySelectorAll("script").forEach(oldScript => {
-          const newScript = document.createElement("script");
-          if (oldScript.type) newScript.type = oldScript.type;
-          if (oldScript.src) {
-            newScript.src = oldScript.src;
-          } else {
-            newScript.textContent = oldScript.textContent;
-          }
-          content.appendChild(newScript);
-        });
       } catch (err) {
         content.innerHTML = `<h2>Fehler</h2><p>${err.message}</p>`;
       }
@@ -287,25 +273,25 @@
     const userName = document.getElementById("userName");
     observeAuthState(user => {
       if (user) {
+        // Wenn eingeloggt
         userName.textContent = user.displayName || user.email.split("@")[0];
       } else {
+        // Wenn ausgeloggt → zurück zum Login
         window.location.href = "index.html";
       }
     });
 
-    // Darkmode Handling zentral
-    if (localStorage.getItem("theme") === "dark") {
-      document.body.classList.add("dark");
-    }
-    window.addEventListener("toggleTheme", () => {
-      if (document.body.classList.contains("dark")) {
-        document.body.classList.remove("dark");
-        localStorage.setItem("theme", "light");
-      } else {
+    // Theme initialisieren (über LocalStorage)
+    function setTheme(mode){
+      if(mode==="dark"){
         document.body.classList.add("dark");
-        localStorage.setItem("theme", "dark");
+        localStorage.setItem("theme","dark");
+      } else {
+        document.body.classList.remove("dark");
+        localStorage.setItem("theme","light");
       }
-    });
+    }
+    setTheme(localStorage.getItem("theme") || "light");
   </script>
 </body>
 </html>
