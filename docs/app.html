@@ -14,18 +14,6 @@
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
       --hellgrau: rgb(239,238,234);
-
-      --sidebar-bg: #fff;
-      --sidebar-text: #000;
-      --sidebar-hover: var(--hellblau);
-      --content-bg: var(--hellgrau);
-    }
-
-    body.dark {
-      --sidebar-bg: #1e1e1e;
-      --sidebar-text: #f0f0f0;
-      --sidebar-hover: #333d55;
-      --content-bg: #121212;
     }
 
     body {
@@ -33,15 +21,15 @@
       font-family: Arial, sans-serif;
       display: flex;
       height: 100vh;
-      background: var(--content-bg);
+      background: var(--hellgrau);
       overflow: hidden;
-      color: var(--sidebar-text);
+      transition: background 0.3s, color 0.3s;
     }
 
     /* Sidebar */
     .sidebar {
-      background: var(--sidebar-bg);
-      color: var(--sidebar-text);
+      background: #fff;
+      color: #000;
       width: 260px;
       display: flex;
       flex-direction: column;
@@ -60,7 +48,7 @@
       aspect-ratio: 1/1;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid var(--sidebar-text);
+      border: 2px solid var(--dunkelblau);
       display: block;
       margin: 0 auto 0.8rem auto;
       background: #ccc;
@@ -75,7 +63,7 @@
     .profile p {
       margin: 0;
       font-size: 0.9rem;
-      opacity: 0.7;
+      color: #666;
     }
 
     .menu {
@@ -90,22 +78,22 @@
       padding: 0.6rem 1rem;
       background: transparent;
       border: none;
-      color: var(--sidebar-text);
+      color: #000;
       font-size: 1rem;
       cursor: pointer;
       text-align: left;
       border-radius: 8px;
       margin-bottom: 0.5rem;
-      transition: background 0.2s, color 0.2s;
+      transition: background 0.2s;
     }
 
     .menu button:hover {
-      background: var(--sidebar-hover);
+      background: var(--hellblau);
       color: #fff;
     }
 
     .menu button.active {
-      background: var(--hellblau);
+      background: var(--dunkelblau);
       color: #fff;
     }
 
@@ -117,30 +105,30 @@
       gap: 0.75rem;
       background: transparent;
       border: none;
-      color: var(--sidebar-text);
+      color: #000;
       font-size: 1rem;
       cursor: pointer;
       text-align: left;
       border-radius: 8px;
       padding: 0.6rem 1rem;
-      transition: background 0.2s, color 0.2s;
+      transition: background 0.2s;
     }
 
     .logout:hover {
-      background: var(--sidebar-hover);
+      background: var(--hellblau);
       color: #fff;
     }
 
     .version {
       font-size: 0.8rem;
       text-align: center;
-      opacity: 0.6;
+      color: #666;
     }
 
     /* Content */
     .content {
       flex-grow: 1;
-      background: var(--content-bg);
+      background: var(--hellgrau);
       padding: 2rem 3rem;
       overflow-y: auto;
       transition: background 0.3s, color 0.3s;
@@ -152,7 +140,7 @@
         left: -260px;
         top: 0;
         height: 100%;
-        transition: left 0.3s, background 0.3s;
+        transition: left 0.3s;
         z-index: 1000;
       }
       .sidebar.active {
@@ -175,6 +163,29 @@
         padding: 5rem 1.5rem 2rem 1.5rem;
       }
     }
+
+    /* Darkmode */
+    body.dark {
+      background: #121212;
+      color: #f0f0f0;
+    }
+    body.dark .sidebar {
+      background: #1e1e1e;
+      color: #f0f0f0;
+    }
+    body.dark .menu button,
+    body.dark .logout {
+      color: #f0f0f0;
+    }
+    body.dark .menu button:hover,
+    body.dark .logout:hover {
+      background: var(--hellblau);
+      color: #fff;
+    }
+    body.dark .content {
+      background: #121212;
+      color: #f0f0f0;
+    }
   </style>
 </head>
 <body>
@@ -186,7 +197,7 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <img src="assets/profile-placeholder.png" alt="Profilbild" id="profileImg">
+      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
       <p>Teilnehmer</p>
@@ -214,18 +225,30 @@
   <!-- Firebase / Auth -->
   <script type="module">
     import { auth, logout, observeAuthState } from "./js/firebase.js";
+    import { 
+      updateProfile, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    import { 
+      getStorage, ref, uploadBytes, getDownloadURL 
+    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
+
+    const menuToggle   = document.getElementById("menuToggle");
+    const sidebar      = document.getElementById("sidebar");
+    const content      = document.getElementById("content");
+    const buttons      = document.querySelectorAll(".menu button");
+    const profileImg   = document.getElementById("profileImg");
+    const profileUpload= document.getElementById("profileUpload");
+    const logoutBtn    = document.getElementById("logoutBtn");
+    const userName     = document.getElementById("userName");
+
+    const storage = getStorage();
 
     // Sidebar Toggle
-    const menuToggle = document.getElementById("menuToggle");
-    const sidebar = document.getElementById("sidebar");
     menuToggle.addEventListener("click", () => {
       sidebar.classList.toggle("active");
     });
 
-    // Content Wechsel mit externen Views
-    const content = document.getElementById("content");
-    const buttons = document.querySelectorAll(".menu button");
-
+    // Content Wechsel
     async function loadPage(page) {
       try {
         const res = await fetch(`views/${page}.html`);
@@ -236,52 +259,47 @@
         content.innerHTML = `<h2>Fehler</h2><p>${err.message}</p>`;
       }
     }
-
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         const page = btn.getAttribute("data-page");
         loadPage(page);
         sidebar.classList.remove("active");
-
-        // aktives Menü hervorheben
         buttons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
       });
     });
 
-    // Profilbild Upload (noch lokal, später Firebase Storage)
-    const profileImg = document.getElementById("profileImg");
-    const profileUpload = document.getElementById("profileUpload");
+    // Profilbild Upload
     profileImg.addEventListener("click", () => profileUpload.click());
-    profileUpload.addEventListener("change", (event) => {
+    profileUpload.addEventListener("change", async (event) => {
       const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = e => profileImg.src = e.target.result;
-        reader.readAsDataURL(file);
+      const user = auth.currentUser;
+      if (file && user) {
+        const storageRef = ref(storage, `profilePics/${user.uid}.jpg`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        await updateProfile(user, { photoURL: url });
+        profileImg.src = url;
       }
     });
 
     // Logout
-    const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", async () => {
       await logout();
       window.location.href = "index.html";
     });
 
     // Login-Check + Userdaten
-    const userName = document.getElementById("userName");
     observeAuthState(user => {
       if (user) {
-        // Wenn eingeloggt
         userName.textContent = user.displayName || user.email.split("@")[0];
+        profileImg.src = user.photoURL || "assets/avatar-default.png";
       } else {
-        // Wenn ausgeloggt → zurück zum Login
         window.location.href = "index.html";
       }
     });
 
-    // Theme initialisieren (über LocalStorage)
+    // === DARKMODE GLOBAL ===
     function setTheme(mode){
       if(mode==="dark"){
         document.body.classList.add("dark");
@@ -292,6 +310,11 @@
       }
     }
     setTheme(localStorage.getItem("theme") || "light");
+
+    // Darkmode auch auf Unterseiten steuerbar
+    window.addEventListener("storage", (e) => {
+      if (e.key === "theme") setTheme(e.newValue);
+    });
   </script>
 </body>
 </html>
