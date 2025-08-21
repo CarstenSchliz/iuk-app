@@ -26,10 +26,8 @@
 
     /* Sidebar */
     .sidebar {
-      background: rgba(0, 45, 85, 0.9);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      color: white;
+      background: #fff;
+      color: black;
       width: 260px;
       display: flex;
       flex-direction: column;
@@ -47,7 +45,7 @@
       aspect-ratio: 1/1;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid white;
+      border: 2px solid var(--dunkelblau);
       display: block;
       margin: 0 auto 0.8rem auto;
       background: #ccc;
@@ -62,7 +60,7 @@
     .profile p {
       margin: 0;
       font-size: 0.9rem;
-      color: #ddd;
+      color: #444;
     }
 
     .menu {
@@ -77,7 +75,7 @@
       padding: 0.6rem 1rem;
       background: transparent;
       border: none;
-      color: white;
+      color: black;
       font-size: 1rem;
       cursor: pointer;
       text-align: left;
@@ -87,11 +85,11 @@
     }
 
     .menu button:hover {
-      background: rgba(255,255,255,0.15);
+      background: var(--hellgrau);
     }
 
     .menu button.active {
-      background: rgba(255,255,255,0.25);
+      background: var(--hellgrau);
     }
 
     .logout {
@@ -102,7 +100,7 @@
       gap: 0.75rem;
       background: transparent;
       border: none;
-      color: white;
+      color: black;
       font-size: 1rem;
       cursor: pointer;
       text-align: left;
@@ -112,13 +110,13 @@
     }
 
     .logout:hover {
-      background: rgba(255,255,255,0.15);
+      background: var(--hellgrau);
     }
 
     .version {
       font-size: 0.8rem;
       text-align: center;
-      color: #ccc;
+      color: #777;
     }
 
     /* Content */
@@ -158,6 +156,24 @@
         padding: 5rem 1.5rem 2rem 1.5rem;
       }
     }
+
+    /* Dark Mode */
+    body.dark {
+      background: #121212;
+      color: #f0f0f0;
+    }
+    body.dark .sidebar {
+      background: #1e1e1e;
+      color: #f0f0f0;
+    }
+    body.dark .menu button,
+    body.dark .logout {
+      color: #f0f0f0;
+    }
+    body.dark .menu button:hover,
+    body.dark .logout:hover {
+      background: rgba(255,255,255,0.1);
+    }
   </style>
 </head>
 <body>
@@ -172,7 +188,7 @@
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
-      <p id="userEmail"></p>
+      <p>Teilnehmer</p>
     </div>
 
     <div class="menu">
@@ -194,15 +210,9 @@
     <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
   </div>
 
-  <!-- Firebase / Auth -->
+  <!-- Firebase / App Logic -->
   <script type="module">
-    import { 
-      auth, 
-      logout, 
-      observeAuthState, 
-      uploadProfileImage, 
-      loadUserProfile 
-    } from "./js/firebase.js";
+    import { auth, logout, observeAuthState, uploadProfileImage, getUserProfile } from "./js/firebase.js";
 
     // Sidebar Toggle
     const menuToggle = document.getElementById("menuToggle");
@@ -211,7 +221,7 @@
       sidebar.classList.toggle("active");
     });
 
-    // Content Wechsel
+    // Content-Wechsel
     const content = document.getElementById("content");
     const buttons = document.querySelectorAll(".menu button");
 
@@ -247,7 +257,7 @@
           const url = await uploadProfileImage(file);
           profileImg.src = url;
         } catch (err) {
-          alert("Fehler beim Hochladen: " + err.message);
+          alert("Fehler beim Upload: " + err.message);
         }
       }
     });
@@ -259,25 +269,31 @@
       window.location.href = "index.html";
     });
 
-    // Login-Check + Userdaten laden
+    // User laden
     const userName = document.getElementById("userName");
-    const userEmail = document.getElementById("userEmail");
-
     observeAuthState(async (user) => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
-        userEmail.textContent = user.email;
-
-        // Firestore Profil laden (falls vorhanden)
-        const data = await loadUserProfile(user.uid);
-        if (data) {
-          if (data.displayName) userName.textContent = data.displayName;
-          if (data.photoURL) profileImg.src = data.photoURL;
-        }
+        try {
+          const profile = await getUserProfile(user.uid);
+          if (profile?.photoURL) profileImg.src = profile.photoURL;
+        } catch(e) { console.warn("Kein Profilbild geladen:", e); }
       } else {
         window.location.href = "index.html";
       }
     });
+
+    // Darkmode speichern
+    function setTheme(mode){
+      if(mode==="dark"){
+        document.body.classList.add("dark");
+        localStorage.setItem("theme","dark");
+      } else {
+        document.body.classList.remove("dark");
+        localStorage.setItem("theme","light");
+      }
+    }
+    setTheme(localStorage.getItem("theme") || "light");
   </script>
 </body>
 </html>
