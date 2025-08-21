@@ -93,22 +93,13 @@
     --hellblau: rgb(100,160,220);
     --hellgrau: rgb(239,238,234);
 
-    --bg: var(--hellgrau);
-    --text: #000;
     --card-bg: #fff;
-    --border: #ccc;
+    --text-color: #000;
   }
 
   body.dark {
-    --bg: #121212;
-    --text: #f0f0f0;
     --card-bg: #1e1e1e;
-    --border: #555;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
+    --text-color: #f0f0f0;
   }
 
   .page-title {
@@ -129,10 +120,12 @@
 
   .card {
     background: var(--card-bg);
+    color: var(--text-color);
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     margin-bottom: 1.5rem;
+    transition: background 0.3s, color 0.3s;
   }
 
   .card h3 {
@@ -149,12 +142,12 @@
   .form-group.floating input {
     width: 100%;
     padding: 1rem 0.75rem 0.25rem 0.75rem;
-    border: 1px solid var(--border);
+    border: 1px solid #ccc;
     border-radius: 8px;
     background: transparent;
     font-size: 1rem;
     box-sizing: border-box;
-    color: var(--text);
+    color: var(--text-color);
   }
   .form-group.floating label {
     position: absolute;
@@ -238,6 +231,8 @@
   const profileForm = document.getElementById("profileForm");
   const profileMsg = document.getElementById("profileMsg");
   const backBtn = document.getElementById("backBtn");
+
+  // Sidebar Name holen
   const sidebarName = document.getElementById("userName");
 
   // Userdaten laden
@@ -289,13 +284,17 @@
     }
   }
 
+  // Initial setzen
   setTheme(localStorage.getItem("theme") || "light");
 
-  themeBtn.addEventListener("click", () => {
-    if(document.body.classList.contains("dark")){
-      setTheme("light");
-    } else {
-      setTheme("dark");
-    }
-  });
+  // Toggle
+  if(themeBtn){
+    themeBtn.addEventListener("click", () => {
+      if(document.body.classList.contains("dark")){
+        setTheme("light");
+      } else {
+        setTheme("dark");
+      }
+    });
+  }
 </script>
