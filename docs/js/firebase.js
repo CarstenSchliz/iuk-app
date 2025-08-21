@@ -1,9 +1,9 @@
 // public/js/firebase.js
-// Firebase Setup & zentrale Auth/Storage/Firestore Funktionen
+// === Firebase Setup, Auth, Firestore & Storage ===
 
-// === Firebase Module laden ===
+// Importiere Firebase Module
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
+import {
   getAuth,
   setPersistence,
   browserLocalPersistence,
@@ -15,7 +15,6 @@ import {
   onAuthStateChanged,
   updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
 import {
   getFirestore,
   doc,
@@ -23,7 +22,6 @@ import {
   getDoc,
   updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
 import {
   getStorage,
   ref,
@@ -48,26 +46,35 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-// === Persistenz (eingeloggt bleiben) ===
+// Persistenz: User bleibt eingeloggt (auch nach Reload)
 setPersistence(auth, browserLocalPersistence);
 
-// === Fehlertexte übersetzen ===
+// === Hilfsfunktion: Fehlertexte übersetzen ===
 export function translateFirebaseError(errorCode) {
   switch (errorCode) {
-    case "auth/invalid-email": return "Die eingegebene E-Mail-Adresse ist ungültig.";
-    case "auth/user-disabled": return "Dieses Konto wurde deaktiviert.";
-    case "auth/user-not-found": return "Es existiert kein Benutzer mit dieser E-Mail.";
+    case "auth/invalid-email":
+      return "Die eingegebene E-Mail-Adresse ist ungültig.";
+    case "auth/user-disabled":
+      return "Dieses Konto wurde deaktiviert.";
+    case "auth/user-not-found":
+      return "Es existiert kein Benutzer mit dieser E-Mail.";
     case "auth/wrong-password":
-    case "auth/invalid-credential": return "Das eingegebene Passwort ist falsch.";
-    case "auth/email-already-in-use": return "Diese E-Mail-Adresse wird bereits verwendet.";
-    case "auth/weak-password": return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
-    case "auth/missing-password": return "Bitte geben Sie ein Passwort ein.";
-    case "auth/network-request-failed": return "Netzwerkfehler – bitte Internetverbindung prüfen.";
-    default: return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
+    case "auth/invalid-credential":
+      return "Das eingegebene Passwort ist falsch.";
+    case "auth/email-already-in-use":
+      return "Diese E-Mail-Adresse wird bereits verwendet.";
+    case "auth/weak-password":
+      return "Das Passwort ist zu schwach (mindestens 6 Zeichen).";
+    case "auth/missing-password":
+      return "Bitte geben Sie ein Passwort ein.";
+    case "auth/network-request-failed":
+      return "Netzwerkfehler – bitte Internetverbindung prüfen.";
+    default:
+      return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
   }
 }
 
-// === Basis Auth Funktionen ===
+// === Auth Funktionen ===
 export async function login(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
 }
@@ -75,14 +82,16 @@ export async function login(email, password) {
 export async function register(email, password) {
   const userCred = await createUserWithEmailAndPassword(auth, email, password);
   await sendEmailVerification(userCred.user);
-  // User-Dokument in Firestore anlegen
+
+  // Leeres Profil-Dokument in Firestore anlegen
   await setDoc(doc(db, "users", userCred.user.uid), {
+    name: "",
     email: userCred.user.email,
-    displayName: "",
+    photoURL: "",
     phone: "",
-    mobile: "",
-    photoURL: ""
+    mobile: ""
   });
+
   return userCred;
 }
 
@@ -99,44 +108,49 @@ export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
 
-// === Profil aktualisieren (Name, Telefonnummer, Profilbild) ===
-export async function updateUserProfile(updates) {
-  const user = auth.currentUser;
-  if (!user) throw new Error("Kein User eingeloggt");
+// === Profilfunktionen ===
 
-  // Auth Profil updaten
-  if (updates.displayName) {
-    await updateProfile(user, { displayName: updates.displayName });
-  }
-  if (updates.photoURL) {
-    await updateProfile(user, { photoURL: updates.photoURL });
-  }
-
-  // Firestore Dokument updaten
-  const userRef = doc(db, "users", user.uid);
-  await updateDoc(userRef, updates);
-}
-
-// === Profildaten laden (aus Firestore) ===
-export async function loadUserProfile(uid) {
+// Nutzerprofil aus Firestore laden
+export async function getUserProfile(uid) {
   const refDoc = doc(db, "users", uid);
   const snap = await getDoc(refDoc);
-  if (snap.exists()) {
-    return snap.data();
-  }
-  return null;
+  return snap.exists() ? snap.data() : null;
 }
 
-// === Profilbild hochladen ===
-export async function uploadProfileImage(file) {
+// Nutzerprofil aktualisieren (Name, Telefon etc.)
+export async function updateUserProfile(uid, data) {
   const user = auth.currentUser;
   if (!user) throw new Error("Kein User eingeloggt");
 
-  const fileRef = ref(storage, `profileImages/${user.uid}.jpg`);
-  await uploadBytes(fileRef, file);
-  const url = await getDownloadURL(fileRef);
+  // Auth-Profil (nur Name & Foto)
+  if (data.name || data.photoURL) {
+    await updateProfile(user, {
+      displayName: data.name || user.displayName,
+      photoURL: data.photoURL || user.photoURL
+    });
+  }
 
-  // Speichern im Profil + Firestore
-  await updateUserProfile({ photoURL: url });
+  // Firestore Profil
+  const refDoc = doc(db, "users", uid);
+  await setDoc(refDoc, {
+    name: data.name || user.displayName || "",
+    email: user.email,
+    photoURL: data.photoURL || user.photoURL || "",
+    phone: data.phone || "",
+    mobile: data.mobile || ""
+  }, { merge: true });
+}
+
+// Profilbild hochladen
+export async function uploadProfileImage(file, uid) {
+  if (!file) throw new Error("Keine Datei ausgewählt");
+
+  const storageRef = ref(storage, `profileImages/${uid}.jpg`);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+
+  // Profil sofort updaten
+  await updateUserProfile(uid, { photoURL: url });
+
   return url;
 }
