@@ -1,7 +1,6 @@
 <h2 class="page-title">Einstellungen</h2>
 
 <div class="settings-grid">
-
   <!-- Linke Spalte -->
   <div>
     <!-- Persönliche Daten -->
@@ -9,11 +8,11 @@
       <h3><i class="bi bi-person"></i> Persönliche Daten</h3>
       <form id="profileForm">
 
-        <!-- Avatar -->
-        <div class="form-group avatar-upload">
-          <img id="avatarPreview" src="assets/avatar-default.png" alt="Avatar">
-          <input type="file" id="avatarInput" accept="image/*" style="display:none;">
-          <button type="button" id="changeAvatarBtn" class="btn-secondary">Profilbild ändern</button>
+        <!-- Profilbild -->
+        <div class="form-group" style="text-align:center; margin-bottom:1rem;">
+          <img id="profilePreview" src="assets/avatar-default.png" alt="Profilbild" style="width:120px; height:120px; border-radius:50%; object-fit:cover; cursor:pointer; border:2px solid #ccc;">
+          <input type="file" id="profileUpload" accept="image/*" style="display:none;">
+          <small>Profilbild ändern (Klick auf Bild)</small>
         </div>
 
         <!-- Name -->
@@ -93,9 +92,6 @@
   </div>
 </div>
 
-<!-- ================== -->
-<!-- STYLES -->
-<!-- ================== -->
 <style>
   :root {
     --softrot: rgb(228,100,80);
@@ -132,19 +128,6 @@
     color: var(--hellblau);
     margin-top: 0;
     margin-bottom: 1rem;
-  }
-
-  /* Avatar */
-  .avatar-upload {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-  .avatar-upload img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 0.5rem;
   }
 
   /* Floating Label */
@@ -250,80 +233,79 @@
   }
 </style>
 
-<!-- ================== -->
-<!-- SCRIPT -->
-<!-- ================== -->
 <script type="module">
-  import { auth, getUserData, updateUserName, uploadAvatar, updateUserData } from "../js/firebase.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { 
+    auth, 
+    updateUserProfile, 
+    uploadProfileImage 
+  } from "../js/firebase.js";
+
+  import { onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
-  const mobileField = document.getElementById("mobile");
-  const phoneField = document.getElementById("phone");
   const profileForm = document.getElementById("profileForm");
   const profileMsg = document.getElementById("profileMsg");
   const backBtn = document.getElementById("backBtn");
 
-  const avatarPreview = document.getElementById("avatarPreview");
-  const avatarInput = document.getElementById("avatarInput");
-  const changeAvatarBtn = document.getElementById("changeAvatarBtn");
+  const profilePreview = document.getElementById("profilePreview");
+  const profileUpload = document.getElementById("profileUpload");
 
-  // Sidebar Name
+  // Sidebar Name holen
   const sidebarName = document.getElementById("userName");
+  const sidebarImg = document.getElementById("profileImg");
 
-  let currentUser = null;
-
-  // User laden
-  onAuthStateChanged(auth, async (user) => {
+  // Userdaten laden
+  onAuthStateChanged(auth, (user) => {
     if (user) {
-      currentUser = user;
-      const data = await getUserData(user.uid);
-
       emailField.value = user.email || "";
-      nameField.value = data?.name || user.displayName || "";
-      mobileField.value = data?.mobile || "";
-      phoneField.value = data?.phone || "";
-
-      avatarPreview.src = data?.avatarUrl || "assets/avatar-default.png";
-
-      if (sidebarName) sidebarName.textContent = nameField.value || user.email.split("@")[0];
+      nameField.value = user.displayName || "";
+      if (user.photoURL) {
+        profilePreview.src = user.photoURL;
+        if (sidebarImg) sidebarImg.src = user.photoURL;
+      }
+      if (sidebarName) sidebarName.textContent = user.displayName || user.email.split("@")[0];
     }
   });
 
-  // Avatar ändern
-  changeAvatarBtn.addEventListener("click", () => avatarInput.click());
-  avatarInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (file && currentUser) {
-      const url = await uploadAvatar(currentUser, file);
-      avatarPreview.src = url;
+  // Profilbild Klick
+  profilePreview.addEventListener("click", () => profileUpload.click());
+
+  profileUpload.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      const url = await uploadProfileImage(file);
+      await updateUserProfile({ photoURL: url });
+      profilePreview.src = url;
+      if (sidebarImg) sidebarImg.src = url;
+      profileMsg.style.color = "green";
+      profileMsg.textContent = "✅ Profilbild gespeichert!";
+    } catch (err) {
+      profileMsg.style.color = "red";
+      profileMsg.textContent = "❌ Fehler beim Hochladen: " + err.message;
     }
   });
 
-  // Speichern
+  // Name speichern + Sidebar aktualisieren
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (!currentUser) return;
-
+    const user = auth.currentUser;
     try {
-      await updateUserName(currentUser, nameField.value);
-      await updateUserData(currentUser.uid, {
-        mobile: mobileField.value,
-        phone: phoneField.value
-      });
-
-      if (sidebarName) sidebarName.textContent = nameField.value;
-
-      profileMsg.style.color = "green";
-      profileMsg.textContent = "✅ Änderungen gespeichert!";
+      if (user) {
+        await updateUserProfile({ displayName: nameField.value });
+        if (sidebarName) sidebarName.textContent = nameField.value;
+        profileMsg.style.color = "green";
+        profileMsg.textContent = "✅ Änderungen gespeichert!";
+      }
     } catch (err) {
       profileMsg.style.color = "red";
       profileMsg.textContent = "❌ Fehler: " + err.message;
     }
   });
 
-  // Zurück
+  // Zurück → Dashboard
   backBtn.addEventListener("click", () => {
     window.location.hash = "#dashboard";
   });
@@ -345,13 +327,18 @@
       localStorage.setItem("theme","light");
     }
   }
+
+  // Initial setzen
   setTheme(localStorage.getItem("theme") || "light");
 
-  themeBtn.addEventListener("click", () => {
-    if(document.body.classList.contains("dark")){
-      setTheme("light");
-    } else {
-      setTheme("dark");
-    }
-  });
+  // Toggle
+  if(themeBtn){
+    themeBtn.addEventListener("click", () => {
+      if(document.body.classList.contains("dark")){
+        setTheme("light");
+      } else {
+        setTheme("dark");
+      }
+    });
+  }
 </script>
