@@ -1,135 +1,349 @@
 <h2 style="color:#e46450; margin-bottom:1rem;">Einstellungen</h2>
 
-<div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;flex-wrap:wrap;">
+<div class="settings-grid">
 
   <!-- Linke Spalte -->
   <div>
     <!-- Persönliche Daten -->
-    <div style="background:#fff;padding:1.5rem;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1);margin-bottom:1.5rem;">
-      <h3 style="margin-top:0;color:#002D55;">Persönliche Daten</h3>
-      <form id="profileForm" style="display:grid;gap:1rem;">
-
-        <div>
-          <label><strong>E-Mail Adresse</strong></label>
-          <input type="email" id="email" readonly 
-            style="width:100%;padding:0.7rem;border:1px solid #ccc;border-radius:8px;background:#f7f7f7;">
-          <small>Die E-Mail-Adresse kann nicht geändert werden</small>
+    <div class="card">
+      <h3><i class="bi bi-person"></i> Persönliche Daten</h3>
+      <form id="profileForm">
+        
+        <!-- E-Mail -->
+        <div class="form-group floating">
+          <input type="email" id="email" placeholder=" " readonly>
+          <label for="email">E-Mail Adresse</label>
         </div>
 
-        <div>
-          <label><strong>Name</strong></label>
-          <input type="text" id="name"
-            style="width:100%;padding:0.7rem;border:1px solid #ccc;border-radius:8px;">
+        <!-- Name -->
+        <div class="form-group floating">
+          <input type="text" id="name" placeholder=" ">
+          <label for="name">Name</label>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div>
-            <label><strong>Mobiltelefon</strong></label>
-            <input type="tel" id="mobile" placeholder="+49 123 456789"
-              style="width:100%;padding:0.7rem;border:1px solid #ccc;border-radius:8px;">
+        <!-- Telefonnummern -->
+        <div class="form-row">
+          <div class="form-group floating">
+            <input type="tel" id="mobile" placeholder=" ">
+            <label for="mobile">Mobiltelefon</label>
           </div>
-          <div>
-            <label><strong>Telefonnummer</strong></label>
-            <input type="tel" id="phone" placeholder="+49 123 456789"
-              style="width:100%;padding:0.7rem;border:1px solid #ccc;border-radius:8px;">
+          <div class="form-group floating">
+            <input type="tel" id="phone" placeholder=" ">
+            <label for="phone">Telefonnummer</label>
           </div>
         </div>
 
-        <div>
-          <label><strong>Rolle</strong></label>
-          <input type="text" id="role" value="Teilnehmer" readonly 
-            style="width:100%;padding:0.7rem;border:1px solid #ccc;border-radius:8px;background:#f7f7f7;">
-          <small>Die Rolle wird vom Administrator vergeben</small>
+        <!-- Rolle -->
+        <div class="form-group floating">
+          <input type="text" id="role" value="Teilnehmer" placeholder=" " readonly>
+          <label for="role">Rolle</label>
         </div>
+        <small>Die Rolle wird vom Administrator vergeben</small>
 
-        <div style="display:flex;gap:1rem;">
-          <button type="button" id="backBtn" style="padding:0.6rem 1.2rem;border:none;border-radius:8px;background:#eee;cursor:pointer;">
+        <!-- Buttons -->
+        <div class="form-actions">
+          <button type="button" id="backBtn" class="btn-secondary">
             ← Zurück
           </button>
-          <button type="submit" style="padding:0.6rem 1.2rem;border:none;border-radius:8px;background:#002D55;color:white;cursor:pointer;">
-            💾 Speichern
+          <button type="submit" class="btn-primary">
+            <i class="bi bi-save"></i> Speichern
           </button>
         </div>
-        <div id="profileMsg" style="margin-top:0.5rem;display:none;"></div>
+        <div id="profileMsg" class="form-msg"></div>
       </form>
     </div>
 
     <!-- Weitere Einstellungen -->
-    <div style="background:#fff;padding:1.5rem;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-      <h3 style="margin-top:0;color:#002D55;">Weitere Einstellungen</h3>
-      <ul style="list-style:none;padding:0;margin:0;">
-        <li style="padding:0.8rem 0;border-bottom:1px solid #eee;cursor:pointer;">🔔 Benachrichtigungseinstellungen</li>
-        <li style="padding:0.8rem 0;cursor:pointer;">🔑 Passwort ändern</li>
+    <div class="card">
+      <h3><i class="bi bi-gear"></i> Weitere Einstellungen</h3>
+      <ul class="list">
+        <li><i class="bi bi-bell"></i> Benachrichtigungseinstellungen</li>
+        <li><i class="bi bi-key"></i> Passwort ändern</li>
       </ul>
     </div>
   </div>
 
   <!-- Rechte Spalte -->
-  <div style="display:flex;flex-direction:column;gap:1.5rem;">
+  <div>
     <!-- Erscheinungsbild -->
-    <div style="background:#fff;padding:1.5rem;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-      <h3 style="margin-top:0;color:#002D55;">Erscheinungsbild</h3>
-      <p>Aktuelles Theme: <strong>Klassisches Design</strong></p>
-      <button style="padding:0.6rem 1.2rem;border:none;border-radius:8px;background:#e46450;color:white;cursor:pointer;">
-        🎨 Zu modernem Design wechseln
+    <div class="card">
+      <h3><i class="bi bi-palette"></i> Erscheinungsbild</h3>
+      <p>Aktuelles Theme: <span id="themeLabel">Hell</span></p>
+      <button id="themeToggle" class="btn-accent">
+        🌙 Zu Dunkelmodus wechseln
       </button>
     </div>
 
     <!-- Sicherheit -->
-    <div style="background:#fff;padding:1.5rem;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-      <h3 style="margin-top:0;color:#002D55;">Sicherheit</h3>
+    <div class="card">
+      <h3><i class="bi bi-shield-lock"></i> Sicherheit</h3>
       <p>Zwei-Faktor-Authentifizierung (2FA)</p>
-      <p style="font-size:0.9rem;color:#555;">Schützen Sie Ihr Konto mit einer zusätzlichen Sicherheitsebene.</p>
-      <button style="padding:0.6rem 1.2rem;border:none;border-radius:8px;background:#002D55;color:white;cursor:pointer;">
-        🔒 2FA aktivieren
+      <p class="hint">Schützen Sie Ihr Konto mit einer zusätzlichen Sicherheitsebene.</p>
+      <button class="btn-primary">
+        <i class="bi bi-lock"></i> 2FA aktivieren
       </button>
     </div>
   </div>
 </div>
 
+<style>
+  .settings-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+  }
+  @media(max-width: 768px){
+    .settings-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .card {
+    background: var(--card-bg, #fff);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Floating Label */
+  .form-group.floating {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .form-group.floating input {
+    width: 100%;
+    padding: 1rem 0.75rem 0.25rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: transparent;
+    font-size: 1rem;
+  }
+  .form-group.floating label {
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    transform: translateY(-50%);
+    color: #777;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    background: var(--card-bg, #fff);
+    padding: 0 0.25rem;
+  }
+  .form-group.floating input:focus + label,
+  .form-group.floating input:not(:placeholder-shown) + label {
+    top: 0;
+    left: 0.6rem;
+    font-size: 0.8rem;
+    color: #002D55;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-actions {
+    display:flex;
+    gap:1rem;
+    margin-top:1rem;
+  }
+
+  small {
+    display:block;
+    font-size:0.8rem;
+    color:#777;
+    margin:-0.5rem 0 1rem 0;
+  }
+
+  .btn-primary, .btn-secondary, .btn-accent {
+    padding:0.6rem 1rem;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .btn-primary { background:#002D55; color:#fff; }
+  .btn-secondary { background:#eee; }
+  .btn-accent { background:#e46450; color:#fff; }
+
+  .form-msg {
+    margin-top:0.5rem;
+    font-weight:bold;
+  }
+
+  .list {
+    list-style:none;
+    padding:0;
+    margin:0;
+  }
+  .list li {
+    padding:0.6rem 0;
+    border-bottom:1px solid #eee;
+    cursor:pointer;
+  }
+  .hint {
+    font-size:0.9rem;
+    color:#555;
+  }
+
+  /* Darkmode Variablen */
+  body.dark {
+    --card-bg: #1e1e1e;
+    color:#f0f0f0;
+    background:#121212;
+  }
+  body.dark input {
+    background:#2a2a2a;
+    color:#f0f0f0;
+    border:1px solid #555;
+  }
+  body.dark small { color:#aaa; }
+  body.dark .form-group.floating label {
+    background: #1e1e1e;
+  }
+
+  /* Mobile Optimierung */
+  @media(max-width: 768px){
+    h2 {
+      font-size:1.4rem;
+    }
+
+    .card {
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .btn-primary, .btn-secondary, .btn-accent {
+      width:100%;
+      font-size:1rem;
+      padding:0.9rem;
+    }
+
+    .form-actions {
+      flex-direction:column;
+    }
+
+    input {
+      font-size:1rem;
+      padding:1rem 0.75rem 0.25rem 0.75rem;
+    }
+
+    .list li {
+      padding:1rem 0;
+      font-size:1rem;
+      transition: background 0.2s;
+    }
+    .list li:active {
+      background:rgba(0,0,0,0.05);
+    }
+    body.dark .list li:active {
+      background:rgba(255,255,255,0.1);
+    }
+
+    /* Handy-optimierter Dark Mode */
+    body.dark {
+      background:#0d0d0d;
+    }
+    body.dark .card {
+      background:#242424;
+      box-shadow:0 2px 6px rgba(0,0,0,0.6);
+    }
+    body.dark input {
+      background:#2e2e2e;
+      border:1px solid #555;
+      color:#f5f5f5;
+    }
+    body.dark .btn-primary {
+      background:#1a73e8;
+      color:white;
+    }
+    body.dark .btn-accent {
+      background:#ff6b5b;
+      color:white;
+    }
+    body.dark .btn-secondary {
+      background:#333;
+      color:#ddd;
+    }
+    body.dark .list li {
+      border-bottom:1px solid #444;
+    }
+  }
+</style>
+
 <script type="module">
   import { auth } from "../js/firebase.js";
-  import { updateProfile } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { updateProfile, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
-  const user = auth.currentUser;
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
-  const mobileField = document.getElementById("mobile");
-  const phoneField = document.getElementById("phone");
   const profileForm = document.getElementById("profileForm");
   const profileMsg = document.getElementById("profileMsg");
   const backBtn = document.getElementById("backBtn");
 
-  // Felder initial befüllen
-  if (user) {
-    emailField.value = user.email || "";
-    nameField.value = user.displayName || "";
-    // 📌 Telefonnummern könnten später aus Firestore kommen
-  }
+  // Userdaten laden
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      emailField.value = user.email || "";
+      nameField.value = user.displayName || "";
+    }
+  });
 
-  // Speichern
+  // Name speichern
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    const user = auth.currentUser;
     try {
       if (user) {
         await updateProfile(user, { displayName: nameField.value });
-        // Telefonnummern hier später mit Firestore speichern
-        profileMsg.style.display = "block";
         profileMsg.style.color = "green";
         profileMsg.textContent = "✅ Änderungen gespeichert!";
       }
     } catch (err) {
-      profileMsg.style.display = "block";
       profileMsg.style.color = "red";
       profileMsg.textContent = "❌ Fehler: " + err.message;
     }
   });
 
-  // Zurück Button → Dashboard
+  // Zurück → Dashboard
   backBtn.addEventListener("click", () => {
     window.location.hash = "#dashboard";
   });
-</script>
 
+  // Theme Toggle mit localStorage
+  const themeBtn = document.getElementById("themeToggle");
+  const themeLabel = document.getElementById("themeLabel");
+
+  function setTheme(mode){
+    if(mode==="dark"){
+      document.body.classList.add("dark");
+      themeLabel.textContent = "Dunkel";
+      themeBtn.textContent = "☀️ Zu Hellmodus wechseln";
+      localStorage.setItem("theme","dark");
+    } else {
+      document.body.classList.remove("dark");
+      themeLabel.textContent = "Hell";
+      themeBtn.textContent = "🌙 Zu Dunkelmodus wechseln";
+      localStorage.setItem("theme","light");
+    }
+  }
+
+  // Initial
+  setTheme(localStorage.getItem("theme") || "light");
+
+  // Toggle
+  themeBtn.addEventListener("click", () => {
+    if(document.body.classList.contains("dark")){
+      setTheme("light");
+    } else {
+      setTheme("dark");
+    }
   });
 </script>
