@@ -1,8 +1,7 @@
 // public/js/firebase.js
 // Firebase Setup & Auth-Funktionen ausgelagert
 
-// Importiere Firebase Module
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import { 
   getAuth, 
   setPersistence,
@@ -14,7 +13,7 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 // === Deine Firebase Config ===
 const firebaseConfig = {
@@ -31,7 +30,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
-// Persistenz: User bleibt eingeloggt (auch nach Reload)
+// Persistenz: User bleibt eingeloggt
 setPersistence(auth, browserLocalPersistence);
 
 // === Hilfsfunktion: Fehlertexte übersetzen ===
@@ -83,7 +82,7 @@ export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
 
-// === Profil aktualisieren (z. B. Name) ===
+// === Neues Update für Profildaten ===
 export async function updateUserProfile(user, data) {
   return updateProfile(user, data);
 }
