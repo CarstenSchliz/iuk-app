@@ -1,0 +1,129 @@
+<h2>Persönliche Daten</h2>
+
+<section style="margin-bottom:2rem;">
+  <h3>Profildaten</h3>
+  <form id="profileForm" style="max-width:500px;">
+    <div style="margin-bottom:1rem;">
+      <label for="name"><strong>Name</strong></label><br>
+      <input type="text" id="name" name="name" value="" style="width:100%;padding:0.5rem;">
+    </div>
+    <div style="margin-bottom:1rem;">
+      <label for="email"><strong>E-Mail</strong></label><br>
+      <input type="email" id="email" name="email" value="" readonly style="width:100%;padding:0.5rem;background:#eee;">
+    </div>
+    <div style="margin-bottom:1rem;">
+      <label for="role"><strong>Rolle</strong></label><br>
+      <input type="text" id="role" name="role" value="Teilnehmer" readonly style="width:100%;padding:0.5rem;background:#eee;">
+    </div>
+    <button type="submit" style="padding:0.6rem 1rem;background:#002D55;color:white;border:none;border-radius:6px;cursor:pointer;">
+      Änderungen speichern
+    </button>
+    <div id="profileMsg" style="margin-top:0.5rem;color:green;display:none;">✅ Änderungen gespeichert!</div>
+  </form>
+</section>
+
+<section style="margin-bottom:2rem;">
+  <h3>Passwort ändern</h3>
+  <form id="passwordForm" style="max-width:500px;">
+    <div style="margin-bottom:1rem;">
+      <label for="oldPw"><strong>Aktuelles Passwort</strong></label><br>
+      <input type="password" id="oldPw" name="oldPw" style="width:100%;padding:0.5rem;">
+    </div>
+    <div style="margin-bottom:1rem;">
+      <label for="newPw"><strong>Neues Passwort</strong></label><br>
+      <input type="password" id="newPw" name="newPw" style="width:100%;padding:0.5rem;">
+    </div>
+    <div style="margin-bottom:1rem;">
+      <label for="newPw2"><strong>Neues Passwort wiederholen</strong></label><br>
+      <input type="password" id="newPw2" name="newPw2" style="width:100%;padding:0.5rem;">
+    </div>
+    <button type="submit" style="padding:0.6rem 1rem;background:#e46450;color:white;border:none;border-radius:6px;cursor:pointer;">
+      Passwort ändern
+    </button>
+    <div id="pwMsg" style="margin-top:0.5rem;color:green;display:none;">✅ Passwort erfolgreich geändert!</div>
+  </form>
+</section>
+
+<section>
+  <h3>Sicherheit</h3>
+  <ul id="securityInfo">
+    <li>🔒 Zwei-Faktor-Authentifizierung: <em>noch nicht eingerichtet</em></li>
+    <li id="lastLogin">📅 Letzter Login: –</li>
+    <li id="deviceInfo">💻 Aktuelles Gerät: –</li>
+  </ul>
+</section>
+
+<script type="module">
+  import { auth } from "../js/firebase.js";
+  import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } 
+    from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+  const user = auth.currentUser;
+  const nameField = document.getElementById("name");
+  const emailField = document.getElementById("email");
+  const roleField = document.getElementById("role");
+  const profileForm = document.getElementById("profileForm");
+  const profileMsg = document.getElementById("profileMsg");
+
+  const passwordForm = document.getElementById("passwordForm");
+  const pwMsg = document.getElementById("pwMsg");
+
+  // Daten initial befüllen
+  if (user) {
+    nameField.value = user.displayName || "";
+    emailField.value = user.email || "";
+    roleField.value = "Teilnehmer"; // später aus Firestore
+    document.getElementById("lastLogin").textContent = "📅 Letzter Login: " + (user.metadata?.lastSignInTime || "unbekannt");
+    document.getElementById("deviceInfo").textContent = "💻 Aktuelles Gerät: " + navigator.userAgent;
+  }
+
+  // Profildaten speichern
+  profileForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      if (user) {
+        await updateProfile(user, { displayName: nameField.value });
+        profileMsg.style.display = "block";
+        profileMsg.style.color = "green";
+        profileMsg.textContent = "✅ Änderungen gespeichert!";
+      }
+    } catch (err) {
+      profileMsg.style.display = "block";
+      profileMsg.style.color = "red";
+      profileMsg.textContent = "❌ Fehler: " + err.message;
+    }
+  });
+
+  // Passwort ändern
+  passwordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const oldPw = document.getElementById("oldPw").value;
+    const newPw = document.getElementById("newPw").value;
+    const newPw2 = document.getElementById("newPw2").value;
+
+    if (newPw !== newPw2) {
+      pwMsg.style.display = "block";
+      pwMsg.style.color = "red";
+      pwMsg.textContent = "❌ Neues Passwort stimmt nicht überein!";
+      return;
+    }
+
+    try {
+      if (user && user.email) {
+        // Re-Authentifizierung (Firebase verlangt das)
+        const credential = EmailAuthProvider.credential(user.email, oldPw);
+        await reauthenticateWithCredential(user, credential);
+
+        await updatePassword(user, newPw);
+        pwMsg.style.display = "block";
+        pwMsg.style.color = "green";
+        pwMsg.textContent = "✅ Passwort erfolgreich geändert!";
+        passwordForm.reset();
+      }
+    } catch (err) {
+      pwMsg.style.display = "block";
+      pwMsg.style.color = "red";
+      pwMsg.textContent = "❌ Fehler: " + err.message;
+    }
+  });
+</script>
