@@ -13,21 +13,15 @@
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --hellgrau: rgb(239,238,234);
-      --mittelgrau: rgb(180,180,180);
-      --dunkelgrau: rgb(85,79,74);
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      height: 100%;
-      background: var(--hellgrau);
-      overflow: hidden;
     }
 
     body {
+      margin: 0;
+      font-family: Arial, sans-serif;
       display: flex;
+      height: 100vh;
+      background: var(--hellgrau);
+      overflow: hidden;
     }
 
     /* Sidebar */
@@ -41,7 +35,6 @@
       flex-direction: column;
       padding: 1.5rem 1rem;
       box-sizing: border-box;
-      height: 100vh;
     }
 
     .profile {
@@ -58,13 +51,11 @@
       display: block;
       margin: 0 auto 0.8rem auto;
       background: #ccc;
-      cursor: pointer;
     }
 
     .profile h2 {
       margin: 0;
       font-size: 1.2rem;
-      color: white;
     }
 
     .profile p {
@@ -75,7 +66,6 @@
 
     .menu {
       flex-grow: 1;
-      margin-top: 1rem;
     }
 
     .menu button {
@@ -134,18 +124,6 @@
       overflow-y: auto;
     }
 
-    .content h1, .content h2 {
-      color: var(--dunkelblau);
-    }
-
-    /* Mobile Anpassungen */
-    @media (min-width: 769px) {
-      .content {
-        padding-left: 5rem;
-        padding-right: 3rem;
-      }
-    }
-
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -175,30 +153,6 @@
         padding: 5rem 1.5rem 2rem 1.5rem;
       }
     }
-
-    /* Toast */
-    #toast {
-      visibility: hidden;
-      min-width: 250px;
-      margin-left: -125px;
-      background-color: #333;
-      color: #fff;
-      text-align: center;
-      border-radius: 8px;
-      padding: 16px;
-      position: fixed;
-      z-index: 2000;
-      left: 50%;
-      bottom: 30px;
-      font-size: 1rem;
-      opacity: 0;
-      transition: opacity 0.5s, bottom 0.5s;
-    }
-    #toast.show {
-      visibility: visible;
-      opacity: 1;
-      bottom: 50px;
-    }
   </style>
 </head>
 <body>
@@ -212,8 +166,8 @@
     <div class="profile">
       <img src="assets/profile-placeholder.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
-      <h2 id="userName">Max Mustermann</h2>
-      <p id="userEmail">Teilnehmer</p>
+      <h2 id="userName">Lädt...</h2>
+      <p>Teilnehmer</p>
     </div>
 
     <div class="menu">
@@ -235,83 +189,21 @@
     <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
   </div>
 
-  <!-- Toast -->
-  <div id="toast"></div>
-
+  <!-- Firebase / Auth -->
   <script type="module">
-    import { app, auth } from "./firebase.js";
-    import { 
-      onAuthStateChanged, 
-      signOut, 
-      updateProfile 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-      getStorage, ref, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import { auth, logout, observeAuthState } from "./js/firebase.js";
 
-    const sidebar = document.getElementById("sidebar");
+    // Sidebar Toggle
     const menuToggle = document.getElementById("menuToggle");
-    const profileImg = document.getElementById("profileImg");
-    const profileUpload = document.getElementById("profileUpload");
-    const userName = document.getElementById("userName");
-    const userEmail = document.getElementById("userEmail");
-    const content = document.getElementById("content");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const toast = document.getElementById("toast");
-
-    const storage = getStorage(app);
-
-    function showToast(message, color = "#333") {
-      toast.innerText = message;
-      toast.style.backgroundColor = color;
-      toast.className = "show";
-      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-    }
-
-    // Sidebar toggle
+    const sidebar = document.getElementById("sidebar");
     menuToggle.addEventListener("click", () => {
       sidebar.classList.toggle("active");
     });
 
-    // Auth-Check
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
-        userEmail.textContent = user.email;
-        userName.textContent = user.displayName || user.email.split("@")[0];
-
-        // Profilbild aus Storage laden
-        try {
-          const imgRef = ref(storage, `profilePictures/${user.uid}.jpg`);
-          const url = await getDownloadURL(imgRef);
-          profileImg.src = url;
-        } catch {
-          profileImg.src = "assets/profile-placeholder.png";
-        }
-      }
-    });
-
-    // Profilbild Upload
-    profileImg.addEventListener("click", () => profileUpload.click());
-    profileUpload.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      if (file && auth.currentUser) {
-        try {
-          const imgRef = ref(storage, `profilePictures/${auth.currentUser.uid}.jpg`);
-          await uploadBytes(imgRef, file);
-          const url = await getDownloadURL(imgRef);
-          profileImg.src = url;
-          await updateProfile(auth.currentUser, { photoURL: url });
-          showToast("Profilbild aktualisiert!", "green");
-        } catch (err) {
-          showToast("Fehler beim Upload: " + err.message, "red");
-        }
-      }
-    });
-
     // Content Wechsel
-    document.querySelectorAll(".menu button").forEach(btn => {
+    const content = document.getElementById("content");
+    const buttons = document.querySelectorAll(".menu button");
+    buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         const page = btn.getAttribute("data-page");
         content.innerHTML = "<h2>" + btn.innerText + "</h2><p>Inhalt für " + btn.innerText + " kommt hier hin.</p>";
@@ -319,10 +211,36 @@
       });
     });
 
+    // Profilbild Upload (noch lokal, später Firebase Storage)
+    const profileImg = document.getElementById("profileImg");
+    const profileUpload = document.getElementById("profileUpload");
+    profileImg.addEventListener("click", () => profileUpload.click());
+    profileUpload.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => profileImg.src = e.target.result;
+        reader.readAsDataURL(file);
+      }
+    });
+
     // Logout
+    const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
+      await logout();
       window.location.href = "index.html";
+    });
+
+    // Login-Check + Userdaten
+    const userName = document.getElementById("userName");
+    observeAuthState(user => {
+      if (user) {
+        // Wenn eingeloggt
+        userName.textContent = user.displayName || user.email.split("@")[0];
+      } else {
+        // Wenn ausgeloggt → zurück zum Login
+        window.location.href = "index.html";
+      }
     });
   </script>
 </body>
