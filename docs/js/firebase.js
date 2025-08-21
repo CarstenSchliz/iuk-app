@@ -13,7 +13,7 @@ import {
   sendEmailVerification, 
   signOut,
   onAuthStateChanged,
-  updateProfile   // <---- hinzugefügt
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // === Deine Firebase Config ===
@@ -78,13 +78,12 @@ export async function logout() {
   return signOut(auth);
 }
 
-// === Profil aktualisieren (Name etc.) ===
-export async function updateUserProfile(user, data) {
-  return updateProfile(user, data);
-}
-
 // === State Observer ===
-// Kann in app.html genutzt werden, um zu prüfen ob jemand eingeloggt ist
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
+}
+
+// === Profil aktualisieren (z. B. Name) ===
+export async function updateUserProfile(user, data) {
+  return updateProfile(user, data);
 }
