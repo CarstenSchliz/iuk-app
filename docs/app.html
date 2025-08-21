@@ -51,6 +51,7 @@
       display: block;
       margin: 0 auto 0.8rem auto;
       background: #ccc;
+      cursor: pointer;
     }
 
     .profile h2 {
@@ -87,6 +88,10 @@
 
     .menu button:hover {
       background: rgba(255,255,255,0.15);
+    }
+
+    .menu button.active {
+      background: rgba(255,255,255,0.25);
     }
 
     .logout {
@@ -200,14 +205,30 @@
       sidebar.classList.toggle("active");
     });
 
-    // Content Wechsel
+    // Content Wechsel mit externen Views
     const content = document.getElementById("content");
     const buttons = document.querySelectorAll(".menu button");
+
+    async function loadPage(page) {
+      try {
+        const res = await fetch(`views/${page}.html`);
+        if (!res.ok) throw new Error("Seite nicht gefunden");
+        const html = await res.text();
+        content.innerHTML = html;
+      } catch (err) {
+        content.innerHTML = `<h2>Fehler</h2><p>${err.message}</p>`;
+      }
+    }
+
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         const page = btn.getAttribute("data-page");
-        content.innerHTML = "<h2>" + btn.innerText + "</h2><p>Inhalt für " + btn.innerText + " kommt hier hin.</p>";
+        loadPage(page);
         sidebar.classList.remove("active");
+
+        // aktives Menü hervorheben
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
       });
     });
 
