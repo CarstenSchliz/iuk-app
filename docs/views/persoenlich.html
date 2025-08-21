@@ -1,21 +1,22 @@
 <h2 class="page-title">Einstellungen</h2>
 
 <div class="settings-grid">
-
   <!-- Linke Spalte -->
   <div>
     <!-- Persönliche Daten -->
     <div class="card">
       <h3><i class="bi bi-person"></i> Persönliche Daten</h3>
-
-      <!-- Profilbild -->
-      <div class="avatar-wrapper">
-        <img id="profileImage" src="assets/avatar-default.png" alt="Profilbild">
-        <input type="file" id="imageUpload" accept="image/*" hidden>
-        <button type="button" id="uploadBtn" class="btn-secondary">Neues Bild hochladen</button>
-      </div>
-
       <form id="profileForm">
+
+        <!-- Profilbild -->
+        <div class="form-group" style="text-align:center;">
+          <img id="profileImage" src="assets/avatar-default.png" 
+               alt="Profilbild" 
+               style="width:100px;height:100px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid #ccc;">
+          <input type="file" id="profileImageUpload" accept="image/*" style="display:none;">
+          <p style="font-size:0.8rem;color:#777;">Zum Ändern anklicken</p>
+        </div>
+
         <!-- Name -->
         <div class="form-group floating">
           <input type="text" id="name" placeholder=" ">
@@ -112,7 +113,9 @@
     gap: 1.5rem;
   }
   @media(max-width: 768px){
-    .settings-grid { grid-template-columns: 1fr; }
+    .settings-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .card {
@@ -127,21 +130,6 @@
     color: var(--hellblau);
     margin-top: 0;
     margin-bottom: 1rem;
-  }
-
-  /* Avatar */
-  .avatar-wrapper {
-    display:flex;
-    align-items:center;
-    gap:1rem;
-    margin-bottom:1.5rem;
-  }
-  .avatar-wrapper img {
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    object-fit:cover;
-    border:2px solid var(--hellgrau);
   }
 
   /* Floating Label */
@@ -248,78 +236,84 @@
 </style>
 
 <script type="module">
-  import { auth, observeAuthState, updateUserProfile, uploadProfileImage } from "../js/firebase.js";
+  import { auth, updateUserProfile, uploadProfileImage, loadUserProfile } 
+    from "../js/firebase.js";
+  import { onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
-  const mobileField = document.getElementById("mobile");
-  const phoneField = document.getElementById("phone");
+  const profileImage = document.getElementById("profileImage");
+  const profileUpload = document.getElementById("profileImageUpload");
   const profileForm = document.getElementById("profileForm");
   const profileMsg = document.getElementById("profileMsg");
   const backBtn = document.getElementById("backBtn");
-
   const sidebarName = document.getElementById("userName");
-  const sidebarAvatar = document.getElementById("userAvatar");
-  const profileImage = document.getElementById("profileImage");
-  const imageUpload = document.getElementById("imageUpload");
-  const uploadBtn = document.getElementById("uploadBtn");
+  const sidebarImg = document.getElementById("profileImg");
 
-  // === Userdaten laden ===
-  observeAuthState((user) => {
+  // Userdaten laden
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
       emailField.value = user.email || "";
       nameField.value = user.displayName || "";
-      mobileField.value = user.mobile || "";
-      phoneField.value = user.phone || "";
-      profileImage.src = user.photoURL || "assets/avatar-default.png";
 
-      if (sidebarName) sidebarName.textContent = user.displayName || user.email.split("@")[0];
-      if (sidebarAvatar) sidebarAvatar.src = user.photoURL || "assets/avatar-default.png";
+      // Firestore laden
+      const data = await loadUserProfile(user.uid);
+      if (data) {
+        if (data.displayName) nameField.value = data.displayName;
+        if (data.photoURL) {
+          profileImage.src = data.photoURL;
+          if (sidebarImg) sidebarImg.src = data.photoURL;
+        }
+      }
     }
   });
 
-  // === Profil speichern ===
+  // Name speichern
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    const user = auth.currentUser;
     try {
-      await updateUserProfile({
-        displayName: nameField.value,
-        mobile: mobileField.value,
-        phone: phoneField.value,
-        photoURL: profileImage.src
-      });
-      if (sidebarName) sidebarName.textContent = nameField.value;
-      profileMsg.style.color = "green";
-      profileMsg.textContent = "✅ Änderungen gespeichert!";
+      if (user) {
+        await updateUserProfile(user.uid, {
+          displayName: nameField.value
+        });
+        if (sidebarName) sidebarName.textContent = nameField.value;
+        profileMsg.style.color = "green";
+        profileMsg.textContent = "✅ Änderungen gespeichert!";
+      }
     } catch (err) {
       profileMsg.style.color = "red";
       profileMsg.textContent = "❌ Fehler: " + err.message;
     }
   });
 
-  // === Bild hochladen ===
-  uploadBtn.addEventListener("click", () => imageUpload.click());
-  imageUpload.addEventListener("change", async (e) => {
+  // Profilbild ändern
+  profileImage.addEventListener("click", () => profileUpload.click());
+  profileUpload.addEventListener("change", async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-    try {
-      const url = await uploadProfileImage(file);
-      profileImage.src = url;
-      if (sidebarAvatar) sidebarAvatar.src = url;
-      profileMsg.style.color = "green";
-      profileMsg.textContent = "✅ Bild aktualisiert!";
-    } catch (err) {
-      profileMsg.style.color = "red";
-      profileMsg.textContent = "❌ Fehler beim Bild-Upload";
+    const user = auth.currentUser;
+    if (file && user) {
+      try {
+        const url = await uploadProfileImage(file, user.uid);
+        profileImage.src = url;
+        if (sidebarImg) sidebarImg.src = url;
+        await updateUserProfile(user.uid, { photoURL: url });
+        profileMsg.style.color = "green";
+        profileMsg.textContent = "✅ Profilbild aktualisiert!";
+      } catch (err) {
+        profileMsg.style.color = "red";
+        profileMsg.textContent = "❌ Fehler: " + err.message;
+      }
     }
   });
 
-  // Zurück → Dashboard
+  // Zurück
   backBtn.addEventListener("click", () => {
     window.location.hash = "#dashboard";
   });
 
-  // === Theme Toggle ===
+  // Dark/Light Mode
   const themeBtn = document.getElementById("themeToggle");
   const themeLabel = document.getElementById("themeLabel");
 
