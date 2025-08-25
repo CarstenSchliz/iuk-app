@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwa-cache-v25";   // <--- hochzählen, wenn du SW neu veröffentlichst
+const CACHE_NAME = "pwa-cache-v26";   // <--- hochzählen bei Änderungen
 
 const URLS_TO_CACHE = [
   "./",
@@ -6,7 +6,8 @@ const URLS_TO_CACHE = [
   "./manifest.json",
   "./assets/iuk-192.png",
   "./assets/iuk-512.png",
-  "./assets/iuk-lernwelt-512.png"
+  "./assets/iuk-lernwelt-512.png",
+  "./assets/avatar-default.png"   // Default-Avatar sicherstellen
 ];
 
 // Installation: wichtige App-Dateien vorab cachen
@@ -29,23 +30,39 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch-Handler: Hybrid-Strategie
+// Fetch-Handler
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // 👉 Nur GET-Anfragen cachen
+  // 👉 Nur GET-Anfragen behandeln
   if (event.request.method !== "GET") {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // 👉 Externe Ressourcen (CDNs, Firebase, APIs) NIE cachen
+  // 👉 Firebase Storage: NIE cachen (Profilbilder etc.)
+  if (url.origin.includes("firebasestorage.googleapis.com")) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // 👉 Externe Ressourcen (CDNs, APIs): immer Netz
   if (url.origin !== self.location.origin) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // 👉 Eigene App-Dateien: Cache-First
+  // 👉 Eigene Assets (inkl. Default-Avatar): Cache mit Fallback Netz
+  if (url.pathname.startsWith("/assets/")) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        return cachedResponse || fetch(event.request);
+      })
+    );
+    return;
+  }
+
+  // 👉 Standard: Cache-First für App-Dateien
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
