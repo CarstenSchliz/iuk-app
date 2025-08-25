@@ -309,7 +309,7 @@
       if (file && user) {
         try {
           const url = await uploadProfileImage(user, file);
-          profileImg.src = url; // direkt aktualisieren
+          profileImg.src = url + "?v=" + Date.now(); // Cache-Buster
           alert("✅ Profilbild aktualisiert!");
         } catch (err) {
           alert("❌ Fehler beim Hochladen: " + err.message);
@@ -326,10 +326,14 @@
 
     // Login-Check + Userdaten
     const userName = document.getElementById("userName");
-    observeAuthState(user => {
+    observeAuthState(async (user) => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
-        profileImg.src = user.photoURL || "assets/avatar-default.png";
+        if (user.photoURL) {
+          profileImg.src = user.photoURL + "?v=" + Date.now(); // Cache-Buster
+        } else {
+          profileImg.src = "assets/avatar-default.png";
+        }
       } else {
         window.location.href = "index.html";
       }
