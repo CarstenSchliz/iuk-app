@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwa-cache-v27";   // <--- hochzählen
+const CACHE_NAME = "pwa-cache-v28";   // <--- hochzählen bei Änderungen
 
 const URLS_TO_CACHE = [
   "./",
@@ -7,48 +7,53 @@ const URLS_TO_CACHE = [
   "./assets/iuk-192.png",
   "./assets/iuk-512.png",
   "./assets/iuk-lernwelt-512.png",
-  "./assets/avatar-default.png"
+  "./assets/avatar-default.png"   // Default-Avatar
 ];
 
+// Installation: wichtige App-Dateien vorab cachen
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(URLS_TO_CACHE))
   );
 });
 
+// Alte Caches löschen
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) =>
       Promise.all(
-        cacheNames.filter((name) => name !== CACHE_NAME)
-                  .map((name) => caches.delete(name))
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
       )
     )
   );
 });
 
+// Fetch-Handler
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
+  // 👉 Nur GET-Anfragen behandeln
   if (event.request.method !== "GET") {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // Firebase Storage nie cachen
+  // 👉 Firebase Storage: NIE cachen (Profilbilder etc.)
   if (url.origin.includes("firebasestorage.googleapis.com")) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // Externe Ressourcen nie cachen
+  // 👉 Externe Ressourcen (CDNs, APIs): immer Netz
   if (url.origin !== self.location.origin) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // Eigene Assets (inkl. Default-Avatar): Cache mit Fallback Netz
-  if (url.pathname.includes("/assets/")) {
+  // 👉 Eigene Assets (z. B. /iuk-app/assets/...): Cache mit Fallback Netz
+  if (url.pathname.includes("assets/")) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
         return cachedResponse || fetch(event.request);
@@ -57,7 +62,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Standard: Cache-First
+  // 👉 Standard: Cache-First für App-Dateien
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
