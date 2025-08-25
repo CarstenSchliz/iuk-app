@@ -220,7 +220,7 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <img src="assets/profile-placeholder.png" alt="Profilbild" id="profileImg">
+      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
       <p>Teilnehmer</p>
@@ -247,7 +247,7 @@
 
   <!-- Firebase / Auth -->
   <script type="module">
-    import { auth, logout, observeAuthState } from "./js/firebase.js";
+    import { auth, logout, observeAuthState, uploadProfileImage } from "./js/firebase.js";
 
     // Sidebar Toggle (nur Mobile)
     const menuToggle = document.getElementById("menuToggle");
@@ -300,13 +300,20 @@
     // Profilbild Upload
     const profileImg = document.getElementById("profileImg");
     const profileUpload = document.getElementById("profileUpload");
+
     profileImg.addEventListener("click", () => profileUpload.click());
-    profileUpload.addEventListener("change", (event) => {
+
+    profileUpload.addEventListener("change", async (event) => {
       const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = e => profileImg.src = e.target.result;
-        reader.readAsDataURL(file);
+      const user = auth.currentUser;
+      if (file && user) {
+        try {
+          const url = await uploadProfileImage(user, file);
+          profileImg.src = url; // direkt aktualisieren
+          alert("✅ Profilbild aktualisiert!");
+        } catch (err) {
+          alert("❌ Fehler beim Hochladen: " + err.message);
+        }
       }
     });
 
@@ -322,6 +329,7 @@
     observeAuthState(user => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
+        profileImg.src = user.photoURL || "assets/avatar-default.png";
       } else {
         window.location.href = "index.html";
       }
