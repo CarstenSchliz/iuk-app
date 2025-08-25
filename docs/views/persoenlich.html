@@ -92,6 +92,7 @@
     --dunkelblau: rgb(0,45,85);
     --hellblau: rgb(100,160,220);
     --hellgrau: rgb(239,238,234);
+    --blassblau: rgb(230,240,250);
   }
 
   .page-title {
@@ -134,9 +135,10 @@
     padding: 1rem 0.75rem 0.25rem 0.75rem;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background: transparent;
+    background: #fff;
     font-size: 1rem;
     box-sizing: border-box;
+    transition: background 0.2s, border-color 0.2s;
   }
   .form-group.floating label {
     position: absolute;
@@ -156,6 +158,12 @@
     left: 0.6rem;
     font-size: 0.8rem;
     color: var(--dunkelblau);
+  }
+
+  /* Blassblau nur wenn etwas drinsteht */
+  .form-group.floating input:not(:placeholder-shown) {
+    background: var(--blassblau);
+    border-color: var(--dunkelblau);
   }
 
   .form-row {
@@ -244,8 +252,8 @@
   // Userdaten laden
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      emailField.value = user.email || "";      // Nur im Formular anzeigen
-      nameField.value = user.displayName || ""; // Name ins Formular
+      emailField.value = user.email || "";
+      nameField.value = user.displayName || "";
       if (sidebarName) sidebarName.textContent = user.displayName || user.email.split("@")[0];
     }
   });
