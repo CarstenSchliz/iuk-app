@@ -1,13 +1,13 @@
-const CACHE_NAME = "pwa-cache-v28";   // <--- hochzählen bei Änderungen
+const CACHE_NAME = "pwa-cache-v30";   // bei jedem Update hochzählen!
 
 const URLS_TO_CACHE = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./assets/iuk-192.png",
-  "./assets/iuk-512.png",
-  "./assets/iuk-lernwelt-512.png",
-  "./assets/avatar-default.png"   // Default-Avatar
+  "/iuk-app/assets/iuk-192.png",
+  "/iuk-app/assets/iuk-512.png",
+  "/iuk-app/assets/iuk-lernwelt-512.png",
+  "/iuk-app/assets/avatar-default.png"   // Default-Avatar
 ];
 
 // Installation: wichtige App-Dateien vorab cachen
@@ -17,7 +17,7 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Alte Caches löschen
+// Aktivierung: alte Caches löschen
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) =>
@@ -30,7 +30,7 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch-Handler
+// Fetch-Handler: Hybrid-Strategie
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
@@ -40,20 +40,20 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 👉 Firebase Storage: NIE cachen (Profilbilder etc.)
+  // 👉 Firebase Storage (Profilbilder) → niemals cachen
   if (url.origin.includes("firebasestorage.googleapis.com")) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // 👉 Externe Ressourcen (CDNs, APIs): immer Netz
+  // 👉 Externe Ressourcen (CDNs, APIs) → immer aus dem Netz
   if (url.origin !== self.location.origin) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // 👉 Eigene Assets (z. B. /iuk-app/assets/...): Cache mit Fallback Netz
-  if (url.pathname.includes("assets/")) {
+  // 👉 Eigene Assets (/iuk-app/assets/...) → Cache mit Fallback Netz
+  if (url.pathname.includes("/iuk-app/assets/")) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
         return cachedResponse || fetch(event.request);
