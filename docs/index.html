@@ -18,7 +18,7 @@
       --hellgrau: rgb(239,238,234);
       --dunkelgrau: rgb(85,79,74);
       --mittelgrau: rgb(180,180,180);
-      --hellblau: rgb(100,160,220);
+      --blassblau: rgb(230,240,250); /* sehr helles Blau */
     }
 
     html, body {
@@ -130,10 +130,9 @@
       transition: background 0.2s, border-color 0.2s;
     }
 
-    /* Einheitlicher Fokus-Stil */
-    .form-group input:focus,
+    /* Blassblau nur wenn etwas eingetragen ist */
     .form-group input:not(:placeholder-shown) {
-      background: var(--hellblau);
+      background: var(--blassblau);
       border-color: var(--dunkelblau);
     }
 
@@ -150,8 +149,8 @@
       padding: 0 0.2rem;
     }
 
-    .form-group input:focus + label,
-    .form-group input:not(:placeholder-shown) + label {
+    .form-group input:not(:placeholder-shown) + label,
+    .form-group input:focus + label {
       top: 0.15rem;
       font-size: 0.75rem;
       color: var(--dunkelgrau);
@@ -223,7 +222,9 @@
         margin: auto;
         padding: 1.5rem;
       }
-      .logo-top img { max-height: 150px; }
+      .logo-top img {
+        max-height: 150px;
+      }
     }
 
     /* Handy quer */
@@ -239,7 +240,9 @@
         margin: auto;
         padding: 1.5rem;
       }
-      .logo-top img { max-height: 120px; }
+      .logo-top img {
+        max-height: 120px;
+      }
     }
 
     /* === Modal & Toast Zusatzstyles === */
@@ -356,7 +359,7 @@
     </div>
 
     <div class="right">
-      <img src="assets/iuk-icon.png" alt="IuK Icon" 
+      <img src="assets/iuk-icon.png" alt="IuK Icon"
            onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=\'fallback\'>Bild nicht gefunden</div>');">
     </div>
   </div>
@@ -395,9 +398,8 @@
   <div id="toast"></div>
 
   <script type="module">
-    import { auth, login, register, resetPassword, translateFirebaseError } from "./js/firebase.js";
+    import { login, register, resetPassword, translateFirebaseError } from "./js/firebase.js";
 
-    // Toast Funktion
     function showToast(message, color = "#333") {
       const toast = document.getElementById("toast");
       toast.innerText = message;
@@ -420,13 +422,12 @@
       }
     });
 
-    // Registrierung Modal öffnen
+    // Registrierung Modal
     document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("register-modal").style.display = "flex";
     });
 
-    // Registrierung abschicken
     document.getElementById("reg-submit").addEventListener("click", async () => {
       const email = document.getElementById("reg-email").value;
       const password = document.getElementById("reg-pass").value;
@@ -439,13 +440,12 @@
       }
     });
 
-    // Passwort-Reset Modal öffnen
+    // Passwort zurücksetzen
     document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("reset-modal").style.display = "flex";
     });
 
-    // Passwort-Reset abschicken
     document.getElementById("reset-submit").addEventListener("click", async () => {
       const email = document.getElementById("reset-email").value;
       try {
@@ -457,7 +457,7 @@
       }
     });
 
-    // Close-Buttons in den Modals
+    // Modal Close
     document.querySelectorAll(".modal .close").forEach(btn => {
       btn.addEventListener("click", () => {
         btn.closest(".modal").style.display = "none";
