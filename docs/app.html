@@ -14,7 +14,7 @@
       --dunkelblau: rgb(0,45,85);
       --hellgrau: rgb(239,238,234);
       --mittelgrau: rgb(180,180,180);
-      --blassblau: rgb(230,240,250);
+      --blassblau: rgb(230,240,250); /* sehr helles Blau */
     }
 
     body {
@@ -202,6 +202,7 @@
       transition: background 0.2s, border-color 0.2s;
     }
 
+    /* Nur wenn etwas eingetragen ist → blassblau */
     input:not(:placeholder-shown),
     textarea:not(:placeholder-shown),
     select:valid {
@@ -219,7 +220,7 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <img src="/iuk-app/assets/avatar-default.png" alt="Profilbild" id="profileImg">
+      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
       <p>Teilnehmer</p>
@@ -248,7 +249,7 @@
   <script type="module">
     import { auth, logout, observeAuthState, uploadProfileImage } from "./js/firebase.js";
 
-    // Sidebar Toggle
+    // Sidebar Toggle (nur Mobile)
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
     if (menuToggle) {
@@ -257,7 +258,7 @@
       });
     }
 
-    // Content-Wechsel
+    // Content-Wechsel mit externen Views
     const content = document.getElementById("content");
     const buttons = document.querySelectorAll(".menu button");
 
@@ -268,7 +269,7 @@
         const html = await res.text();
         content.innerHTML = html;
 
-        // Skripte im geladenen View ausführen
+        // Skripte in geladenem View ausführen
         content.querySelectorAll("script").forEach(oldScript => {
           const newScript = document.createElement("script");
           if (oldScript.type) newScript.type = oldScript.type;
@@ -289,6 +290,8 @@
         const page = btn.getAttribute("data-page");
         loadPage(page);
         sidebar.classList.remove("active");
+
+        // aktives Menü hervorheben
         buttons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
       });
@@ -306,7 +309,7 @@
       if (file && user) {
         try {
           const url = await uploadProfileImage(user, file);
-          profileImg.src = url + "?v=" + Date.now();
+          profileImg.src = url; // direkt aktualisieren
           alert("✅ Profilbild aktualisiert!");
         } catch (err) {
           alert("❌ Fehler beim Hochladen: " + err.message);
@@ -323,20 +326,16 @@
 
     // Login-Check + Userdaten
     const userName = document.getElementById("userName");
-    observeAuthState(async (user) => {
+    observeAuthState(user => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
-        if (user.photoURL) {
-          profileImg.src = user.photoURL + "?v=" + Date.now();
-        } else {
-          profileImg.src = "/iuk-app/assets/avatar-default.png";
-        }
+        profileImg.src = user.photoURL || "assets/avatar-default.png";
       } else {
         window.location.href = "index.html";
       }
     });
 
-    // Darkmode
+    // Darkmode Handling
     if (localStorage.getItem("theme") === "dark") {
       document.body.classList.add("dark");
     }
