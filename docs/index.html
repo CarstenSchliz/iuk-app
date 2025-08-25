@@ -18,6 +18,7 @@
       --hellgrau: rgb(239,238,234);
       --dunkelgrau: rgb(85,79,74);
       --mittelgrau: rgb(180,180,180);
+      --hellblau: rgb(100,160,220);
     }
 
     html, body {
@@ -124,8 +125,16 @@
       padding: 0.9rem 0.8rem 0.5rem 2.5rem;
       font-size: 1rem;
       outline: none;
-      background: transparent;
+      background: #fff;
       box-sizing: border-box;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    /* Einheitlicher Fokus-Stil */
+    .form-group input:focus,
+    .form-group input:not(:placeholder-shown) {
+      background: var(--hellblau);
+      border-color: var(--dunkelblau);
     }
 
     .form-group label {
@@ -214,12 +223,7 @@
         margin: auto;
         padding: 1.5rem;
       }
-      .logo-top img {
-        max-height: 150px;
-      }
-      h1 {
-        margin: 0.8rem 0 0.5rem 0;
-      }
+      .logo-top img { max-height: 150px; }
     }
 
     /* Handy quer */
@@ -235,12 +239,7 @@
         margin: auto;
         padding: 1.5rem;
       }
-      .logo-top img {
-        max-height: 120px;
-      }
-      h1 {
-        margin: 0.8rem 0 0.5rem 0;
-      }
+      .logo-top img { max-height: 120px; }
     }
 
     /* === Modal & Toast Zusatzstyles === */
@@ -269,15 +268,11 @@
       font-size: 1.25rem;
       margin: 0.5rem 0 1.2rem 0;
     }
-    .modal-content .form-group {
-      margin-bottom: 1.2rem;
-    }
+    .modal-content .form-group { margin-bottom: 1.2rem; }
     .modal-content .form-group input {
       padding: 0.9rem 0.8rem 0.5rem 0.8rem;
     }
-    .modal-content .form-group label {
-      left: 0.8rem;
-    }
+    .modal-content .form-group label { left: 0.8rem; }
     .modal-content button {
       width: 100%;
       padding: 0.7rem;
