@@ -13,8 +13,15 @@ import {
   sendEmailVerification, 
   signOut,
   onAuthStateChanged,
-  updateProfile   // <---- hinzugefügt
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import { 
+  getStorage, 
+  ref, 
+  uploadBytes, 
+  getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // === Deine Firebase Config ===
 const firebaseConfig = {
@@ -30,6 +37,7 @@ const firebaseConfig = {
 // === Initialisieren ===
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const storage = getStorage(app); // Storage verfügbar machen
 
 // Persistenz: User bleibt eingeloggt (auch nach Reload)
 setPersistence(auth, browserLocalPersistence);
@@ -78,13 +86,22 @@ export async function logout() {
   return signOut(auth);
 }
 
-// === Profil aktualisieren (Name etc.) ===
+// === Profil aktualisieren (Name oder Bild etc.) ===
 export async function updateUserProfile(user, data) {
   return updateProfile(user, data);
 }
 
 // === State Observer ===
-// Kann in app.html genutzt werden, um zu prüfen ob jemand eingeloggt ist
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
+}
+
+// === Profilbild Upload ===
+export async function uploadProfileImage(user, file) {
+  if (!user) throw new Error("Kein Benutzer angemeldet");
+  const imageRef = ref(storage, `profileImages/${user.uid}/avatar.png`);
+  await uploadBytes(imageRef, file);
+  const url = await getDownloadURL(imageRef);
+  await updateProfile(user, { photoURL: url });
+  return url;
 }
