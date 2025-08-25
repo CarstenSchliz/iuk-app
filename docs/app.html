@@ -12,9 +12,9 @@
     :root {
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
-      --hellblau: rgb(100,160,220);
       --hellgrau: rgb(239,238,234);
       --mittelgrau: rgb(180,180,180);
+      --blassblau: rgb(230,240,250); /* sehr helles Blau */
     }
 
     body {
@@ -26,7 +26,7 @@
       overflow: hidden;
     }
 
-    /* Sidebar Weiß-Layout */
+    /* Sidebar */
     .sidebar {
       background: #fff;
       color: #000;
@@ -90,8 +90,8 @@
     .menu button:hover,
     .menu button.active,
     .logout:hover {
-      background: var(--hellblau);
-      color: #fff;
+      background: var(--blassblau);
+      color: #000;
     }
 
     .logout {
@@ -125,7 +125,7 @@
       overflow-y: auto;
     }
 
-    /* Menü-Button standardmäßig ausblenden */
+    /* Menü-Button */
     .menu-toggle {
       display: none;
     }
@@ -161,7 +161,7 @@
       }
     }
 
-    /* Darkmode (global) */
+    /* Darkmode */
     body.dark {
       background: #0d0d0d;
       color: #f5f5f5;
@@ -177,15 +177,15 @@
     body.dark .sidebar .menu button:hover,
     body.dark .sidebar .menu button.active,
     body.dark .sidebar .logout:hover {
-      background: var(--hellblau);
-      color: #fff;
+      background: var(--blassblau);
+      color: #000;
     }
     body.dark .profile h2,
     body.dark .profile p {
       color: #f5f5f5;
     }
 
-    /* Einheitlicher Fokus-Stil für ALLE beschreibbaren Felder */
+    /* Einheitlicher Stil für Eingabefelder */
     input[type="text"],
     input[type="email"],
     input[type="password"],
@@ -196,18 +196,17 @@
       background: #fff;
       border: 1px solid var(--mittelgrau);
       border-radius: 6px;
-      outline: none;
-      transition: background 0.2s, border-color 0.2s;
       padding: 0.5rem;
       font-size: 1rem;
+      outline: none;
+      transition: background 0.2s, border-color 0.2s;
     }
 
-    input:focus,
-    textarea:focus,
-    select:focus,
+    /* Nur wenn etwas eingetragen ist → blassblau */
     input:not(:placeholder-shown),
-    textarea:not(:placeholder-shown) {
-      background: var(--hellblau);
+    textarea:not(:placeholder-shown),
+    select:valid {
+      background: var(--blassblau);
       border-color: var(--dunkelblau);
     }
   </style>
@@ -270,7 +269,7 @@
         const html = await res.text();
         content.innerHTML = html;
 
-        // Skripte in geladenem View neu ausführen
+        // Skripte in geladenem View ausführen
         content.querySelectorAll("script").forEach(oldScript => {
           const newScript = document.createElement("script");
           if (oldScript.type) newScript.type = oldScript.type;
@@ -298,7 +297,7 @@
       });
     });
 
-    // Profilbild Upload (lokal, später Firebase Storage)
+    // Profilbild Upload
     const profileImg = document.getElementById("profileImg");
     const profileUpload = document.getElementById("profileUpload");
     profileImg.addEventListener("click", () => profileUpload.click());
@@ -328,7 +327,7 @@
       }
     });
 
-    // Darkmode Handling zentral
+    // Darkmode Handling
     if (localStorage.getItem("theme") === "dark") {
       document.body.classList.add("dark");
     }
