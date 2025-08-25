@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwa-cache-v24";   // <--- hochzählen, wenn du SW neu veröffentlichst
+const CACHE_NAME = "pwa-cache-v25";   // <--- hochzählen, wenn du SW neu veröffentlichst
 
 const URLS_TO_CACHE = [
   "./",
