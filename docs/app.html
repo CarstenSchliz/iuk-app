@@ -164,7 +164,7 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <!-- Default-Avatar immer gesetzt -->
+      <!-- Default Avatar IMMER als Start -->
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
@@ -214,7 +214,6 @@
         const html = await res.text();
         content.innerHTML = html;
 
-        // Skripte aus geladenem View starten
         content.querySelectorAll("script").forEach(oldScript => {
           const newScript = document.createElement("script");
           if (oldScript.type) newScript.type = oldScript.type;
