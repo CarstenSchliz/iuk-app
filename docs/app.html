@@ -14,6 +14,7 @@
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
       --hellgrau: rgb(239,238,234);
+      --mittelgrau: rgb(180,180,180);
     }
 
     body {
@@ -183,6 +184,32 @@
     body.dark .profile p {
       color: #f5f5f5;
     }
+
+    /* Einheitlicher Fokus-Stil für ALLE beschreibbaren Felder */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select {
+      background: #fff;
+      border: 1px solid var(--mittelgrau);
+      border-radius: 6px;
+      outline: none;
+      transition: background 0.2s, border-color 0.2s;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus,
+    input:not(:placeholder-shown),
+    textarea:not(:placeholder-shown) {
+      background: var(--hellblau);
+      border-color: var(--dunkelblau);
+    }
   </style>
 </head>
 <body>
@@ -223,7 +250,7 @@
   <script type="module">
     import { auth, logout, observeAuthState } from "./js/firebase.js";
 
-    // Sidebar Toggle (nur Mobile, da Button am PC nicht sichtbar ist)
+    // Sidebar Toggle (nur Mobile)
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
     if (menuToggle) {
@@ -232,7 +259,7 @@
       });
     }
 
-    // Content Wechsel mit externen Views
+    // Content-Wechsel mit externen Views
     const content = document.getElementById("content");
     const buttons = document.querySelectorAll(".menu button");
 
@@ -243,7 +270,7 @@
         const html = await res.text();
         content.innerHTML = html;
 
-        // Skripte aus geladenem View ausführen
+        // Skripte in geladenem View neu ausführen
         content.querySelectorAll("script").forEach(oldScript => {
           const newScript = document.createElement("script");
           if (oldScript.type) newScript.type = oldScript.type;
@@ -271,7 +298,7 @@
       });
     });
 
-    // Profilbild Upload (noch lokal, später Firebase Storage)
+    // Profilbild Upload (lokal, später Firebase Storage)
     const profileImg = document.getElementById("profileImg");
     const profileUpload = document.getElementById("profileUpload");
     profileImg.addEventListener("click", () => profileUpload.click());
