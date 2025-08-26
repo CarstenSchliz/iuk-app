@@ -14,6 +14,7 @@
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --mittelblau: rgb(0,140,205);
+      --volltonblau: rgb(34,117,208);
       --hellgrau: rgb(239,238,234);
       --dunkelgrau: rgb(85,79,74);
       --mittelgrau: rgb(180,180,180);
@@ -78,6 +79,7 @@
       box-sizing: border-box;
     }
 
+    .logo-top { margin-bottom: 0.5rem; }
     .logo-top img { max-height: 160px; }
 
     h1 {
@@ -106,13 +108,35 @@
       padding: 0.9rem 0.8rem 0.5rem 2.5rem;
       font-size: 1rem;
       outline: none;
-      background: transparent;
+      background: #fff;
       box-sizing: border-box;
+      transition: background 0.2s, border-color 0.2s;
     }
 
+    /* Blassblau nur wenn etwas eingetragen ist */
     .form-group input:not(:placeholder-shown) {
       background: var(--blassblau);
       border-color: var(--dunkelblau);
+    }
+
+    .form-group label {
+      position: absolute;
+      top: 50%;
+      left: 2.5rem;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: var(--dunkelgrau);
+      pointer-events: none;
+      transition: 0.2s ease all;
+      background: #fff;
+      padding: 0 0.2rem;
+    }
+
+    .form-group input:not(:placeholder-shown) + label,
+    .form-group input:focus + label {
+      top: 0.15rem;
+      font-size: 0.75rem;
+      color: var(--dunkelgrau);
     }
 
     .form-group i {
@@ -137,21 +161,29 @@
       margin-top: 0.5rem;
     }
 
-    .links {
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      text-align: center;
-    }
-
+    .links { margin-top: 2rem; font-size: 0.85rem; text-align: center; }
+    .links .section { margin-bottom: 1.8rem; }
+    .links span { display: block; margin-bottom: 0.3rem; color: var(--dunkelgrau); }
+    .links a { display: block; text-decoration: none; margin-top: 0.3rem; }
     .links a.register { color: var(--softrot); font-weight: bold; }
     .links a.forgot { color: var(--dunkelblau); }
 
-    /* Modal */
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+      .right { display: none; }
+      .login-box { width: 90%; margin: auto; padding: 1.5rem; }
+      .logo-top img { max-height: 150px; }
+    }
+
+    /* === Modal & Toast Zusatzstyles === */
     .modal {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       display: none;
-      justify-content: center; align-items: center;
+      justify-content: center;
+      align-items: center;
       background: rgba(0,0,0,0.5);
       z-index: 1000;
     }
@@ -159,26 +191,55 @@
       background: #fff;
       padding: 2rem;
       border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
       max-width: 500px;
       width: 90%;
       text-align: center;
       box-sizing: border-box;
     }
     .modal-content h2 {
-      color: var(--dunkelblau);
-      margin-bottom: 1rem;
+      color: var(--dunkelblau); /* dunkelblau */
+      font-size: 1.25rem;
+      margin: 0.5rem 0 1.2rem 0;
     }
-    .modal-content input {
-      width: 100%; padding: 0.7rem; margin: 0.5rem 0;
-      border: 1px solid var(--mittelgrau); border-radius: 6px;
-    }
+    .modal-content .form-group { margin-bottom: 1.2rem; }
+    .modal-content .form-group input { padding: 0.9rem 0.8rem 0.5rem 0.8rem; }
+    .modal-content .form-group label { left: 0.8rem; }
     .modal-content button {
-      margin-top: 0.5rem; padding: 0.7rem;
-      border: none; border-radius: 6px;
+      width: 100%;
+      padding: 0.7rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: bold;
       cursor: pointer;
+      margin-top: 0.5rem;
     }
-    .modal-content .primary { background: var(--drk-rot); color:#fff; }
-    .modal-content .close { background: var(--mittelgrau); color:#fff; }
+    .modal-content button.primary { background: var(--drk-rot); color: white; }
+    .modal-content button.close { background: var(--mittelgrau); color: white; }
+
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      margin-left: -125px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 2000;
+      left: 50%;
+      bottom: 30px;
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity 0.5s, bottom 0.5s;
+    }
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
   </style>
 </head>
 <body>
@@ -188,7 +249,6 @@
         <div class="logo-top">
           <img src="assets/drk-icon.png" alt="DRK Logo">
         </div>
-
         <h1>Willkommen in der IuK Lernwelt</h1>
         <p class="subtitle">Melden Sie sich mit Ihren Zugangsdaten an</p>
 
@@ -209,10 +269,12 @@
         </form>
 
         <div class="links">
-          <div><span>Ich habe noch keinen Zugang</span>
+          <div class="section">
+            <span>Ich habe noch keinen Zugang</span>
             <a href="#" class="register">Jetzt registrieren!</a>
           </div>
-          <div><span>Passwort vergessen?</span>
+          <div class="section">
+            <span>Passwort vergessen?</span>
             <a href="#" class="forgot">Neues Passwort per Mail anfordern</a>
           </div>
         </div>
@@ -224,31 +286,54 @@
     </div>
   </div>
 
-  <!-- Registrierung Modal -->
+  <!-- Registrierung -->
   <div id="register-modal" class="modal">
     <div class="modal-content">
       <h2>Registrieren</h2>
-      <input type="text" id="reg-name" placeholder="Name" required>
-      <input type="email" id="reg-email" placeholder="E-Mail" required>
-      <input type="password" id="reg-pass" placeholder="Passwort" required>
+      <div class="form-group">
+        <input type="text" id="reg-name" placeholder=" " required>
+        <label for="reg-name">Name</label>
+      </div>
+      <div class="form-group">
+        <input type="email" id="reg-email" placeholder=" " required>
+        <label for="reg-email">E-Mail-Adresse</label>
+      </div>
+      <div class="form-group">
+        <input type="password" id="reg-pass" placeholder=" " required>
+        <label for="reg-pass">Passwort</label>
+      </div>
       <button id="reg-submit" class="primary">Registrieren</button>
       <button class="close">Abbrechen</button>
     </div>
   </div>
 
-  <!-- Passwort Reset Modal -->
+  <!-- Passwort zurücksetzen -->
   <div id="reset-modal" class="modal">
     <div class="modal-content">
       <h2>Passwort zurücksetzen</h2>
-      <input type="email" id="reset-email" placeholder="E-Mail" required>
+      <div class="form-group">
+        <input type="email" id="reset-email" placeholder=" " required>
+        <label for="reset-email">E-Mail-Adresse</label>
+      </div>
       <button id="reset-submit" class="primary">Zurücksetzen</button>
       <button class="close">Abbrechen</button>
     </div>
   </div>
 
-  <!-- Firebase / Auth -->
+  <!-- Toast -->
+  <div id="toast"></div>
+
   <script type="module">
-    import { login, register, resetPassword, translateFirebaseError, updateUserProfile } from "./js/firebase.js";
+    import { auth, login, register, resetPassword, translateFirebaseError, updateUserProfile } from "./js/firebase.js";
+
+    // Toast Funktion
+    function showToast(message, color = "#333") {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.style.backgroundColor = color;
+      toast.className = "show";
+      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+    }
 
     // Login
     document.getElementById("login-form").addEventListener("submit", async (e) => {
@@ -257,50 +342,57 @@
       const password = document.getElementById("password").value;
       try {
         await login(email, password);
+        showToast("Login erfolgreich!", "green");
         window.location.href = "app.html";
       } catch (err) {
-        alert(translateFirebaseError(err.code));
+        showToast(translateFirebaseError(err.code), "red");
       }
     });
 
-    // Registrierung
-    document.querySelector(".register").addEventListener("click", e => {
+    // Registrierung Modal öffnen
+    document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("register-modal").style.display = "flex";
     });
+
+    // Registrierung abschicken
     document.getElementById("reg-submit").addEventListener("click", async () => {
       const name = document.getElementById("reg-name").value;
       const email = document.getElementById("reg-email").value;
       const password = document.getElementById("reg-pass").value;
       try {
-        const cred = await register(email, password);
-        if (name) await updateUserProfile(cred.user, { displayName: name });
-        alert("✅ Registrierung erfolgreich! Bitte E-Mail bestätigen.");
+        const userCred = await register(email, password);
+        await updateUserProfile(userCred.user, { displayName: name });
+        showToast("Registrierung erfolgreich! Bitte E-Mail bestätigen.", "green");
         document.getElementById("register-modal").style.display = "none";
       } catch (err) {
-        alert(translateFirebaseError(err.code));
+        showToast(translateFirebaseError(err.code), "red");
       }
     });
 
-    // Passwort Reset
-    document.querySelector(".forgot").addEventListener("click", e => {
+    // Passwort-Reset Modal öffnen
+    document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("reset-modal").style.display = "flex";
     });
+
+    // Passwort-Reset abschicken
     document.getElementById("reset-submit").addEventListener("click", async () => {
       const email = document.getElementById("reset-email").value;
       try {
         await resetPassword(email);
-        alert("✅ Passwort-Reset E-Mail gesendet!");
+        showToast("E-Mail zum Zurücksetzen wurde verschickt!", "green");
         document.getElementById("reset-modal").style.display = "none";
       } catch (err) {
-        alert(translateFirebaseError(err.code));
+        showToast(translateFirebaseError(err.code), "red");
       }
     });
 
-    // Modal schließen
+    // Close-Buttons in den Modals
     document.querySelectorAll(".modal .close").forEach(btn => {
-      btn.addEventListener("click", () => btn.closest(".modal").style.display = "none");
+      btn.addEventListener("click", () => {
+        btn.closest(".modal").style.display = "none";
+      });
     });
   </script>
 
