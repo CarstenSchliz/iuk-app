@@ -242,8 +242,6 @@
   import { updateProfile, onAuthStateChanged } 
     from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
-  console.log("👉 Aktueller auth:", auth);
-
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
   const profileMsg = document.getElementById("profileMsg");
@@ -263,7 +261,7 @@
     }
   });
 
-  // Name speichern + Sidebar aktualisieren
+  // Name speichern
   saveBtn.addEventListener("click", async () => {
     console.log("👉 Speichern geklickt");
     const user = auth.currentUser;
@@ -287,6 +285,7 @@
       await updateProfile(user, { displayName: newName });
       console.log("✅ updateProfile erfolgreich");
 
+      // Sidebar sofort aktualisieren
       if (sidebarName) sidebarName.textContent = newName;
 
       profileMsg.style.color = "green";
