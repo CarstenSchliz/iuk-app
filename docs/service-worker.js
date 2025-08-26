@@ -1,51 +1,61 @@
-const CACHE_NAME = "pwa-cache-v32";  // bei Änderungen hochzählen!
+// Version bitte bei jeder Änderung hochzählen
+const CACHE_NAME = "pwa-cache-v23";
 
 const URLS_TO_CACHE = [
   "./",
   "./index.html",
   "./manifest.json",
-  "assets/avatar-default.png",
-  "assets/iuk-192.png",
-  "assets/iuk-512.png",
-  "assets/iuk-lernwelt-512.png"
+  "./assets/iuk-192.png",
+  "./assets/iuk-512.png",
+  "./assets/iuk-lernwelt-512.png",
+  "./assets/avatar-default.png"  // Standard-Avatar immer verfügbar
 ];
 
-// Installation: App-Dateien und Standard-Assets cachen
+// Installieren → Grundgerüst cachen
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(URLS_TO_CACHE))
   );
 });
 
-// Aktivierung: alte Caches löschen
+// Aktivieren → alte Caches löschen
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((names) =>
-      Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)))
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      )
     )
   );
 });
 
-// Fetch-Handler
+// Fetch-Strategie
 self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
+  const url = event.request.url;
 
-  // 👉 Firebase Storage immer Netz
-  if (url.origin.includes("firebasestorage.googleapis.com")) return;
+  // Firebase Storage oder andere externe URLs nie cachen
+  if (url.includes("firebasestorage.googleapis.com")) {
+    return event.respondWith(fetch(event.request));
+  }
 
-  // 👉 Externe Domains immer Netz
-  if (url.origin !== self.location.origin) return;
-
-  // 👉 Eigene Dateien: Cache-First
+  // Standard: Cache First, dann Netzwerk
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-
+      if (cachedResponse) {
+        return cachedResponse;
+      }
       return fetch(event.request).then((networkResponse) => {
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
+        // nur gleiche-Origin Dateien cachen
+        if (event.request.url.startsWith(self.location.origin)) {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
+        } else {
           return networkResponse;
-        });
+        }
       });
     })
   );
