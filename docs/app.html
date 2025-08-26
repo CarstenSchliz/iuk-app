@@ -269,8 +269,14 @@
     observeAuthState(user => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
+
         if (user.photoURL) {
           profileImg.src = user.photoURL + "&t=" + Date.now();
+          // Falls Bild ungültig -> zurück auf Default
+          profileImg.onerror = () => {
+            console.warn("Profilbild ungültig, Default wird geladen.");
+            profileImg.src = "assets/avatar-default.png";
+          };
         } else {
           profileImg.src = "assets/avatar-default.png";
         }
