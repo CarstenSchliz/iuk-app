@@ -236,9 +236,13 @@
 </style>
 
 <script type="module">
+  console.log("✅ persoenlich.html geladen");
+
   import { auth } from "../js/firebase.js";
   import { updateProfile, onAuthStateChanged } 
     from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+  console.log("👉 Aktueller auth:", auth);
 
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
@@ -251,6 +255,7 @@
 
   // Userdaten laden
   onAuthStateChanged(auth, (user) => {
+    console.log("🔍 onAuthStateChanged fired, user:", user);
     if (user) {
       emailField.value = user.email || "";
       nameField.value = user.displayName || "";
@@ -260,8 +265,12 @@
 
   // Name speichern + Sidebar aktualisieren
   saveBtn.addEventListener("click", async () => {
+    console.log("👉 Speichern geklickt");
     const user = auth.currentUser;
     const newName = nameField.value.trim();
+
+    console.log("Aktueller User:", user);
+    console.log("Neuer Name:", newName);
 
     if (!user) {
       profileMsg.style.color = "red";
@@ -276,14 +285,14 @@
 
     try {
       await updateProfile(user, { displayName: newName });
+      console.log("✅ updateProfile erfolgreich");
 
-      // Sidebar sofort aktualisieren
       if (sidebarName) sidebarName.textContent = newName;
 
       profileMsg.style.color = "green";
       profileMsg.textContent = "✅ Änderungen gespeichert!";
     } catch (err) {
-      console.error("Fehler beim Update:", err);
+      console.error("❌ Fehler beim updateProfile:", err);
       profileMsg.style.color = "red";
       profileMsg.textContent = "❌ Fehler: " + err.message;
     }
