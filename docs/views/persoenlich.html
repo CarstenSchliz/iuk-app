@@ -260,23 +260,31 @@
 
   // Name speichern + Sidebar aktualisieren
   profileForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // ⛔ kein Reload
+
     const user = auth.currentUser;
+    const newName = nameField.value.trim();
+
+    if (!user || !newName) return;
+
     try {
-      if (user) {
-        await updateProfile(user, { displayName: nameField.value });
-        if (sidebarName) sidebarName.textContent = nameField.value;
-        profileMsg.style.color = "green";
-        profileMsg.textContent = "✅ Änderungen gespeichert!";
-      }
+      await updateProfile(user, { displayName: newName });
+
+      // Sidebar sofort aktualisieren
+      if (sidebarName) sidebarName.textContent = newName;
+
+      profileMsg.style.color = "green";
+      profileMsg.textContent = "✅ Änderungen gespeichert!";
     } catch (err) {
+      console.error("Fehler beim Update:", err);
       profileMsg.style.color = "red";
       profileMsg.textContent = "❌ Fehler: " + err.message;
     }
   });
 
-  // Zurück → Dashboard
-  backBtn.addEventListener("click", () => {
+  // Zurück → Dashboard laden
+  backBtn.addEventListener("click", (e) => {
+    e.preventDefault();
     window.location.hash = "#dashboard";
   });
 
