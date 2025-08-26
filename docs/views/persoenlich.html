@@ -45,7 +45,7 @@
           <button type="button" id="backBtn" class="btn-secondary">
             ← Zurück
           </button>
-          <button type="submit" class="btn-primary">
+          <button type="button" id="saveBtn" class="btn-primary">
             <i class="bi bi-save"></i> Speichern
           </button>
         </div>
@@ -242,9 +242,9 @@
 
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
-  const profileForm = document.getElementById("profileForm");
   const profileMsg = document.getElementById("profileMsg");
   const backBtn = document.getElementById("backBtn");
+  const saveBtn = document.getElementById("saveBtn");
 
   // Sidebar Name holen
   const sidebarName = document.getElementById("userName");
@@ -259,13 +259,20 @@
   });
 
   // Name speichern + Sidebar aktualisieren
-  profileForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // ⛔ kein Reload
-
+  saveBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
     const newName = nameField.value.trim();
 
-    if (!user || !newName) return;
+    if (!user) {
+      profileMsg.style.color = "red";
+      profileMsg.textContent = "❌ Kein Benutzer eingeloggt.";
+      return;
+    }
+    if (!newName) {
+      profileMsg.style.color = "red";
+      profileMsg.textContent = "❌ Bitte Namen eingeben.";
+      return;
+    }
 
     try {
       await updateProfile(user, { displayName: newName });
