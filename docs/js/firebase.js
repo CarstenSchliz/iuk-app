@@ -1,26 +1,26 @@
 // public/js/firebase.js
-// Firebase Setup & Auth-Funktionen ausgelagert
+// Firebase Setup & Auth-Funktionen
 
 // Importiere Firebase Module
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getAuth, 
+import {
+  getAuth,
   setPersistence,
   browserLocalPersistence,
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  sendPasswordResetEmail, 
-  sendEmailVerification, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  sendEmailVerification,
   signOut,
   onAuthStateChanged,
   updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import { 
-  getStorage, 
-  ref, 
-  uploadBytes, 
-  getDownloadURL 
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // === Deine Firebase Config ===
@@ -28,7 +28,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
   authDomain: "iuk-app.firebaseapp.com",
   projectId: "iuk-app",
-  storageBucket: "iuk-app.firebasestorage.app",
+  storageBucket: "iuk-app.appspot.com",   // ✅ korrigiert
   messagingSenderId: "759014128178",
   appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
   measurementId: "G-ZPD5VPD5TS"
@@ -37,7 +37,7 @@ const firebaseConfig = {
 // === Initialisieren ===
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const storage = getStorage(app); // Storage verfügbar machen
+const storage = getStorage(app);
 
 // Persistenz: User bleibt eingeloggt (auch nach Reload)
 setPersistence(auth, browserLocalPersistence);
@@ -86,22 +86,25 @@ export async function logout() {
   return signOut(auth);
 }
 
-// === Profil aktualisieren (Name oder Bild etc.) ===
+// === Profil aktualisieren (Name etc.) ===
 export async function updateUserProfile(user, data) {
   return updateProfile(user, data);
 }
 
-// === State Observer ===
-export function observeAuthState(callback) {
-  onAuthStateChanged(auth, callback);
+// === Profilbild hochladen ===
+export async function uploadProfileImage(user, file) {
+  if (!user) throw new Error("Kein Nutzer eingeloggt.");
+
+  const storageRef = ref(storage, `profileImages/${user.uid}/avatar.png`);
+  await uploadBytes(storageRef, file);
+
+  const url = await getDownloadURL(storageRef);
+  // ✅ Cache-Buster: mit &t=..., nicht ?t=...
+  return url + "&t=" + Date.now();
 }
 
-// === Profilbild Upload ===
-export async function uploadProfileImage(user, file) {
-  if (!user) throw new Error("Kein Benutzer angemeldet");
-  const imageRef = ref(storage, `profileImages/${user.uid}/avatar.png`);
-  await uploadBytes(imageRef, file);
-  const url = await getDownloadURL(imageRef);
-  await updateProfile(user, { photoURL: url });
-  return url;
+// === State Observer ===
+// Kann in app.html genutzt werden, um zu prüfen ob jemand eingeloggt ist
+export function observeAuthState(callback) {
+  onAuthStateChanged(auth, callback);
 }
