@@ -1,7 +1,7 @@
 // public/js/firebase.js
 // Firebase Setup & Auth-Funktionen
 
-// Importiere Firebase Module
+// === Firebase Module importieren ===
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
@@ -28,7 +28,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
   authDomain: "iuk-app.firebaseapp.com",
   projectId: "iuk-app",
-  storageBucket: "iuk-app.appspot.com",   // ✅ korrigiert
+  storageBucket: "iuk-app.appspot.com",
   messagingSenderId: "759014128178",
   appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
   measurementId: "G-ZPD5VPD5TS"
@@ -91,7 +91,7 @@ export async function updateUserProfile(user, data) {
   return updateProfile(user, data);
 }
 
-// === Profilbild hochladen ===
+// === Profilbild hochladen & speichern ===
 export async function uploadProfileImage(user, file) {
   if (!user) throw new Error("Kein Nutzer eingeloggt.");
 
@@ -99,7 +99,11 @@ export async function uploadProfileImage(user, file) {
   await uploadBytes(storageRef, file);
 
   const url = await getDownloadURL(storageRef);
-  // ✅ Cache-Buster: mit &t=..., nicht ?t=...
+
+  // ✅ Wichtig: im Auth-Profil merken, damit es beim Login wiederkommt
+  await updateProfile(user, { photoURL: url });
+
+  // Cache-Buster, damit Browser das neue Bild sofort zeigt
   return url + "&t=" + Date.now();
 }
 
