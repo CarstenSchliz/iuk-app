@@ -164,7 +164,7 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <!-- Default Avatar IMMER als Start -->
+      <!-- Default Avatar -->
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
@@ -214,6 +214,7 @@
         const html = await res.text();
         content.innerHTML = html;
 
+        // eingebettete Scripts neu laden
         content.querySelectorAll("script").forEach(oldScript => {
           const newScript = document.createElement("script");
           if (oldScript.type) newScript.type = oldScript.type;
@@ -248,7 +249,7 @@
       if (file && user) {
         try {
           const url = await uploadProfileImage(user, file);
-          profileImg.src = url + "?t=" + Date.now(); // sofort aktualisieren
+          profileImg.src = url; // sofort aktualisieren
           alert("✅ Profilbild aktualisiert!");
         } catch (err) {
           alert("❌ Fehler beim Hochladen: " + err.message);
@@ -269,7 +270,9 @@
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
         if (user.photoURL) {
-          profileImg.src = user.photoURL + "?t=" + Date.now();
+          profileImg.src = user.photoURL + "&t=" + Date.now();
+        } else {
+          profileImg.src = "assets/avatar-default.png";
         }
       } else {
         window.location.href = "index.html";
