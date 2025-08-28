@@ -1,1 +1,130 @@
 
+<h2 class="page-title">Lernmaterialien</h2>
+
+<div class="card">
+  <h3><i class="bi bi-folder"></i> Materialien</h3>
+  <div id="materialsTree" class="tree">
+    <!-- Struktur wird hier dynamisch eingefügt -->
+  </div>
+</div>
+
+<style>
+  :root {
+    --softrot: rgb(228,100,80);
+    --dunkelblau: rgb(0,45,85);
+    --hellgrau: rgb(239,238,234);
+    --blassblau: rgb(230,240,250);
+  }
+
+  .page-title {
+    color: var(--softrot);
+    margin-bottom: 1rem;
+  }
+
+  .card {
+    background: var(--card-bg, #fff);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+  }
+
+  .tree {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .tree ul {
+    list-style: none;
+    margin-left: 1.5rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid var(--blassblau);
+  }
+
+  .tree li {
+    margin: 0.5rem 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .tree li i {
+    color: var(--dunkelblau);
+  }
+
+  .tree li span {
+    flex-grow: 1;
+  }
+
+  .tree li:hover {
+    background: var(--blassblau);
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
+  }
+
+  /* Darkmode */
+  body.dark .card {
+    background: #1e1e1e;
+    color: #f0f0f0;
+  }
+  body.dark .tree ul {
+    border-left-color: #444;
+  }
+  body.dark .tree li:hover {
+    background: #333;
+  }
+</style>
+
+<script type="module">
+  console.log("✅ materialien.html geladen");
+
+  import { auth } from "../js/firebase.js";
+
+  const treeContainer = document.getElementById("materialsTree");
+
+  // Beispielstruktur zum Testen
+  const exampleStructure = {
+    global: {
+      name: "Global",
+      type: "folder",
+      children: {
+        einsatz: { name: "Einsatz", type: "folder", children: {} },
+        funk: { name: "Funktechnik", type: "folder", children: {} }
+      }
+    },
+    user: {
+      name: "Mein Ordner",
+      type: "folder",
+      children: {
+        notizen: { name: "Notizen", type: "folder", children: {} }
+      }
+    }
+  };
+
+  function renderTree(node, container) {
+    const ul = document.createElement("ul");
+    for (const key in node) {
+      const item = node[key];
+      const li = document.createElement("li");
+      if (item.type === "folder") {
+        li.innerHTML = `<i class="bi bi-folder"></i><span>${item.name}</span>`;
+        li.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const childContainer = li.querySelector("ul");
+          if (childContainer) {
+            childContainer.style.display =
+              childContainer.style.display === "none" ? "block" : "none";
+          }
+        });
+        renderTree(item.children, li);
+      } else {
+        li.innerHTML = `<i class="bi bi-file-earmark"></i><span>${item.name}</span>`;
+      }
+      ul.appendChild(li);
+    }
+    container.appendChild(ul);
+  }
+
+  renderTree(exampleStructure, treeContainer);
+</script>
