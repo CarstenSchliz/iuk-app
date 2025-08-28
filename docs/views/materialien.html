@@ -1,11 +1,8 @@
-
 <h2 class="page-title">Lernmaterialien</h2>
 
 <div class="card">
   <h3><i class="bi bi-folder"></i> Materialien</h3>
-  <div id="materialsTree" class="tree">
-    <!-- Struktur wird hier dynamisch eingefügt -->
-  </div>
+  <div id="materialsTree" class="tree"></div>
 </div>
 
 <style>
@@ -27,11 +24,6 @@
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     margin-bottom: 1.5rem;
-  }
-
-  .tree {
-    list-style: none;
-    padding-left: 0;
   }
 
   .tree ul {
@@ -83,21 +75,23 @@
 
   const treeContainer = document.getElementById("materialsTree");
 
-  // Beispielstruktur zum Testen
-  const exampleStructure = {
+  // Simulation: Daten aus Firestore (später echt)
+  const materials = {
     global: {
-      name: "Global",
       type: "folder",
+      name: "Global",
       children: {
-        einsatz: { name: "Einsatz", type: "folder", children: {} },
-        funk: { name: "Funktechnik", type: "folder", children: {} }
+        einsatz: { type: "folder", name: "Einsatz", children: {
+          doc1: { type: "file", name: "Einführung.pdf", url: "#" }
+        }},
+        funk: { type: "folder", name: "Funktechnik", children: {} }
       }
     },
     user: {
-      name: "Mein Ordner",
       type: "folder",
+      name: "Mein Ordner",
       children: {
-        notizen: { name: "Notizen", type: "folder", children: {} }
+        notizen: { type: "folder", name: "Notizen", children: {} }
       }
     }
   };
@@ -107,24 +101,26 @@
     for (const key in node) {
       const item = node[key];
       const li = document.createElement("li");
+
       if (item.type === "folder") {
         li.innerHTML = `<i class="bi bi-folder"></i><span>${item.name}</span>`;
+        renderTree(item.children, li);
         li.addEventListener("click", (e) => {
           e.stopPropagation();
-          const childContainer = li.querySelector("ul");
-          if (childContainer) {
-            childContainer.style.display =
-              childContainer.style.display === "none" ? "block" : "none";
+          const child = li.querySelector("ul");
+          if (child) {
+            child.style.display = child.style.display === "none" ? "block" : "none";
           }
         });
-        renderTree(item.children, li);
-      } else {
-        li.innerHTML = `<i class="bi bi-file-earmark"></i><span>${item.name}</span>`;
+      } else if (item.type === "file") {
+        li.innerHTML = `<i class="bi bi-file-earmark"></i>
+                        <a href="${item.url}" target="_blank">${item.name}</a>`;
       }
+
       ul.appendChild(li);
     }
     container.appendChild(ul);
   }
 
-  renderTree(exampleStructure, treeContainer);
+  renderTree(materials, treeContainer);
 </script>
