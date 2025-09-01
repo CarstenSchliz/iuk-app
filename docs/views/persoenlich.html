@@ -15,25 +15,25 @@
           <label for="name">Name</label>
         </div>
 
-        <!-- E-Mail -->
+        <!-- E-Mail (readonly) -->
         <div class="form-group floating">
           <input type="email" id="email" placeholder=" " readonly>
           <label for="email">E-Mail Adresse</label>
         </div>
 
-        <!-- Telefonnummern -->
+        <!-- Telefonnummern (nur Anzeige, keine Funktion) -->
         <div class="form-row">
           <div class="form-group floating">
-            <input type="tel" id="mobile" placeholder=" ">
+            <input type="tel" id="mobile" placeholder=" " readonly>
             <label for="mobile">Mobiltelefon</label>
           </div>
           <div class="form-group floating">
-            <input type="tel" id="phone" placeholder=" ">
+            <input type="tel" id="phone" placeholder=" " readonly>
             <label for="phone">Telefonnummer</label>
           </div>
         </div>
 
-        <!-- Rolle -->
+        <!-- Rolle (nur Anzeige) -->
         <div class="form-group floating">
           <input type="text" id="role" value="Teilnehmer" placeholder=" " readonly>
           <label for="role">Rolle</label>
@@ -238,9 +238,7 @@
 <script type="module">
   console.log("✅ persoenlich.html geladen");
 
-  import { auth } from "../js/firebase.js";
-  import { updateProfile, onAuthStateChanged } 
-    from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { auth, updateUserProfile, observeAuthState } from "../js/firebase.js";
 
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
@@ -248,27 +246,23 @@
   const backBtn = document.getElementById("backBtn");
   const saveBtn = document.getElementById("saveBtn");
 
-  // Sidebar Name holen
   const sidebarName = document.getElementById("userName");
 
   // Userdaten laden
-  onAuthStateChanged(auth, (user) => {
-    console.log("🔍 onAuthStateChanged fired, user:", user);
+  observeAuthState((user) => {
     if (user) {
       emailField.value = user.email || "";
       nameField.value = user.displayName || "";
-      if (sidebarName) sidebarName.textContent = user.displayName || user.email.split("@")[0];
+      if (sidebarName) {
+        sidebarName.textContent = user.displayName || user.email.split("@")[0];
+      }
     }
   });
 
   // Name speichern
   saveBtn.addEventListener("click", async () => {
-    console.log("👉 Speichern geklickt");
     const user = auth.currentUser;
     const newName = nameField.value.trim();
-
-    console.log("Aktueller User:", user);
-    console.log("Neuer Name:", newName);
 
     if (!user) {
       profileMsg.style.color = "red";
@@ -282,16 +276,14 @@
     }
 
     try {
-      await updateProfile(user, { displayName: newName });
-      console.log("✅ updateProfile erfolgreich");
+      await updateUserProfile(user, { displayName: newName });
 
-      // Sidebar sofort aktualisieren
       if (sidebarName) sidebarName.textContent = newName;
 
       profileMsg.style.color = "green";
-      profileMsg.textContent = "✅ Änderungen gespeichert!";
+      profileMsg.textContent = "✅ Name gespeichert!";
     } catch (err) {
-      console.error("❌ Fehler beim updateProfile:", err);
+      console.error("❌ Fehler beim updateUserProfile:", err);
       profileMsg.style.color = "red";
       profileMsg.textContent = "❌ Fehler: " + err.message;
     }
