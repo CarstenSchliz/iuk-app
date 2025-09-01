@@ -51,6 +51,12 @@
       margin: 0 auto 0.8rem auto;
       background: #ccc;
       cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .profile img.visible {
+      opacity: 1;
     }
 
     .profile h2 {
@@ -164,8 +170,8 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <!-- Default Avatar -->
-      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
+      <!-- Profilbild wird erst durch JS gesetzt -->
+      <img src="" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
       <p>Teilnehmer</p>
@@ -249,7 +255,8 @@
       if (file && user) {
         try {
           const url = await uploadProfileImage(user, file);
-          profileImg.src = url; // sofort aktualisieren
+          profileImg.src = url; 
+          profileImg.classList.add("visible");
           alert("✅ Profilbild aktualisiert!");
         } catch (err) {
           alert("❌ Fehler beim Hochladen: " + err.message);
@@ -271,14 +278,16 @@
         userName.textContent = user.displayName || user.email.split("@")[0];
 
         if (user.photoURL) {
-          profileImg.src = user.photoURL + "&t=" + Date.now();
-          // Falls Bild ungültig -> zurück auf Default
+          profileImg.src = user.photoURL;
+          profileImg.onload = () => profileImg.classList.add("visible");
           profileImg.onerror = () => {
             console.warn("Profilbild ungültig, Default wird geladen.");
             profileImg.src = "assets/avatar-default.png";
+            profileImg.classList.add("visible");
           };
         } else {
           profileImg.src = "assets/avatar-default.png";
+          profileImg.classList.add("visible");
         }
       } else {
         window.location.href = "index.html";
