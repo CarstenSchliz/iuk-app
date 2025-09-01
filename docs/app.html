@@ -51,12 +51,6 @@
       margin: 0 auto 0.8rem auto;
       background: #ccc;
       cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.3s ease-in-out;
-    }
-
-    .profile img.visible {
-      opacity: 1;
     }
 
     .profile h2 {
@@ -170,7 +164,7 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <img src="" alt="Profilbild" id="profileImg">
+      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
       <p>Teilnehmer</p>
@@ -199,6 +193,7 @@
   <script type="module">
     import { auth, logout, observeAuthState, uploadProfileImage } from "./js/firebase.js";
 
+    // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
     if (menuToggle) {
@@ -207,6 +202,7 @@
       });
     }
 
+    // Seitenwechsel
     const content = document.getElementById("content");
     const buttons = document.querySelectorAll(".menu button");
 
@@ -217,6 +213,7 @@
         const html = await res.text();
         content.innerHTML = html;
 
+        // eingebettete Scripts neu laden
         content.querySelectorAll("script").forEach(oldScript => {
           const newScript = document.createElement("script");
           if (oldScript.type) newScript.type = oldScript.type;
@@ -239,6 +236,7 @@
       });
     });
 
+    // Profilbild Upload
     const profileImg = document.getElementById("profileImg");
     const profileUpload = document.getElementById("profileUpload");
 
@@ -250,19 +248,7 @@
       if (file && user) {
         try {
           const url = await uploadProfileImage(user, file);
-          profileImg.src = url;
-          profileImg.classList.add("visible");
-
-          fetch(url)
-            .then(res => res.blob())
-            .then(blob => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                localStorage.setItem("profileImg_" + user.uid, reader.result);
-              };
-              reader.readAsDataURL(blob);
-            });
-
+          profileImg.src = url; // direkt von Firebase
           alert("✅ Profilbild aktualisiert!");
         } catch (err) {
           alert("❌ Fehler beim Hochladen: " + err.message);
@@ -270,55 +256,30 @@
       }
     });
 
+    // Logout
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", async () => {
       await logout();
       window.location.href = "index.html";
     });
 
+    // Login-Check + Userdaten
     const userName = document.getElementById("userName");
     observeAuthState(user => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
-        const cacheKey = "profileImg_" + user.uid;
-        const cachedImg = localStorage.getItem(cacheKey);
 
         if (user.photoURL) {
-          console.log("📷 Profilbild sofort gesetzt auf:", user.photoURL);
-          profileImg.src = user.photoURL;
-          profileImg.classList.add("visible");
-
-          fetch(user.photoURL)
-            .then(res => res.blob())
-            .then(blob => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                localStorage.setItem(cacheKey, reader.result);
-              };
-              reader.readAsDataURL(blob);
-            })
-            .catch(() => {
-              console.warn("Profilbild konnte nicht geladen werden, nutze ggf. Cache.");
-              if (cachedImg) {
-                profileImg.src = cachedImg;
-                profileImg.classList.add("visible");
-              } else {
-                profileImg.src = "assets/avatar-default.png";
-                profileImg.classList.add("visible");
-              }
-            });
-        } else if (cachedImg) {
-          profileImg.src = cachedImg;
-          profileImg.classList.add("visible");
+          profileImg.src = user.photoURL; // Nur online verfügbar
         } else {
           profileImg.src = "assets/avatar-default.png";
-          profileImg.classList.add("visible");
         }
       } else {
         window.location.href = "index.html";
       }
     });
 
+    // Darkmode
     if (localStorage.getItem("theme") === "dark") {
       document.body.classList.add("dark");
     }
@@ -331,20 +292,6 @@
         localStorage.setItem("theme", "dark");
       }
     });
-  </script>
-
-  <!-- Service Worker Registrierung -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("./views/service-worker.js")
-        .then((reg) => {
-          console.log("✅ Service Worker registriert:", reg.scope);
-        })
-        .catch((err) => {
-          console.error("❌ Service Worker Fehler:", err);
-        });
-    }
   </script>
 </body>
 </html>
