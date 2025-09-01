@@ -1,5 +1,5 @@
 // Version bitte bei jeder Änderung hochzählen
-const CACHE_NAME = "pwa-cache-v27";
+const CACHE_NAME = "pwa-cache-v28"; // ⬅️ hochgezählt
 
 const URLS_TO_CACHE = [
   "./",
@@ -8,7 +8,7 @@ const URLS_TO_CACHE = [
   "./assets/iuk-192.png",
   "./assets/iuk-512.png",
   "./assets/iuk-lernwelt-512.png",
-  "./assets/avatar-default.png"  // Standard-Avatar immer verfügbar
+  "./assets/avatar-default.png" // Standard-Avatar immer verfügbar
 ];
 
 // Installieren → Grundgerüst cachen
@@ -33,24 +33,45 @@ self.addEventListener("activate", (event) => {
 
 // Fetch-Strategie
 self.addEventListener("fetch", (event) => {
-  const url = event.request.url;
+  const request = event.request;
+  const url = request.url;
 
-  // Firebase Storage oder andere externe URLs nie cachen
-  if (url.includes("firebasestorage.googleapis.com")) {
-    return event.respondWith(fetch(event.request));
+  // 👉 Profilbilder aus Firebase Storage speziell behandeln
+  if (url.includes("firebasestorage.googleapis.com") && request.destination === "image") {
+    event.respondWith(
+      caches.match(request).then((cachedResponse) => {
+        if (cachedResponse) {
+          // Cache First
+          return cachedResponse;
+        }
+        return fetch(request)
+          .then((networkResponse) => {
+            // neu laden und in Cache legen
+            return caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, networkResponse.clone());
+              return networkResponse;
+            });
+          })
+          .catch(() => {
+            // Fallback wenn offline → Default Avatar
+            return caches.match("./assets/avatar-default.png");
+          });
+      })
+    );
+    return; // wichtig: hier beenden, sonst fällt er unten wieder rein
   }
 
-  // Standard: Cache First, dann Netzwerk
+  // 👉 Standard-Strategie für alles andere
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).then((networkResponse) => {
+      return fetch(request).then((networkResponse) => {
         // nur gleiche-Origin Dateien cachen
-        if (event.request.url.startsWith(self.location.origin)) {
+        if (request.url.startsWith(self.location.origin)) {
           return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, networkResponse.clone());
+            cache.put(request, networkResponse.clone());
             return networkResponse;
           });
         } else {
