@@ -170,7 +170,6 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <!-- Profilbild wird durch JS gesetzt -->
       <img src="" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
@@ -258,7 +257,7 @@
           profileImg.src = url;
           profileImg.classList.add("visible");
 
-          // Bild auch in LocalStorage ablegen
+          // Bild zusätzlich in LocalStorage ablegen
           fetch(url)
             .then(res => res.blob())
             .then(blob => {
@@ -288,16 +287,15 @@
     observeAuthState(user => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
-
         const cacheKey = "profileImg_" + user.uid;
         const cachedImg = localStorage.getItem(cacheKey);
 
         if (user.photoURL) {
-          // Sofort Online-Bild anzeigen
+          // Sofort das Online-Bild zeigen
           profileImg.src = user.photoURL;
           profileImg.classList.add("visible");
 
-          // Im Hintergrund Base64 für Offline cachen
+          // Parallel ins LocalStorage speichern
           fetch(user.photoURL)
             .then(res => res.blob())
             .then(blob => {
@@ -342,6 +340,20 @@
         localStorage.setItem("theme", "dark");
       }
     });
+  </script>
+
+  <!-- Service Worker Registrierung -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("views/service-worker.js")
+        .then((reg) => {
+          console.log("✅ Service Worker registriert:", reg.scope);
+        })
+        .catch((err) => {
+          console.error("❌ Service Worker Fehler:", err);
+        });
+    }
   </script>
 </body>
 </html>
