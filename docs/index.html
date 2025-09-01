@@ -13,11 +13,8 @@
       --drk-rot: rgb(230,0,5);
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
-      --mittelblau: rgb(0,140,205);
-      --volltonblau: rgb(34,117,208);
-      --hellgrau: rgb(239,238,234);
-      --dunkelgrau: rgb(85,79,74);
       --mittelgrau: rgb(180,180,180);
+      --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
     }
 
@@ -25,7 +22,6 @@
       height: 100%;
       width: 100%;
       margin: 0;
-      padding: 0;
       font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
       background: var(--hellgrau);
     }
@@ -79,8 +75,7 @@
       box-sizing: border-box;
     }
 
-    .logo-top { margin-bottom: 0.5rem; }
-    .logo-top img { max-height: 160px; }
+    .logo-top img { max-height: 160px; margin-bottom: 0.5rem; }
 
     h1 {
       color: var(--dunkelblau);
@@ -91,7 +86,7 @@
 
     .subtitle {
       font-size: 0.85rem;
-      color: var(--dunkelgrau);
+      color: #555;
       margin-bottom: 1.5rem;
     }
 
@@ -109,11 +104,9 @@
       font-size: 1rem;
       outline: none;
       background: #fff;
-      box-sizing: border-box;
       transition: background 0.2s, border-color 0.2s;
     }
 
-    /* Blassblau nur wenn etwas eingetragen ist */
     .form-group input:not(:placeholder-shown) {
       background: var(--blassblau);
       border-color: var(--dunkelblau);
@@ -125,7 +118,7 @@
       left: 2.5rem;
       transform: translateY(-50%);
       font-size: 1rem;
-      color: var(--dunkelgrau);
+      color: #777;
       pointer-events: none;
       transition: 0.2s ease all;
       background: #fff;
@@ -136,7 +129,7 @@
     .form-group input:focus + label {
       top: 0.15rem;
       font-size: 0.75rem;
-      color: var(--dunkelgrau);
+      color: var(--dunkelblau);
     }
 
     .form-group i {
@@ -145,7 +138,7 @@
       left: 0.6rem;
       transform: translateY(-50%);
       font-size: 1.2rem;
-      color: var(--dunkelgrau);
+      color: #777;
     }
 
     button.login-btn {
@@ -162,21 +155,13 @@
     }
 
     .links { margin-top: 2rem; font-size: 0.85rem; text-align: center; }
-    .links .section { margin-bottom: 1.8rem; }
-    .links span { display: block; margin-bottom: 0.3rem; color: var(--dunkelgrau); }
+    .links .section { margin-bottom: 1.5rem; }
+    .links span { display: block; margin-bottom: 0.3rem; color: #555; }
     .links a { display: block; text-decoration: none; margin-top: 0.3rem; }
     .links a.register { color: var(--softrot); font-weight: bold; }
     .links a.forgot { color: var(--dunkelblau); }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .container { flex-direction: column; }
-      .right { display: none; }
-      .login-box { width: 90%; margin: auto; padding: 1.5rem; }
-      .logo-top img { max-height: 150px; }
-    }
-
-    /* === Modal & Toast Zusatzstyles === */
+    /* === Modal & Toast === */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -191,20 +176,17 @@
       background: #fff;
       padding: 2rem;
       border-radius: 16px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
       max-width: 500px;
       width: 90%;
       text-align: center;
       box-sizing: border-box;
     }
     .modal-content h2 {
-      color: var(--dunkelblau); /* dunkelblau */
+      color: var(--dunkelblau);
       font-size: 1.25rem;
-      margin: 0.5rem 0 1.2rem 0;
+      margin-bottom: 1.2rem;
     }
     .modal-content .form-group { margin-bottom: 1.2rem; }
-    .modal-content .form-group input { padding: 0.9rem 0.8rem 0.5rem 0.8rem; }
-    .modal-content .form-group label { left: 0.8rem; }
     .modal-content button {
       width: 100%;
       padding: 0.7rem;
@@ -324,7 +306,7 @@
   <div id="toast"></div>
 
   <script type="module">
-    import { auth, login, register, resetPassword, translateFirebaseError, updateUserProfile } from "./js/firebase.js";
+    import { login, register, resetPassword, translateFirebaseError, updateUserProfile } from "./js/firebase.js";
 
     // Toast Funktion
     function showToast(message, color = "#333") {
@@ -335,60 +317,81 @@
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
-    // Login
+    // === Login ===
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        showToast("❌ Bitte E-Mail und Passwort eingeben.", "red");
+        return;
+      }
+
       try {
         await login(email, password);
-        showToast("Login erfolgreich!", "green");
+        showToast("✅ Login erfolgreich!", "green");
         window.location.href = "app.html";
       } catch (err) {
-        showToast(translateFirebaseError(err.code), "red");
+        console.error("❌ Login-Fehler:", err.code, err.message);
+        showToast("❌ " + translateFirebaseError(err.code), "red");
       }
     });
 
-    // Registrierung Modal öffnen
+    // === Registrierung öffnen ===
     document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("register-modal").style.display = "flex";
     });
 
-    // Registrierung abschicken
+    // === Registrierung abschicken ===
     document.getElementById("reg-submit").addEventListener("click", async () => {
-      const name = document.getElementById("reg-name").value;
-      const email = document.getElementById("reg-email").value;
-      const password = document.getElementById("reg-pass").value;
+      const name = document.getElementById("reg-name").value.trim();
+      const email = document.getElementById("reg-email").value.trim();
+      const password = document.getElementById("reg-pass").value.trim();
+
+      if (!name || !email || !password) {
+        showToast("❌ Bitte alle Felder ausfüllen.", "red");
+        return;
+      }
+
       try {
         const userCred = await register(email, password);
         await updateUserProfile(userCred.user, { displayName: name });
-        showToast("Registrierung erfolgreich! Bitte E-Mail bestätigen.", "green");
+
+        showToast("✅ Registrierung erfolgreich! Bitte bestätigen Sie Ihre E-Mail.", "green");
         document.getElementById("register-modal").style.display = "none";
       } catch (err) {
-        showToast(translateFirebaseError(err.code), "red");
+        console.error("❌ Registrierungsfehler:", err.code, err.message);
+        showToast("❌ " + translateFirebaseError(err.code), "red");
       }
     });
 
-    // Passwort-Reset Modal öffnen
+    // === Passwort-Reset öffnen ===
     document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("reset-modal").style.display = "flex";
     });
 
-    // Passwort-Reset abschicken
+    // === Passwort-Reset abschicken ===
     document.getElementById("reset-submit").addEventListener("click", async () => {
-      const email = document.getElementById("reset-email").value;
+      const email = document.getElementById("reset-email").value.trim();
+      if (!email) {
+        showToast("❌ Bitte E-Mail eingeben.", "red");
+        return;
+      }
+
       try {
         await resetPassword(email);
-        showToast("E-Mail zum Zurücksetzen wurde verschickt!", "green");
+        showToast("✅ E-Mail zum Zurücksetzen wurde verschickt!", "green");
         document.getElementById("reset-modal").style.display = "none";
       } catch (err) {
-        showToast(translateFirebaseError(err.code), "red");
+        console.error("❌ Reset-Fehler:", err.code, err.message);
+        showToast("❌ " + translateFirebaseError(err.code), "red");
       }
     });
 
-    // Close-Buttons in den Modals
+    // === Close-Buttons in Modals ===
     document.querySelectorAll(".modal .close").forEach(btn => {
       btn.addEventListener("click", () => {
         btn.closest(".modal").style.display = "none";
