@@ -1,7 +1,6 @@
 // public/js/firebase.js
 // Firebase Setup & Auth-Funktionen
 
-// === Firebase Module importieren ===
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
@@ -23,7 +22,7 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// === Deine Firebase Config ===
+// === Firebase Config ===
 const firebaseConfig = {
   apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
   authDomain: "iuk-app.firebaseapp.com",
@@ -39,10 +38,10 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const storage = getStorage(app);
 
-// Persistenz: User bleibt eingeloggt (auch nach Reload)
+// Nutzer bleibt eingeloggt
 setPersistence(auth, browserLocalPersistence);
 
-// === Hilfsfunktion: Fehlertexte übersetzen ===
+// Fehlertexte übersetzen
 export function translateFirebaseError(errorCode) {
   switch (errorCode) {
     case "auth/invalid-email":
@@ -67,7 +66,7 @@ export function translateFirebaseError(errorCode) {
   }
 }
 
-// === Auth Funktionen ===
+// Auth Funktionen
 export async function login(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
 }
@@ -86,12 +85,12 @@ export async function logout() {
   return signOut(auth);
 }
 
-// === Profil aktualisieren (Name etc.) ===
+// Profil aktualisieren
 export async function updateUserProfile(user, data) {
   return updateProfile(user, data);
 }
 
-// === Profilbild hochladen & speichern ===
+// Profilbild hochladen
 export async function uploadProfileImage(user, file) {
   if (!user) throw new Error("Kein Nutzer eingeloggt.");
 
@@ -99,16 +98,12 @@ export async function uploadProfileImage(user, file) {
   await uploadBytes(storageRef, file);
 
   const url = await getDownloadURL(storageRef);
-
-  // ✅ Wichtig: im Auth-Profil merken, damit es beim Login wiederkommt
   await updateProfile(user, { photoURL: url });
 
-  // Cache-Buster, damit Browser das neue Bild sofort zeigt
-  return url + "&t=" + Date.now();
+  return url; // ✅ Nur die echte Download-URL
 }
 
-// === State Observer ===
-// Kann in app.html genutzt werden, um zu prüfen ob jemand eingeloggt ist
+// Auth State Observer
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
