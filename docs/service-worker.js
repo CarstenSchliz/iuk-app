@@ -1,5 +1,5 @@
 // Version bitte bei jeder Änderung hochzählen
-const CACHE_NAME = "pwa-cache-v30"; // ⬅️ hochgezählt
+const CACHE_NAME = "pwa-cache-v1";
 
 const URLS_TO_CACHE = [
   "./",
@@ -31,51 +31,19 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch-Strategie
+// Fetch-Strategie (Cache First für statische Assets, sonst Netzwerk)
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-  const url = request.url;
 
-  // 👉 Profilbilder aus Firebase Storage speziell behandeln
-  if (url.includes("firebasestorage.googleapis.com") && request.destination === "image") {
-    event.respondWith(
-      caches.match(request).then((cachedResponse) => {
-        if (cachedResponse) {
-          // Cache First
-          return cachedResponse;
-        }
-        return fetch(request)
-          .then((networkResponse) => {
-            // neu laden und in Cache legen
-            return caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, networkResponse.clone());
-              return networkResponse;
-            });
-          })
-          .catch(() => {
-            // Fallback wenn offline → Default Avatar
-            return caches.match("./assets/avatar-default.png");
-          });
-      })
-    );
-    return; // wichtig: hier beenden, sonst fällt er unten wieder rein
-  }
-
-  // 👉 Standard-Strategie für alles andere
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(request).then((networkResponse) => {
-        // nur gleiche-Origin Dateien cachen
-        if (request.url.startsWith(self.location.origin)) {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, networkResponse.clone());
-            return networkResponse;
-          });
-        } else {
-          return networkResponse;
+      return fetch(request).catch(() => {
+        // Fallback: Avatar, falls Bild angefragt wird
+        if (request.destination === "image") {
+          return caches.match("./assets/avatar-default.png");
         }
       });
     })
