@@ -199,7 +199,6 @@
   <script type="module">
     import { auth, logout, observeAuthState, uploadProfileImage } from "./js/firebase.js";
 
-    // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
     if (menuToggle) {
@@ -208,7 +207,6 @@
       });
     }
 
-    // Seitenwechsel
     const content = document.getElementById("content");
     const buttons = document.querySelectorAll(".menu button");
 
@@ -219,7 +217,6 @@
         const html = await res.text();
         content.innerHTML = html;
 
-        // eingebettete Scripts neu laden
         content.querySelectorAll("script").forEach(oldScript => {
           const newScript = document.createElement("script");
           if (oldScript.type) newScript.type = oldScript.type;
@@ -242,7 +239,6 @@
       });
     });
 
-    // Profilbild Upload
     const profileImg = document.getElementById("profileImg");
     const profileUpload = document.getElementById("profileUpload");
 
@@ -257,7 +253,6 @@
           profileImg.src = url;
           profileImg.classList.add("visible");
 
-          // Bild zusätzlich in LocalStorage ablegen
           fetch(url)
             .then(res => res.blob())
             .then(blob => {
@@ -275,14 +270,12 @@
       }
     });
 
-    // Logout
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", async () => {
       await logout();
       window.location.href = "index.html";
     });
 
-    // Login-Check + Userdaten
     const userName = document.getElementById("userName");
     observeAuthState(user => {
       if (user) {
@@ -291,11 +284,10 @@
         const cachedImg = localStorage.getItem(cacheKey);
 
         if (user.photoURL) {
-          // Sofort das Online-Bild zeigen
+          console.log("📷 Profilbild sofort gesetzt auf:", user.photoURL);
           profileImg.src = user.photoURL;
           profileImg.classList.add("visible");
 
-          // Parallel ins LocalStorage speichern
           fetch(user.photoURL)
             .then(res => res.blob())
             .then(blob => {
@@ -327,7 +319,6 @@
       }
     });
 
-    // Darkmode
     if (localStorage.getItem("theme") === "dark") {
       document.body.classList.add("dark");
     }
@@ -346,7 +337,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register("views/service-worker.js")
+        .register("./views/service-worker.js")
         .then((reg) => {
           console.log("✅ Service Worker registriert:", reg.scope);
         })
