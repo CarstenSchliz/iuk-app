@@ -170,7 +170,7 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <!-- Profilbild wird erst durch JS gesetzt -->
+      <!-- Profilbild wird durch JS gesetzt -->
       <img src="" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
@@ -258,7 +258,7 @@
           profileImg.src = url;
           profileImg.classList.add("visible");
 
-          // neues Bild direkt auch in LocalStorage speichern
+          // Bild auch in LocalStorage ablegen
           fetch(url)
             .then(res => res.blob())
             .then(blob => {
@@ -289,31 +289,37 @@
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
 
-        // Schritt 1: Lokales Bild sofort laden
-        const cachedImg = localStorage.getItem("profileImg_" + user.uid);
-        if (cachedImg) {
-          profileImg.src = cachedImg;
-          profileImg.classList.add("visible");
-        }
+        const cacheKey = "profileImg_" + user.uid;
+        const cachedImg = localStorage.getItem(cacheKey);
 
-        // Schritt 2: Online prüfen, ob es ein aktuelles Foto gibt
         if (user.photoURL) {
+          // Sofort Online-Bild anzeigen
+          profileImg.src = user.photoURL;
+          profileImg.classList.add("visible");
+
+          // Im Hintergrund Base64 für Offline cachen
           fetch(user.photoURL)
             .then(res => res.blob())
             .then(blob => {
               const reader = new FileReader();
               reader.onloadend = () => {
-                localStorage.setItem("profileImg_" + user.uid, reader.result);
-                profileImg.src = reader.result;
-                profileImg.classList.add("visible");
+                localStorage.setItem(cacheKey, reader.result);
               };
               reader.readAsDataURL(blob);
             })
             .catch(() => {
-              console.warn("Profilbild konnte nicht geladen werden, nutze Fallback.");
-              profileImg.src = "assets/avatar-default.png";
-              profileImg.classList.add("visible");
+              console.warn("Profilbild konnte nicht geladen werden, nutze ggf. Cache.");
+              if (cachedImg) {
+                profileImg.src = cachedImg;
+                profileImg.classList.add("visible");
+              } else {
+                profileImg.src = "assets/avatar-default.png";
+                profileImg.classList.add("visible");
+              }
             });
+        } else if (cachedImg) {
+          profileImg.src = cachedImg;
+          profileImg.classList.add("visible");
         } else {
           profileImg.src = "assets/avatar-default.png";
           profileImg.classList.add("visible");
