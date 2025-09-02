@@ -12,8 +12,6 @@
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
-      --hellgrau: rgb(239,238,234);
-      --blassblau: rgb(230,240,250);
     }
 
     .page-title {
@@ -90,7 +88,6 @@
       margin-left: 0.3rem;
     }
 
-    /* Dropdown-Karte */
     .select-user {
       margin-bottom: 1rem;
     }
@@ -99,47 +96,50 @@
       color: var(--dunkelblau);
       margin-top: 0.5rem;
     }
-
-    /* Darkmode Variablen */
-    body.dark {
-      --card-bg: #1e1e1e;
-      color:#f0f0f0;
-      background:#121212;
-    }
   </style>
 </head>
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
+  <!-- Nutzer-Auswahl zuerst -->
+  <div class="card" style="margin-bottom:1.5rem;">
+    <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
+    <div class="select-user">
+      <select id="userSelect">
+        <option value="">-- bitte wählen --</option>
+        <option value="user1">Max Mustermann</option>
+        <option value="user2">Anna Beispiel</option>
+        <option value="user3">Lukas Test</option>
+      </select>
+      <div id="selectedUser" class="selected-user"></div>
+    </div>
+  </div>
+
   <div class="zugang-grid">
     <!-- Grundvoraussetzungen -->
     <div class="card">
-      <h3><i class="bi bi-gear-check"></i> Grundvoraussetzungen</h3>
-
+      <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
       <div class="progress">
-        <div id="grund-progress" class="progress-bar" style="width:0%">0%</div>
+        <div id="grund-progress" class="progress-bar" style="width:0%"></div>
       </div>
-
       <ul class="checklist" id="grund-list">
-        <li><input type="checkbox" data-id="fachdienst"> Fachdienstausbildung Sanitätsdienst</li>
-        <li><input type="checkbox" data-id="erstgespraech"> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
-        <li><input type="checkbox" data-id="18jahre"> Vollendung 18. Lebensjahr</li>
-        <li><input type="checkbox" data-id="hospitation"> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
-        <li><input type="checkbox" data-id="mitwirken"> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
+        <li><input type="checkbox" data-id="fachdienst" disabled> Fachdienstausbildung Sanitätsdienst</li>
+        <li><input type="checkbox" data-id="erstgespraech" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
+        <li><input type="checkbox" data-id="18jahre" disabled> Vollendung 18. Lebensjahr</li>
+        <li><input type="checkbox" data-id="hospitation" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
+        <li><input type="checkbox" data-id="mitwirken" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
       </ul>
     </div>
 
     <!-- Voraussetzungen im Verlauf -->
     <div class="card">
       <h3><i class="bi bi-graph-up"></i> Voraussetzungen im Verlauf</h3>
-
       <div class="progress">
-        <div id="verlauf-progress" class="progress-bar" style="width:0%">0%</div>
+        <div id="verlauf-progress" class="progress-bar" style="width:0%"></div>
       </div>
-
       <ul class="checklist" id="verlauf-list">
-        <li><input type="checkbox" data-id="c1"> C1 (Helfer-)Führerschein</li>
-        <li><input type="checkbox" data-id="gruppenfuehrer"> Gruppenführer Sanitätsdienst</li>
+        <li><input type="checkbox" data-id="c1" disabled> C1 (Helfer-)Führerschein</li>
+        <li><input type="checkbox" data-id="gruppenfuehrer" disabled> Gruppenführer Sanitätsdienst</li>
       </ul>
     </div>
   </div>
@@ -147,29 +147,24 @@
   <!-- Bestätigung durch Ausbilder -->
   <div class="card" style="margin-top:1.5rem;">
     <h3><i class="bi bi-person-check"></i> Bestätigung durch Ausbilder</h3>
-
     <div class="select-user">
-      <label for="userSelect">Nutzer auswählen:</label><br>
-      <select id="userSelect">
+      <label for="trainerSelect">Nutzer auswählen:</label><br>
+      <select id="trainerSelect">
         <option value="">-- bitte wählen --</option>
-        <!-- Platzhalter – später dynamisch aus Firestore -->
         <option value="user1">Max Mustermann</option>
         <option value="user2">Anna Beispiel</option>
-        <option value="user3">Lukas Test</option>
       </select>
-      <div id="selectedUser" class="selected-user"></div>
+      <div id="trainerSelected" class="selected-user"></div>
     </div>
-
     <div class="checklist">
       <label>
-        <input type="checkbox" id="confirmUser">
+        <input type="checkbox" id="confirmUser" disabled>
         Bestätigung erteilt
       </label>
     </div>
   </div>
 
   <script>
-    // Fortschrittsanzeige aktualisieren mit Farblogik
     function updateProgress(listId, progressId) {
       const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
       const checked = Array.from(list).filter(cb => cb.checked).length;
@@ -177,9 +172,8 @@
       const bar = document.getElementById(progressId);
 
       bar.style.width = percent + "%";
-      bar.textContent = percent + "%";
+      bar.textContent = percent > 0 ? percent + "%" : "";
 
-      // Farben anpassen
       if (percent === 100) {
         bar.style.backgroundColor = "darkgreen";
         bar.classList.add("done");
@@ -192,13 +186,16 @@
       } else if (percent >= 25) {
         bar.style.backgroundColor = "orange";
         bar.classList.remove("done");
-      } else {
+      } else if (percent > 0) {
         bar.style.backgroundColor = "crimson";
+        bar.classList.remove("done");
+      } else {
+        bar.style.backgroundColor = "#e9ecef";
         bar.classList.remove("done");
       }
     }
 
-    // Checkbox Listener
+    // Grund & Verlauf Listener
     document.querySelectorAll("#grund-list input").forEach(cb => {
       cb.addEventListener("change", () => updateProgress("grund-list", "grund-progress"));
     });
@@ -206,28 +203,40 @@
       cb.addEventListener("change", () => updateProgress("verlauf-list", "verlauf-progress"));
     });
 
-    // Initial Balken setzen
-    updateProgress("grund-list", "grund-progress");
-    updateProgress("verlauf-list", "verlauf-progress");
-
-    // Dropdown Nutzerwahl
+    // Nutzer-Auswahl (erst damit Haken erlaubt sind)
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
-    const confirmUser = document.getElementById("confirmUser");
 
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
         selectedUser.textContent = "Ausgewählt: " + userSelect.options[userSelect.selectedIndex].text;
-        confirmUser.disabled = false;
+        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => cb.disabled = false);
       } else {
         selectedUser.textContent = "";
+        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => {
+          cb.checked = false;
+          cb.disabled = true;
+        });
+        updateProgress("grund-list", "grund-progress");
+        updateProgress("verlauf-list", "verlauf-progress");
+      }
+    });
+
+    // Trainer-Auswahl (Bestätigung)
+    const trainerSelect = document.getElementById("trainerSelect");
+    const trainerSelected = document.getElementById("trainerSelected");
+    const confirmUser = document.getElementById("confirmUser");
+
+    trainerSelect.addEventListener("change", () => {
+      if (trainerSelect.value) {
+        trainerSelected.textContent = "Ausgewählt: " + trainerSelect.options[trainerSelect.selectedIndex].text;
+        confirmUser.disabled = false;
+      } else {
+        trainerSelected.textContent = "";
         confirmUser.checked = false;
         confirmUser.disabled = true;
       }
     });
-
-    // Anfangszustand
-    confirmUser.disabled = true;
   </script>
 </body>
 </html>
