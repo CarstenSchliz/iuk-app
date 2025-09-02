@@ -64,7 +64,6 @@
       cursor: pointer;
     }
 
-    /* Fortschrittsbalken */
     .progress {
       height: 22px;
       background-color: #e9ecef;
@@ -95,6 +94,17 @@
       font-weight: bold;
       color: var(--dunkelblau);
       margin-top: 0.5rem;
+    }
+
+    .btn-confirm {
+      display:inline-block;
+      margin:0.5rem 0.5rem 0 0;
+      padding:0.6rem 1rem;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      background: var(--dunkelblau);
+      color:#fff;
     }
   </style>
 </head>
@@ -131,9 +141,9 @@
       </ul>
     </div>
 
-    <!-- Voraussetzungen im Verlauf -->
+    <!-- Optionale Voraussetzungen im Verlauf -->
     <div class="card">
-      <h3><i class="bi bi-graph-up"></i> Voraussetzungen im Verlauf</h3>
+      <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen im Verlauf</h3>
       <div class="progress">
         <div id="verlauf-progress" class="progress-bar" style="width:0%"></div>
       </div>
@@ -147,20 +157,43 @@
   <!-- Bestätigung durch Ausbilder -->
   <div class="card" style="margin-top:1.5rem;">
     <h3><i class="bi bi-person-check"></i> Bestätigung durch Ausbilder</h3>
-    <div class="select-user">
-      <label for="trainerSelect">Nutzer auswählen:</label><br>
-      <select id="trainerSelect">
-        <option value="">-- bitte wählen --</option>
-        <option value="user1">Max Mustermann</option>
-        <option value="user2">Anna Beispiel</option>
-      </select>
-      <div id="trainerSelected" class="selected-user"></div>
-    </div>
-    <div class="checklist">
-      <label>
-        <input type="checkbox" id="confirmUser" disabled>
-        Bestätigung erteilt
-      </label>
+    <div id="confirmUserSection" style="display:none;">
+      <p id="confirmText"></p>
+
+      <!-- Grundvoraussetzungen -->
+      <div class="checklist">
+        <label>
+          <input type="checkbox" id="chkGrund">
+          Alle Grundvoraussetzungen erfüllt
+        </label>
+      </div>
+      <div id="grundActions" style="display:none; margin-top:0.5rem;">
+        <button class="btn-confirm" id="btnApproveGrund" style="background:green;">
+          ✅ Mitglied für den aktiven Dienst freigeben
+        </button>
+        <button class="btn-confirm" id="btnRejectGrund" style="background:crimson;">
+          ❌ Mitglied für den aktiven Dienst ablehnen
+        </button>
+        <div id="rejectReasonBox" style="display:none; margin-top:0.5rem;">
+          <label for="rejectReason">Grund für Ablehnung (optional):</label><br>
+          <input type="text" id="rejectReason" placeholder="Begründung eingeben..." style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid #ccc;">
+        </div>
+      </div>
+
+      <hr style="margin:1rem 0;">
+
+      <!-- Optionale Voraussetzungen -->
+      <div class="checklist">
+        <label>
+          <input type="checkbox" id="chkOptional">
+          Mitglied hat die optionalen Voraussetzungen erfüllt
+        </label>
+      </div>
+      <div id="optionalActions" style="display:none; margin-top:0.5rem;">
+        <button class="btn-confirm" id="btnConfirmOptional" style="background:var(--dunkelblau);">
+          📧 Bestätigung per Mail senden
+        </button>
+      </div>
     </div>
   </div>
 
@@ -203,16 +236,22 @@
       cb.addEventListener("change", () => updateProgress("verlauf-list", "verlauf-progress"));
     });
 
-    // Nutzer-Auswahl (erst damit Haken erlaubt sind)
+    // Nutzer-Auswahl
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
+    const confirmUserSection = document.getElementById("confirmUserSection");
+    const confirmText = document.getElementById("confirmText");
 
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
-        selectedUser.textContent = "Ausgewählt: " + userSelect.options[userSelect.selectedIndex].text;
+        const name = userSelect.options[userSelect.selectedIndex].text;
+        selectedUser.textContent = "Ausgewählt: " + name;
+        confirmText.textContent = "Bestätigung für: " + name;
+        confirmUserSection.style.display = "block";
         document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => cb.disabled = false);
       } else {
         selectedUser.textContent = "";
+        confirmUserSection.style.display = "none";
         document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => {
           cb.checked = false;
           cb.disabled = true;
@@ -222,20 +261,39 @@
       }
     });
 
-    // Trainer-Auswahl (Bestätigung)
-    const trainerSelect = document.getElementById("trainerSelect");
-    const trainerSelected = document.getElementById("trainerSelected");
-    const confirmUser = document.getElementById("confirmUser");
+    // Bestätigung Grundvoraussetzungen
+    const chkGrund = document.getElementById("chkGrund");
+    const grundActions = document.getElementById("grundActions");
+    const btnRejectGrund = document.getElementById("btnRejectGrund");
+    const rejectReasonBox = document.getElementById("rejectReasonBox");
 
-    trainerSelect.addEventListener("change", () => {
-      if (trainerSelect.value) {
-        trainerSelected.textContent = "Ausgewählt: " + trainerSelect.options[trainerSelect.selectedIndex].text;
-        confirmUser.disabled = false;
-      } else {
-        trainerSelected.textContent = "";
-        confirmUser.checked = false;
-        confirmUser.disabled = true;
-      }
+    chkGrund.addEventListener("change", () => {
+      grundActions.style.display = chkGrund.checked ? "block" : "none";
+      rejectReasonBox.style.display = "none";
+    });
+
+    btnRejectGrund.addEventListener("click", () => {
+      rejectReasonBox.style.display = "block";
+    });
+
+    document.getElementById("btnApproveGrund").addEventListener("click", () => {
+      alert("✅ Mitglied wurde für den aktiven Dienst freigegeben!");
+    });
+    document.getElementById("btnRejectGrund").addEventListener("click", () => {
+      const reason = document.getElementById("rejectReason").value;
+      alert("❌ Mitglied wurde abgelehnt!" + (reason ? " Grund: " + reason : ""));
+    });
+
+    // Optionale Voraussetzungen
+    const chkOptional = document.getElementById("chkOptional");
+    const optionalActions = document.getElementById("optionalActions");
+
+    chkOptional.addEventListener("change", () => {
+      optionalActions.style.display = chkOptional.checked ? "block" : "none";
+    });
+
+    document.getElementById("btnConfirmOptional").addEventListener("click", () => {
+      alert("📧 Mail-Bestätigung wurde versendet (Simulation)!");
     });
   </script>
 </body>
