@@ -94,7 +94,7 @@
       font-weight: bold;
       color: var(--dunkelblau);
       font-size: 1.05rem;
-      margin-top: 1rem; /* mehr Abstand */
+      margin-top: 1rem;
     }
 
     .btn-confirm {
@@ -130,7 +130,7 @@
     }
     @media(min-width: 769px){
       .select-user select {
-        max-width: 300px; /* auf PC schmaler */
+        max-width: 300px;
       }
     }
 
@@ -182,21 +182,6 @@
     }
     #confirmYes { background:var(--dunkelblau); color:#fff; }
     #confirmCancel { background:#bbb; color:#fff; }
-
-    /* Close X */
-    .close-btn {
-      position:absolute;
-      top:10px;
-      right:10px;
-      background:none;
-      border:none;
-      font-size:1.5rem;
-      font-weight:bold;
-      color:#666;
-      cursor:pointer;
-      line-height:1;
-    }
-    .close-btn:hover { color:var(--softrot); }
   </style>
 </head>
 <body>
@@ -251,7 +236,7 @@
     <div id="confirmUserSection" style="display:none;">
       <p id="confirmText"></p>
 
-      <!-- Grundvoraussetzungen -->
+      <!-- Grundvoraussetzungen erfüllt -->
       <div class="checklist">
         <label>
           <input type="checkbox" id="chkGrund">
@@ -262,6 +247,16 @@
         <button class="btn-confirm" id="btnApproveGrund" style="background:green;">
           ✅ Mitglied für den aktiven Dienst freigeben
         </button>
+      </div>
+
+      <!-- Nicht freigeben -->
+      <div class="checklist" style="margin-top:1rem;">
+        <label>
+          <input type="checkbox" id="chkReject">
+          Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden
+        </label>
+      </div>
+      <div id="rejectActions" style="display:none; margin-top:0.5rem;">
         <button class="btn-confirm" id="btnRejectGrund" style="background:crimson;">
           ❌ Mitglied für den aktiven Dienst ablehnen
         </button>
@@ -287,7 +282,6 @@
   <!-- Popup -->
   <div id="confirmModal">
     <div class="modal-box">
-      <button id="confirmClose" class="close-btn">×</button>
       <h3 id="confirmModalTitle"></h3>
       <p id="confirmModalText"></p>
       <div id="rejectReasonBox" style="display:none; text-align:left; margin-bottom:1rem;">
@@ -363,7 +357,7 @@
       }
     });
 
-    // Grundvoraussetzungen-Checkbox steuert Buttons
+    // Grundvoraussetzungen-Checkbox → Freigabe
     const chkGrund = document.getElementById("chkGrund");
     const grundActions = document.getElementById("grundActions");
     chkGrund.addEventListener("change", () => {
@@ -376,7 +370,14 @@
       grundActions.style.display = chkGrund.checked ? "block" : "none";
     });
 
-    // Optionale Voraussetzungen-Checkbox steuert Button
+    // Unabhängige Ablehnung
+    const chkReject = document.getElementById("chkReject");
+    const rejectActions = document.getElementById("rejectActions");
+    chkReject.addEventListener("change", () => {
+      rejectActions.style.display = chkReject.checked ? "block" : "none";
+    });
+
+    // Optionale Voraussetzungen
     const chkOptional = document.getElementById("chkOptional");
     const optionalActions = document.getElementById("optionalActions");
     chkOptional.addEventListener("change", () => {
@@ -395,7 +396,6 @@
     const confirmModalText = document.getElementById("confirmModalText");
     const confirmYes = document.getElementById("confirmYes");
     const confirmCancel = document.getElementById("confirmCancel");
-    const confirmClose = document.getElementById("confirmClose");
     const rejectReasonBox = document.getElementById("rejectReasonBox");
     const rejectReasonInput = document.getElementById("rejectReason");
 
@@ -419,15 +419,13 @@
       }, 300);
     }
 
-    // Buttons für Grundvoraussetzungen
+    // Buttons
     document.getElementById("btnApproveGrund").addEventListener("click", () => {
       openModal("approve", "Mitglied freigeben", "Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?", false);
     });
     document.getElementById("btnRejectGrund").addEventListener("click", () => {
       openModal("reject", "Mitglied ablehnen", "Soll das Mitglied wirklich für den aktiven Dienst abgelehnt werden?", true);
     });
-
-    // Button für optionale Voraussetzungen
     document.getElementById("btnConfirmOptional").addEventListener("click", () => {
       openModal("optional", "Optionale Voraussetzungen bestätigen", "Soll die Bestätigung wirklich per E-Mail an das Mitglied gesendet werden?", false);
     });
@@ -444,9 +442,7 @@
         alert("📧 Bestätigung für optionale Voraussetzungen wurde gesendet!");
       }
     });
-
     confirmCancel.addEventListener("click", closeModal);
-    confirmClose.addEventListener("click", closeModal);
   </script>
 </body>
 </html>
