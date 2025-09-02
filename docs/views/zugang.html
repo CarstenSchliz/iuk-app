@@ -8,158 +8,173 @@
   <link rel="stylesheet" href="../assets/style.css">
 
   <style>
+    :root {
+      --softrot: rgb(228,100,80);
+      --dunkelblau: rgb(0,45,85);
+      --hellblau: rgb(100,160,220);
+      --hellgrau: rgb(239,238,234);
+      --blassblau: rgb(230,240,250);
+    }
+
+    .page-title {
+      color: var(--softrot);
+      margin-bottom: 1rem;
+    }
+
+    .zugang-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media(max-width: 768px){
+      .zugang-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg, #fff);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      color: var(--hellblau);
+      margin-top: 0;
+      margin-bottom: 1rem;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .checklist li {
+      margin: 0.6rem 0;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      font-size:1rem;
+    }
+    .checklist input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      cursor: pointer;
+    }
+
+    /* Fortschrittsbalken */
     .progress {
-      height: 20px;
+      height: 22px;
       background-color: #e9ecef;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
+      margin-bottom: 1rem;
     }
     .progress-bar {
       height: 100%;
-      background-color: rgb(0,140,205); /* Mittelblau */
       text-align: center;
-      color: white;
-      font-size: 0.8rem;
-      transition: width 0.3s ease;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: width 0.3s ease, background-color 0.3s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .checklist li {
-      margin: 8px 0;
+    .progress-bar.done::after {
+      content: " ✅";
+      margin-left: 0.3rem;
+    }
+
+    /* Darkmode Variablen */
+    body.dark {
+      --card-bg: #1e1e1e;
+      color:#f0f0f0;
+      background:#121212;
     }
   </style>
 </head>
 <body>
-  <div class="container mt-4">
+  <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
-    <h1 class="mb-4" style="color: rgb(230,0,5);">Zugangsvoraussetzungen</h1>
-
+  <div class="zugang-grid">
     <!-- Grundvoraussetzungen -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-body">
-        <h5 class="card-title text-primary">
-          <i class="bi bi-check-circle me-2"></i> Grundvoraussetzungen
-        </h5>
+    <div class="card">
+      <h3><i class="bi bi-check-circle"></i> Grundvoraussetzungen</h3>
 
-        <!-- Fortschrittsbalken -->
-        <div class="progress mb-3">
-          <div id="grund-progress" class="progress-bar" style="width: 0%;">0%</div>
-        </div>
-
-        <!-- Checkliste -->
-        <ul class="list-unstyled checklist" id="grund-list">
-          <li><input type="checkbox" data-id="fachdienst"> Fachdienstausbildung Sanitätsdienst</li>
-          <li><input type="checkbox" data-id="erstgespraech"> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
-          <li><input type="checkbox" data-id="18jahre"> Vollendung 18. Lebensjahr</li>
-          <li><input type="checkbox" data-id="hospitation"> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
-          <li><input type="checkbox" data-id="mitwirken"> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
-        </ul>
+      <div class="progress">
+        <div id="grund-progress" class="progress-bar" style="width:0%">0%</div>
       </div>
+
+      <ul class="checklist" id="grund-list">
+        <li><input type="checkbox" data-id="fachdienst"> Fachdienstausbildung Sanitätsdienst</li>
+        <li><input type="checkbox" data-id="erstgespraech"> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
+        <li><input type="checkbox" data-id="18jahre"> Vollendung 18. Lebensjahr</li>
+        <li><input type="checkbox" data-id="hospitation"> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
+        <li><input type="checkbox" data-id="mitwirken"> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
+      </ul>
     </div>
 
     <!-- Voraussetzungen im Verlauf -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-body">
-        <h5 class="card-title text-primary">
-          <i class="bi bi-list-task me-2"></i> Voraussetzungen im Verlauf
-        </h5>
+    <div class="card">
+      <h3><i class="bi bi-list-task"></i> Voraussetzungen im Verlauf</h3>
 
-        <!-- Fortschrittsbalken -->
-        <div class="progress mb-3">
-          <div id="verlauf-progress" class="progress-bar" style="width: 0%;">0%</div>
-        </div>
-
-        <!-- Checkliste -->
-        <ul class="list-unstyled checklist" id="verlauf-list">
-          <li><input type="checkbox" data-id="c1"> C1 (Helfer-)Führerschein</li>
-          <li><input type="checkbox" data-id="gruppenfuehrer"> Gruppenführer Sanitätsdienst</li>
-        </ul>
+      <div class="progress">
+        <div id="verlauf-progress" class="progress-bar" style="width:0%">0%</div>
       </div>
-    </div>
 
+      <ul class="checklist" id="verlauf-list">
+        <li><input type="checkbox" data-id="c1"> C1 (Helfer-)Führerschein</li>
+        <li><input type="checkbox" data-id="gruppenfuehrer"> Gruppenführer Sanitätsdienst</li>
+      </ul>
+    </div>
   </div>
 
-  <!-- Firebase Logik -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { firebaseConfig } from "../firebase.js"; // deine Firebase Config
-
-    // Init Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // Fortschrittsanzeige aktualisieren
+  <script>
+    // Fortschrittsanzeige aktualisieren mit Farblogik
     function updateProgress(listId, progressId) {
       const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
       const checked = Array.from(list).filter(cb => cb.checked).length;
       const percent = Math.round((checked / list.length) * 100);
       const bar = document.getElementById(progressId);
+
       bar.style.width = percent + "%";
       bar.textContent = percent + "%";
-    }
 
-    // Checkboxen initial befüllen
-    async function loadUserProgress(uid) {
-      const userDoc = await getDoc(doc(db, "nutzerZugang", uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-
-        // Grundvoraussetzungen
-        document.querySelectorAll("#grund-list input").forEach(cb => {
-          const id = cb.dataset.id;
-          if (data.grundvoraussetzungen && data.grundvoraussetzungen[id]) {
-            cb.checked = true;
-          }
-        });
-
-        // Voraussetzungen im Verlauf
-        document.querySelectorAll("#verlauf-list input").forEach(cb => {
-          const id = cb.dataset.id;
-          if (data.verlauf && data.verlauf[id]) {
-            cb.checked = true;
-          }
-        });
-      }
-
-      // Balken nachladen
-      updateProgress("grund-list", "grund-progress");
-      updateProgress("verlauf-list", "verlauf-progress");
-    }
-
-    // Änderungen speichern
-    async function saveProgress(uid, category, id, value) {
-      const userRef = doc(db, "nutzerZugang", uid);
-      await setDoc(userRef, { [category]: { [id]: value } }, { merge: true });
-    }
-
-    // Warten bis User eingeloggt
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        const uid = user.uid;
-
-        // Daten laden
-        loadUserProgress(uid);
-
-        // Listener für alle Checkboxen
-        document.querySelectorAll("#grund-list input").forEach(cb => {
-          cb.addEventListener("change", () => {
-            updateProgress("grund-list", "grund-progress");
-            saveProgress(uid, "grundvoraussetzungen", cb.dataset.id, cb.checked);
-          });
-        });
-
-        document.querySelectorAll("#verlauf-list input").forEach(cb => {
-          cb.addEventListener("change", () => {
-            updateProgress("verlauf-list", "verlauf-progress");
-            saveProgress(uid, "verlauf", cb.dataset.id, cb.checked);
-          });
-        });
-
+      // Farben anpassen
+      if (percent === 100) {
+        bar.style.backgroundColor = "darkgreen";
+        bar.classList.add("done");
+      } else if (percent >= 75) {
+        bar.style.backgroundColor = "limegreen";
+        bar.classList.remove("done");
+      } else if (percent >= 50) {
+        bar.style.backgroundColor = "gold";
+        bar.classList.remove("done");
+      } else if (percent >= 25) {
+        bar.style.backgroundColor = "orange";
+        bar.classList.remove("done");
       } else {
-        alert("Bitte zuerst einloggen!");
+        bar.style.backgroundColor = "crimson";
+        bar.classList.remove("done");
       }
+    }
+
+    // Event-Listener hinzufügen
+    document.querySelectorAll("#grund-list input").forEach(cb => {
+      cb.addEventListener("change", () => updateProgress("grund-list", "grund-progress"));
     });
+    document.querySelectorAll("#verlauf-list input").forEach(cb => {
+      cb.addEventListener("change", () => updateProgress("verlauf-list", "verlauf-progress"));
+    });
+
+    // Initial aufrufen
+    updateProgress("grund-list", "grund-progress");
+    updateProgress("verlauf-list", "verlauf-progress");
   </script>
 </body>
 </html>
