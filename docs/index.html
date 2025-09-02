@@ -13,11 +13,9 @@
       --drk-rot: rgb(230,0,5);
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
-      --mittelblau: rgb(0,140,205);
-      --volltonblau: rgb(34,117,208);
+      --mittelgrau: rgb(180,180,180);
       --hellgrau: rgb(239,238,234);
       --dunkelgrau: rgb(85,79,74);
-      --mittelgrau: rgb(180,180,180);
       --blassblau: rgb(230,240,250);
     }
 
@@ -113,7 +111,6 @@
       transition: background 0.2s, border-color 0.2s;
     }
 
-    /* Blassblau nur wenn etwas eingetragen ist */
     .form-group input:not(:placeholder-shown) {
       background: var(--blassblau);
       border-color: var(--dunkelblau);
@@ -136,7 +133,7 @@
     .form-group input:focus + label {
       top: 0.15rem;
       font-size: 0.75rem;
-      color: var(--dunkelgrau);
+      color: var(--dunkelblau);
     }
 
     .form-group i {
@@ -230,6 +227,24 @@
       opacity: 1;
       bottom: 50px;
     }
+
+    /* Responsive: Handy-Layout */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .right {
+        display: none; /* rechte Spalte mit Bild ausblenden */
+      }
+      .login-box {
+        width: 90%;
+        margin: auto;
+        padding: 1.5rem;
+      }
+      .logo-top img {
+        max-height: 150px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -313,11 +328,9 @@
   <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- === NEUER SCRIPTBLOCK === -->
   <script type="module">
     import { login, register, resetPassword, translateFirebaseError, updateUserProfile } from "./js/firebase.js";
 
-    // Toast Funktion
     function showToast(message, color = "#333") {
       const toast = document.getElementById("toast");
       toast.innerText = message;
@@ -326,7 +339,7 @@
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
-    // === Login ===
+    // Login
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value.trim();
@@ -347,13 +360,13 @@
       }
     });
 
-    // === Registrierung öffnen ===
+    // Registrierung öffnen
     document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("register-modal").style.display = "flex";
     });
 
-    // === Registrierung abschicken ===
+    // Registrierung absenden
     document.getElementById("reg-submit").addEventListener("click", async () => {
       const name = document.getElementById("reg-name").value.trim();
       const email = document.getElementById("reg-email").value.trim();
@@ -367,7 +380,6 @@
       try {
         const userCred = await register(email, password);
         await updateUserProfile(userCred.user, { displayName: name });
-
         showToast("✅ Registrierung erfolgreich! Bitte bestätigen Sie Ihre E-Mail.", "green");
         document.getElementById("register-modal").style.display = "none";
       } catch (err) {
@@ -376,13 +388,13 @@
       }
     });
 
-    // === Passwort-Reset öffnen ===
+    // Passwort-Reset öffnen
     document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
       document.getElementById("reset-modal").style.display = "flex";
     });
 
-    // === Passwort-Reset abschicken ===
+    // Passwort-Reset absenden
     document.getElementById("reset-submit").addEventListener("click", async () => {
       const email = document.getElementById("reset-email").value.trim();
       if (!email) {
@@ -400,7 +412,7 @@
       }
     });
 
-    // === Close-Buttons in Modals ===
+    // Close-Buttons für Modals
     document.querySelectorAll(".modal .close").forEach(btn => {
       btn.addEventListener("click", () => {
         btn.closest(".modal").style.display = "none";
@@ -408,7 +420,7 @@
     });
   </script>
 
-  <!-- Service Worker Registrierung -->
+  <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
