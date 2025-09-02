@@ -82,12 +82,12 @@
 
     h1 {
       color: var(--dunkelblau);
-      font-size: 1.8rem;
+      font-size: 1.8rem; /* größer am PC */
       font-weight: bold;
       margin: 0.3rem 0 0.6rem 0;
     }
     @media(max-width: 768px){
-      h1 { font-size: 1.25rem; }
+      h1 { font-size: 1.25rem; } /* Handy kleiner */
     }
 
     .subtitle {
@@ -175,6 +175,12 @@
       align-items: center;
       background: rgba(0,0,0,0.5);
       z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .modal.show {
+      display: flex;
+      opacity: 1;
     }
     .modal-content {
       background: #fff;
@@ -185,20 +191,25 @@
       width: 90%;
       text-align: center;
       box-sizing: border-box;
+      transform: scale(0.95);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .modal.show .modal-content {
+      transform: scale(1);
+      opacity: 1;
     }
     .modal-content h2 {
       color: var(--dunkelblau); 
       font-size: 1.4rem;
       margin: 0.5rem 0 1.2rem 0;
     }
-    .modal-content .form-group {
-      margin-bottom: 1.2rem;
-    }
+    .modal-content .form-group { margin-bottom: 1.2rem; }
     .modal-content input {
       width: 100%;
       border: 1px solid var(--mittelgrau);
       border-radius: 6px;
-      padding: 0.9rem 0.8rem 0.5rem 0.8rem; /* Text näher links */
+      padding: 0.9rem 0.8rem 0.5rem 0.8rem;
       font-size: 1rem;
       outline: none;
       background: #fff;
@@ -372,6 +383,16 @@
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
+    function openModal(id){
+      const modal = document.getElementById(id);
+      modal.style.display = "flex";
+      setTimeout(()=> modal.classList.add("show"),10);
+    }
+    function closeModal(modal){
+      modal.classList.remove("show");
+      setTimeout(()=> modal.style.display="none",300);
+    }
+
     // Login
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -396,7 +417,7 @@
     // Registrierung öffnen
     document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
-      document.getElementById("register-modal").style.display = "flex";
+      openModal("register-modal");
     });
 
     // Registrierung absenden
@@ -414,7 +435,7 @@
         const userCred = await register(email, password);
         await updateUserProfile(userCred.user, { displayName: name });
         showToast("✅ Registrierung erfolgreich! Bitte bestätigen Sie Ihre E-Mail.", "green");
-        document.getElementById("register-modal").style.display = "none";
+        closeModal(document.getElementById("register-modal"));
       } catch (err) {
         console.error("❌ Registrierungsfehler:", err.code, err.message);
         showToast("❌ " + translateFirebaseError(err.code), "red");
@@ -424,7 +445,7 @@
     // Passwort-Reset öffnen
     document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
-      document.getElementById("reset-modal").style.display = "flex";
+      openModal("reset-modal");
     });
 
     // Passwort-Reset absenden
@@ -438,7 +459,7 @@
       try {
         await resetPassword(email);
         showToast("✅ E-Mail zum Zurücksetzen wurde verschickt!", "green");
-        document.getElementById("reset-modal").style.display = "none";
+        closeModal(document.getElementById("reset-modal"));
       } catch (err) {
         console.error("❌ Reset-Fehler:", err.code, err.message);
         showToast("❌ " + translateFirebaseError(err.code), "red");
@@ -448,7 +469,7 @@
     // Close-Buttons für Modals
     document.querySelectorAll(".modal .close").forEach(btn => {
       btn.addEventListener("click", () => {
-        btn.closest(".modal").style.display = "none";
+        closeModal(btn.closest(".modal"));
       });
     });
   </script>
