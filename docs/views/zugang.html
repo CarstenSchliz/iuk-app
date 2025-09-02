@@ -107,22 +107,53 @@
       color:#fff;
     }
 
-    /* Modal */
+    /* Modal Overlay */
     #confirmModal {
       display:none;
       position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.6); z-index:9999; 
-      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.6); z-index:9999;
+      align-items:center; justify-content:center;
+      opacity:0;
+      transition: opacity 0.3s ease;
+      pointer-events:none;
     }
+    #confirmModal.show {
+      display:flex;
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    /* Modal Box */
     #confirmModal .modal-box {
-      background:#fff; padding:1.5rem; border-radius:12px;
-      max-width:400px; text-align:center;
-      box-shadow:0 2px 10px rgba(0,0,0,0.3);
+      background:#fff; padding:2rem; border-radius:12px;
+      max-width:420px; width:90%;
+      box-shadow:0 4px 15px rgba(0,0,0,0.3);
+      text-align:center;
+      transform:scale(0.95);
+      opacity:0;
+      transition: all 0.3s ease;
+    }
+    #confirmModal.show .modal-box {
+      transform:scale(1);
+      opacity:1;
+    }
+    #confirmModal h3 {
+      color:var(--dunkelblau);
+      margin-top:0; margin-bottom:1rem;
     }
     #confirmModal input {
-      width:100%; padding:0.5rem;
+      width:100%; padding:0.6rem;
       border-radius:6px; border:1px solid #ccc;
+      margin-top:0.3rem;
     }
+    #confirmModal button {
+      width:100%; padding:0.8rem;
+      border:none; border-radius:8px;
+      font-size:1rem; font-weight:bold;
+      cursor:pointer; margin-top:0.6rem;
+    }
+    #confirmYes { background:var(--softrot); color:#fff; }
+    #confirmCancel { background:#bbb; color:#fff; }
   </style>
 </head>
 <body>
@@ -210,20 +241,17 @@
     </div>
   </div>
 
-  <!-- Bestätigungs-Popup -->
+  <!-- Popup -->
   <div id="confirmModal">
     <div class="modal-box">
-      <p id="confirmModalText" style="margin-bottom:1rem; font-size:1.1rem;"></p>
-      <div id="rejectReasonBox" style="display:none; margin-bottom:1rem;">
-        <label for="rejectReason">Grund für Ablehnung (optional):</label><br>
+      <h3 id="confirmModalTitle"></h3>
+      <p id="confirmModalText"></p>
+      <div id="rejectReasonBox" style="display:none; text-align:left; margin-bottom:1rem;">
+        <label for="rejectReason" style="font-size:0.9rem; color:#555;">Grund für Ablehnung (optional):</label>
         <input type="text" id="rejectReason" placeholder="Begründung eingeben...">
       </div>
-      <button id="confirmYes" class="btn-confirm" style="background:green; margin-right:0.5rem;">
-        ✅ Ja, Bestätigung per E-Mail senden
-      </button>
-      <button id="confirmCancel" class="btn-confirm" style="background:crimson;">
-        ❌ Abbrechen
-      </button>
+      <button id="confirmYes">Bestätigung per E-Mail senden</button>
+      <button id="confirmCancel">Abbrechen</button>
     </div>
   </div>
 
@@ -291,16 +319,9 @@
       }
     });
 
-    // Aktionen Grundvoraussetzungen
-    const chkGrund = document.getElementById("chkGrund");
-    const grundActions = document.getElementById("grundActions");
-
-    chkGrund.addEventListener("change", () => {
-      grundActions.style.display = chkGrund.checked ? "block" : "none";
-    });
-
     // Modal-Steuerung
     const confirmModal = document.getElementById("confirmModal");
+    const confirmModalTitle = document.getElementById("confirmModalTitle");
     const confirmModalText = document.getElementById("confirmModalText");
     const confirmYes = document.getElementById("confirmYes");
     const confirmCancel = document.getElementById("confirmCancel");
@@ -309,37 +330,43 @@
 
     let currentAction = null;
 
-    document.getElementById("btnApproveGrund").addEventListener("click", () => {
-      currentAction = "approve";
-      confirmModalText.textContent = "Soll das Mitglied wirklich freigegeben werden?";
-      rejectReasonBox.style.display = "none";
+    function openModal(action, title, text, showReason) {
+      currentAction = action;
+      confirmModalTitle.textContent = title;
+      confirmModalText.textContent = text;
+      rejectReasonBox.style.display = showReason ? "block" : "none";
       confirmModal.style.display = "flex";
+      setTimeout(() => confirmModal.classList.add("show"), 10);
+    }
+
+    function closeModal() {
+      confirmModal.classList.remove("show");
+      setTimeout(() => {
+        confirmModal.style.display = "none";
+        rejectReasonInput.value = "";
+        currentAction = null;
+      }, 300);
+    }
+
+    document.getElementById("btnApproveGrund").addEventListener("click", () => {
+      openModal("approve", "Mitglied freigeben", "Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?", false);
     });
 
     document.getElementById("btnRejectGrund").addEventListener("click", () => {
-      currentAction = "reject";
-      confirmModalText.textContent = "Soll das Mitglied wirklich abgelehnt werden?";
-      rejectReasonBox.style.display = "block";
-      confirmModal.style.display = "flex";
+      openModal("reject", "Mitglied ablehnen", "Soll das Mitglied wirklich für den aktiven Dienst abgelehnt werden?", true);
     });
 
     confirmYes.addEventListener("click", () => {
-      confirmModal.style.display = "none";
+      closeModal();
       if (currentAction === "approve") {
         alert("✅ Mitglied wurde für den aktiven Dienst freigegeben! (Mail gesendet)");
       } else if (currentAction === "reject") {
         const reason = rejectReasonInput.value;
         alert("❌ Mitglied wurde abgelehnt!" + (reason ? " Grund: " + reason : "") + " (Mail gesendet)");
       }
-      rejectReasonInput.value = "";
-      currentAction = null;
     });
 
-    confirmCancel.addEventListener("click", () => {
-      confirmModal.style.display = "none";
-      rejectReasonInput.value = "";
-      currentAction = null;
-    });
+    confirmCancel.addEventListener("click", closeModal);
 
     // Optionale Voraussetzungen
     const chkOptional = document.getElementById("chkOptional");
