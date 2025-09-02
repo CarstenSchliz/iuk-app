@@ -106,6 +106,23 @@
       background: var(--dunkelblau);
       color:#fff;
     }
+
+    /* Modal */
+    #confirmModal {
+      display:none;
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.6); z-index:9999; 
+      display:flex; align-items:center; justify-content:center;
+    }
+    #confirmModal .modal-box {
+      background:#fff; padding:1.5rem; border-radius:12px;
+      max-width:400px; text-align:center;
+      box-shadow:0 2px 10px rgba(0,0,0,0.3);
+    }
+    #confirmModal input {
+      width:100%; padding:0.5rem;
+      border-radius:6px; border:1px solid #ccc;
+    }
   </style>
 </head>
 <body>
@@ -174,10 +191,6 @@
         <button class="btn-confirm" id="btnRejectGrund" style="background:crimson;">
           ❌ Mitglied für den aktiven Dienst ablehnen
         </button>
-        <div id="rejectReasonBox" style="display:none; margin-top:0.5rem;">
-          <label for="rejectReason">Grund für Ablehnung (optional):</label><br>
-          <input type="text" id="rejectReason" placeholder="Begründung eingeben..." style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid #ccc;">
-        </div>
       </div>
 
       <hr style="margin:1rem 0;">
@@ -194,6 +207,23 @@
           📧 Bestätigung per Mail senden
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Bestätigungs-Popup -->
+  <div id="confirmModal">
+    <div class="modal-box">
+      <p id="confirmModalText" style="margin-bottom:1rem; font-size:1.1rem;"></p>
+      <div id="rejectReasonBox" style="display:none; margin-bottom:1rem;">
+        <label for="rejectReason">Grund für Ablehnung (optional):</label><br>
+        <input type="text" id="rejectReason" placeholder="Begründung eingeben...">
+      </div>
+      <button id="confirmYes" class="btn-confirm" style="background:green; margin-right:0.5rem;">
+        ✅ Ja, Bestätigung per E-Mail senden
+      </button>
+      <button id="confirmCancel" class="btn-confirm" style="background:crimson;">
+        ❌ Abbrechen
+      </button>
     </div>
   </div>
 
@@ -228,7 +258,7 @@
       }
     }
 
-    // Grund & Verlauf Listener
+    // Fortschrittsbalken Listener
     document.querySelectorAll("#grund-list input").forEach(cb => {
       cb.addEventListener("change", () => updateProgress("grund-list", "grund-progress"));
     });
@@ -261,27 +291,54 @@
       }
     });
 
-    // Bestätigung Grundvoraussetzungen
+    // Aktionen Grundvoraussetzungen
     const chkGrund = document.getElementById("chkGrund");
     const grundActions = document.getElementById("grundActions");
-    const btnRejectGrund = document.getElementById("btnRejectGrund");
-    const rejectReasonBox = document.getElementById("rejectReasonBox");
 
     chkGrund.addEventListener("change", () => {
       grundActions.style.display = chkGrund.checked ? "block" : "none";
-      rejectReasonBox.style.display = "none";
     });
 
-    btnRejectGrund.addEventListener("click", () => {
-      rejectReasonBox.style.display = "block";
-    });
+    // Modal-Steuerung
+    const confirmModal = document.getElementById("confirmModal");
+    const confirmModalText = document.getElementById("confirmModalText");
+    const confirmYes = document.getElementById("confirmYes");
+    const confirmCancel = document.getElementById("confirmCancel");
+    const rejectReasonBox = document.getElementById("rejectReasonBox");
+    const rejectReasonInput = document.getElementById("rejectReason");
+
+    let currentAction = null;
 
     document.getElementById("btnApproveGrund").addEventListener("click", () => {
-      alert("✅ Mitglied wurde für den aktiven Dienst freigegeben!");
+      currentAction = "approve";
+      confirmModalText.textContent = "Soll das Mitglied wirklich freigegeben werden?";
+      rejectReasonBox.style.display = "none";
+      confirmModal.style.display = "flex";
     });
+
     document.getElementById("btnRejectGrund").addEventListener("click", () => {
-      const reason = document.getElementById("rejectReason").value;
-      alert("❌ Mitglied wurde abgelehnt!" + (reason ? " Grund: " + reason : ""));
+      currentAction = "reject";
+      confirmModalText.textContent = "Soll das Mitglied wirklich abgelehnt werden?";
+      rejectReasonBox.style.display = "block";
+      confirmModal.style.display = "flex";
+    });
+
+    confirmYes.addEventListener("click", () => {
+      confirmModal.style.display = "none";
+      if (currentAction === "approve") {
+        alert("✅ Mitglied wurde für den aktiven Dienst freigegeben! (Mail gesendet)");
+      } else if (currentAction === "reject") {
+        const reason = rejectReasonInput.value;
+        alert("❌ Mitglied wurde abgelehnt!" + (reason ? " Grund: " + reason : "") + " (Mail gesendet)");
+      }
+      rejectReasonInput.value = "";
+      currentAction = null;
+    });
+
+    confirmCancel.addEventListener("click", () => {
+      confirmModal.style.display = "none";
+      rejectReasonInput.value = "";
+      currentAction = null;
     });
 
     // Optionale Voraussetzungen
