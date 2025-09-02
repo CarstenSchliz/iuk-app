@@ -90,6 +90,16 @@
       margin-left: 0.3rem;
     }
 
+    /* Dropdown-Karte */
+    .select-user {
+      margin-bottom: 1rem;
+    }
+    .selected-user {
+      font-weight: bold;
+      color: var(--dunkelblau);
+      margin-top: 0.5rem;
+    }
+
     /* Darkmode Variablen */
     body.dark {
       --card-bg: #1e1e1e;
@@ -104,7 +114,7 @@
   <div class="zugang-grid">
     <!-- Grundvoraussetzungen -->
     <div class="card">
-      <h3><i class="bi bi-check-circle"></i> Grundvoraussetzungen</h3>
+      <h3><i class="bi bi-gear-check"></i> Grundvoraussetzungen</h3>
 
       <div class="progress">
         <div id="grund-progress" class="progress-bar" style="width:0%">0%</div>
@@ -121,7 +131,7 @@
 
     <!-- Voraussetzungen im Verlauf -->
     <div class="card">
-      <h3><i class="bi bi-list-task"></i> Voraussetzungen im Verlauf</h3>
+      <h3><i class="bi bi-graph-up"></i> Voraussetzungen im Verlauf</h3>
 
       <div class="progress">
         <div id="verlauf-progress" class="progress-bar" style="width:0%">0%</div>
@@ -131,6 +141,30 @@
         <li><input type="checkbox" data-id="c1"> C1 (Helfer-)Führerschein</li>
         <li><input type="checkbox" data-id="gruppenfuehrer"> Gruppenführer Sanitätsdienst</li>
       </ul>
+    </div>
+  </div>
+
+  <!-- Bestätigung durch Ausbilder -->
+  <div class="card" style="margin-top:1.5rem;">
+    <h3><i class="bi bi-person-check"></i> Bestätigung durch Ausbilder</h3>
+
+    <div class="select-user">
+      <label for="userSelect">Nutzer auswählen:</label><br>
+      <select id="userSelect">
+        <option value="">-- bitte wählen --</option>
+        <!-- Platzhalter – später dynamisch aus Firestore -->
+        <option value="user1">Max Mustermann</option>
+        <option value="user2">Anna Beispiel</option>
+        <option value="user3">Lukas Test</option>
+      </select>
+      <div id="selectedUser" class="selected-user"></div>
+    </div>
+
+    <div class="checklist">
+      <label>
+        <input type="checkbox" id="confirmUser">
+        Bestätigung erteilt
+      </label>
     </div>
   </div>
 
@@ -164,7 +198,7 @@
       }
     }
 
-    // Event-Listener hinzufügen
+    // Checkbox Listener
     document.querySelectorAll("#grund-list input").forEach(cb => {
       cb.addEventListener("change", () => updateProgress("grund-list", "grund-progress"));
     });
@@ -172,9 +206,28 @@
       cb.addEventListener("change", () => updateProgress("verlauf-list", "verlauf-progress"));
     });
 
-    // Initial aufrufen
+    // Initial Balken setzen
     updateProgress("grund-list", "grund-progress");
     updateProgress("verlauf-list", "verlauf-progress");
+
+    // Dropdown Nutzerwahl
+    const userSelect = document.getElementById("userSelect");
+    const selectedUser = document.getElementById("selectedUser");
+    const confirmUser = document.getElementById("confirmUser");
+
+    userSelect.addEventListener("change", () => {
+      if (userSelect.value) {
+        selectedUser.textContent = "Ausgewählt: " + userSelect.options[userSelect.selectedIndex].text;
+        confirmUser.disabled = false;
+      } else {
+        selectedUser.textContent = "";
+        confirmUser.checked = false;
+        confirmUser.disabled = true;
+      }
+    });
+
+    // Anfangszustand
+    confirmUser.disabled = true;
   </script>
 </body>
 </html>
