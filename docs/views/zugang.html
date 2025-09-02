@@ -94,6 +94,7 @@
       font-weight: bold;
       color: var(--dunkelblau);
       font-size: 1.05rem;
+      margin-top: 1rem; /* mehr Abstand */
     }
 
     .btn-confirm {
@@ -126,6 +127,11 @@
       outline: none;
       border-color: var(--softrot);
       box-shadow: 0 0 4px rgba(228,100,80,0.5);
+    }
+    @media(min-width: 769px){
+      .select-user select {
+        max-width: 300px; /* auf PC schmaler */
+      }
     }
 
     /* Modal Overlay */
@@ -180,10 +186,15 @@
     /* Close X */
     .close-btn {
       position:absolute;
-      top:10px; right:15px;
-      background:none; border:none;
-      font-size:1.5rem; font-weight:bold;
-      color:#666; cursor:pointer;
+      top:10px;
+      right:10px;
+      background:none;
+      border:none;
+      font-size:1.5rem;
+      font-weight:bold;
+      color:#666;
+      cursor:pointer;
+      line-height:1;
     }
     .close-btn:hover { color:var(--softrot); }
   </style>
@@ -436,6 +447,6 @@
 
     confirmCancel.addEventListener("click", closeModal);
     confirmClose.addEventListener("click", closeModal);
-  </script
+  </script>
 </body>
 </html>
