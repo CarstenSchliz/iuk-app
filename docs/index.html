@@ -82,9 +82,12 @@
 
     h1 {
       color: var(--dunkelblau);
-      font-size: 1.25rem;
+      font-size: 1.8rem;
       font-weight: bold;
       margin: 0.3rem 0 0.6rem 0;
+    }
+    @media(max-width: 768px){
+      h1 { font-size: 1.25rem; }
     }
 
     .subtitle {
@@ -93,6 +96,7 @@
       margin-bottom: 1.5rem;
     }
 
+    /* === Formulare === */
     .form-group {
       position: relative;
       margin-bottom: 1.2rem;
@@ -110,12 +114,10 @@
       box-sizing: border-box;
       transition: background 0.2s, border-color 0.2s;
     }
-
     .form-group input:not(:placeholder-shown) {
       background: var(--blassblau);
       border-color: var(--dunkelblau);
     }
-
     .form-group label {
       position: absolute;
       top: 50%;
@@ -128,14 +130,12 @@
       background: #fff;
       padding: 0 0.2rem;
     }
-
     .form-group input:not(:placeholder-shown) + label,
     .form-group input:focus + label {
       top: 0.15rem;
       font-size: 0.75rem;
       color: var(--dunkelblau);
     }
-
     .form-group i {
       position: absolute;
       top: 50%;
@@ -188,21 +188,61 @@
     }
     .modal-content h2 {
       color: var(--dunkelblau); 
-      font-size: 1.25rem;
+      font-size: 1.4rem;
       margin: 0.5rem 0 1.2rem 0;
     }
-    .modal-content .form-group { margin-bottom: 1.2rem; }
-    .modal-content button {
+    .modal-content .form-group {
+      margin-bottom: 1.2rem;
+    }
+    .modal-content input {
       width: 100%;
+      border: 1px solid var(--mittelgrau);
+      border-radius: 6px;
+      padding: 0.9rem 0.8rem 0.5rem 0.8rem; /* Text näher links */
+      font-size: 1rem;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .modal-content input:not(:placeholder-shown) {
+      background: var(--blassblau);
+      border-color: var(--dunkelblau);
+    }
+    .modal-content label {
+      position: absolute;
+      top: 50%;
+      left: 0.8rem;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: var(--dunkelgrau);
+      pointer-events: none;
+      transition: 0.2s ease all;
+      background: #fff;
+      padding: 0 0.2rem;
+    }
+    .modal-content input:not(:placeholder-shown) + label,
+    .modal-content input:focus + label {
+      top: 0.15rem;
+      font-size: 0.75rem;
+      color: var(--dunkelblau);
+    }
+    .modal-actions {
+      display:flex;
+      gap:1rem;
+      margin-top:1rem;
+    }
+    .modal-content button {
+      flex:1;
       padding: 0.7rem;
       border: none;
       border-radius: 6px;
       font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 0.5rem;
     }
-    .modal-content button.primary { background: var(--drk-rot); color: white; }
+    #reg-submit.primary { background: var(--dunkelblau); color: white; }
+    #reset-submit.primary { background: var(--drk-rot); color: white; }
     .modal-content button.close { background: var(--mittelgrau); color: white; }
 
     #toast {
@@ -228,22 +268,11 @@
       bottom: 50px;
     }
 
-    /* Responsive: Handy-Layout */
     @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-      .right {
-        display: none; /* rechte Spalte mit Bild ausblenden */
-      }
-      .login-box {
-        width: 90%;
-        margin: auto;
-        padding: 1.5rem;
-      }
-      .logo-top img {
-        max-height: 150px;
-      }
+      .container { flex-direction: column; }
+      .right { display: none; }
+      .login-box { width: 90%; margin: auto; padding: 1.5rem; }
+      .logo-top img { max-height: 150px; }
     }
   </style>
 </head>
@@ -295,20 +324,22 @@
   <div id="register-modal" class="modal">
     <div class="modal-content">
       <h2>Registrieren</h2>
-      <div class="form-group">
+      <div class="form-group floating">
         <input type="text" id="reg-name" placeholder=" " required>
         <label for="reg-name">Name</label>
       </div>
-      <div class="form-group">
+      <div class="form-group floating">
         <input type="email" id="reg-email" placeholder=" " required>
         <label for="reg-email">E-Mail-Adresse</label>
       </div>
-      <div class="form-group">
+      <div class="form-group floating">
         <input type="password" id="reg-pass" placeholder=" " required>
         <label for="reg-pass">Passwort</label>
       </div>
-      <button id="reg-submit" class="primary">Registrieren</button>
-      <button class="close">Abbrechen</button>
+      <div class="modal-actions">
+        <button id="reg-submit" class="primary">Registrieren</button>
+        <button class="close">Abbrechen</button>
+      </div>
     </div>
   </div>
 
@@ -316,12 +347,14 @@
   <div id="reset-modal" class="modal">
     <div class="modal-content">
       <h2>Passwort zurücksetzen</h2>
-      <div class="form-group">
+      <div class="form-group floating">
         <input type="email" id="reset-email" placeholder=" " required>
         <label for="reset-email">E-Mail-Adresse</label>
       </div>
-      <button id="reset-submit" class="primary">Zurücksetzen</button>
-      <button class="close">Abbrechen</button>
+      <div class="modal-actions">
+        <button id="reset-submit" class="primary">Zurücksetzen</button>
+        <button class="close">Abbrechen</button>
+      </div>
     </div>
   </div>
 
