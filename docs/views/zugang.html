@@ -90,10 +90,10 @@
     .select-user {
       margin-bottom: 1rem;
     }
-    .selected-user {
+    .selected-user, #confirmText {
       font-weight: bold;
       color: var(--dunkelblau);
-      margin-top: 0.5rem;
+      font-size: 1.05rem;
     }
 
     .btn-confirm {
@@ -105,6 +105,27 @@
       cursor:pointer;
       background: var(--dunkelblau);
       color:#fff;
+    }
+
+    /* Dropdown Styling */
+    select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--dunkelblau);
+      background: #fff;
+      font-size: 1rem;
+      color: var(--dunkelblau);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--softrot);
+      box-shadow: 0 0 4px rgba(228,100,80,0.5);
     }
 
     /* Modal Overlay */
@@ -125,6 +146,7 @@
 
     /* Modal Box */
     #confirmModal .modal-box {
+      position: relative;
       background:#fff; padding:2rem; border-radius:12px;
       max-width:420px; width:90%;
       box-shadow:0 4px 15px rgba(0,0,0,0.3);
@@ -152,8 +174,18 @@
       font-size:1rem; font-weight:bold;
       cursor:pointer; margin-top:0.6rem;
     }
-    #confirmYes { background:var(--softrot); color:#fff; }
+    #confirmYes { background:var(--dunkelblau); color:#fff; }
     #confirmCancel { background:#bbb; color:#fff; }
+
+    /* Close X */
+    .close-btn {
+      position:absolute;
+      top:10px; right:15px;
+      background:none; border:none;
+      font-size:1.5rem; font-weight:bold;
+      color:#666; cursor:pointer;
+    }
+    .close-btn:hover { color:var(--softrot); }
   </style>
 </head>
 <body>
@@ -244,6 +276,7 @@
   <!-- Popup -->
   <div id="confirmModal">
     <div class="modal-box">
+      <button id="confirmClose" class="close-btn">×</button>
       <h3 id="confirmModalTitle"></h3>
       <p id="confirmModalText"></p>
       <div id="rejectReasonBox" style="display:none; text-align:left; margin-bottom:1rem;">
@@ -323,7 +356,26 @@
     const chkGrund = document.getElementById("chkGrund");
     const grundActions = document.getElementById("grundActions");
     chkGrund.addEventListener("change", () => {
+      const allChecked = Array.from(document.querySelectorAll("#grund-list input")).every(cb => cb.checked);
+      if (!allChecked && chkGrund.checked) {
+        alert("⚠️ Alle Grundvoraussetzungen sind noch nicht erfüllt!");
+        chkGrund.checked = false;
+        return;
+      }
       grundActions.style.display = chkGrund.checked ? "block" : "none";
+    });
+
+    // Optionale Voraussetzungen-Checkbox steuert Button
+    const chkOptional = document.getElementById("chkOptional");
+    const optionalActions = document.getElementById("optionalActions");
+    chkOptional.addEventListener("change", () => {
+      const allChecked = Array.from(document.querySelectorAll("#verlauf-list input")).every(cb => cb.checked);
+      if (!allChecked && chkOptional.checked) {
+        alert("⚠️ Alle optionalen Voraussetzungen sind noch nicht erfüllt!");
+        chkOptional.checked = false;
+        return;
+      }
+      optionalActions.style.display = chkOptional.checked ? "block" : "none";
     });
 
     // Modal-Steuerung
@@ -332,6 +384,7 @@
     const confirmModalText = document.getElementById("confirmModalText");
     const confirmYes = document.getElementById("confirmYes");
     const confirmCancel = document.getElementById("confirmCancel");
+    const confirmClose = document.getElementById("confirmClose");
     const rejectReasonBox = document.getElementById("rejectReasonBox");
     const rejectReasonInput = document.getElementById("rejectReason");
 
@@ -382,6 +435,7 @@
     });
 
     confirmCancel.addEventListener("click", closeModal);
-  </script>
+    confirmClose.addEventListener("click", closeModal);
+  </script
 </body>
 </html>
