@@ -13,8 +13,11 @@
       --drk-rot: rgb(230,0,5);
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
-      --mittelgrau: rgb(180,180,180);
+      --mittelblau: rgb(0,140,205);
+      --volltonblau: rgb(34,117,208);
       --hellgrau: rgb(239,238,234);
+      --dunkelgrau: rgb(85,79,74);
+      --mittelgrau: rgb(180,180,180);
       --blassblau: rgb(230,240,250);
     }
 
@@ -22,6 +25,7 @@
       height: 100%;
       width: 100%;
       margin: 0;
+      padding: 0;
       font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
       background: var(--hellgrau);
     }
@@ -75,7 +79,8 @@
       box-sizing: border-box;
     }
 
-    .logo-top img { max-height: 160px; margin-bottom: 0.5rem; }
+    .logo-top { margin-bottom: 0.5rem; }
+    .logo-top img { max-height: 160px; }
 
     h1 {
       color: var(--dunkelblau);
@@ -86,7 +91,7 @@
 
     .subtitle {
       font-size: 0.85rem;
-      color: #555;
+      color: var(--dunkelgrau);
       margin-bottom: 1.5rem;
     }
 
@@ -104,9 +109,11 @@
       font-size: 1rem;
       outline: none;
       background: #fff;
+      box-sizing: border-box;
       transition: background 0.2s, border-color 0.2s;
     }
 
+    /* Blassblau nur wenn etwas eingetragen ist */
     .form-group input:not(:placeholder-shown) {
       background: var(--blassblau);
       border-color: var(--dunkelblau);
@@ -118,7 +125,7 @@
       left: 2.5rem;
       transform: translateY(-50%);
       font-size: 1rem;
-      color: #777;
+      color: var(--dunkelgrau);
       pointer-events: none;
       transition: 0.2s ease all;
       background: #fff;
@@ -129,7 +136,7 @@
     .form-group input:focus + label {
       top: 0.15rem;
       font-size: 0.75rem;
-      color: var(--dunkelblau);
+      color: var(--dunkelgrau);
     }
 
     .form-group i {
@@ -138,7 +145,7 @@
       left: 0.6rem;
       transform: translateY(-50%);
       font-size: 1.2rem;
-      color: #777;
+      color: var(--dunkelgrau);
     }
 
     button.login-btn {
@@ -155,13 +162,13 @@
     }
 
     .links { margin-top: 2rem; font-size: 0.85rem; text-align: center; }
-    .links .section { margin-bottom: 1.5rem; }
-    .links span { display: block; margin-bottom: 0.3rem; color: #555; }
+    .links .section { margin-bottom: 1.8rem; }
+    .links span { display: block; margin-bottom: 0.3rem; color: var(--dunkelgrau); }
     .links a { display: block; text-decoration: none; margin-top: 0.3rem; }
     .links a.register { color: var(--softrot); font-weight: bold; }
     .links a.forgot { color: var(--dunkelblau); }
 
-    /* === Modal & Toast === */
+    /* === Modal & Toast Zusatzstyles === */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -176,15 +183,16 @@
       background: #fff;
       padding: 2rem;
       border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
       max-width: 500px;
       width: 90%;
       text-align: center;
       box-sizing: border-box;
     }
     .modal-content h2 {
-      color: var(--dunkelblau);
+      color: var(--dunkelblau); 
       font-size: 1.25rem;
-      margin-bottom: 1.2rem;
+      margin: 0.5rem 0 1.2rem 0;
     }
     .modal-content .form-group { margin-bottom: 1.2rem; }
     .modal-content button {
@@ -305,6 +313,7 @@
   <!-- Toast -->
   <div id="toast"></div>
 
+  <!-- === NEUER SCRIPTBLOCK === -->
   <script type="module">
     import { login, register, resetPassword, translateFirebaseError, updateUserProfile } from "./js/firebase.js";
 
