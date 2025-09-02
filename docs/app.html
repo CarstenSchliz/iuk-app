@@ -15,6 +15,7 @@
       --hellgrau: rgb(239,238,234);
       --mittelgrau: rgb(180,180,180);
       --blassblau: rgb(230,240,250);
+      --hoverblau: #cfe4f9;
     }
 
     body {
@@ -29,7 +30,7 @@
     /* Sidebar */
     .sidebar {
       background: #fff;
-      width: 260px;
+      width: 300px; /* breiter für PC */
       display: flex;
       flex-direction: column;
       padding: 1.5rem 1rem;
@@ -87,8 +88,11 @@
     }
 
     .menu button:hover,
-    .menu button.active,
     .logout:hover {
+      background: var(--hoverblau);
+    }
+
+    .menu button.active {
       background: var(--blassblau);
     }
 
@@ -122,6 +126,7 @@
         left: -260px;
         top: 0;
         height: 100%;
+        width: 260px; /* mobil kompakter */
         transition: left 0.3s;
         z-index: 1000;
       }
@@ -149,8 +154,8 @@
     body.dark .menu button,
     body.dark .logout { color: #f5f5f5; }
     body.dark .menu button:hover,
-    body.dark .menu button.active,
-    body.dark .logout:hover { background: var(--blassblau); color: #000; }
+    body.dark .logout:hover { background: var(--hoverblau); color: #000; }
+    body.dark .menu button.active { background: var(--blassblau); color: #000; }
     body.dark .profile h2,
     body.dark .profile p { color: #f5f5f5; }
   </style>
