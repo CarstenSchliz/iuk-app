@@ -319,6 +319,13 @@
       }
     });
 
+    // Grundvoraussetzungen-Checkbox steuert Buttons
+    const chkGrund = document.getElementById("chkGrund");
+    const grundActions = document.getElementById("grundActions");
+    chkGrund.addEventListener("change", () => {
+      grundActions.style.display = chkGrund.checked ? "block" : "none";
+    });
+
     // Modal-Steuerung
     const confirmModal = document.getElementById("confirmModal");
     const confirmModalTitle = document.getElementById("confirmModalTitle");
@@ -348,14 +355,20 @@
       }, 300);
     }
 
+    // Buttons für Grundvoraussetzungen
     document.getElementById("btnApproveGrund").addEventListener("click", () => {
       openModal("approve", "Mitglied freigeben", "Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?", false);
     });
-
     document.getElementById("btnRejectGrund").addEventListener("click", () => {
       openModal("reject", "Mitglied ablehnen", "Soll das Mitglied wirklich für den aktiven Dienst abgelehnt werden?", true);
     });
 
+    // Button für optionale Voraussetzungen
+    document.getElementById("btnConfirmOptional").addEventListener("click", () => {
+      openModal("optional", "Optionale Voraussetzungen bestätigen", "Soll die Bestätigung wirklich per E-Mail an das Mitglied gesendet werden?", false);
+    });
+
+    // Bestätigung
     confirmYes.addEventListener("click", () => {
       closeModal();
       if (currentAction === "approve") {
@@ -363,22 +376,12 @@
       } else if (currentAction === "reject") {
         const reason = rejectReasonInput.value;
         alert("❌ Mitglied wurde abgelehnt!" + (reason ? " Grund: " + reason : "") + " (Mail gesendet)");
+      } else if (currentAction === "optional") {
+        alert("📧 Bestätigung für optionale Voraussetzungen wurde gesendet!");
       }
     });
 
     confirmCancel.addEventListener("click", closeModal);
-
-    // Optionale Voraussetzungen
-    const chkOptional = document.getElementById("chkOptional");
-    const optionalActions = document.getElementById("optionalActions");
-
-    chkOptional.addEventListener("change", () => {
-      optionalActions.style.display = chkOptional.checked ? "block" : "none";
-    });
-
-    document.getElementById("btnConfirmOptional").addEventListener("click", () => {
-      alert("📧 Mail-Bestätigung wurde versendet (Simulation)!");
-    });
   </script>
 </body>
 </html>
