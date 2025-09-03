@@ -84,9 +84,6 @@
       align-items:center;
       justify-content:center;
     }
-    .progress-bar.done::after {
-      content: "";
-    }
 
     .select-user {
       margin-bottom: 1rem;
@@ -110,7 +107,6 @@
       cursor:pointer;
       color:#fff;
       font-weight:bold;
-      width:100%; /* alle gleich breit */
     }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
@@ -225,7 +221,7 @@
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
-  <!-- Nutzer-Auswahl zuerst -->
+  <!-- Nutzer-Auswahl -->
   <div class="card" style="margin-bottom:1.5rem;">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
     <div class="select-user">
@@ -287,10 +283,8 @@
         </button>
       </div>
 
-      <hr style="margin:1rem 0;">
-
       <!-- Optionale Voraussetzungen -->
-      <div class="checklist">
+      <div class="checklist" style="margin-top:1rem;">
         <label>
           <input type="checkbox" id="chkOptional">
           Optionale Voraussetzungen erfüllt
@@ -301,8 +295,6 @@
           <i class="bi bi-envelope"></i> Bestätigung per Mail senden
         </button>
       </div>
-
-      <hr style="margin:1rem 0;">
 
       <!-- Nicht freigeben -->
       <div class="checklist" style="margin-top:1rem;">
@@ -350,29 +342,23 @@
 
       if (percent === 100) {
         bar.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--drk-gruen");
-        bar.classList.add("done");
       } else if (percent >= 75) {
         bar.style.backgroundColor = "limegreen";
-        bar.classList.remove("done");
       } else if (percent >= 50) {
         bar.style.backgroundColor = "gold";
-        bar.classList.remove("done");
       } else if (percent >= 25) {
         bar.style.backgroundColor = "orange";
-        bar.classList.remove("done");
       } else if (percent > 0) {
         bar.style.backgroundColor = "crimson";
-        bar.classList.remove("done");
       } else {
         bar.style.backgroundColor = "#e9ecef";
-        bar.classList.remove("done");
       }
       return percent;
     }
 
-    function showToast(message, color = "#333") {
+    function showToast(message, color = "#333", icon = "") {
       const toast = document.getElementById("toast");
-      toast.innerText = message;
+      toast.innerHTML = icon ? `<i class="bi ${icon}"></i> ${message}` : message;
       toast.style.backgroundColor = color;
       toast.className = "show";
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
@@ -422,40 +408,40 @@
       }
     });
 
-    // Grundvoraussetzungen-Checkbox → Freigabe
+    // Grundvoraussetzungen
     const chkGrund = document.getElementById("chkGrund");
     const grundActions = document.getElementById("grundActions");
     chkGrund.addEventListener("change", () => {
       const allChecked = Array.from(document.querySelectorAll("#grund-list input")).every(cb => cb.checked);
       if (!allChecked && chkGrund.checked) {
-        showToast("❌ Alle Grundvoraussetzungen sind noch nicht erfüllt!", "red");
+        showToast("Alle Grundvoraussetzungen sind noch nicht erfüllt!", "red", "bi-x-circle");
         chkGrund.checked = false;
         return;
       }
       grundActions.style.display = chkGrund.checked ? "block" : "none";
     });
 
-    // Unabhängige Ablehnung
+    // Ablehnung
     const chkReject = document.getElementById("chkReject");
     const rejectActions = document.getElementById("rejectActions");
     chkReject.addEventListener("change", () => {
       rejectActions.style.display = chkReject.checked ? "block" : "none";
     });
 
-    // Optionale Voraussetzungen
+    // Optionale
     const chkOptional = document.getElementById("chkOptional");
     const optionalActions = document.getElementById("optionalActions");
     chkOptional.addEventListener("change", () => {
       const allChecked = Array.from(document.querySelectorAll("#verlauf-list input")).every(cb => cb.checked);
       if (!allChecked && chkOptional.checked) {
-        showToast("❌ Alle optionalen Voraussetzungen sind noch nicht erfüllt!", "red");
+        showToast("Alle optionalen Voraussetzungen sind noch nicht erfüllt!", "red", "bi-x-circle");
         chkOptional.checked = false;
         return;
       }
       optionalActions.style.display = chkOptional.checked ? "block" : "none";
     });
 
-    // Modal-Steuerung
+    // Modal
     const confirmModal = document.getElementById("confirmModal");
     const confirmModalTitle = document.getElementById("confirmModalTitle");
     const confirmModalText = document.getElementById("confirmModalText");
@@ -499,12 +485,12 @@
     confirmYes.addEventListener("click", () => {
       closeModal();
       if (currentAction === "approve") {
-        showToast("✅ Mitglied wurde für den aktiven Dienst freigegeben! (Mail gesendet)", "green");
+        showToast("Mitglied wurde für den aktiven Dienst freigegeben! (Mail gesendet)", "green", "bi-check-circle");
       } else if (currentAction === "reject") {
         const reason = rejectReasonInput.value;
-        showToast("❌ Mitglied wurde abgelehnt!" + (reason ? " Grund: " + reason : "") + " (Mail gesendet)", "red");
+        showToast("Mitglied wurde abgelehnt!" + (reason ? " Grund: " + reason : "") + " (Mail gesendet)", "red", "bi-x-circle");
       } else if (currentAction === "optional") {
-        showToast("📧 Bestätigung für optionale Voraussetzungen wurde gesendet!", "blue");
+        showToast("Bestätigung für optionale Voraussetzungen wurde gesendet!", "blue", "bi-envelope");
       }
     });
     confirmCancel.addEventListener("click", closeModal);
