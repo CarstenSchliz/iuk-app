@@ -101,13 +101,14 @@
 
     .btn-confirm {
       display:inline-block;
-      margin:0.5rem 0.5rem 0 0;
+      margin:0.5rem 0;
       padding:0.6rem 1rem;
       border:none;
       border-radius:8px;
       cursor:pointer;
       color:#fff;
       font-weight:bold;
+      width:100%; /* alle gleich breit */
     }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
@@ -198,7 +199,6 @@
     #toast {
       visibility: hidden;
       min-width: 250px;
-      margin-left: -125px;
       background-color: #333;
       color: #fff;
       text-align: center;
@@ -210,6 +210,7 @@
       bottom: 30px;
       font-size: 1rem;
       opacity: 0;
+      transform: translateX(-50%); /* echte Zentrierung */
       transition: opacity 0.5s, bottom 0.5s;
     }
     #toast.show {
@@ -252,9 +253,9 @@
       </ul>
     </div>
 
-    <!-- Optionale Voraussetzungen im Verlauf -->
+    <!-- Optionale Voraussetzungen -->
     <div class="card">
-      <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen im Verlauf</h3>
+      <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
       <div class="progress">
         <div id="verlauf-progress" class="progress-bar" style="width:0%"></div>
       </div>
@@ -284,6 +285,23 @@
         </button>
       </div>
 
+      <hr style="margin:1rem 0;">
+
+      <!-- Optionale Voraussetzungen -->
+      <div class="checklist">
+        <label>
+          <input type="checkbox" id="chkOptional">
+          Optionale Voraussetzungen erfüllt
+        </label>
+      </div>
+      <div id="optionalActions" style="display:none; margin-top:0.5rem;">
+        <button class="btn-confirm btn-blue" id="btnConfirmOptional">
+          📧 Bestätigung per Mail senden
+        </button>
+      </div>
+
+      <hr style="margin:1rem 0;">
+
       <!-- Nicht freigeben -->
       <div class="checklist" style="margin-top:1rem;">
         <label>
@@ -294,21 +312,6 @@
       <div id="rejectActions" style="display:none; margin-top:0.5rem;">
         <button class="btn-confirm btn-red" id="btnRejectGrund">
           ❌ Mitglied für den aktiven Dienst ablehnen
-        </button>
-      </div>
-
-      <hr style="margin:1rem 0;">
-
-      <!-- Optionale Voraussetzungen -->
-      <div class="checklist">
-        <label>
-          <input type="checkbox" id="chkOptional">
-          Optionale Voraussetzungen im Verlauf erfüllt
-        </label>
-      </div>
-      <div id="optionalActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-blue" id="btnConfirmOptional">
-          📧 Bestätigung per Mail senden
         </button>
       </div>
     </div>
@@ -393,7 +396,18 @@
         selectedUser.textContent = "Ausgewählt: " + name;
         confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
-        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => cb.disabled = false);
+
+        // Reset beim Benutzerwechsel
+        document.querySelectorAll("input[type='checkbox']").forEach(cb => {
+          cb.checked = false;
+          cb.disabled = false;
+        });
+        document.getElementById("grundActions").style.display = "none";
+        document.getElementById("optionalActions").style.display = "none";
+        document.getElementById("rejectActions").style.display = "none";
+
+        updateProgress("grund-list", "grund-progress");
+        updateProgress("verlauf-list", "verlauf-progress");
       } else {
         selectedUser.textContent = "";
         confirmUserSection.style.display = "none";
