@@ -54,19 +54,10 @@
     --blassblau: rgb(230,240,250);
   }
 
-  .page-title {
-    color: var(--softrot);
-    margin-bottom: 1rem;
-  }
+  .page-title { color: var(--softrot); margin-bottom: 1rem; }
 
-  .settings-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.5rem;
-  }
-  @media(max-width: 768px){
-    .settings-grid { grid-template-columns: 1fr; }
-  }
+  .settings-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+  @media(max-width: 768px){ .settings-grid { grid-template-columns: 1fr; } }
 
   .card {
     background: var(--card-bg, #fff);
@@ -75,122 +66,64 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     margin-bottom: 1.5rem;
   }
+  .card h3 { color: var(--dunkelblau); margin: 0 0 1rem 0; }
 
-  .card h3 {
-    color: var(--dunkelblau);
-    margin-top: 0;
-    margin-bottom: 1rem;
-  }
-
-  .user-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-  }
+  .user-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
   .user-table th, .user-table td {
-    border-bottom: 1px solid #ddd;
-    padding: 0.6rem;
-    text-align: left;
-    vertical-align: top;
+    border-bottom: 1px solid #ddd; padding: 0.6rem;
+    text-align: left; vertical-align: top;
   }
-  .user-table th {
-    background: var(--blassblau);
-  }
+  .user-table th { background: var(--blassblau); }
 
   .btn-primary, .btn-secondary, .btn-danger {
-    padding:0.4rem 0.8rem;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    font-size: 0.85rem;
+    padding:0.4rem 0.8rem; border:none; border-radius:6px;
+    cursor:pointer; font-size: 0.85rem;
   }
   .btn-primary { background: var(--dunkelblau); color: #fff; }
   .btn-secondary { background:#eee; }
   .btn-danger { background:#c62828; color: #fff; }
 
-  .form-msg {
-    margin-top:0.5rem;
-    font-weight:bold;
-  }
+  .form-msg { margin-top:0.5rem; font-weight:bold; }
 
   /* Floating Label */
-  .form-group.floating {
-    position: relative;
-    margin-bottom: 1.5rem;
-  }
+  .form-group.floating { position: relative; margin-bottom: 1.5rem; }
   .form-group.floating input {
-    width: 100%;
-    padding: 1rem 0.75rem 0.25rem 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #fff;
-    font-size: 1rem;
-    box-sizing: border-box;
-    transition: background 0.2s, border-color 0.2s;
+    width: 100%; padding: 1rem 0.75rem 0.25rem 0.75rem;
+    border: 1px solid #ccc; border-radius: 8px;
+    background: #fff; font-size: 1rem; box-sizing: border-box;
   }
   .form-group.floating label {
-    position: absolute;
-    top: 50%;
-    left: 0.75rem;
-    transform: translateY(-50%);
-    color: #777;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-    pointer-events: none;
-    background: var(--card-bg, #fff);
-    padding: 0 0.25rem;
+    position: absolute; top: 50%; left: 0.75rem; transform: translateY(-50%);
+    color: #777; font-size: 0.95rem; transition: all 0.2s ease;
+    pointer-events: none; background: var(--card-bg, #fff); padding: 0 0.25rem;
   }
   .form-group.floating input:focus + label,
   .form-group.floating input:not(:placeholder-shown) + label {
-    top: 0;
-    left: 0.6rem;
-    font-size: 0.8rem;
-    color: var(--dunkelblau);
+    top: 0; left: 0.6rem; font-size: 0.8rem; color: var(--dunkelblau);
   }
 
-  /* Editor-Zeile */
-  .user-editor {
-    padding: 0.5rem 0;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  .user-editor label {
-    font-size: 0.9rem;
-  }
-  .user-editor input {
-    padding: 0.3rem 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
+  /* Editor */
+  .user-editor { padding: 0.5rem 0; display: flex; gap: 1rem; align-items: center; }
+  .user-editor label { font-size: 0.9rem; }
+  .user-editor input { padding: 0.3rem 0.5rem; border: 1px solid #ccc; border-radius: 6px; }
 
   /* Darkmode */
-  body.dark .card {
-    background: #1e1e1e;
-    color: #f5f5f5;
-  }
-  body.dark .user-table th {
-    background: #333;
-  }
-  body.dark .user-table td {
-    border-bottom: 1px solid #555;
-  }
-  body.dark .form-group.floating label {
-    background: #1e1e1e;
-  }
+  body.dark .card { background: #1e1e1e; color: #f5f5f5; }
+  body.dark .user-table th { background: #333; }
+  body.dark .user-table td { border-bottom: 1px solid #555; }
+  body.dark .form-group.floating label { background: #1e1e1e; }
 </style>
 
 <script type="module">
   console.log("✅ benutzer.html geladen");
 
-  // 👉 richtiger Import für docs/views/
   import { auth, functions } from "../js/firebase.js";
-  import { httpsCallable } 
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+  import { httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
 
   const userList = document.getElementById("userList");
   const userMsg = document.getElementById("userMsg");
 
+  // Nutzer rendern
   function renderUsers(users) {
     userList.innerHTML = "";
     users.forEach(u => {
@@ -217,6 +150,7 @@
         </td>
       `;
 
+      // Admin setzen/entfernen
       tr.querySelector(".toggle-admin").addEventListener("click", async () => {
         try {
           const fn = httpsCallable(functions, "setUserAdmin");
@@ -230,10 +164,12 @@
         }
       });
 
+      // Edit öffnen
       tr.querySelector(".edit-user").addEventListener("click", () => {
         editorRow.style.display = editorRow.style.display === "none" ? "table-row" : "none";
       });
 
+      // Änderungen speichern
       editorRow.querySelector(".save-user").addEventListener("click", async () => {
         const newName = editorRow.querySelector(".edit-name").value;
         try {
@@ -248,6 +184,7 @@
         }
       });
 
+      // Nutzer löschen
       tr.querySelector(".delete-user").addEventListener("click", async () => {
         if (!confirm("Soll dieser Nutzer wirklich gelöscht werden?")) return;
         try {
@@ -267,6 +204,7 @@
     });
   }
 
+  // Nutzer laden
   async function loadUsers() {
     try {
       const fn = httpsCallable(functions, "listUsers");
@@ -278,9 +216,9 @@
       console.error(err);
     }
   }
-
   loadUsers();
 
+  // Neuen Nutzer anlegen
   const form = document.getElementById("createUserForm");
   const msg = document.getElementById("createUserMsg");
 
