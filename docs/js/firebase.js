@@ -1,4 +1,4 @@
-// public/js/firebase.js
+// docs/js/firebase.js
 // Firebase Setup & Auth-Funktionen
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -22,6 +22,10 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
+import {
+  getFunctions
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+
 // === Firebase Config ===
 const firebaseConfig = {
   apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
@@ -37,6 +41,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const storage = getStorage(app);
+export const functions = getFunctions(app);
 
 // Nutzer bleibt eingeloggt
 setPersistence(auth, browserLocalPersistence);
@@ -44,37 +49,29 @@ setPersistence(auth, browserLocalPersistence);
 // === Fehlertexte übersetzen ===
 export function translateFirebaseError(errorCode) {
   switch (errorCode) {
-    // Anmeldefehler
     case "auth/invalid-email":
       return "Die eingegebene E-Mail-Adresse ist ungültig.";
     case "auth/user-disabled":
       return "Dieses Konto wurde deaktiviert. Bitte wenden Sie sich an den Administrator.";
     case "auth/user-not-found":
-    case "auth/invalid-credential": // kommt oft bei unbekannten Mails
+    case "auth/invalid-credential":
       return "Es existiert kein Benutzer mit dieser E-Mail.";
     case "auth/wrong-password":
       return "Das eingegebene Passwort ist falsch.";
-
-    // Registrierungsfehler
     case "auth/email-already-in-use":
       return "Diese E-Mail-Adresse wird bereits verwendet.";
     case "auth/weak-password":
       return "Das Passwort ist zu schwach. Bitte mindestens 6 Zeichen verwenden.";
     case "auth/missing-password":
       return "Bitte geben Sie ein Passwort ein.";
-
-    // Passwort-Reset
     case "auth/missing-email":
       return "Bitte geben Sie eine E-Mail-Adresse ein.";
-
-    // Netzwerk & Sonstiges
     case "auth/network-request-failed":
       return "Netzwerkfehler – bitte Internetverbindung prüfen.";
     case "auth/too-many-requests":
       return "Zu viele Anmeldeversuche. Bitte versuchen Sie es später erneut.";
     case "auth/internal-error":
       return "Interner Fehler bei der Anmeldung. Bitte später erneut versuchen.";
-
     default:
       return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
   }
@@ -112,10 +109,7 @@ export async function uploadProfileImage(user, file) {
   await uploadBytes(storageRef, file);
 
   const url = await getDownloadURL(storageRef);
-
-  // im Auth-Profil speichern
   await updateProfile(user, { photoURL: url });
-
   return url;
 }
 
@@ -124,7 +118,6 @@ export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
 
-// Für Debug in der Konsole zugänglich machen
+// === Debug: in Console verfügbar machen ===
 window.auth = auth;
 window.functions = functions;
-}
