@@ -6,7 +6,10 @@ admin.initializeApp();
 // 🔹 Neuen Nutzer anlegen
 exports.createUser = functions.https.onCall(async (data, context) => {
   if (!context.auth || !context.auth.token.admin) {
-    throw new functions.https.HttpsError("permission-denied", "Nur Admins dürfen neue Nutzer anlegen.");
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Nur Admins dürfen neue Nutzer anlegen."
+    );
   }
 
   const { email, password, displayName } = data;
@@ -17,7 +20,7 @@ exports.createUser = functions.https.onCall(async (data, context) => {
       password,
       displayName: displayName || ""
     });
-    return { success: true, uid: userRecord.uid };
+    return { uid: userRecord.uid };
   } catch (err) {
     throw new functions.https.HttpsError("internal", err.message);
   }
@@ -26,7 +29,10 @@ exports.createUser = functions.https.onCall(async (data, context) => {
 // 🔹 Nutzer löschen
 exports.deleteUser = functions.https.onCall(async (data, context) => {
   if (!context.auth || !context.auth.token.admin) {
-    throw new functions.https.HttpsError("permission-denied", "Nur Admins dürfen Nutzer löschen.");
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Nur Admins dürfen Nutzer löschen."
+    );
   }
 
   const { uid } = data;
@@ -42,7 +48,10 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
 // 🔹 Adminrechte setzen oder entfernen
 exports.setUserAdmin = functions.https.onCall(async (data, context) => {
   if (!context.auth || !context.auth.token.admin) {
-    throw new functions.https.HttpsError("permission-denied", "Nur Admins dürfen Adminrechte vergeben.");
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Nur Admins dürfen Adminrechte vergeben."
+    );
   }
 
   const { uid, makeAdmin } = data;
@@ -55,53 +64,43 @@ exports.setUserAdmin = functions.https.onCall(async (data, context) => {
   }
 });
 
-// 🔹 Alle Nutzer auflisten
-exports.listUsers = functions.https.onCall(async (data, context) => {
-  if (!context.auth || !context.auth.token.admin) {
-    throw new functions.https.HttpsError("permission-denied", "Nur Admins dürfen Benutzer auflisten.");
-  }
-
-  try {
-    const maxResults = 1000; // max. Anzahl Nutzer pro Aufruf
-    const listUsersResult = await admin.auth().listUsers(maxResults);
-    const users = listUsersResult.users.map(userRecord => ({
-      uid: userRecord.uid,
-      email: userRecord.email,
-      displayName: userRecord.displayName || "",
-      admin: userRecord.customClaims && userRecord.customClaims.admin === true
-    }));
-    return { users };
-  } catch (err) {
-    throw new functions.https.HttpsError("internal", err.message);
-  }
-});
-
-// 🔹 Benutzer aktualisieren (z. B. Name ändern)
+// 🔹 Nutzer aktualisieren (Name etc.)
 exports.updateUser = functions.https.onCall(async (data, context) => {
   if (!context.auth || !context.auth.token.admin) {
-    throw new functions.https.HttpsError("permission-denied", "Nur Admins dürfen Nutzer bearbeiten.");
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Nur Admins dürfen Nutzer ändern."
+    );
   }
 
   const { uid, displayName } = data;
 
   try {
-    await admin.auth().updateUser(uid, {
-      displayName: displayName || ""
-    });
+    await admin.auth().updateUser(uid, { displayName });
     return { success: true };
   } catch (err) {
     throw new functions.https.HttpsError("internal", err.message);
   }
 });
 
-// 🔹 Einmal-Funktion: Mich selbst zum Admin machen
-exports.makeMeAdmin = functions.https.onCall(async (data, context) => {
-  // 👉 Hier deine eigene UID eintragen
-  const myUid = "O1utEGpjUQT9oF8V0b6qbeZbsN72";
+// 🔹 Alle Nutzer auflisten
+exports.listUsers = functions.https.onCall(async (data, context) => {
+  if (!context.auth || !context.auth.token.admin) {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Nur Admins dürfen Benutzer auflisten."
+    );
+  }
 
   try {
-    await admin.auth().setCustomUserClaims(myUid, { admin: true });
-    return { success: true, message: "✅ Nutzer ist jetzt Admin" };
+    const listUsersResult = await admin.auth().listUsers(1000);
+    const users = listUsersResult.users.map(userRecord => ({
+      uid: userRecord.uid,
+      email: userRecord.email,
+      displayName: userRecord.displayName || "",
+      admin: userRecord.customClaims?.admin === true
+    }));
+    return { users };
   } catch (err) {
     throw new functions.https.HttpsError("internal", err.message);
   }
