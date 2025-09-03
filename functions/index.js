@@ -75,3 +75,21 @@ exports.listUsers = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError("internal", err.message);
   }
 });
+
+// 🔹 Benutzer aktualisieren (z. B. Name ändern)
+exports.updateUser = functions.https.onCall(async (data, context) => {
+  if (!context.auth || !context.auth.token.admin) {
+    throw new functions.https.HttpsError("permission-denied", "Nur Admins dürfen Nutzer bearbeiten.");
+  }
+
+  const { uid, displayName } = data;
+
+  try {
+    await admin.auth().updateUser(uid, {
+      displayName: displayName || ""
+    });
+    return { success: true };
+  } catch (err) {
+    throw new functions.https.HttpsError("internal", err.message);
+  }
+});
