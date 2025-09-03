@@ -93,3 +93,16 @@ exports.updateUser = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError("internal", err.message);
   }
 });
+
+// 🔹 Einmal-Funktion: Mich selbst zum Admin machen
+exports.makeMeAdmin = functions.https.onCall(async (data, context) => {
+  // 👉 Hier deine eigene UID eintragen
+  const myUid = "O1utEGpjUQT9oF8V0b6qbeZbsN72";
+
+  try {
+    await admin.auth().setCustomUserClaims(myUid, { admin: true });
+    return { success: true, message: "✅ Nutzer ist jetzt Admin" };
+  } catch (err) {
+    throw new functions.https.HttpsError("internal", err.message);
+  }
+});
