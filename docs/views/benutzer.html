@@ -183,11 +183,10 @@
 <script type="module">
   console.log("✅ benutzer.html geladen");
 
-  import { auth } from "../js/firebase.js";
-  import { getFunctions, httpsCallable } 
-    from "https://www.gstatic.com/firebasejs/10.13.2/firebase-functions.js";
+  import { auth, functions } from "../js/firebase.js";
+  import { httpsCallable } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
 
-  const functions = getFunctions();
   const userList = document.getElementById("userList");
   const userMsg = document.getElementById("userMsg");
 
@@ -282,6 +281,7 @@
     } catch (err) {
       userMsg.style.color = "red";
       userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
+      console.error(err);
     }
   }
 
