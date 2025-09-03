@@ -123,3 +123,8 @@ export async function uploadProfileImage(user, file) {
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
+
+// Für Debug in der Konsole zugänglich machen
+window.auth = auth;
+window.functions = functions;
+}
