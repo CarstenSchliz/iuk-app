@@ -1,4 +1,3 @@
-
 <h2 class="page-title">Benutzerverwaltung</h2>
 
 <div class="settings-grid">
@@ -18,6 +17,7 @@
         <!-- Nutzer werden hier dynamisch eingefügt -->
       </tbody>
     </table>
+    <div id="userMsg" class="form-msg"></div>
   </div>
 
   <!-- Rechte Spalte: Nutzer anlegen -->
@@ -148,6 +148,22 @@
     color: var(--dunkelblau);
   }
 
+  /* Editor-Zeile */
+  .user-editor {
+    padding: 0.5rem 0;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .user-editor label {
+    font-size: 0.9rem;
+  }
+  .user-editor input {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
   /* Darkmode */
   body.dark .card {
     background: #1e1e1e;
@@ -173,9 +189,10 @@
 
   const functions = getFunctions();
   const userList = document.getElementById("userList");
+  const userMsg = document.getElementById("userMsg");
 
-  // Nutzer rendern
-  function renderUsers(users){
+  // 🔹 Nutzer rendern mit Edit-Row
+  function renderUsers(users) {
     userList.innerHTML = "";
     users.forEach(u => {
       const tr = document.createElement("tr");
@@ -185,18 +202,54 @@
         <td>${u.admin ? "✅" : "❌"}</td>
         <td>
           <button class="btn-secondary toggle-admin">Admin ${u.admin ? "entfernen" : "setzen"}</button>
+          <button class="btn-secondary edit-user">Bearbeiten</button>
           <button class="btn-danger delete-user">Löschen</button>
-        </td>`;
+        </td>
+      `;
+
+      // Editor-Row hinzufügen
+      const editorRow = document.createElement("tr");
+      editorRow.style.display = "none";
+      editorRow.innerHTML = `
+        <td colspan="4">
+          <div class="user-editor">
+            <label>Name: <input type="text" value="${u.displayName || ""}" class="edit-name"></label>
+            <button class="btn-primary save-user">Speichern</button>
+          </div>
+        </td>
+      `;
 
       // Admin umschalten
       tr.querySelector(".toggle-admin").addEventListener("click", async () => {
         try {
           const fn = httpsCallable(functions, "setUserAdmin");
           await fn({ uid: u.uid, makeAdmin: !u.admin });
-          alert("✅ Adminrechte geändert!");
-          loadUsers(); // Liste neu laden
+          userMsg.style.color = "green";
+          userMsg.textContent = "✅ Adminrechte geändert!";
+          loadUsers();
         } catch (err) {
-          alert("❌ Fehler: " + err.message);
+          userMsg.style.color = "red";
+          userMsg.textContent = "❌ Fehler: " + err.message;
+        }
+      });
+
+      // Bearbeiten öffnen/schließen
+      tr.querySelector(".edit-user").addEventListener("click", () => {
+        editorRow.style.display = editorRow.style.display === "none" ? "table-row" : "none";
+      });
+
+      // Änderungen speichern
+      editorRow.querySelector(".save-user").addEventListener("click", async () => {
+        const newName = editorRow.querySelector(".edit-name").value;
+        try {
+          const fn = httpsCallable(functions, "updateUser");
+          await fn({ uid: u.uid, displayName: newName });
+          userMsg.style.color = "green";
+          userMsg.textContent = "✅ Benutzer aktualisiert!";
+          loadUsers();
+        } catch (err) {
+          userMsg.style.color = "red";
+          userMsg.textContent = "❌ Fehler: " + err.message;
         }
       });
 
@@ -206,34 +259,39 @@
         try {
           const fn = httpsCallable(functions, "deleteUser");
           await fn({ uid: u.uid });
-          alert("🗑️ Nutzer gelöscht!");
-          loadUsers(); // Liste neu laden
+          userMsg.style.color = "green";
+          userMsg.textContent = "🗑️ Nutzer gelöscht!";
+          loadUsers();
         } catch (err) {
-          alert("❌ Fehler: " + err.message);
+          userMsg.style.color = "red";
+          userMsg.textContent = "❌ Fehler: " + err.message;
         }
       });
 
       userList.appendChild(tr);
+      userList.appendChild(editorRow);
     });
   }
 
-  // Nutzer laden
-  async function loadUsers(){
+  // 🔹 Nutzer laden
+  async function loadUsers() {
     try {
       const fn = httpsCallable(functions, "listUsers");
       const res = await fn();
       renderUsers(res.data.users);
     } catch (err) {
-      console.error("❌ Fehler beim Laden der Nutzer:", err);
+      userMsg.style.color = "red";
+      userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
     }
   }
 
   // Initial laden
   loadUsers();
 
-  // Neuen Nutzer anlegen
+  // 🔹 Neuen Nutzer anlegen
   const form = document.getElementById("createUserForm");
   const msg = document.getElementById("createUserMsg");
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("newEmail").value;
@@ -250,7 +308,7 @@
       msg.textContent = "✅ Benutzer angelegt mit UID " + res.data.uid;
       loadUsers();
       form.reset();
-    } catch(err) {
+    } catch (err) {
       msg.style.color = "red";
       msg.textContent = "❌ Fehler: " + err.message;
     }
