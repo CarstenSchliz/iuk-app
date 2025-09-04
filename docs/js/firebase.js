@@ -22,7 +22,10 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-import { getFunctions } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+import {
+  getFunctions,
+  httpsCallable
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
 
 // === Firebase Config ===
 const firebaseConfig = {
@@ -115,3 +118,8 @@ export async function uploadProfileImage(user, file) {
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
+
+// === Debug-Hilfe: für die Browser-Konsole global machen ===
+window.auth = auth;
+window.functions = functions;
+window.httpsCallable = httpsCallable;
