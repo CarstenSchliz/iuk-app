@@ -39,22 +39,24 @@
     .card h3{ color:var(--dunkelblau); margin:0 0 1rem; font-size:1.1rem }
 
     /* Tabelle */
-    .user-table{ width:100%; border-collapse:collapse; font-size:.95rem }
+    .user-table{ width:100%; border-collapse:collapse; font-size:.95rem; table-layout:fixed }
     .user-table th, .user-table td{ border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle }
     .user-table th{ background:var(--blassblau); position:sticky; top:0; z-index:1 }
 
     /* Ein-Zeile ohne Umbruch (Desktop) */
-    .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:1px } /* max-width trick für flex table cells */
+    .nowrap{
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
     .td-name b{ font-weight:700 }
     .td-uid{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace }
 
     /* Rollen-Badges */
     .role-badges{ display:flex; gap:.35rem; flex-wrap:wrap }
     .role-badge{ display:inline-block; padding:.18rem .55rem; border-radius:999px; font-size:.78rem; border:1px solid transparent; white-space:nowrap }
-    .role-admin{ background:var(--role-admin-bg); border-color:var(--role-admin-bd); color:var(--role-admin-fg) }
-    .role-gl{    background:var(--role-gl-bg);    border-color:var(--role-gl-bd);    color:var(--role-gl-fg) }
-    .role-hf{    background:var(--role-hf-bg);    border-color:var(--role-hf-bd);    color:var(--role-hf-fg) }
-    .role-an{    background:var(--role-an-bg);    border-color:var(--role-an-bd);    color:var(--role-an-fg) }
+    .role-admin{ background:var(--role-admin-bg); border-color: var(--role-admin-bd); color: var(--role-admin-fg) }
+    .role-gl{    background:var(--role-gl-bg);    border-color: var(--role-gl-bd);    color: var(--role-gl-fg) }
+    .role-hf{    background:var(--role-hf-bg);    border-color: var(--role-hf-bd);    color: var(--role-hf-fg) }
+    .role-an{    background:var(--role-an-bg);    border-color: var(--role-an-bd);    color: var(--role-an-fg) }
 
     .actions-cell{ position:relative; width:44px; text-align:right }
     .kebab-btn{ background:transparent; border:none; cursor:pointer; padding:.3rem .4rem; font-size:1.2rem; color:#374151; border-radius:8px }
@@ -70,9 +72,9 @@
     .form-msg{ margin-top:.5rem; font-weight:600 }
 
     /* Floating fields (Create & Editor) */
-    .form-group.floating{ position:relative; margin-bottom:1rem }
+    .form-group.floating{ position:relative; margin-bottom:1.25rem }
     .form-group.floating input{
-      width:100%; padding:1rem .75rem .3rem .75rem; border:1px solid #d1d5db; border-radius:10px; background:#fff; font-size:1rem; transition:border-color .15s ease;
+      width:100%; padding:1rem .75rem .3rem .75rem; border:1px solid #d1d5db; border-radius:10px; background:#fff; font-size:1rem; transition:border-color .15s ease; min-height:44px;
     }
     .form-group.floating input:focus{ outline:none; border-color:var(--dunkelblau) }
     .form-group.floating label{
@@ -84,27 +86,26 @@
     }
     .form-group.floating input[readonly]{ background:#f9fafb; color:#6b7280 }
 
-    .btn-primary, .btn-secondary, .btn-danger{
-      padding:.6rem .9rem; border:none; border-radius:10px; cursor:pointer; font-size:.95rem
-    }
+    /* Buttons (einheitliche Größe) */
+    .btn{ padding:.6rem .9rem; border:none; border-radius:10px; cursor:pointer; font-size:.95rem; min-height:44px }
     .btn-primary{ background:var(--dunkelblau); color:#fff }
     .btn-secondary{ background:#eef2f7 }
     .btn-danger{ background:#c62828; color:#fff }
 
     /* Editor-Layout */
     #editPanelOuter{ display:none }
-    #editPanel .editor-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; align-items:start; margin-bottom:.5rem }
+    #editPanel .editor-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.25rem; align-items:start; margin-bottom:.25rem }
     @media (max-width:900px){ #editPanel .editor-row{ grid-template-columns:1fr 1fr } }
     @media (max-width:640px){ #editPanel .editor-row{ grid-template-columns:1fr } }
 
     #rolesSection{ margin-top:1rem }
-    #rolesSection h4{ margin:.4rem 0 .6rem; font-size:1rem; color:var(--dunkelblau) }
+    #rolesSection h4{ margin:.2rem 0 .8rem; font-size:1.05rem; color:var(--dunkelblau); font-weight:700 }
     .roles-grid{ display:flex; gap:1rem 1.25rem; flex-wrap:wrap }
-    .role-check{ display:flex; align-items:center; gap:.5rem; padding:.35rem .5rem; border-radius:10px; border:1px solid #e5e7eb; background:#fff }
-    .role-check input[type="checkbox"]{ width:22px; height:22px; accent-color: var(--dunkelblau) }
-    .role-check .role-badge{ font-size:.8rem }
+    .role-check{ display:flex; align-items:center; gap:.6rem; padding:.45rem .6rem; border-radius:12px; border:1px solid #e5e7eb; background:#fff }
+    .role-check input[type="checkbox"]{ width:24px; height:24px; accent-color: var(--dunkelblau) }
+    .role-check .role-badge{ font-size:.82rem }
 
-    .editor-actions{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:.8rem; margin-top:1rem }
+    .editor-actions{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-top:1.1rem }
     .editor-actions .btn{ width:100% }
 
     /* Mobile Kartenlayout */
@@ -119,8 +120,8 @@
       .user-table td[data-label]::before{
         content:attr(data-label) ": "; font-weight:600; color:#6b7280; display:inline-block; min-width:120px;
       }
-      /* Mobile: Name/E-Mail/UID jeweils eigene Zeile, E-Mail unter Label */
-      .nowrap{ white-space:normal; overflow:visible; text-overflow:clip; max-width:none }
+      /* Mobile: Werte dürfen umbrechen */
+      .nowrap{ white-space:normal; overflow:visible; text-overflow:clip }
       .user-table .actions-cell{ position:static; text-align:right; padding-top:.4rem }
       .kebab-menu{ position:fixed; right:.9rem; bottom:1rem; top:auto }
     }
@@ -183,7 +184,7 @@
             <input type="text" id="newName" placeholder=" " autocomplete="name" />
             <label for="newName">Anzeigename (optional)</label>
           </div>
-          <button type="submit" class="btn-primary btn"><i class="bi bi-save"></i> Benutzer erstellen</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Benutzer erstellen</button>
           <div id="createUserMsg" class="form-msg"></div>
         </form>
       </div>
@@ -282,11 +283,11 @@
             <label for="edName">Anzeigename</label>
           </div>
           <div class="form-group floating">
-            <input type="email" id="edEmail" placeholder=" " value="${user.email || ""}" readonly>
+            <input type="email" id="edEmail" placeholder=" " value="\${user.email || ""}" readonly>
             <label for="edEmail">E-Mail-Adresse</label>
           </div>
           <div class="form-group floating">
-            <input type="text" id="edUID" placeholder=" " value="${user.uid}" readonly>
+            <input type="text" id="edUID" placeholder=" " value="\${user.uid}" readonly>
             <label for="edUID">UID</label>
           </div>
         </div>
@@ -304,9 +305,9 @@
         </div>
 
         <div class="editor-actions">
-          <button class="btn-secondary btn" id="edCancel"><i class="bi bi-arrow-counterclockwise"></i> Abbrechen</button>
-          <button class="btn-secondary btn" id="edBack"><i class="bi bi-arrow-left"></i> Zurück</button>
-          <button class="btn-primary btn"  id="edSave"><i class="bi bi-save"></i> Speichern</button>
+          <button class="btn btn-secondary" id="edCancel"><i class="bi bi-x-lg"></i> Abbrechen</button>
+          <button class="btn btn-secondary" id="edBack"><i class="bi bi-arrow-left"></i> Zurück</button>
+          <button class="btn btn-primary"  id="edSave"><i class="bi bi-save"></i> Speichern</button>
         </div>
       `;
 
@@ -359,10 +360,10 @@
         const uid = u.uid || "–";
 
         tr.innerHTML = `
-          <td class="nowrap td-name" data-label="Name"><b>${name}</b></td>
-          <td class="nowrap" data-label="E-Mail-Adresse">${mail}</td>
+          <td class="nowrap td-name" data-label="Name" title="${name}"><b>${name}</b></td>
+          <td class="nowrap" data-label="E-Mail-Adresse" title="${mail}">${mail}</td>
           <td data-label="Rollen">${rolesToBadges(roles)}</td>
-          <td class="nowrap td-uid" data-label="UID">${uid}</td>
+          <td class="nowrap td-uid" data-label="UID" title="${uid}">${uid}</td>
           <td class="actions-cell" data-label=""></td>
         `;
         const actionsCell = tr.querySelector(".actions-cell");
