@@ -1,95 +1,76 @@
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
+// functions/index.js
 const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
 
 admin.initializeApp();
 
-// 🔹 Neuen Nutzer anlegen
-exports.createUser = onCall(async (request) => {
-  if (!request.auth?.token?.admin) {
-    throw new HttpsError("permission-denied", "Nur Admins dürfen neue Nutzer anlegen.");
-  }
-
-  const { email, password, displayName } = request.data;
-
-  try {
-    const userRecord = await admin.auth().createUser({
-      email,
-      password,
-      displayName: displayName || ""
+// Hilfsfunktion: CORS + Fehlerbehandlung
+function handleRequest(handler) {
+  return (req, res) => {
+    cors(req, res, async () => {
+      try {
+        await handler(req, res);
+      } catch (err) {
+        console.error("❌ Fehler:", err);
+        res.status(500).json({ error: err.message });
+      }
     });
-    return { uid: userRecord.uid };
-  } catch (err) {
-    throw new HttpsError("internal", err.message);
+  };
+}
+
+// 🔹 Neuen Nutzer anlegen
+exports.createUser = onRequest(handleRequest(async (req, res) => {
+  const { email, password, displayName } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "E-Mail und Passwort erforderlich" });
   }
-});
+
+  const userRecord = await admin.auth().createUser({
+    email,
+    password,
+    displayName: displayName || ""
+  });
+
+  res.json({ uid: userRecord.uid });
+}));
 
 // 🔹 Nutzer löschen
-exports.deleteUser = onCall(async (request) => {
-  if (!request.auth?.token?.admin) {
-    throw new HttpsError("permission-denied", "Nur Admins dürfen Nutzer löschen.");
-  }
+exports.deleteUser = onRequest(handleRequest(async (req, res) => {
+  const { uid } = req.body;
+  if (!uid) return res.status(400).json({ error: "UID erforderlich" });
 
-  const { uid } = request.data;
-
-  try {
-    await admin.auth().deleteUser(uid);
-    return { success: true };
-  } catch (err) {
-    throw new HttpsError("internal", err.message);
-  }
-});
+  await admin.auth().deleteUser(uid);
+  res.json({ success: true });
+}));
 
 // 🔹 Adminrechte setzen oder entfernen
-exports.setUserAdmin = onCall(async (request) => {
-  if (!request.auth?.token?.admin) {
-    throw new HttpsError("permission-denied", "Nur Admins dürfen Adminrechte vergeben.");
-  }
+exports.setUserAdmin = onRequest(handleRequest(async (req, res) => {
+  const { uid, makeAdmin } = req.body;
+  if (!uid) return res.status(400).json({ error: "UID erforderlich" });
 
-  const { uid, makeAdmin } = request.data;
+  await admin.auth().setCustomUserClaims(uid, { admin: makeAdmin });
+  res.json({ success: true });
+}));
 
-  try {
-    await admin.auth().setCustomUserClaims(uid, { admin: makeAdmin });
-    return { success: true };
-  } catch (err) {
-    throw new HttpsError("internal", err.message);
-  }
-});
+// 🔹 Nutzer aktualisieren
+exports.updateUser = onRequest(handleRequest(async (req, res) => {
+  const { uid, displayName } = req.body;
+  if (!uid) return res.status(400).json({ error: "UID erforderlich" });
 
-// 🔹 Nutzer aktualisieren (Name etc.)
-exports.updateUser = onCall(async (request) => {
-  if (!request.auth?.token?.admin) {
-    throw new HttpsError("permission-denied", "Nur Admins dürfen Nutzer ändern.");
-  }
+  await admin.auth().updateUser(uid, { displayName });
+  res.json({ success: true });
+}));
 
-  const { uid, displayName } = request.data;
-
-  try {
-    await admin.auth().updateUser(uid, { displayName });
-    return { success: true };
-  } catch (err) {
-    throw new HttpsError("internal", err.message);
-  }
-});
-
-// 🔹 Alle Nutzer auflisten (CORS-fähig für GitHub Pages)
-exports.listUsers = onRequest((req, res) => {
-  cors(req, res, async () => {
-    try {
-      const listUsersResult = await admin.auth().listUsers(1000);
-      const users = listUsersResult.users.map((userRecord) => ({
-        uid: userRecord.uid,
-        email: userRecord.email,
-        displayName: userRecord.displayName || "",
-        admin: userRecord.customClaims?.admin === true,
-      }));
-
-      res.set("Access-Control-Allow-Origin", "*");
-      res.status(200).send({ users });
-    } catch (err) {
-      console.error("❌ Fehler in listUsers:", err);
-      res.status(500).send({ error: err.message });
-    }
-  });
-});
+// 🔹 Alle Nutzer auflisten
+exports.listUsers = onRequest(handleRequest(async (req, res) => {
+  const listUsersResult = await admin.auth().listUsers(1000);
+  const users = listUsersResult.users.map((userRecord) => ({
+    uid: userRecord.uid,
+    email: userRecord.email,
+    displayName: userRecord.displayName || "",
+    admin: userRecord.customClaims?.admin === true
+  }));
+  res.json({ users });
+}));
