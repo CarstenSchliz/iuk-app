@@ -1,315 +1,333 @@
-<h2 class="page-title">Benutzerverwaltung</h2>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benutzerverwaltung</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-<div class="settings-grid">
-  <!-- Linke Spalte: Nutzerliste -->
-  <div class="card">
-    <h3><i class="bi bi-people"></i> Benutzerübersicht</h3>
-    <table class="user-table">
-      <thead>
-        <tr>
-          <th>Name / E-Mail</th>
-          <th>UID</th>
-          <th>Admin</th>
-          <th>Aktionen</th>
-        </tr>
-      </thead>
-      <tbody id="userList">
-        <!-- Nutzer werden hier dynamisch eingefügt -->
-      </tbody>
-    </table>
-    <div id="userMsg" class="form-msg"></div>
-  </div>
+  <style>
+    :root {
+      --softrot: rgb(228,100,80);
+      --dunkelblau: rgb(0,45,85);
+      --hellgrau: rgb(239,238,234);
+      --blassblau: rgb(230,240,250);
+    }
 
-  <!-- Rechte Spalte: Nutzer anlegen -->
-  <div>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 1rem;
+      background: var(--hellgrau);
+    }
+
+    .page-title {
+      color: var(--softrot);
+      margin-bottom: 1rem;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+    @media(max-width: 768px){
+      .settings-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 1.5rem;
+    }
+
+    .card h3 {
+      color: var(--dunkelblau);
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    .user-table th, .user-table td {
+      border-bottom: 1px solid #ddd;
+      padding: 0.6rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    .user-table th {
+      background: var(--blassblau);
+    }
+
+    .btn-primary, .btn-secondary, .btn-danger {
+      padding:0.4rem 0.8rem;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      font-size: 0.85rem;
+    }
+    .btn-primary { background: var(--dunkelblau); color: #fff; }
+    .btn-secondary { background:#eee; }
+    .btn-danger { background:#c62828; color: #fff; }
+
+    .form-msg {
+      margin-top:0.5rem;
+      font-weight:bold;
+    }
+
+    /* Floating Label */
+    .form-group.floating {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .form-group.floating input {
+      width: 100%;
+      padding: 1rem 0.75rem 0.25rem 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .form-group.floating label {
+      position: absolute;
+      top: 50%;
+      left: 0.75rem;
+      transform: translateY(-50%);
+      color: #777;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      pointer-events: none;
+      background: #fff;
+      padding: 0 0.25rem;
+    }
+    .form-group.floating input:focus + label,
+    .form-group.floating input:not(:placeholder-shown) + label {
+      top: 0;
+      left: 0.6rem;
+      font-size: 0.8rem;
+      color: var(--dunkelblau);
+    }
+
+    /* Editor-Zeile */
+    .user-editor {
+      padding: 0.5rem 0;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .user-editor label {
+      font-size: 0.9rem;
+    }
+    .user-editor input {
+      padding: 0.3rem 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    /* Darkmode */
+    body.dark .card { background: #1e1e1e; color: #f5f5f5; }
+    body.dark .user-table th { background: #333; }
+    body.dark .user-table td { border-bottom: 1px solid #555; }
+    body.dark .form-group.floating label { background: #1e1e1e; }
+  </style>
+</head>
+<body>
+  <h2 class="page-title">Benutzerverwaltung</h2>
+
+  <div class="settings-grid">
+    <!-- Linke Spalte: Nutzerliste -->
     <div class="card">
-      <h3><i class="bi bi-person-plus"></i> Neuen Nutzer anlegen</h3>
-      <form id="createUserForm">
-        <div class="form-group floating">
-          <input type="email" id="newEmail" placeholder=" " required>
-          <label for="newEmail">E-Mail</label>
-        </div>
-        <div class="form-group floating">
-          <input type="password" id="newPassword" placeholder=" " required>
-          <label for="newPassword">Passwort</label>
-        </div>
-        <div class="form-group floating">
-          <input type="text" id="newName" placeholder=" ">
-          <label for="newName">Anzeigename (optional)</label>
-        </div>
-        <button type="submit" class="btn-primary">
-          <i class="bi bi-save"></i> Benutzer erstellen
-        </button>
-        <div id="createUserMsg" class="form-msg"></div>
-      </form>
+      <h3><i class="bi bi-people"></i> Benutzerübersicht</h3>
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th>Name / E-Mail</th>
+            <th>UID</th>
+            <th>Admin</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody id="userList"></tbody>
+      </table>
+      <div id="userMsg" class="form-msg"></div>
+    </div>
+
+    <!-- Rechte Spalte: Nutzer anlegen -->
+    <div>
+      <div class="card">
+        <h3><i class="bi bi-person-plus"></i> Neuen Nutzer anlegen</h3>
+        <form id="createUserForm">
+          <div class="form-group floating">
+            <input type="email" id="newEmail" placeholder=" " required>
+            <label for="newEmail">E-Mail</label>
+          </div>
+          <div class="form-group floating">
+            <input type="password" id="newPassword" placeholder=" " required>
+            <label for="newPassword">Passwort</label>
+          </div>
+          <div class="form-group floating">
+            <input type="text" id="newName" placeholder=" ">
+            <label for="newName">Anzeigename (optional)</label>
+          </div>
+          <button type="submit" class="btn-primary">
+            <i class="bi bi-save"></i> Benutzer erstellen
+          </button>
+          <div id="createUserMsg" class="form-msg"></div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
-<style>
-  :root {
-    --softrot: rgb(228,100,80);
-    --dunkelblau: rgb(0,45,85);
-    --hellgrau: rgb(239,238,234);
-    --blassblau: rgb(230,240,250);
-  }
+  <script type="module">
+    console.log("✅ benutzer.html geladen");
 
-  .page-title {
-    color: var(--softrot);
-    margin-bottom: 1rem;
-  }
+    const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
 
-  .settings-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.5rem;
-  }
-  @media(max-width: 768px){
-    .settings-grid { grid-template-columns: 1fr; }
-  }
+    const userList = document.getElementById("userList");
+    const userMsg = document.getElementById("userMsg");
 
-  .card {
-    background: var(--card-bg, #fff);
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    margin-bottom: 1.5rem;
-  }
+    // Nutzer rendern
+    function renderUsers(users){
+      userList.innerHTML = "";
+      users.forEach(u => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${u.displayName || "-"}<br><small>${u.email}</small></td>
+          <td>${u.uid}</td>
+          <td>${u.admin ? "✅" : "❌"}</td>
+          <td>
+            <button class="btn-secondary toggle-admin">Admin ${u.admin ? "entfernen" : "setzen"}</button>
+            <button class="btn-secondary edit-user">Bearbeiten</button>
+            <button class="btn-danger delete-user">Löschen</button>
+          </td>`;
 
-  .card h3 {
-    color: var(--dunkelblau);
-    margin-top: 0;
-    margin-bottom: 1rem;
-  }
+        // Editor-Zeile
+        const editorRow = document.createElement("tr");
+        editorRow.style.display = "none";
+        editorRow.innerHTML = `
+          <td colspan="4">
+            <div class="user-editor">
+              <label>Name: <input type="text" value="${u.displayName || ""}" class="edit-name"></label>
+              <button class="btn-primary save-user">Speichern</button>
+            </div>
+          </td>`;
 
-  .user-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-  }
-  .user-table th, .user-table td {
-    border-bottom: 1px solid #ddd;
-    padding: 0.6rem;
-    text-align: left;
-    vertical-align: top;
-  }
-  .user-table th {
-    background: var(--blassblau);
-  }
+        // Admin umschalten
+        tr.querySelector(".toggle-admin").addEventListener("click", async () => {
+          try {
+            await fetch(API_BASE + "/setUserAdmin", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ uid: u.uid, makeAdmin: !u.admin })
+            });
+            userMsg.style.color = "green";
+            userMsg.textContent = "✅ Adminrechte geändert!";
+            loadUsers();
+          } catch (err) {
+            userMsg.style.color = "red";
+            userMsg.textContent = "❌ Fehler: " + err.message;
+          }
+        });
 
-  .btn-primary, .btn-secondary, .btn-danger {
-    padding:0.4rem 0.8rem;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    font-size: 0.85rem;
-  }
-  .btn-primary { background: var(--dunkelblau); color: #fff; }
-  .btn-secondary { background:#eee; }
-  .btn-danger { background:#c62828; color: #fff; }
+        // Editor öffnen
+        tr.querySelector(".edit-user").addEventListener("click", () => {
+          editorRow.style.display = editorRow.style.display === "none" ? "table-row" : "none";
+        });
 
-  .form-msg {
-    margin-top:0.5rem;
-    font-weight:bold;
-  }
+        // Speichern
+        editorRow.querySelector(".save-user").addEventListener("click", async () => {
+          const newName = editorRow.querySelector(".edit-name").value;
+          try {
+            await fetch(API_BASE + "/updateUser", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ uid: u.uid, displayName: newName })
+            });
+            userMsg.style.color = "green";
+            userMsg.textContent = "✅ Benutzer aktualisiert!";
+            loadUsers();
+          } catch (err) {
+            userMsg.style.color = "red";
+            userMsg.textContent = "❌ Fehler: " + err.message;
+          }
+        });
 
-  /* Floating Label */
-  .form-group.floating {
-    position: relative;
-    margin-bottom: 1.5rem;
-  }
-  .form-group.floating input {
-    width: 100%;
-    padding: 1rem 0.75rem 0.25rem 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #fff;
-    font-size: 1rem;
-    box-sizing: border-box;
-    transition: background 0.2s, border-color 0.2s;
-  }
-  .form-group.floating label {
-    position: absolute;
-    top: 50%;
-    left: 0.75rem;
-    transform: translateY(-50%);
-    color: #777;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-    pointer-events: none;
-    background: var(--card-bg, #fff);
-    padding: 0 0.25rem;
-  }
-  .form-group.floating input:focus + label,
-  .form-group.floating input:not(:placeholder-shown) + label {
-    top: 0;
-    left: 0.6rem;
-    font-size: 0.8rem;
-    color: var(--dunkelblau);
-  }
+        // User löschen
+        tr.querySelector(".delete-user").addEventListener("click", async () => {
+          if (!confirm("Soll dieser Nutzer wirklich gelöscht werden?")) return;
+          try {
+            await fetch(API_BASE + "/deleteUser", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ uid: u.uid })
+            });
+            userMsg.style.color = "green";
+            userMsg.textContent = "🗑️ Nutzer gelöscht!";
+            loadUsers();
+          } catch (err) {
+            userMsg.style.color = "red";
+            userMsg.textContent = "❌ Fehler: " + err.message;
+          }
+        });
 
-  /* Editor-Zeile */
-  .user-editor {
-    padding: 0.5rem 0;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  .user-editor label {
-    font-size: 0.9rem;
-  }
-  .user-editor input {
-    padding: 0.3rem 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
-
-  /* Darkmode */
-  body.dark .card {
-    background: #1e1e1e;
-    color: #f5f5f5;
-  }
-  body.dark .user-table th {
-    background: #333;
-  }
-  body.dark .user-table td {
-    border-bottom: 1px solid #555;
-  }
-  body.dark .form-group.floating label {
-    background: #1e1e1e;
-  }
-</style>
-
-<script type="module">
-  console.log("✅ benutzer.html geladen");
-
-  import { httpsCallable } 
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
-
-  const userList = document.getElementById("userList");
-  const userMsg = document.getElementById("userMsg");
-
-  // Nutzer rendern
-  function renderUsers(users){
-    userList.innerHTML = "";
-    users.forEach(u => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${u.displayName || "-"}<br><small>${u.email}</small></td>
-        <td>${u.uid}</td>
-        <td>${u.admin ? "✅" : "❌"}</td>
-        <td>
-          <button class="btn-secondary toggle-admin">Admin ${u.admin ? "entfernen" : "setzen"}</button>
-          <button class="btn-secondary edit-user">Bearbeiten</button>
-          <button class="btn-danger delete-user">Löschen</button>
-        </td>`;
-
-      const editorRow = document.createElement("tr");
-      editorRow.style.display = "none";
-      editorRow.innerHTML = `
-        <td colspan="4">
-          <div class="user-editor">
-            <label>Name: <input type="text" value="${u.displayName || ""}" class="edit-name"></label>
-            <button class="btn-primary save-user">Speichern</button>
-          </div>
-        </td>`;
-
-      // Admin setzen/entfernen
-      tr.querySelector(".toggle-admin").addEventListener("click", async () => {
-        try {
-          const fn = httpsCallable(window.functions, "setUserAdmin");
-          await fn({ uid: u.uid, makeAdmin: !u.admin });
-          userMsg.style.color = "green";
-          userMsg.textContent = "✅ Adminrechte geändert!";
-          loadUsers();
-        } catch (err) {
-          userMsg.style.color = "red";
-          userMsg.textContent = "❌ Fehler: " + err.message;
-        }
+        userList.appendChild(tr);
+        userList.appendChild(editorRow);
       });
+    }
 
-      // Bearbeiten öffnen
-      tr.querySelector(".edit-user").addEventListener("click", () => {
-        editorRow.style.display = editorRow.style.display === "none" ? "table-row" : "none";
-      });
+    // Nutzer laden
+    async function loadUsers(){
+      userMsg.style.color = "orange";
+      userMsg.textContent = "⏳ Lade Nutzer...";
+      try {
+        const res = await fetch(API_BASE + "/listUsers", { method: "GET" });
+        const data = await res.json();
+        renderUsers(data.users);
+        userMsg.textContent = "";
+      } catch (err) {
+        userMsg.style.color = "red";
+        userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
+      }
+    }
 
-      // Speichern
-      editorRow.querySelector(".save-user").addEventListener("click", async () => {
-        const newName = editorRow.querySelector(".edit-name").value;
-        try {
-          const fn = httpsCallable(window.functions, "updateUser");
-          await fn({ uid: u.uid, displayName: newName });
-          userMsg.style.color = "green";
-          userMsg.textContent = "✅ Benutzer aktualisiert!";
-          loadUsers();
-        } catch (err) {
-          userMsg.style.color = "red";
-          userMsg.textContent = "❌ Fehler: " + err.message;
-        }
-      });
+    // Initial laden
+    loadUsers();
 
-      // Löschen
-      tr.querySelector(".delete-user").addEventListener("click", async () => {
-        if (!confirm("Soll dieser Nutzer wirklich gelöscht werden?")) return;
-        try {
-          const fn = httpsCallable(window.functions, "deleteUser");
-          await fn({ uid: u.uid });
-          userMsg.style.color = "green";
-          userMsg.textContent = "🗑️ Nutzer gelöscht!";
-          loadUsers();
-        } catch (err) {
-          userMsg.style.color = "red";
-          userMsg.textContent = "❌ Fehler: " + err.message;
-        }
-      });
+    // Neuen Nutzer anlegen
+    const form = document.getElementById("createUserForm");
+    const msg = document.getElementById("createUserMsg");
 
-      userList.appendChild(tr);
-      userList.appendChild(editorRow);
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("newEmail").value;
+      const pw = document.getElementById("newPassword").value;
+      const name = document.getElementById("newName").value;
+
+      msg.style.color = "orange";
+      msg.textContent = "⏳ wird erstellt...";
+
+      try {
+        const res = await fetch(API_BASE + "/createUser", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password: pw, displayName: name })
+        });
+        const data = await res.json();
+        msg.style.color = "green";
+        msg.textContent = "✅ Benutzer angelegt mit UID " + data.uid;
+        loadUsers();
+        form.reset();
+      } catch(err) {
+        msg.style.color = "red";
+        msg.textContent = "❌ Fehler: " + err.message;
+      }
     });
-  }
-
-  // Nutzer laden – jetzt mit fetch
-  async function loadUsers(){
-    userMsg.style.color = "orange";
-    userMsg.textContent = "⏳ Lade Nutzer...";
-    try {
-      const res = await fetch("https://us-central1-iuk-app.cloudfunctions.net/listUsers");
-      const data = await res.json();
-      renderUsers(data.users);
-      userMsg.textContent = "";
-    } catch (err) {
-      userMsg.style.color = "red";
-      userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
-      console.error("❌ Fehler beim Laden der Nutzer:", err);
-    }
-  }
-
-  // Initial laden
-  loadUsers();
-
-  // Neuen Nutzer anlegen
-  const form = document.getElementById("createUserForm");
-  const msg = document.getElementById("createUserMsg");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("newEmail").value;
-    const pw = document.getElementById("newPassword").value;
-    const name = document.getElementById("newName").value;
-
-    msg.style.color = "orange";
-    msg.textContent = "⏳ wird erstellt...";
-
-    try {
-      const fn = httpsCallable(window.functions, "createUser");
-      const res = await fn({ email, password: pw, displayName: name });
-      msg.style.color = "green";
-      msg.textContent = "✅ Benutzer angelegt mit UID " + res.data.uid;
-      loadUsers();
-      form.reset();
-    } catch(err) {
-      msg.style.color = "red";
-      msg.textContent = "❌ Fehler: " + err.message;
-    }
-  });
-</script>
+  </script>
+</body>
+</html>
