@@ -1,6 +1,7 @@
-// functions/index.js
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+const cors = require("cors")({ origin: true });
 
 admin.initializeApp();
 
@@ -72,22 +73,23 @@ exports.updateUser = onCall(async (request) => {
   }
 });
 
-// 🔹 Alle Nutzer auflisten
-exports.listUsers = onCall(async (request) => {
-  if (!request.auth?.token?.admin) {
-    throw new HttpsError("permission-denied", "Nur Admins dürfen Benutzer auflisten.");
-  }
+// 🔹 Alle Nutzer auflisten (CORS-fähig für GitHub Pages)
+exports.listUsers = onRequest((req, res) => {
+  cors(req, res, async () => {
+    try {
+      const listUsersResult = await admin.auth().listUsers(1000);
+      const users = listUsersResult.users.map((userRecord) => ({
+        uid: userRecord.uid,
+        email: userRecord.email,
+        displayName: userRecord.displayName || "",
+        admin: userRecord.customClaims?.admin === true,
+      }));
 
-  try {
-    const listUsersResult = await admin.auth().listUsers(1000);
-    const users = listUsersResult.users.map((userRecord) => ({
-      uid: userRecord.uid,
-      email: userRecord.email,
-      displayName: userRecord.displayName || "",
-      admin: userRecord.customClaims?.admin === true
-    }));
-    return { users };
-  } catch (err) {
-    throw new HttpsError("internal", err.message);
-  }
+      res.set("Access-Control-Allow-Origin", "*");
+      res.status(200).send({ users });
+    } catch (err) {
+      console.error("❌ Fehler in listUsers:", err);
+      res.status(500).send({ error: err.message });
+    }
+  });
 });
