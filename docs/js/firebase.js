@@ -1,4 +1,4 @@
-// public/js/firebase.js
+// docs/js/firebase.js
 // Firebase Setup & Auth-Funktionen
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -41,7 +41,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const storage = getStorage(app);
-export const functions = getFunctions(app, "us-central1"); // <<< Region erzwingen
+
+// 🔹 Functions (immer mit Region us-central1!)
+export const functions = getFunctions(app, "us-central1");
+
+// Auch im Window verfügbar machen, damit man im Browser testen kann
+window.auth = auth;
+window.functions = functions;
 
 // Nutzer bleibt eingeloggt
 setPersistence(auth, browserLocalPersistence);
@@ -117,7 +123,3 @@ export async function uploadProfileImage(user, file) {
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
-
-// Debug in Console verfügbar machen
-window.auth = auth;
-window.functions = functions;
