@@ -1,4 +1,4 @@
-// docs/js/firebase.js
+// public/js/firebase.js
 // Firebase Setup & Auth-Funktionen
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -23,8 +23,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 import {
-  getFunctions,
-  httpsCallable
+  getFunctions
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
 
 // === Firebase Config ===
@@ -42,7 +41,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const storage = getStorage(app);
-export const functions = getFunctions(app, "us-central1");
+export const functions = getFunctions(app, "us-central1"); // <<< Region erzwingen
 
 // Nutzer bleibt eingeloggt
 setPersistence(auth, browserLocalPersistence);
@@ -119,7 +118,6 @@ export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
 
-// === Debug-Hilfe: für die Browser-Konsole global machen ===
+// Debug in Console verfügbar machen
 window.auth = auth;
 window.functions = functions;
-window.httpsCallable = httpsCallable;
