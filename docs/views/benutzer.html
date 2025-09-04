@@ -5,190 +5,148 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Benutzerverwaltung</title>
 
-  <!-- Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
-    :root {
+    :root{
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
-      --text: #1f2937;
+      --text:#1f2937;
 
       /* Rollenfarben */
-      --role-admin-bg: #ffe8e6;
-      --role-admin-bd: #ffcdc6;
-      --role-admin-fg: #9e1b1b;
-
-      --role-gl-bg: #fff6db;   /* gelb */
-      --role-gl-bd: #fde8a6;
-      --role-gl-fg: #8a6b00;
-
-      --role-hf-bg: #e8f6ec;   /* grün */
-      --role-hf-bd: #c7efd5;
-      --role-hf-fg: #0f6b2b;
-
-      --role-an-bg: #e6f0ff;   /* blau */
-      --role-an-bd: #cfe1ff;
-      --role-an-fg: #0d3b8a;
+      --role-admin-bg:#ffe8e6; --role-admin-bd:#ffcdc6; --role-admin-fg:#9e1b1b;   /* rot */
+      --role-gl-bg:#fff6db;   --role-gl-bd:#fde8a6;   --role-gl-fg:#8a6b00;       /* gelb */
+      --role-hf-bg:#e8f6ec;   --role-hf-bd:#c7efd5;   --role-hf-fg:#0f6b2b;       /* grün */
+      --role-an-bg:#e6f0ff;   --role-an-bd:#cfe1ff;   --role-an-fg:#0d3b8a;       /* blau */
     }
+    *{box-sizing:border-box}
 
-    * { box-sizing: border-box; }
-
-    body {
+    body{
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-      margin: 0; padding: 1rem;
-      background: var(--hellgrau);
-      color: var(--text);
+      margin:0; padding:1rem; background:var(--hellgrau); color:var(--text);
     }
+    .page-title{ color:var(--softrot); margin:0 0 1rem }
 
-    .page-title {
-      color: var(--softrot);
-      margin: 0 0 1rem 0;
-    }
+    .settings-grid{ display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; align-items:start }
+    @media (max-width:980px){ .settings-grid{ grid-template-columns:1fr } }
 
-    .settings-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1.5rem;
-      align-items: start;
+    .card{
+      background:#fff; padding:1.25rem; border-radius:12px;
+      box-shadow:0 2px 6px rgba(0,0,0,.08); margin-bottom:1.5rem;
     }
-    @media (max-width: 980px){
-      .settings-grid { grid-template-columns: 1fr; }
-    }
+    .card h3{ color:var(--dunkelblau); margin:0 0 1rem; font-size:1.1rem }
 
-    .card {
-      background: #fff;
-      padding: 1.25rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      margin-bottom: 1.5rem;
-    }
+    /* Tabelle */
+    .user-table{ width:100%; border-collapse:collapse; font-size:.95rem }
+    .user-table th, .user-table td{ border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle }
+    .user-table th{ background:var(--blassblau); position:sticky; top:0; z-index:1 }
 
-    .card h3 {
-      color: var(--dunkelblau);
-      margin: 0 0 1rem 0;
-      font-size: 1.1rem;
-    }
+    /* Ein-Zeile ohne Umbruch (Desktop) */
+    .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:1px } /* max-width trick für flex table cells */
+    .td-name b{ font-weight:700 }
+    .td-uid{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace }
 
-    /* Tabelle Desktop */
-    .user-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
-    }
-    .user-table th, .user-table td {
-      border-bottom: 1px solid #e5e7eb;
-      padding: 0.6rem 0.5rem;
-      text-align: left;
-      vertical-align: middle;
-    }
-    .user-table th {
-      background: var(--blassblau);
-      position: sticky; top: 0; z-index: 1;
-    }
+    /* Rollen-Badges */
+    .role-badges{ display:flex; gap:.35rem; flex-wrap:wrap }
+    .role-badge{ display:inline-block; padding:.18rem .55rem; border-radius:999px; font-size:.78rem; border:1px solid transparent; white-space:nowrap }
+    .role-admin{ background:var(--role-admin-bg); border-color:var(--role-admin-bd); color:var(--role-admin-fg) }
+    .role-gl{    background:var(--role-gl-bg);    border-color:var(--role-gl-bd);    color:var(--role-gl-fg) }
+    .role-hf{    background:var(--role-hf-bg);    border-color:var(--role-hf-bd);    color:var(--role-hf-fg) }
+    .role-an{    background:var(--role-an-bg);    border-color:var(--role-an-bd);    color:var(--role-an-fg) }
 
-    .role-badges { display:flex; gap:.35rem; flex-wrap: wrap; }
-    .role-badge {
-      display:inline-block; padding:.18rem .55rem; border-radius:999px; font-size:.78rem;
-      border:1px solid transparent; white-space: nowrap;
+    .actions-cell{ position:relative; width:44px; text-align:right }
+    .kebab-btn{ background:transparent; border:none; cursor:pointer; padding:.3rem .4rem; font-size:1.2rem; color:#374151; border-radius:8px }
+    .kebab-btn:focus-visible{ outline:2px solid var(--dunkelblau) }
+    .kebab-menu{
+      position:absolute; right:0; top:calc(100% + 6px); min-width:180px; z-index:20;
+      background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,.12);
+      display:none; overflow:hidden;
     }
-    .role-admin { background: var(--role-admin-bg); border-color: var(--role-admin-bd); color: var(--role-admin-fg); }
-    .role-gl    { background: var(--role-gl-bg);    border-color: var(--role-gl-bd);    color: var(--role-gl-fg); }
-    .role-hf    { background: var(--role-hf-bg);    border-color: var(--role-hf-bd);    color: var(--role-hf-fg); }
-    .role-an    { background: var(--role-an-bg);    border-color: var(--role-an-bd);    color: var(--role-an-fg); }
+    .kebab-menu button{ width:100%; background:transparent; border:none; text-align:left; cursor:pointer; padding:.7rem .9rem; font-size:.92rem; display:flex; gap:.5rem; align-items:center }
+    .kebab-menu button:hover{ background:#f8fafc }
 
-    .actions-cell { position: relative; width: 44px; text-align: right; }
-    .kebab-btn {
-      background: transparent; border: none; cursor: pointer; padding:.3rem .4rem;
-      font-size: 1.2rem; color: #374151; border-radius: 8px;
-    }
-    .kebab-btn:focus-visible { outline: 2px solid var(--dunkelblau); }
+    .form-msg{ margin-top:.5rem; font-weight:600 }
 
-    .kebab-menu {
-      position: absolute; right: 0; top: calc(100% + 6px); min-width: 180px; z-index: 20;
-      background: #fff; border:1px solid #e5e7eb; border-radius: 10px;
-      box-shadow: 0 12px 30px rgba(0,0,0,.12);
-      display:none; overflow: hidden;
+    /* Floating fields (Create & Editor) */
+    .form-group.floating{ position:relative; margin-bottom:1rem }
+    .form-group.floating input{
+      width:100%; padding:1rem .75rem .3rem .75rem; border:1px solid #d1d5db; border-radius:10px; background:#fff; font-size:1rem; transition:border-color .15s ease;
     }
-    .kebab-menu button {
-      width:100%; background:transparent; border:none; text-align:left; cursor:pointer;
-      padding:.7rem .9rem; font-size:.92rem; display:flex; gap:.5rem; align-items:center;
-    }
-    .kebab-menu button:hover { background:#f8fafc; }
-
-    .form-msg { margin-top:0.5rem; font-weight:600; }
-
-    /* Floating Label */
-    .form-group.floating { position: relative; margin-bottom: 1rem; }
-    .form-group.floating input {
-      width: 100%; padding: 1rem 0.75rem 0.3rem 0.75rem;
-      border: 1px solid #d1d5db; border-radius: 10px; background: #fff; font-size: 1rem;
-      transition: border-color .15s ease;
-    }
-    .form-group.floating input:focus { outline: none; border-color: var(--dunkelblau); }
-    .form-group.floating label {
-      position: absolute; top: 50%; left: 0.75rem; transform: translateY(-50%);
-      color: #6b7280; font-size: 0.95rem; transition: all .15s ease; pointer-events: none;
-      background: #fff; padding: 0 .25rem;
+    .form-group.floating input:focus{ outline:none; border-color:var(--dunkelblau) }
+    .form-group.floating label{
+      position:absolute; top:50%; left:.75rem; transform:translateY(-50%); color:#6b7280; font-size:.95rem; transition:all .15s; pointer-events:none; background:#fff; padding:0 .25rem;
     }
     .form-group.floating input:focus + label,
-    .form-group.floating input:not(:placeholder-shown) + label {
-      top: 0; left: 0.6rem; font-size: .78rem; color: var(--dunkelblau);
+    .form-group.floating input:not(:placeholder-shown) + label{
+      top:0; left:.6rem; font-size:.78rem; color:var(--dunkelblau);
+    }
+    .form-group.floating input[readonly]{ background:#f9fafb; color:#6b7280 }
+
+    .btn-primary, .btn-secondary, .btn-danger{
+      padding:.6rem .9rem; border:none; border-radius:10px; cursor:pointer; font-size:.95rem
+    }
+    .btn-primary{ background:var(--dunkelblau); color:#fff }
+    .btn-secondary{ background:#eef2f7 }
+    .btn-danger{ background:#c62828; color:#fff }
+
+    /* Editor-Layout */
+    #editPanelOuter{ display:none }
+    #editPanel .editor-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; align-items:start; margin-bottom:.5rem }
+    @media (max-width:900px){ #editPanel .editor-row{ grid-template-columns:1fr 1fr } }
+    @media (max-width:640px){ #editPanel .editor-row{ grid-template-columns:1fr } }
+
+    #rolesSection{ margin-top:1rem }
+    #rolesSection h4{ margin:.4rem 0 .6rem; font-size:1rem; color:var(--dunkelblau) }
+    .roles-grid{ display:flex; gap:1rem 1.25rem; flex-wrap:wrap }
+    .role-check{ display:flex; align-items:center; gap:.5rem; padding:.35rem .5rem; border-radius:10px; border:1px solid #e5e7eb; background:#fff }
+    .role-check input[type="checkbox"]{ width:22px; height:22px; accent-color: var(--dunkelblau) }
+    .role-check .role-badge{ font-size:.8rem }
+
+    .editor-actions{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:.8rem; margin-top:1rem }
+    .editor-actions .btn{ width:100% }
+
+    /* Mobile Kartenlayout */
+    @media (max-width:720px){
+      .user-table thead{ display:none }
+      .user-table, .user-table tbody, .user-table tr, .user-table td{ display:block; width:100% }
+      .user-table tr{
+        background:#fff; border:1px solid #e5e7eb; border-radius:12px;
+        padding:.6rem .6rem .2rem; margin-bottom:.8rem; box-shadow:0 1px 4px rgba(0,0,0,.06);
+      }
+      .user-table td{ border:none; padding:.35rem .25rem }
+      .user-table td[data-label]::before{
+        content:attr(data-label) ": "; font-weight:600; color:#6b7280; display:inline-block; min-width:120px;
+      }
+      /* Mobile: Name/E-Mail/UID jeweils eigene Zeile, E-Mail unter Label */
+      .nowrap{ white-space:normal; overflow:visible; text-overflow:clip; max-width:none }
+      .user-table .actions-cell{ position:static; text-align:right; padding-top:.4rem }
+      .kebab-menu{ position:fixed; right:.9rem; bottom:1rem; top:auto }
     }
 
-    .btn-primary, .btn-secondary, .btn-danger {
-      padding: .48rem .85rem; border: none; border-radius: 8px; cursor: pointer; font-size: .9rem;
-    }
-    .btn-primary { background: var(--dunkelblau); color: #fff; }
-    .btn-secondary { background:#eef2f7; }
-    .btn-danger { background:#c62828; color: #fff; }
-
-    /* Mobiles Kartenlayout */
-    @media (max-width: 720px){
-      .user-table thead { display: none; }
-      .user-table, .user-table tbody, .user-table tr, .user-table td { display: block; width: 100%; }
-      .user-table tr {
-        background: #fff;
-        border:1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: .6rem .6rem .2rem;
-        margin-bottom: .8rem;
-        box-shadow: 0 1px 4px rgba(0,0,0,.06);
-      }
-      .user-table td {
-        border: none;
-        padding: .35rem .25rem;
-      }
-      .user-table td[data-label]::before {
-        content: attr(data-label) ": ";
-        font-weight: 600;
-        color:#6b7280;
-        display: inline-block;
-        min-width: 120px;
-      }
-      .user-table .actions-cell {
-        position: static; text-align: right; padding-top: .4rem;
-      }
-      .kebab-menu { position: fixed; right: .9rem; bottom: 1rem; top: auto; }
+    /* Toast */
+    #toast{
+      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+      background:#111827; color:#e5e7eb; border:1px solid #243244; padding:.8rem 1rem; border-radius:12px;
+      box-shadow:0 12px 30px rgba(0,0,0,.25); display:none; z-index:1000;
     }
 
     /* Darkmode */
-    body.dark .card,
-    body.dark .user-table tr { background:#1e1e1e; color:#f5f5f5; border-color:#374151; }
-    body.dark .user-table th { background:#0f172a; color:#e5e7eb; }
-    body.dark .user-table td { border-color:#374151; }
-    body.dark .kebab-menu { background:#2a2a2a; border-color:#444; }
-    body.dark .kebab-menu button:hover { background:#353535; }
-    body.dark .form-group.floating label { background:#1e1e1e; }
+    body.dark .card, body.dark .user-table tr{ background:#1e1e1e; color:#f5f5f5; border-color:#374151 }
+    body.dark .user-table th{ background:#0f172a; color:#e5e7eb }
+    body.dark .user-table td{ border-color:#374151 }
+    body.dark .kebab-menu{ background:#2a2a2a; border-color:#444 }
+    body.dark .kebab-menu button:hover{ background:#353535 }
+    body.dark .form-group.floating label{ background:#1e1e1e }
+    body.dark .role-check{ border-color:#374151; background:#1e1e1e }
   </style>
 </head>
 <body>
   <h2 class="page-title">Benutzerverwaltung</h2>
 
   <div class="settings-grid">
-    <!-- Linke Spalte: Nutzerliste -->
+    <!-- Nutzerliste -->
     <div class="card">
       <h3><i class="bi bi-people"></i> Benutzerübersicht</h3>
 
@@ -208,7 +166,7 @@
       <div id="userMsg" class="form-msg"></div>
     </div>
 
-    <!-- Rechte Spalte: Nutzer anlegen -->
+    <!-- Neuer Nutzer -->
     <div>
       <div class="card">
         <h3><i class="bi bi-person-plus"></i> Neuen Nutzer anlegen</h3>
@@ -225,226 +183,238 @@
             <input type="text" id="newName" placeholder=" " autocomplete="name" />
             <label for="newName">Anzeigename (optional)</label>
           </div>
-          <button type="submit" class="btn-primary">
-            <i class="bi bi-save"></i> Benutzer erstellen
-          </button>
+          <button type="submit" class="btn-primary btn"><i class="bi bi-save"></i> Benutzer erstellen</button>
           <div id="createUserMsg" class="form-msg"></div>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- SEPARATER Editor-Kasten (nicht im Benutzerübersicht-Kasten) -->
+  <!-- SEPARATER Editor-Kasten -->
   <div id="editPanelOuter" class="card" style="display:none;">
     <div id="editPanel"></div>
   </div>
 
-  <script type="module">
-    console.log("✅ benutzer.html geladen");
+  <!-- Toast -->
+  <div id="toast" role="status" aria-live="polite"></div>
 
+  <script type="module">
     const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
 
-    const userList       = document.getElementById("userList");
-    const userMsg        = document.getElementById("userMsg");
+    const userList = document.getElementById("userList");
+    const userMsg  = document.getElementById("userMsg");
     const editPanelOuter = document.getElementById("editPanelOuter");
-    const editPanel      = document.getElementById("editPanel");
+    const editPanel = document.getElementById("editPanel");
+    const toastEl = document.getElementById("toast");
 
-    // ---------------- Rollen-Definition ----------------
     const ROLE_DEF = [
-      { key: "admin",         label: "Admin",         cls: "role-admin" },
-      { key: "gruppenleiter", label: "Gruppenleiter", cls: "role-gl" },
-      { key: "helfer",        label: "Helfer",        cls: "role-hf" },
-      { key: "anwärter",      label: "Anwärter",      cls: "role-an" },
+      { key:"admin",         label:"Admin",         cls:"role-admin" },
+      { key:"gruppenleiter", label:"Gruppenleiter", cls:"role-gl" },
+      { key:"helfer",        label:"Helfer",        cls:"role-hf" },
+      { key:"anwärter",      label:"Anwärter",      cls:"role-an" },
     ];
 
+    const showToast = (msg) => {
+      toastEl.textContent = msg; toastEl.style.display = "block";
+      clearTimeout(showToast._t); showToast._t = setTimeout(()=> toastEl.style.display = "none", 2600);
+    };
+
     function extractRoles(u){
-      // akzeptiert u.roles (Array) oder einzelne Booleans (admin/gruppenleiter/helfer/anwärter)
-      let roles = [];
-      if (Array.isArray(u.roles)) roles = u.roles;
-      else {
+      let roles = Array.isArray(u.roles) ? u.roles : [];
+      if (!roles.length){
         ROLE_DEF.forEach(r => { if (u[r.key]) roles.push(r.key); });
-        if (u.admin && !roles.includes("admin")) roles.push("admin"); // legacy fallback
+        if (u.admin && !roles.includes("admin")) roles.push("admin");
       }
-      // Normalisieren auf valid keys
-      const allowed = new Set(ROLE_DEF.map(r => r.key));
-      roles = roles.filter(r => allowed.has(r));
-      return Array.from(new Set(roles));
+      const allowed = new Set(ROLE_DEF.map(r=>r.key));
+      return Array.from(new Set(roles.filter(r=>allowed.has(r))));
     }
 
     function rolesToBadges(roles){
       if (!roles?.length) return '<span style="color:#9ca3af">–</span>';
-      return '<div class="role-badges">' + roles.map(r => {
-        const def = ROLE_DEF.find(d => d.key === r);
-        const label = def?.label ?? r;
-        const cls = def?.cls ?? "";
-        return `<span class="role-badge ${cls}">${label}</span>`;
+      return '<div class="role-badges">' + roles.map(r=>{
+        const def = ROLE_DEF.find(d=>d.key===r);
+        return `<span class="role-badge ${def?.cls||""}">${def?.label||r}</span>`;
       }).join("") + '</div>';
     }
 
-    // ---------------- Kebab-Menü ----------------
     function buildKebab(cell, onEdit, user){
       cell.classList.add("actions-cell");
-
       const btn = document.createElement("button");
-      btn.className = "kebab-btn";
-      btn.setAttribute("aria-label", "Aktionen");
+      btn.className = "kebab-btn"; btn.setAttribute("aria-label","Aktionen");
       btn.innerHTML = '<i class="bi bi-three-dots-vertical"></i>';
 
       const menu = document.createElement("div");
       menu.className = "kebab-menu";
-      menu.innerHTML = `
-        <button class="act-edit"><i class="bi bi-pencil"></i><span>Bearbeiten</span></button>
-      `;
+      menu.innerHTML = `<button class="act-edit"><i class="bi bi-pencil"></i><span>Bearbeiten</span></button>`;
 
-      btn.addEventListener("click", (e) => {
+      btn.addEventListener("click", (e)=>{
         e.stopPropagation();
-        const open = menu.style.display === "block";
-        document.querySelectorAll(".kebab-menu").forEach(m => m.style.display = "none");
-        menu.style.display = open ? "none" : "block";
+        const open = menu.style.display==="block";
+        document.querySelectorAll(".kebab-menu").forEach(m=>m.style.display="none");
+        menu.style.display = open ? "none":"block";
       });
-      document.addEventListener("click", () => menu.style.display = "none");
-      menu.querySelector(".act-edit").addEventListener("click", () => { menu.style.display="none"; onEdit(user); });
+      document.addEventListener("click", ()=> menu.style.display="none");
+      menu.querySelector(".act-edit").addEventListener("click", ()=>{ menu.style.display="none"; onEdit(user); });
 
-      cell.appendChild(btn);
-      cell.appendChild(menu);
+      cell.appendChild(btn); cell.appendChild(menu);
     }
 
-    // ---------------- Editor-Panel ----------------
+    function updateNavigationDisplayName(newName){
+      const ids = ["navUserName","sidebarUserName"];
+      ids.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = newName || "Ohne Namen"; });
+      document.querySelectorAll("[data-user-name]").forEach(el => el.textContent = newName || "Ohne Namen");
+    }
+
+    // ===== Editor =====
     function openEditor(user){
-      const roles = extractRoles(user);
-      const isChecked = (k) => roles.includes(k) ? "checked" : "";
+      const initial = {
+        name: user.displayName || "",
+        roles: extractRoles(user)
+      };
 
       editPanelOuter.style.display = "block";
       editPanel.innerHTML = `
         <h3 style="margin-top:0;">Nutzer bearbeiten</h3>
-        <div class="editor-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-          <div>
-            <label style="display:block;font-size:.9rem;margin-bottom:.25rem;">Anzeigename</label>
-            <input type="text" id="edName" value="${user.displayName || ""}">
+
+        <div class="editor-row">
+          <div class="form-group floating">
+            <input type="text" id="edName" placeholder=" " value="${initial.name}">
+            <label for="edName">Anzeigename</label>
           </div>
-          <div style="grid-column: span 2;">
-            <label style="display:block;font-size:.9rem;margin-bottom:.25rem;">Rollen</label>
-            <div class="form-row" style="gap:1rem; flex-wrap:wrap;">
-              ${ROLE_DEF.map(r => `
-                <label style="display:flex;align-items:center;gap:.4rem;">
-                  <input type="checkbox" value="${r.key}" ${isChecked(r.key)} />
-                  <span class="role-badge ${r.cls}">${r.label}</span>
-                </label>
-              `).join("")}
-            </div>
+          <div class="form-group floating">
+            <input type="email" id="edEmail" placeholder=" " value="${user.email || ""}" readonly>
+            <label for="edEmail">E-Mail-Adresse</label>
+          </div>
+          <div class="form-group floating">
+            <input type="text" id="edUID" placeholder=" " value="${user.uid}" readonly>
+            <label for="edUID">UID</label>
           </div>
         </div>
-        <div style="margin-top:.6rem;color:#6b7280;font-size:.9rem;">
-          <span>UID: ${user.uid}</span> · <span>E-Mail: ${user.email || "–"}</span>
+
+        <div id="rolesSection">
+          <h4>Rollen</h4>
+          <div class="roles-grid">
+            ${ROLE_DEF.map(r => `
+              <label class="role-check">
+                <input type="checkbox" value="${r.key}" ${initial.roles.includes(r.key) ? "checked":""} />
+                <span class="role-badge ${r.cls}">${r.label}</span>
+              </label>
+            `).join("")}
+          </div>
         </div>
+
         <div class="editor-actions">
-          <button class="btn-secondary" id="edCancel"><i class="bi bi-x"></i> Abbrechen</button>
-          <button class="btn-primary"  id="edSave"><i class="bi bi-save"></i> Speichern</button>
+          <button class="btn-secondary btn" id="edCancel"><i class="bi bi-arrow-counterclockwise"></i> Abbrechen</button>
+          <button class="btn-secondary btn" id="edBack"><i class="bi bi-arrow-left"></i> Zurück</button>
+          <button class="btn-primary btn"  id="edSave"><i class="bi bi-save"></i> Speichern</button>
         </div>
-        <div id="editMsg" class="form-msg"></div>
       `;
 
-      document.getElementById("edCancel").onclick = () => { editPanelOuter.style.display = "none"; editPanel.innerHTML = ""; };
-      document.getElementById("edSave").onclick   = async () => {
-        const name = /** @type {HTMLInputElement} */(document.getElementById("edName")).value.trim();
-        const selected = Array.from(editPanel.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
-        const m = document.getElementById("editMsg");
-        m.style.color = "orange"; m.textContent = "⏳ wird gespeichert...";
+      // Abbrechen = Werte zurücksetzen
+      document.getElementById("edCancel").onclick = () => {
+        document.getElementById("edName").value = initial.name;
+        editPanel.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+          cb.checked = initial.roles.includes(cb.value);
+        });
+        showToast("Änderungen verworfen");
+      };
 
-        try {
-          await fetch(API_BASE + "/updateUser", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ uid: user.uid, displayName: name, roles: selected })
+      // Zurück = Panel schließen
+      document.getElementById("edBack").onclick = () => {
+        editPanelOuter.style.display = "none";
+        editPanel.innerHTML = "";
+        document.querySelector(".card")?.scrollIntoView({ behavior:"smooth", block:"start" });
+      };
+
+      // Speichern
+      document.getElementById("edSave").onclick = async () => {
+        const newName = document.getElementById("edName").value.trim();
+        const selected = Array.from(editPanel.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
+
+        try{
+          const res = await fetch(API_BASE + "/updateUser", {
+            method:"POST", headers:{ "Content-Type":"application/json" },
+            body: JSON.stringify({ uid: user.uid, displayName: newName, roles: selected })
           });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
 
-          m.style.color = "green"; m.textContent = "✅ gespeichert";
+          showToast("Gespeichert");
+          updateNavigationDisplayName(newName);
           await loadUsers();
-        } catch (err) {
-          m.style.color = "red"; m.textContent = "❌ Fehler: " + err.message;
+        }catch(err){
+          showToast("Fehler: " + err.message);
         }
       };
     }
 
-    // ---------------- Nutzer rendern ----------------
+    // ===== Liste =====
     function renderUsers(users){
       userList.innerHTML = "";
-      users.forEach(u => {
+      users.forEach(u=>{
         const tr = document.createElement("tr");
-
-        const name = u.displayName || "–";
+        const name = u.displayName || "Ohne Namen";
         const mail = u.email || "–";
         const roles = extractRoles(u);
         const uid = u.uid || "–";
 
         tr.innerHTML = `
-          <td data-label="Name">${name}</td>
-          <td data-label="E-Mail-Adresse">${mail}</td>
+          <td class="nowrap td-name" data-label="Name"><b>${name}</b></td>
+          <td class="nowrap" data-label="E-Mail-Adresse">${mail}</td>
           <td data-label="Rollen">${rolesToBadges(roles)}</td>
-          <td data-label="UID" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">${uid}</td>
+          <td class="nowrap td-uid" data-label="UID">${uid}</td>
           <td class="actions-cell" data-label=""></td>
         `;
-
         const actionsCell = tr.querySelector(".actions-cell");
-        buildKebab(actionsCell, openEditor, {
-          uid, displayName: name, email: mail, roles
-        });
+        buildKebab(actionsCell, openEditor, { uid, displayName:name, email:mail, roles });
 
         userList.appendChild(tr);
       });
     }
 
-    // ---------------- Nutzer laden ----------------
     async function loadUsers(){
       userMsg.style.color = "orange";
       userMsg.textContent = "⏳ Lade Nutzer...";
-      try {
-        const res = await fetch(API_BASE + "/listUsers", { method: "GET" });
+      try{
+        const res = await fetch(API_BASE + "/listUsers", { method:"GET" });
         const data = await res.json();
         renderUsers(data.users || []);
         userMsg.textContent = "";
-      } catch (err) {
+      }catch(err){
         userMsg.style.color = "red";
         userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
       }
     }
 
-    // Initial laden
+    // Initial
     loadUsers();
 
-    // ---------------- Neuen Nutzer anlegen ----------------
+    // Neuer Nutzer
     const form = document.getElementById("createUserForm");
     const msg  = document.getElementById("createUserMsg");
-
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", async (e)=>{
       e.preventDefault();
       const email = document.getElementById("newEmail").value.trim();
       const pw    = document.getElementById("newPassword").value;
       const name  = document.getElementById("newName").value.trim();
 
-      if (!email || !pw) {
+      if (!email || !pw){
         msg.style.color = "red"; msg.textContent = "❌ E-Mail und Passwort sind erforderlich.";
         return;
       }
+      msg.style.color = "orange"; msg.textContent = "⏳ wird erstellt...";
 
-      msg.style.color = "orange";
-      msg.textContent = "⏳ wird erstellt...";
-
-      try {
+      try{
         const res = await fetch(API_BASE + "/createUser", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method:"POST", headers:{ "Content-Type":"application/json" },
           body: JSON.stringify({ email, password: pw, displayName: name })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
-        msg.style.color = "green";
-        msg.textContent = "✅ Benutzer angelegt mit UID " + data.uid;
-        form.reset();
-        loadUsers();
-      } catch(err) {
-        msg.style.color = "red";
-        msg.textContent = "❌ Fehler: " + err.message;
+        msg.style.color = "green"; msg.textContent = "✅ Benutzer angelegt mit UID " + data.uid;
+        form.reset(); loadUsers();
+      }catch(err){
+        msg.style.color = "red"; msg.textContent = "❌ Fehler: " + err.message;
       }
     });
   </script>
