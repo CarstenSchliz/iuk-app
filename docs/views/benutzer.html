@@ -186,15 +186,12 @@
   import { httpsCallable } 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
 
+  // Wir benutzen window.functions aus firebase.js
   const userList = document.getElementById("userList");
   const userMsg = document.getElementById("userMsg");
-  const msg = document.getElementById("createUserMsg");
-  const form = document.getElementById("createUserForm");
 
   // Nutzer rendern
   function renderUsers(users){
-    console.log("📊 renderUsers() ->", users); // DEBUG
-
     userList.innerHTML = "";
     users.forEach(u => {
       const tr = document.createElement("tr");
@@ -208,6 +205,7 @@
           <button class="btn-danger delete-user">Löschen</button>
         </td>`;
 
+      // Editor
       const editorRow = document.createElement("tr");
       editorRow.style.display = "none";
       editorRow.innerHTML = `
@@ -218,23 +216,21 @@
           </div>
         </td>`;
 
-      // Admin wechseln
+      // Admin umschalten
       tr.querySelector(".toggle-admin").addEventListener("click", async () => {
         try {
           const fn = httpsCallable(window.functions, "setUserAdmin");
           await fn({ uid: u.uid, makeAdmin: !u.admin });
-          console.log("🔑 Adminrechte geändert für:", u.uid); // DEBUG
           userMsg.style.color = "green";
           userMsg.textContent = "✅ Adminrechte geändert!";
           loadUsers();
         } catch (err) {
-          console.error("❌ Fehler setUserAdmin:", err);
           userMsg.style.color = "red";
           userMsg.textContent = "❌ Fehler: " + err.message;
         }
       });
 
-      // Bearbeiten öffnen
+      // Editor öffnen
       tr.querySelector(".edit-user").addEventListener("click", () => {
         editorRow.style.display = editorRow.style.display === "none" ? "table-row" : "none";
       });
@@ -245,29 +241,25 @@
         try {
           const fn = httpsCallable(window.functions, "updateUser");
           await fn({ uid: u.uid, displayName: newName });
-          console.log("✏️ Benutzer aktualisiert:", u.uid, newName);
           userMsg.style.color = "green";
           userMsg.textContent = "✅ Benutzer aktualisiert!";
           loadUsers();
         } catch (err) {
-          console.error("❌ Fehler updateUser:", err);
           userMsg.style.color = "red";
           userMsg.textContent = "❌ Fehler: " + err.message;
         }
       });
 
-      // Löschen
+      // User löschen
       tr.querySelector(".delete-user").addEventListener("click", async () => {
         if (!confirm("Soll dieser Nutzer wirklich gelöscht werden?")) return;
         try {
           const fn = httpsCallable(window.functions, "deleteUser");
           await fn({ uid: u.uid });
-          console.log("🗑️ Benutzer gelöscht:", u.uid);
           userMsg.style.color = "green";
           userMsg.textContent = "🗑️ Nutzer gelöscht!";
           loadUsers();
         } catch (err) {
-          console.error("❌ Fehler deleteUser:", err);
           userMsg.style.color = "red";
           userMsg.textContent = "❌ Fehler: " + err.message;
         }
@@ -280,23 +272,27 @@
 
   // Nutzer laden
   async function loadUsers(){
+    userMsg.style.color = "orange";
+    userMsg.textContent = "⏳ Lade Nutzer...";
     try {
-      console.log("⏳ Lade Nutzer...");
       const fn = httpsCallable(window.functions, "listUsers");
       const res = await fn();
-      console.log("✅ Antwort von listUsers:", res.data);
       renderUsers(res.data.users);
+      userMsg.textContent = "";
     } catch (err) {
-      console.error("❌ Fehler beim Laden der Nutzer:", err);
       userMsg.style.color = "red";
-      userMsg.textContent = "❌ Fehler beim Laden: " + err.message;
+      userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
+      console.error("❌ Fehler beim Laden der Nutzer:", err);
     }
   }
 
-  // Initial
+  // Initial laden
   loadUsers();
 
   // Neuen Nutzer anlegen
+  const form = document.getElementById("createUserForm");
+  const msg = document.getElementById("createUserMsg");
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("newEmail").value;
@@ -309,13 +305,11 @@
     try {
       const fn = httpsCallable(window.functions, "createUser");
       const res = await fn({ email, password: pw, displayName: name });
-      console.log("➕ Neuer Benutzer erstellt:", res.data);
       msg.style.color = "green";
       msg.textContent = "✅ Benutzer angelegt mit UID " + res.data.uid;
-      form.reset();
       loadUsers();
+      form.reset();
     } catch(err) {
-      console.error("❌ Fehler createUser:", err);
       msg.style.color = "red";
       msg.textContent = "❌ Fehler: " + err.message;
     }
