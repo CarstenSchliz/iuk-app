@@ -42,12 +42,8 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const storage = getStorage(app);
 
-// 🔹 Functions (immer mit Region us-central1!)
+// ⚠️ Functions mit Region explizit setzen
 export const functions = getFunctions(app, "us-central1");
-
-// Auch im Window verfügbar machen, damit man im Browser testen kann
-window.auth = auth;
-window.functions = functions;
 
 // Nutzer bleibt eingeloggt
 setPersistence(auth, browserLocalPersistence);
@@ -123,3 +119,7 @@ export async function uploadProfileImage(user, file) {
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
+
+// === Debug: in Console verfügbar machen ===
+window.auth = auth;
+window.functions = functions;
