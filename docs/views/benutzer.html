@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Benutzerverwaltung</title>
+
+  <!-- Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
@@ -12,129 +14,178 @@
       --dunkelblau: rgb(0,45,85);
       --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
+      --text: #1f2937;
     }
 
+    * { box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 1rem;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      margin: 0; padding: 1rem;
       background: var(--hellgrau);
+      color: var(--text);
     }
 
     .page-title {
       color: var(--softrot);
-      margin-bottom: 1rem;
+      margin: 0 0 1rem 0;
     }
 
     .settings-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 1.5rem;
+      align-items: start;
     }
-    @media(max-width: 768px){
+    @media (max-width: 980px){
       .settings-grid { grid-template-columns: 1fr; }
     }
 
     .card {
       background: #fff;
-      padding: 1.5rem;
+      padding: 1.25rem;
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
       margin-bottom: 1.5rem;
     }
 
     .card h3 {
       color: var(--dunkelblau);
-      margin-top: 0;
-      margin-bottom: 1rem;
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
     }
 
+    /* Tabelle Desktop */
     .user-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.95rem;
     }
     .user-table th, .user-table td {
-      border-bottom: 1px solid #ddd;
-      padding: 0.6rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0.6rem 0.5rem;
       text-align: left;
-      vertical-align: top;
+      vertical-align: middle;
     }
     .user-table th {
       background: var(--blassblau);
+      position: sticky; top: 0; z-index: 1;
     }
+    .user-table .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      object-fit: cover; background: #f3f4f6; border: 1px solid #e5e7eb;
+    }
+    .role-badge {
+      display:inline-block; padding:.2rem .55rem; border-radius:999px; font-size:.78rem;
+      background:#eef2ff; color:#223; border:1px solid #dde3ff;
+      white-space: nowrap;
+    }
+    .role-admin { background:#ffe8e6; border-color:#ffcdc6; color:#9e1b1b; }
 
-    .btn-primary, .btn-secondary, .btn-danger {
-      padding:0.4rem 0.8rem;
-      border:none;
-      border-radius:6px;
-      cursor:pointer;
-      font-size: 0.85rem;
+    .actions-cell { position: relative; width: 44px; text-align: right; }
+    .kebab-btn {
+      background: transparent; border: none; cursor: pointer; padding:.3rem .4rem;
+      font-size: 1.2rem; color: #374151; border-radius: 8px;
     }
-    .btn-primary { background: var(--dunkelblau); color: #fff; }
-    .btn-secondary { background:#eee; }
-    .btn-danger { background:#c62828; color: #fff; }
+    .kebab-btn:focus-visible { outline: 2px solid var(--dunkelblau); }
 
-    .form-msg {
-      margin-top:0.5rem;
-      font-weight:bold;
+    .kebab-menu {
+      position: absolute; right: 0; top: calc(100% + 6px); min-width: 180px; z-index: 20;
+      background: #fff; border:1px solid #e5e7eb; border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.12);
+      display:none; overflow: hidden;
     }
+    .kebab-menu button {
+      width:100%; background:transparent; border:none; text-align:left; cursor:pointer;
+      padding:.7rem .9rem; font-size:.92rem; display:flex; gap:.5rem; align-items:center;
+    }
+    .kebab-menu button:hover { background:#f8fafc; }
+
+    .form-msg { margin-top:0.5rem; font-weight:600; }
 
     /* Floating Label */
-    .form-group.floating {
-      position: relative;
-      margin-bottom: 1.5rem;
-    }
+    .form-group.floating { position: relative; margin-bottom: 1rem; }
     .form-group.floating input {
-      width: 100%;
-      padding: 1rem 0.75rem 0.25rem 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: #fff;
-      font-size: 1rem;
-      box-sizing: border-box;
-      transition: background 0.2s, border-color 0.2s;
+      width: 100%; padding: 1rem 0.75rem 0.3rem 0.75rem;
+      border: 1px solid #d1d5db; border-radius: 10px; background: #fff; font-size: 1rem;
+      transition: border-color .15s ease;
     }
+    .form-group.floating input:focus { outline: none; border-color: var(--dunkelblau); }
     .form-group.floating label {
-      position: absolute;
-      top: 50%;
-      left: 0.75rem;
-      transform: translateY(-50%);
-      color: #777;
-      font-size: 0.95rem;
-      transition: all 0.2s ease;
-      pointer-events: none;
-      background: #fff;
-      padding: 0 0.25rem;
+      position: absolute; top: 50%; left: 0.75rem; transform: translateY(-50%);
+      color: #6b7280; font-size: 0.95rem; transition: all .15s ease; pointer-events: none;
+      background: #fff; padding: 0 .25rem;
     }
     .form-group.floating input:focus + label,
     .form-group.floating input:not(:placeholder-shown) + label {
-      top: 0;
-      left: 0.6rem;
-      font-size: 0.8rem;
-      color: var(--dunkelblau);
+      top: 0; left: 0.6rem; font-size: .78rem; color: var(--dunkelblau);
     }
 
-    /* Editor-Zeile */
-    .user-editor {
-      padding: 0.5rem 0;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
+    .btn-primary, .btn-secondary, .btn-danger {
+      padding: .48rem .85rem; border: none; border-radius: 8px; cursor: pointer; font-size: .9rem;
     }
-    .user-editor label {
-      font-size: 0.9rem;
+    .btn-primary { background: var(--dunkelblau); color: #fff; }
+    .btn-secondary { background:#eef2f7; }
+    .btn-danger { background:#c62828; color: #fff; }
+
+    /* Editor-Panel */
+    #editPanel { margin-top: 1rem; }
+    #editPanel .editor-card {
+      background:#fff; padding:1rem; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,.08);
     }
-    .user-editor input {
-      padding: 0.3rem 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+    .editor-grid {
+      display:grid; grid-template-columns: 96px 1fr 1fr; gap: 1rem; align-items:center;
+    }
+    @media (max-width: 720px){
+      .editor-grid { grid-template-columns: 80px 1fr; }
+    }
+    .editor-grid .avatar-lg {
+      width: 72px; height:72px; border-radius:50%; object-fit:cover; border:1px solid #e5e7eb; background:#f3f4f6;
+    }
+    .editor-grid .form-row { display:flex; gap:.6rem; align-items:center; flex-wrap: wrap; }
+    .editor-grid input, .editor-grid select {
+      width:100%; padding:.55rem .6rem; border:1px solid #d1d5db; border-radius:8px; font-size:.95rem;
+    }
+    .editor-actions { display:flex; gap:.6rem; margin-top:.6rem; }
+
+    /* Mobile: Tabelle -> Kartenlayout */
+    @media (max-width: 720px){
+      .user-table thead { display: none; }
+      .user-table, .user-table tbody, .user-table tr, .user-table td { display: block; width: 100%; }
+      .user-table tr {
+        background: #fff;
+        border:1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: .6rem .6rem .2rem;
+        margin-bottom: .8rem;
+        box-shadow: 0 1px 4px rgba(0,0,0,.06);
+      }
+      .user-table td {
+        border: none;
+        padding: .35rem .25rem;
+      }
+      .user-table td[data-label]::before {
+        content: attr(data-label) ": ";
+        font-weight: 600;
+        color:#6b7280;
+        display: inline-block;
+        min-width: 120px;
+      }
+      .user-table .actions-cell {
+        position: static; text-align: right; padding-top: .4rem;
+      }
+      .kebab-menu { position: fixed; right: .9rem; top: auto; bottom: 1rem; }
     }
 
     /* Darkmode */
-    body.dark .card { background: #1e1e1e; color: #f5f5f5; }
-    body.dark .user-table th { background: #333; }
-    body.dark .user-table td { border-bottom: 1px solid #555; }
-    body.dark .form-group.floating label { background: #1e1e1e; }
+    body.dark .card,
+    body.dark #editPanel .editor-card,
+    body.dark .user-table tr { background:#1e1e1e; color:#f5f5f5; border-color:#374151; }
+    body.dark .user-table th { background:#0f172a; color:#e5e7eb; }
+    body.dark .user-table td { border-color:#374151; }
+    body.dark .kebab-menu { background:#2a2a2a; border-color:#444; }
+    body.dark .kebab-menu button:hover { background:#353535; }
+    body.dark .form-group.floating label { background:#1e1e1e; }
   </style>
 </head>
 <body>
@@ -144,35 +195,43 @@
     <!-- Linke Spalte: Nutzerliste -->
     <div class="card">
       <h3><i class="bi bi-people"></i> Benutzerübersicht</h3>
-      <table class="user-table">
+
+      <table class="user-table" aria-label="Liste der Benutzer">
         <thead>
           <tr>
-            <th>Name / E-Mail</th>
-            <th>UID</th>
-            <th>Admin</th>
-            <th>Aktionen</th>
+            <th>Profilbild</th>
+            <th>Name</th>
+            <th>E-Mail-Adresse</th>
+            <th>Rolle</th>
+            <th>Nutzer seit</th>
+            <th>Letzter Login</th>
+            <th style="width:44px;"></th>
           </tr>
         </thead>
         <tbody id="userList"></tbody>
       </table>
+
       <div id="userMsg" class="form-msg"></div>
+
+      <!-- Editor erscheint hier drunter -->
+      <div id="editPanel"></div>
     </div>
 
     <!-- Rechte Spalte: Nutzer anlegen -->
     <div>
       <div class="card">
         <h3><i class="bi bi-person-plus"></i> Neuen Nutzer anlegen</h3>
-        <form id="createUserForm">
+        <form id="createUserForm" novalidate>
           <div class="form-group floating">
-            <input type="email" id="newEmail" placeholder=" " required>
+            <input type="email" id="newEmail" placeholder=" " required inputmode="email" autocomplete="email" />
             <label for="newEmail">E-Mail</label>
           </div>
           <div class="form-group floating">
-            <input type="password" id="newPassword" placeholder=" " required>
+            <input type="password" id="newPassword" placeholder=" " required autocomplete="new-password" minlength="6" />
             <label for="newPassword">Passwort</label>
           </div>
           <div class="form-group floating">
-            <input type="text" id="newName" placeholder=" ">
+            <input type="text" id="newName" placeholder=" " autocomplete="name" />
             <label for="newName">Anzeigename (optional)</label>
           </div>
           <button type="submit" class="btn-primary">
@@ -188,97 +247,167 @@
     console.log("✅ benutzer.html geladen");
 
     const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
+    const AVATAR_FALLBACK = "../assets/avatar-default.png";
 
-    const userList = document.getElementById("userList");
-    const userMsg = document.getElementById("userMsg");
+    const userList   = document.getElementById("userList");
+    const userMsg    = document.getElementById("userMsg");
+    const editPanel  = document.getElementById("editPanel");
 
-    // Nutzer rendern
+    // ---------------- Helfer ----------------
+    function fmtDate(v){
+      if (!v) return "–";
+      try {
+        const d = typeof v === "number" ? new Date(v) : new Date(String(v));
+        if (isNaN(d)) return "–";
+        const ds = d.toLocaleDateString('de-DE', { year:'numeric', month:'2-digit', day:'2-digit' });
+        const ts = d.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' });
+        return ds + " " + ts;
+      } catch { return "–"; }
+    }
+
+    // Kebab-Menü (3 Punkte)
+    function buildKebab(cell, onEdit, user){
+      cell.classList.add("actions-cell");
+
+      const btn = document.createElement("button");
+      btn.className = "kebab-btn";
+      btn.setAttribute("aria-label", "Aktionen");
+      btn.innerHTML = '<i class="bi bi-three-dots-vertical"></i>';
+
+      const menu = document.createElement("div");
+      menu.className = "kebab-menu";
+      menu.innerHTML = `
+        <button class="act-edit"><i class="bi bi-pencil"></i><span>Bearbeiten</span></button>
+      `;
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = menu.style.display === "block";
+        document.querySelectorAll(".kebab-menu").forEach(m => m.style.display = "none");
+        menu.style.display = open ? "none" : "block";
+      });
+      document.addEventListener("click", () => menu.style.display = "none");
+      menu.querySelector(".act-edit").addEventListener("click", () => { menu.style.display="none"; onEdit(user); });
+
+      cell.appendChild(btn);
+      cell.appendChild(menu);
+    }
+
+    // Editor-Panel
+    function openEditor(user){
+      const role = user.role ?? (user.admin ? "admin" : "user");
+      const photo = user.photoURL || AVATAR_FALLBACK;
+
+      editPanel.innerHTML = `
+        <div class="editor-card">
+          <h3 style="margin-top:0;">Nutzer bearbeiten</h3>
+          <div class="editor-grid">
+            <div>
+              <img class="avatar-lg" id="edPhoto" src="${photo}" alt="Profilbild">
+            </div>
+            <div>
+              <label style="display:block;font-size:.9rem;margin-bottom:.25rem;">Anzeigename</label>
+              <input type="text" id="edName" value="${user.displayName || ""}">
+            </div>
+            <div>
+              <label style="display:block;font-size:.9rem;margin-bottom:.25rem;">Rolle</label>
+              <select id="edRole">
+                <option value="user" ${role === 'user' ? 'selected':''}>Nutzer</option>
+                <option value="admin" ${role === 'admin' ? 'selected':''}>Admin</option>
+              </select>
+            </div>
+            <div></div>
+            <div class="form-row">
+              <span style="font-size:.9rem;color:#6b7280;">E-Mail</span>
+              <strong>${user.email || "–"}</strong>
+            </div>
+            <div class="form-row" style="justify-content:flex-end;">
+              <div class="editor-actions">
+                <button class="btn-secondary" id="edCancel"><i class="bi bi-x"></i> Abbrechen</button>
+                <button class="btn-primary" id="edSave"><i class="bi bi-save"></i> Speichern</button>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:.5rem; font-size:.9rem; color:#6b7280;">
+            <span>UID: ${user.uid}</span> &middot;
+            <span>Nutzer seit: ${fmtDate(user.createdAt)}</span> &middot;
+            <span>Letzter Login: ${fmtDate(user.lastLoginAt)}</span>
+          </div>
+          <div id="editMsg" class="form-msg"></div>
+        </div>
+      `;
+
+      document.getElementById("edCancel").onclick = () => editPanel.innerHTML = "";
+      document.getElementById("edSave").onclick = async () => {
+        const newName = /** @type {HTMLInputElement} */(document.getElementById("edName")).value.trim();
+        const newRole = /** @type {HTMLSelectElement} */(document.getElementById("edRole")).value;
+        const m = document.getElementById("editMsg");
+        m.style.color = "orange"; m.textContent = "⏳ wird gespeichert...";
+
+        try {
+          // Name
+          await fetch(API_BASE + "/updateUser", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ uid: user.uid, displayName: newName })
+          });
+
+          // Rolle via vorhandener Function
+          if ((newRole === "admin") !== !!user.admin) {
+            await fetch(API_BASE + "/setUserAdmin", {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ uid: user.uid, makeAdmin: newRole === "admin" })
+            });
+          }
+
+          m.style.color = "green"; m.textContent = "✅ gespeichert";
+          await loadUsers();
+        } catch (err) {
+          m.style.color = "red"; m.textContent = "❌ Fehler: " + err.message;
+        }
+      };
+    }
+
+    // Nutzer rendern (Desktop + Mobile)
     function renderUsers(users){
       userList.innerHTML = "";
       users.forEach(u => {
         const tr = document.createElement("tr");
+
+        // Fallbacks / Mapping
+        const photo = u.photoURL || AVATAR_FALLBACK;
+        const name = u.displayName || "–";
+        const mail = u.email || "–";
+        const role = (u.role ?? (u.admin ? "admin" : "user"));
+        const created = u.createdAt || u.creationTime || u.metadata?.creationTime;
+        const lastLogin = u.lastLoginAt || u.lastSignInTime || u.metadata?.lastSignInTime;
+
         tr.innerHTML = `
-          <td>${u.displayName || "-"}<br><small>${u.email}</small></td>
-          <td>${u.uid}</td>
-          <td>${u.admin ? "✅" : "❌"}</td>
-          <td>
-            <button class="btn-secondary toggle-admin">Admin ${u.admin ? "entfernen" : "setzen"}</button>
-            <button class="btn-secondary edit-user">Bearbeiten</button>
-            <button class="btn-danger delete-user">Löschen</button>
-          </td>`;
+          <td data-label="Profilbild"><img class="avatar" src="${photo}" alt="Profilbild ${name}"></td>
+          <td data-label="Name">${name}</td>
+          <td data-label="E-Mail-Adresse">${mail}</td>
+          <td data-label="Rolle"><span class="role-badge ${role==='admin' ? 'role-admin' : ''}">${role==='admin' ? 'Admin' : 'Nutzer'}</span></td>
+          <td data-label="Nutzer seit">${fmtDate(created)}</td>
+          <td data-label="Letzter Login">${fmtDate(lastLogin)}</td>
+          <td class="actions-cell" data-label="">
+          </td>
+        `;
 
-        // Editor-Zeile
-        const editorRow = document.createElement("tr");
-        editorRow.style.display = "none";
-        editorRow.innerHTML = `
-          <td colspan="4">
-            <div class="user-editor">
-              <label>Name: <input type="text" value="${u.displayName || ""}" class="edit-name"></label>
-              <button class="btn-primary save-user">Speichern</button>
-            </div>
-          </td>`;
-
-        // Admin umschalten
-        tr.querySelector(".toggle-admin").addEventListener("click", async () => {
-          try {
-            await fetch(API_BASE + "/setUserAdmin", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ uid: u.uid, makeAdmin: !u.admin })
-            });
-            userMsg.style.color = "green";
-            userMsg.textContent = "✅ Adminrechte geändert!";
-            loadUsers();
-          } catch (err) {
-            userMsg.style.color = "red";
-            userMsg.textContent = "❌ Fehler: " + err.message;
-          }
-        });
-
-        // Editor öffnen
-        tr.querySelector(".edit-user").addEventListener("click", () => {
-          editorRow.style.display = editorRow.style.display === "none" ? "table-row" : "none";
-        });
-
-        // Speichern
-        editorRow.querySelector(".save-user").addEventListener("click", async () => {
-          const newName = editorRow.querySelector(".edit-name").value;
-          try {
-            await fetch(API_BASE + "/updateUser", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ uid: u.uid, displayName: newName })
-            });
-            userMsg.style.color = "green";
-            userMsg.textContent = "✅ Benutzer aktualisiert!";
-            loadUsers();
-          } catch (err) {
-            userMsg.style.color = "red";
-            userMsg.textContent = "❌ Fehler: " + err.message;
-          }
-        });
-
-        // User löschen
-        tr.querySelector(".delete-user").addEventListener("click", async () => {
-          if (!confirm("Soll dieser Nutzer wirklich gelöscht werden?")) return;
-          try {
-            await fetch(API_BASE + "/deleteUser", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ uid: u.uid })
-            });
-            userMsg.style.color = "green";
-            userMsg.textContent = "🗑️ Nutzer gelöscht!";
-            loadUsers();
-          } catch (err) {
-            userMsg.style.color = "red";
-            userMsg.textContent = "❌ Fehler: " + err.message;
-          }
+        // 3-Punkte-Menü
+        const actionsCell = tr.querySelector(".actions-cell");
+        buildKebab(actionsCell, openEditor, {
+          uid: u.uid,
+          displayName: name,
+          email: mail,
+          photoURL: photo,
+          role, admin: role === 'admin',
+          createdAt: created, lastLoginAt: lastLogin
         });
 
         userList.appendChild(tr);
-        userList.appendChild(editorRow);
       });
+
+      // Optional: Editor schließen bei Neuladung der Liste
+      // editPanel.innerHTML = "";
     }
 
     // Nutzer laden
@@ -288,7 +417,7 @@
       try {
         const res = await fetch(API_BASE + "/listUsers", { method: "GET" });
         const data = await res.json();
-        renderUsers(data.users);
+        renderUsers(data.users || []);
         userMsg.textContent = "";
       } catch (err) {
         userMsg.style.color = "red";
@@ -301,13 +430,18 @@
 
     // Neuen Nutzer anlegen
     const form = document.getElementById("createUserForm");
-    const msg = document.getElementById("createUserMsg");
+    const msg  = document.getElementById("createUserMsg");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = document.getElementById("newEmail").value;
-      const pw = document.getElementById("newPassword").value;
-      const name = document.getElementById("newName").value;
+      const email = document.getElementById("newEmail").value.trim();
+      const pw    = document.getElementById("newPassword").value;
+      const name  = document.getElementById("newName").value.trim();
+
+      if (!email || !pw) {
+        msg.style.color = "red"; msg.textContent = "❌ E-Mail und Passwort sind erforderlich.";
+        return;
+      }
 
       msg.style.color = "orange";
       msg.textContent = "⏳ wird erstellt...";
@@ -319,10 +453,11 @@
           body: JSON.stringify({ email, password: pw, displayName: name })
         });
         const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
         msg.style.color = "green";
         msg.textContent = "✅ Benutzer angelegt mit UID " + data.uid;
-        loadUsers();
         form.reset();
+        loadUsers();
       } catch(err) {
         msg.style.color = "red";
         msg.textContent = "❌ Fehler: " + err.message;
