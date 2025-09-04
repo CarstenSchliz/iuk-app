@@ -40,15 +40,15 @@
 
     /* Tabelle */
     .user-table{ width:100%; border-collapse:collapse; font-size:.95rem; table-layout:fixed }
-    .user-table th, .user-table td{ border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle }
-    .user-table th{ background:var(--blassblau); position:sticky; top:0; z-index:1 }
-
-    /* Ein-Zeile ohne Umbruch (Desktop) */
-    .nowrap{
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    .user-table th, .user-table td{
+      border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle; text-align:left;
     }
+    .user-table th{ background:var(--blassblau); position:sticky; top:0; z-index:1; text-align:left }
+
+    /* Desktop: Anzeigename & E-Mail in einer Zeile (ohne Umbruch) */
+    .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
     .td-name b{ font-weight:700 }
-    .td-uid{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace }
+    .td-roles{ white-space:normal } /* Rollen dürfen umbrechen */
 
     /* Rollen-Badges */
     .role-badges{ display:flex; gap:.35rem; flex-wrap:wrap }
@@ -86,7 +86,7 @@
     }
     .form-group.floating input[readonly]{ background:#f9fafb; color:#6b7280 }
 
-    /* Buttons (einheitliche Größe) */
+    /* Buttons */
     .btn{ padding:.6rem .9rem; border:none; border-radius:10px; cursor:pointer; font-size:.95rem; min-height:44px }
     .btn-primary{ background:var(--dunkelblau); color:#fff }
     .btn-secondary{ background:#eef2f7 }
@@ -105,8 +105,8 @@
     .role-check input[type="checkbox"]{ width:24px; height:24px; accent-color: var(--dunkelblau) }
     .role-check .role-badge{ font-size:.82rem }
 
-    .editor-actions{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-top:1.1rem }
-    .editor-actions .btn{ width:100% }
+    .editor-actions{ display:flex; gap:.8rem; margin-top:1.1rem } /* auto-breite Buttons */
+    .editor-actions .btn{ width:auto }
 
     /* Mobile Kartenlayout */
     @media (max-width:720px){
@@ -154,10 +154,9 @@
       <table class="user-table" aria-label="Liste der Benutzer">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Anzeigename</th>
             <th>E-Mail-Adresse</th>
             <th>Rollen</th>
-            <th>UID</th>
             <th style="width:44px;"></th>
           </tr>
         </thead>
@@ -283,11 +282,11 @@
             <label for="edName">Anzeigename</label>
           </div>
           <div class="form-group floating">
-            <input type="email" id="edEmail" placeholder=" " value="\${user.email || ""}" readonly>
+            <input type="email" id="edEmail" placeholder=" " value="${user.email || ""}" readonly>
             <label for="edEmail">E-Mail-Adresse</label>
           </div>
           <div class="form-group floating">
-            <input type="text" id="edUID" placeholder=" " value="\${user.uid}" readonly>
+            <input type="text" id="edUID" placeholder=" " value="${user.uid}" readonly>
             <label for="edUID">UID</label>
           </div>
         </div>
@@ -343,6 +342,10 @@
           showToast("Gespeichert");
           updateNavigationDisplayName(newName);
           await loadUsers();
+
+          // Editor schließen nach Erfolg
+          editPanelOuter.style.display = "none";
+          editPanel.innerHTML = "";
         }catch(err){
           showToast("Fehler: " + err.message);
         }
@@ -357,17 +360,15 @@
         const name = u.displayName || "Ohne Namen";
         const mail = u.email || "–";
         const roles = extractRoles(u);
-        const uid = u.uid || "–";
 
         tr.innerHTML = `
-          <td class="nowrap td-name" data-label="Name" title="${name}"><b>${name}</b></td>
+          <td class="nowrap td-name" data-label="Anzeigename" title="${name}"><b>${name}</b></td>
           <td class="nowrap" data-label="E-Mail-Adresse" title="${mail}">${mail}</td>
-          <td data-label="Rollen">${rolesToBadges(roles)}</td>
-          <td class="nowrap td-uid" data-label="UID" title="${uid}">${uid}</td>
+          <td class="td-roles" data-label="Rollen">${rolesToBadges(roles)}</td>
           <td class="actions-cell" data-label=""></td>
         `;
         const actionsCell = tr.querySelector(".actions-cell");
-        buildKebab(actionsCell, openEditor, { uid, displayName:name, email:mail, roles });
+        buildKebab(actionsCell, openEditor, { uid: u.uid, displayName:name, email:mail, roles });
 
         userList.appendChild(tr);
       });
