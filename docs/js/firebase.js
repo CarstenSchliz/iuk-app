@@ -42,8 +42,12 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const storage = getStorage(app);
 
-// ⚠️ Functions mit Region explizit setzen
+// ❗ Functions mit Region us-central1 initialisieren
 export const functions = getFunctions(app, "us-central1");
+
+// In Console verfügbar machen (Debugging)
+window.auth = auth;
+window.functions = functions;
 
 // Nutzer bleibt eingeloggt
 setPersistence(auth, browserLocalPersistence);
@@ -51,29 +55,37 @@ setPersistence(auth, browserLocalPersistence);
 // === Fehlertexte übersetzen ===
 export function translateFirebaseError(errorCode) {
   switch (errorCode) {
+    // Anmeldefehler
     case "auth/invalid-email":
       return "Die eingegebene E-Mail-Adresse ist ungültig.";
     case "auth/user-disabled":
       return "Dieses Konto wurde deaktiviert. Bitte wenden Sie sich an den Administrator.";
     case "auth/user-not-found":
-    case "auth/invalid-credential":
+    case "auth/invalid-credential": // kommt oft bei unbekannten Mails
       return "Es existiert kein Benutzer mit dieser E-Mail.";
     case "auth/wrong-password":
       return "Das eingegebene Passwort ist falsch.";
+
+    // Registrierungsfehler
     case "auth/email-already-in-use":
       return "Diese E-Mail-Adresse wird bereits verwendet.";
     case "auth/weak-password":
       return "Das Passwort ist zu schwach. Bitte mindestens 6 Zeichen verwenden.";
     case "auth/missing-password":
       return "Bitte geben Sie ein Passwort ein.";
+
+    // Passwort-Reset
     case "auth/missing-email":
       return "Bitte geben Sie eine E-Mail-Adresse ein.";
+
+    // Netzwerk & Sonstiges
     case "auth/network-request-failed":
       return "Netzwerkfehler – bitte Internetverbindung prüfen.";
     case "auth/too-many-requests":
       return "Zu viele Anmeldeversuche. Bitte versuchen Sie es später erneut.";
     case "auth/internal-error":
       return "Interner Fehler bei der Anmeldung. Bitte später erneut versuchen.";
+
     default:
       return "Ein unbekannter Fehler ist aufgetreten. (" + errorCode + ")";
   }
@@ -111,7 +123,10 @@ export async function uploadProfileImage(user, file) {
   await uploadBytes(storageRef, file);
 
   const url = await getDownloadURL(storageRef);
+
+  // im Auth-Profil speichern
   await updateProfile(user, { photoURL: url });
+
   return url;
 }
 
@@ -119,7 +134,3 @@ export async function uploadProfileImage(user, file) {
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
 }
-
-// === Debug: in Console verfügbar machen ===
-window.auth = auth;
-window.functions = functions;
