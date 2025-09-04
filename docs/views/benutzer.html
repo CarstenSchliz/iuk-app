@@ -15,6 +15,15 @@
       --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
       --text: #1f2937;
+      --role-admin-bg: #ffe8e6;
+      --role-admin-bd: #ffcdc6;
+      --role-admin-fg: #9e1b1b;
+      --role-gl-bg: #e8f6ec;
+      --role-gl-bd: #c7efd5;
+      --role-gl-fg: #0f6b2b;
+      --role-hf-bg: #e6f0ff;
+      --role-hf-bd: #cfe1ff;
+      --role-hf-fg: #0d3b8a;
     }
 
     * { box-sizing: border-box; }
@@ -71,16 +80,15 @@
       background: var(--blassblau);
       position: sticky; top: 0; z-index: 1;
     }
-    .user-table .avatar {
-      width: 36px; height: 36px; border-radius: 50%;
-      object-fit: cover; background: #f3f4f6; border: 1px solid #e5e7eb;
-    }
+
+    .role-badges { display:flex; gap:.35rem; flex-wrap: wrap; }
     .role-badge {
-      display:inline-block; padding:.2rem .55rem; border-radius:999px; font-size:.78rem;
-      background:#eef2ff; color:#223; border:1px solid #dde3ff;
-      white-space: nowrap;
+      display:inline-block; padding:.18rem .55rem; border-radius:999px; font-size:.78rem;
+      border:1px solid transparent; white-space: nowrap;
     }
-    .role-admin { background:#ffe8e6; border-color:#ffcdc6; color:#9e1b1b; }
+    .role-admin { background: var(--role-admin-bg); border-color: var(--role-admin-bd); color: var(--role-admin-fg); }
+    .role-gl    { background: var(--role-gl-bg);    border-color: var(--role-gl-bd);    color: var(--role-gl-fg); }
+    .role-hf    { background: var(--role-hf-bg);    border-color: var(--role-hf-bd);    color: var(--role-hf-fg); }
 
     .actions-cell { position: relative; width: 44px; text-align: right; }
     .kebab-btn {
@@ -128,27 +136,7 @@
     .btn-secondary { background:#eef2f7; }
     .btn-danger { background:#c62828; color: #fff; }
 
-    /* Editor-Panel */
-    #editPanel { margin-top: 1rem; }
-    #editPanel .editor-card {
-      background:#fff; padding:1rem; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,.08);
-    }
-    .editor-grid {
-      display:grid; grid-template-columns: 96px 1fr 1fr; gap: 1rem; align-items:center;
-    }
-    @media (max-width: 720px){
-      .editor-grid { grid-template-columns: 80px 1fr; }
-    }
-    .editor-grid .avatar-lg {
-      width: 72px; height:72px; border-radius:50%; object-fit:cover; border:1px solid #e5e7eb; background:#f3f4f6;
-    }
-    .editor-grid .form-row { display:flex; gap:.6rem; align-items:center; flex-wrap: wrap; }
-    .editor-grid input, .editor-grid select {
-      width:100%; padding:.55rem .6rem; border:1px solid #d1d5db; border-radius:8px; font-size:.95rem;
-    }
-    .editor-actions { display:flex; gap:.6rem; margin-top:.6rem; }
-
-    /* Mobile: Tabelle -> Kartenlayout */
+    /* Mobiles Kartenlayout */
     @media (max-width: 720px){
       .user-table thead { display: none; }
       .user-table, .user-table tbody, .user-table tr, .user-table td { display: block; width: 100%; }
@@ -174,12 +162,11 @@
       .user-table .actions-cell {
         position: static; text-align: right; padding-top: .4rem;
       }
-      .kebab-menu { position: fixed; right: .9rem; top: auto; bottom: 1rem; }
+      .kebab-menu { position: fixed; right: .9rem; bottom: 1rem; top: auto; }
     }
 
     /* Darkmode */
     body.dark .card,
-    body.dark #editPanel .editor-card,
     body.dark .user-table tr { background:#1e1e1e; color:#f5f5f5; border-color:#374151; }
     body.dark .user-table th { background:#0f172a; color:#e5e7eb; }
     body.dark .user-table td { border-color:#374151; }
@@ -199,12 +186,10 @@
       <table class="user-table" aria-label="Liste der Benutzer">
         <thead>
           <tr>
-            <th>Profilbild</th>
             <th>Name</th>
             <th>E-Mail-Adresse</th>
-            <th>Rolle</th>
-            <th>Nutzer seit</th>
-            <th>Letzter Login</th>
+            <th>Rollen</th>
+            <th>UID</th>
             <th style="width:44px;"></th>
           </tr>
         </thead>
@@ -212,9 +197,6 @@
       </table>
 
       <div id="userMsg" class="form-msg"></div>
-
-      <!-- Editor erscheint hier drunter -->
-      <div id="editPanel"></div>
     </div>
 
     <!-- Rechte Spalte: Nutzer anlegen -->
@@ -243,29 +225,54 @@
     </div>
   </div>
 
+  <!-- SEPARATER Editor-Kasten (nicht im Benutzerübersicht-Kasten) -->
+  <div id="editPanelOuter" class="card" style="display:none;">
+    <div id="editPanel"></div>
+  </div>
+
   <script type="module">
     console.log("✅ benutzer.html geladen");
 
     const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
-    const AVATAR_FALLBACK = "../assets/avatar-default.png";
 
-    const userList   = document.getElementById("userList");
-    const userMsg    = document.getElementById("userMsg");
-    const editPanel  = document.getElementById("editPanel");
+    const userList       = document.getElementById("userList");
+    const userMsg        = document.getElementById("userMsg");
+    const editPanelOuter = document.getElementById("editPanelOuter");
+    const editPanel      = document.getElementById("editPanel");
 
-    // ---------------- Helfer ----------------
-    function fmtDate(v){
-      if (!v) return "–";
-      try {
-        const d = typeof v === "number" ? new Date(v) : new Date(String(v));
-        if (isNaN(d)) return "–";
-        const ds = d.toLocaleDateString('de-DE', { year:'numeric', month:'2-digit', day:'2-digit' });
-        const ts = d.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' });
-        return ds + " " + ts;
-      } catch { return "–"; }
+    // ---------------- Rollen-Helfer ----------------
+    const ROLE_DEF = [
+      { key: "admin",         label: "Admin",         cls: "role-admin" },
+      { key: "gruppenleiter", label: "Gruppenleiter", cls: "role-gl" },
+      { key: "helfer",        label: "Helfer",        cls: "role-hf" },
+    ];
+
+    function extractRoles(u){
+      // akzeptiere verschiedene Backendschemata
+      // - u.roles: Array<string>
+      // - u.customClaims?.roles: Array<string>
+      // - einzelne Booleans: u.admin / u.gruppenleiter / u.helfer
+      let roles = [];
+      if (Array.isArray(u.roles)) roles = u.roles;
+      else if (Array.isArray(u?.customClaims?.roles)) roles = u.customClaims.roles;
+      else {
+        ROLE_DEF.forEach(r => { if (u[r.key]) roles.push(r.key); });
+        if (u.admin && !roles.includes("admin")) roles.push("admin"); // fallback
+      }
+      return roles;
     }
 
-    // Kebab-Menü (3 Punkte)
+    function rolesToBadges(roles){
+      if (!roles?.length) return '<span style="color:#9ca3af">–</span>';
+      return '<div class="role-badges">' + roles.map(r => {
+        const def = ROLE_DEF.find(d => d.key === r);
+        const label = def?.label ?? r;
+        const cls = def?.cls ?? "";
+        return `<span class="role-badge ${cls}">${label}</span>`;
+      }).join("") + '</div>';
+    }
+
+    // ---------------- Kebab-Menü ----------------
     function buildKebab(cell, onEdit, user){
       cell.classList.add("actions-cell");
 
@@ -293,71 +300,55 @@
       cell.appendChild(menu);
     }
 
-    // Editor-Panel
+    // ---------------- Editor-Panel ----------------
     function openEditor(user){
-      const role = user.role ?? (user.admin ? "admin" : "user");
-      const photo = user.photoURL || AVATAR_FALLBACK;
+      const roles = extractRoles(user);
+      const isChecked = (k) => roles.includes(k) ? "checked" : "";
 
+      editPanelOuter.style.display = "block";
       editPanel.innerHTML = `
-        <div class="editor-card">
-          <h3 style="margin-top:0;">Nutzer bearbeiten</h3>
-          <div class="editor-grid">
-            <div>
-              <img class="avatar-lg" id="edPhoto" src="${photo}" alt="Profilbild">
-            </div>
-            <div>
-              <label style="display:block;font-size:.9rem;margin-bottom:.25rem;">Anzeigename</label>
-              <input type="text" id="edName" value="${user.displayName || ""}">
-            </div>
-            <div>
-              <label style="display:block;font-size:.9rem;margin-bottom:.25rem;">Rolle</label>
-              <select id="edRole">
-                <option value="user" ${role === 'user' ? 'selected':''}>Nutzer</option>
-                <option value="admin" ${role === 'admin' ? 'selected':''}>Admin</option>
-              </select>
-            </div>
-            <div></div>
-            <div class="form-row">
-              <span style="font-size:.9rem;color:#6b7280;">E-Mail</span>
-              <strong>${user.email || "–"}</strong>
-            </div>
-            <div class="form-row" style="justify-content:flex-end;">
-              <div class="editor-actions">
-                <button class="btn-secondary" id="edCancel"><i class="bi bi-x"></i> Abbrechen</button>
-                <button class="btn-primary" id="edSave"><i class="bi bi-save"></i> Speichern</button>
-              </div>
+        <h3 style="margin-top:0;">Nutzer bearbeiten</h3>
+        <div class="editor-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div>
+            <label style="display:block;font-size:.9rem;margin-bottom:.25rem;">Anzeigename</label>
+            <input type="text" id="edName" value="${user.displayName || ""}">
+          </div>
+          <div style="grid-column: span 2;">
+            <label style="display:block;font-size:.9rem;margin-bottom:.25rem;">Rollen</label>
+            <div class="form-row" style="gap:1rem; flex-wrap:wrap;">
+              ${ROLE_DEF.map(r => `
+                <label style="display:flex;align-items:center;gap:.4rem;">
+                  <input type="checkbox" value="${r.key}" ${isChecked(r.key)} />
+                  <span class="role-badge ${r.cls}">${r.label}</span>
+                </label>
+              `).join("")}
             </div>
           </div>
-          <div style="margin-top:.5rem; font-size:.9rem; color:#6b7280;">
-            <span>UID: ${user.uid}</span> &middot;
-            <span>Nutzer seit: ${fmtDate(user.createdAt)}</span> &middot;
-            <span>Letzter Login: ${fmtDate(user.lastLoginAt)}</span>
-          </div>
-          <div id="editMsg" class="form-msg"></div>
         </div>
+        <div style="margin-top:.6rem;color:#6b7280;font-size:.9rem;">
+          <span>UID: ${user.uid}</span> · <span>E-Mail: ${user.email || "–"}</span>
+        </div>
+        <div class="editor-actions">
+          <button class="btn-secondary" id="edCancel"><i class="bi bi-x"></i> Abbrechen</button>
+          <button class="btn-primary"  id="edSave"><i class="bi bi-save"></i> Speichern</button>
+        </div>
+        <div id="editMsg" class="form-msg"></div>
       `;
 
-      document.getElementById("edCancel").onclick = () => editPanel.innerHTML = "";
-      document.getElementById("edSave").onclick = async () => {
-        const newName = /** @type {HTMLInputElement} */(document.getElementById("edName")).value.trim();
-        const newRole = /** @type {HTMLSelectElement} */(document.getElementById("edRole")).value;
+      document.getElementById("edCancel").onclick = () => { editPanelOuter.style.display = "none"; editPanel.innerHTML = ""; };
+      document.getElementById("edSave").onclick   = async () => {
+        const name = /** @type {HTMLInputElement} */(document.getElementById("edName")).value.trim();
+        const selected = Array.from(editPanel.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
         const m = document.getElementById("editMsg");
         m.style.color = "orange"; m.textContent = "⏳ wird gespeichert...";
 
         try {
-          // Name
+          // Name + Rollen in einem Request übergeben
           await fetch(API_BASE + "/updateUser", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ uid: user.uid, displayName: newName })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ uid: user.uid, displayName: name, roles: selected })
           });
-
-          // Rolle via vorhandener Function
-          if ((newRole === "admin") !== !!user.admin) {
-            await fetch(API_BASE + "/setUserAdmin", {
-              method: "POST", headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ uid: user.uid, makeAdmin: newRole === "admin" })
-            });
-          }
 
           m.style.color = "green"; m.textContent = "✅ gespeichert";
           await loadUsers();
@@ -367,50 +358,35 @@
       };
     }
 
-    // Nutzer rendern (Desktop + Mobile)
+    // ---------------- Nutzer rendern ----------------
     function renderUsers(users){
       userList.innerHTML = "";
       users.forEach(u => {
         const tr = document.createElement("tr");
 
-        // Fallbacks / Mapping
-        const photo = u.photoURL || AVATAR_FALLBACK;
         const name = u.displayName || "–";
         const mail = u.email || "–";
-        const role = (u.role ?? (u.admin ? "admin" : "user"));
-        const created = u.createdAt || u.creationTime || u.metadata?.creationTime;
-        const lastLogin = u.lastLoginAt || u.lastSignInTime || u.metadata?.lastSignInTime;
+        const roles = extractRoles(u);
+        const uid = u.uid || "–";
 
         tr.innerHTML = `
-          <td data-label="Profilbild"><img class="avatar" src="${photo}" alt="Profilbild ${name}"></td>
           <td data-label="Name">${name}</td>
           <td data-label="E-Mail-Adresse">${mail}</td>
-          <td data-label="Rolle"><span class="role-badge ${role==='admin' ? 'role-admin' : ''}">${role==='admin' ? 'Admin' : 'Nutzer'}</span></td>
-          <td data-label="Nutzer seit">${fmtDate(created)}</td>
-          <td data-label="Letzter Login">${fmtDate(lastLogin)}</td>
-          <td class="actions-cell" data-label="">
-          </td>
+          <td data-label="Rollen">${rolesToBadges(roles)}</td>
+          <td data-label="UID" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">${uid}</td>
+          <td class="actions-cell" data-label=""></td>
         `;
 
-        // 3-Punkte-Menü
         const actionsCell = tr.querySelector(".actions-cell");
         buildKebab(actionsCell, openEditor, {
-          uid: u.uid,
-          displayName: name,
-          email: mail,
-          photoURL: photo,
-          role, admin: role === 'admin',
-          createdAt: created, lastLoginAt: lastLogin
+          uid, displayName: name, email: mail, roles
         });
 
         userList.appendChild(tr);
       });
-
-      // Optional: Editor schließen bei Neuladung der Liste
-      // editPanel.innerHTML = "";
     }
 
-    // Nutzer laden
+    // ---------------- Nutzer laden ----------------
     async function loadUsers(){
       userMsg.style.color = "orange";
       userMsg.textContent = "⏳ Lade Nutzer...";
@@ -428,7 +404,7 @@
     // Initial laden
     loadUsers();
 
-    // Neuen Nutzer anlegen
+    // ---------------- Neuen Nutzer anlegen ----------------
     const form = document.getElementById("createUserForm");
     const msg  = document.getElementById("createUserMsg");
 
