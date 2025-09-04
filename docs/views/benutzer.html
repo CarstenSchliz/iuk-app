@@ -15,15 +15,23 @@
       --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
       --text: #1f2937;
+
+      /* Rollenfarben */
       --role-admin-bg: #ffe8e6;
       --role-admin-bd: #ffcdc6;
       --role-admin-fg: #9e1b1b;
-      --role-gl-bg: #e8f6ec;
-      --role-gl-bd: #c7efd5;
-      --role-gl-fg: #0f6b2b;
-      --role-hf-bg: #e6f0ff;
-      --role-hf-bd: #cfe1ff;
-      --role-hf-fg: #0d3b8a;
+
+      --role-gl-bg: #fff6db;   /* gelb */
+      --role-gl-bd: #fde8a6;
+      --role-gl-fg: #8a6b00;
+
+      --role-hf-bg: #e8f6ec;   /* grün */
+      --role-hf-bd: #c7efd5;
+      --role-hf-fg: #0f6b2b;
+
+      --role-an-bg: #e6f0ff;   /* blau */
+      --role-an-bd: #cfe1ff;
+      --role-an-fg: #0d3b8a;
     }
 
     * { box-sizing: border-box; }
@@ -89,6 +97,7 @@
     .role-admin { background: var(--role-admin-bg); border-color: var(--role-admin-bd); color: var(--role-admin-fg); }
     .role-gl    { background: var(--role-gl-bg);    border-color: var(--role-gl-bd);    color: var(--role-gl-fg); }
     .role-hf    { background: var(--role-hf-bg);    border-color: var(--role-hf-bd);    color: var(--role-hf-fg); }
+    .role-an    { background: var(--role-an-bg);    border-color: var(--role-an-bd);    color: var(--role-an-fg); }
 
     .actions-cell { position: relative; width: 44px; text-align: right; }
     .kebab-btn {
@@ -240,26 +249,26 @@
     const editPanelOuter = document.getElementById("editPanelOuter");
     const editPanel      = document.getElementById("editPanel");
 
-    // ---------------- Rollen-Helfer ----------------
+    // ---------------- Rollen-Definition ----------------
     const ROLE_DEF = [
       { key: "admin",         label: "Admin",         cls: "role-admin" },
       { key: "gruppenleiter", label: "Gruppenleiter", cls: "role-gl" },
       { key: "helfer",        label: "Helfer",        cls: "role-hf" },
+      { key: "anwärter",      label: "Anwärter",      cls: "role-an" },
     ];
 
     function extractRoles(u){
-      // akzeptiere verschiedene Backendschemata
-      // - u.roles: Array<string>
-      // - u.customClaims?.roles: Array<string>
-      // - einzelne Booleans: u.admin / u.gruppenleiter / u.helfer
+      // akzeptiert u.roles (Array) oder einzelne Booleans (admin/gruppenleiter/helfer/anwärter)
       let roles = [];
       if (Array.isArray(u.roles)) roles = u.roles;
-      else if (Array.isArray(u?.customClaims?.roles)) roles = u.customClaims.roles;
       else {
         ROLE_DEF.forEach(r => { if (u[r.key]) roles.push(r.key); });
-        if (u.admin && !roles.includes("admin")) roles.push("admin"); // fallback
+        if (u.admin && !roles.includes("admin")) roles.push("admin"); // legacy fallback
       }
-      return roles;
+      // Normalisieren auf valid keys
+      const allowed = new Set(ROLE_DEF.map(r => r.key));
+      roles = roles.filter(r => allowed.has(r));
+      return Array.from(new Set(roles));
     }
 
     function rolesToBadges(roles){
@@ -343,7 +352,6 @@
         m.style.color = "orange"; m.textContent = "⏳ wird gespeichert...";
 
         try {
-          // Name + Rollen in einem Request übergeben
           await fetch(API_BASE + "/updateUser", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
