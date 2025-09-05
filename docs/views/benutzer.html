@@ -4,155 +4,134 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>IuK Lernwelt – Benutzerverwaltung</title>
-
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
   <style>
-    :root {
+    :root{
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --hellgrau: rgb(239,238,234);
       --mittelgrau: rgb(180,180,180);
       --blassblau: rgb(230,240,250);
       --hoverblau: #cfe4f9;
-      --text: #1f2937;
+      --text:#1f2937;
     }
 
-    /* App-Shell Layout (wie deine Shell-Seite) */
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      background: var(--hellgrau);
-      overflow: hidden;
-      color: var(--text);
+    /* ==== App-Shell (wie deine bestehende app.html) ==== */
+    body{
+      margin:0; font-family:Arial, sans-serif;
+      display:flex; height:100vh; background:var(--hellgrau); overflow:hidden; color:var(--text);
     }
 
     /* Sidebar */
-    .sidebar {
-      background: #fff;
-      width: 300px;
-      display: flex;
-      flex-direction: column;
-      padding: 1.5rem 1rem;
-      box-sizing: border-box;
+    .sidebar{
+      background:#fff; width:300px; display:flex; flex-direction:column; padding:1.5rem 1rem; box-sizing:border-box;
     }
-    .profile { text-align: center; margin-bottom: 2rem; }
-    .profile img {
-      width: 100px; aspect-ratio: 1/1; border-radius: 50%; object-fit: cover;
-      border: 2px solid #000; display: block; margin: 0 auto .8rem; background: #ccc; cursor: pointer;
+    .profile{ text-align:center; margin-bottom:2rem; }
+    .profile img{
+      width:100px; aspect-ratio:1/1; border-radius:50%; object-fit:cover; border:2px solid #000;
+      display:block; margin:0 auto .8rem; background:#ccc; cursor:pointer;
     }
-    .profile h2 { margin: 0; font-size: 1.2rem; color: #000; }
-    .profile p { margin: 0; font-size: .9rem; color: #333; }
-    .menu { flex-grow: 1; }
-    .menu button, .logout {
-      position: relative; display: flex; align-items: center; gap: .75rem;
-      width: 100%; padding: .6rem 1rem; background: transparent; border: none; font-size: 1rem;
-      cursor: pointer; text-align: left; border-radius: 8px; margin-bottom: .5rem; box-sizing: border-box;
-      transition: background-color .25s ease, color .25s ease;
+    .profile h2{ margin:0; font-size:1.2rem; color:#000; }
+    .profile p{ margin:0; font-size:.9rem; color:#333; }
+
+    .menu{ flex-grow:1; }
+    .menu button, .logout{
+      position:relative; display:flex; align-items:center; gap:.75rem; width:100%;
+      padding:.6rem 1rem; background:transparent; border:none; font-size:1rem; cursor:pointer; text-align:left;
+      border-radius:8px; margin-bottom:.5rem; box-sizing:border-box; transition:background-color .25s, color .25s;
     }
-    .menu button i { color: inherit; }
-    .menu button:hover, .logout:hover { background: var(--hoverblau); }
-    .menu button::before {
-      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 0;
-      background: transparent; border-radius: 4px 0 0 4px; transition: width .25s ease, background-color .25s ease;
+    .menu button i{ color:inherit; }
+    .menu button:hover, .logout:hover{ background:var(--hoverblau); }
+    .menu button::before{
+      content:""; position:absolute; left:0; top:0; bottom:0; width:0; background:transparent; border-radius:4px 0 0 4px;
+      transition:width .25s, background-color .25s;
     }
-    .menu button:hover::before { width: 5px; background: var(--hoverblau); }
-    .menu button.active { background: var(--blassblau); font-weight: bold; color: var(--dunkelblau); }
-    .menu button.active::before { width: 5px; background: var(--dunkelblau); }
-    .logout { margin-top: auto; margin-bottom: .8rem; }
-    .version { font-size: .8rem; text-align: center; color: #555; }
+    .menu button:hover::before{ width:5px; background:var(--hoverblau); }
+    .menu button.active{ background:var(--blassblau); font-weight:bold; color:var(--dunkelblau); }
+    .menu button.active::before{ width:5px; background:var(--dunkelblau); }
+
+    .logout{ margin-top:auto; margin-bottom:.8rem; }
+    .version{ font-size:.8rem; text-align:center; color:#555; }
 
     /* Content */
-    .content {
-      flex-grow: 1;
-      background: var(--hellgrau);
-      padding: 2rem 3rem;
-      overflow-y: auto;
+    .content{ flex-grow:1; background:var(--hellgrau); padding:2rem 3rem; overflow-y:auto; }
+
+    /* Mobile */
+    .menu-toggle{ display:none; }
+    @media (max-width:768px){
+      .sidebar{ position:fixed; left:-260px; top:0; height:100%; width:260px; transition:left .3s; z-index:1000; }
+      .sidebar.active{ left:0; }
+      .menu-toggle{
+        display:block; position:fixed; top:1rem; left:1rem; font-size:1.5rem;
+        background:var(--dunkelblau); color:#fff; border:none; padding:.5rem .8rem; border-radius:8px; cursor:pointer; z-index:1100;
+      }
+      .content{ padding:5rem 1.5rem 2rem; }
     }
 
-    /* Menü-Button mobil */
-    .menu-toggle { display: none; }
-    @media (max-width: 768px) {
-      .sidebar {
-        position: fixed; left: -260px; top: 0; height: 100%; width: 260px; transition: left .3s; z-index: 1000;
-      }
-      .sidebar.active { left: 0; }
-      .menu-toggle {
-        display: block; position: fixed; top: 1rem; left: 1rem; font-size: 1.5rem;
-        background: var(--dunkelblau); color: white; border: none; padding: .5rem .8rem; border-radius: 8px; cursor: pointer; z-index: 1100;
-      }
-      .content { padding: 5rem 1.5rem 2rem; }
-    }
+    /* Darkmode (optional) */
+    body.dark{ background:#0d0d0d; color:#f5f5f5; }
+    body.dark .sidebar{ background:#1a1a1a; color:#f5f5f5; }
+    body.dark .menu button, body.dark .logout{ color:#f5f5f5; }
+    body.dark .menu button:hover, body.dark .logout:hover{ background:var(--hoverblau); color:#000; }
+    body.dark .menu button.active{ background:var(--blassblau); color:var(--dunkelblau); }
+    body.dark .menu button.active::before{ background:var(--dunkelblau); }
+    body.dark .profile h2, body.dark .profile p{ color:#f5f5f5; }
 
-    /* Darkmode Grundzüge (optional) */
-    body.dark { background: #0d0d0d; color: #f5f5f5; }
-    body.dark .sidebar { background: #1a1a1a; color: #f5f5f5; }
-    body.dark .menu button, body.dark .logout { color: #f5f5f5; }
-    body.dark .menu button:hover, body.dark .logout:hover { background: var(--hoverblau); color: #000; }
-    body.dark .menu button.active { background: var(--blassblau); color: var(--dunkelblau); }
-    body.dark .menu button.active::before { background: var(--dunkelblau); }
-    body.dark .profile h2, body.dark .profile p { color: #f5f5f5; }
+    /* ==== Benutzer-Seite (komplett gekapselt) ==== */
+    :where(.user-page){ color:var(--text); }
+    :where(.user-page) .page-title{ color:var(--softrot); margin:0 0 1rem; }
 
-    /* ---------------- Benutzerseite (gekapselt) ---------------- */
-    :where(.user-page) { color: var(--text); }
-    :where(.user-page) .page-title { color: var(--softrot); margin: 0 0 1rem; }
-
-    :where(.user-page) .settings-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; }
-    @media (max-width: 980px){ :where(.user-page) .settings-grid{ grid-template-columns: 1fr } }
+    :where(.user-page) .settings-grid{ display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; align-items:start; }
+    @media (max-width:980px){ :where(.user-page) .settings-grid{ grid-template-columns:1fr; } }
 
     :where(.user-page) .card{
-      background:#fff; padding:1.25rem; border-radius:12px;
-      box-shadow:0 2px 6px rgba(0,0,0,.08); margin-bottom:1.5rem;
+      background:#fff; padding:1.25rem; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,.08); margin-bottom:1.5rem;
     }
-    :where(.user-page) .card h3{ color: var(--dunkelblau); margin:0 0 1rem; font-size:1.1rem }
+    :where(.user-page) .card h3{ color:var(--dunkelblau); margin:0 0 1rem; font-size:1.1rem; }
 
     /* Tabelle */
-    :where(.user-page) .user-table{ width:100%; border-collapse:collapse; font-size:.95rem; table-layout:fixed }
+    :where(.user-page) .user-table{ width:100%; border-collapse:collapse; font-size:.95rem; table-layout:fixed; }
     :where(.user-page) .user-table th, :where(.user-page) .user-table td{
       border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle; text-align:left;
     }
     :where(.user-page) .user-table th{ background:var(--blassblau); }
 
-    :where(.user-page) .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-    :where(.user-page) .td-name b{ font-weight:700 }
-    :where(.user-page) .td-roles{ white-space:normal }
+    :where(.user-page) .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    :where(.user-page) .td-name b{ font-weight:700; }
+    :where(.user-page) .td-roles{ white-space:normal; }
 
     /* Rollen-Badges */
-    :where(.user-page) .role-badges{ display:flex; gap:.35rem; flex-wrap:wrap }
-    :where(.user-page) .role-badge{ display:inline-block; padding:.18rem .55rem; border-radius:999px; font-size:.78rem; border:1px solid transparent; white-space:nowrap }
-    :where(.user-page) .role-admin{ background:#ffe8e6; border-color:#ffcdc6; color:#9e1b1b }
-    :where(.user-page) .role-gl{    background:#fff6db; border-color:#fde8a6; color:#8a6b00 }
-    :where(.user-page) .role-hf{    background:#e8f6ec; border-color:#c7efd5; color:#0f6b2b }
-    :where(.user-page) .role-an{    background:#e6f0ff; border-color:#cfe1ff; color:#0d3b8a }
+    :where(.user-page) .role-badges{ display:flex; gap:.35rem; flex-wrap:wrap; }
+    :where(.user-page) .role-badge{ display:inline-block; padding:.18rem .55rem; border-radius:999px; font-size:.78rem; border:1px solid transparent; white-space:nowrap; }
+    :where(.user-page) .role-admin{ background:#ffe8e6; border-color:#ffcdc6; color:#9e1b1b; } /* rot */
+    :where(.user-page) .role-gl{    background:#fff6db; border-color:#fde8a6; color:#8a6b00; } /* gelb */
+    :where(.user-page) .role-hf{    background:#e8f6ec; border-color:#c7efd5; color:#0f6b2b; } /* grün */
+    :where(.user-page) .role-an{    background:#e6f0ff; border-color:#cfe1ff; color:#0d3b8a; } /* blau */
 
     /* Actions */
-    :where(.user-page) .actions-cell{ position:relative; width:44px; text-align:right }
+    :where(.user-page) .actions-cell{ position:relative; width:44px; text-align:right; }
     :where(.user-page) .kebab-btn{
-      background:transparent; border:none; cursor:pointer; padding:.3rem .4rem;
-      font-size:1.2rem; color:#374151; border-radius:8px; display:inline-flex; line-height:1;
+      background:transparent; border:none; cursor:pointer; padding:.3rem .4rem; font-size:1.2rem; color:#374151; border-radius:8px; display:inline-flex; line-height:1;
     }
-    :where(.user-page) .kebab-btn:focus-visible{ outline:2px solid var(--dunkelblau) }
+    :where(.user-page) .kebab-btn:focus-visible{ outline:2px solid var(--dunkelblau); }
     :where(.user-page) .kebab-menu{
       position:absolute; right:0; top:calc(100% + 6px); min-width:200px; z-index:9999;
-      background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,.12);
-      display:none; overflow:hidden;
+      background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,.12); display:none; overflow:hidden;
     }
     :where(.user-page) .kebab-menu button{
-      width:100%; background:transparent; border:none; text-align:left; cursor:pointer;
-      padding:.7rem .9rem; font-size:.92rem; display:flex; gap:.5rem; align-items:center
+      width:100%; background:transparent; border:none; text-align:left; cursor:pointer; padding:.7rem .9rem; font-size:.92rem; display:flex; gap:.5rem; align-items:center;
     }
-    :where(.user-page) .kebab-menu button:hover{ background:#f8fafc }
+    :where(.user-page) .kebab-menu button:hover{ background:#f8fafc; }
 
-    /* Floating fields */
-    :where(.user-page) .form-group.floating{ position:relative; margin-bottom:1.25rem }
+    /* Floating Fields */
+    :where(.user-page) .form-group.floating{ position:relative; margin-bottom:1.25rem; }
     :where(.user-page) .form-group.floating input{
-      width:100%; padding:1rem .75rem .3rem .75rem; border:1px solid #d1d5db; border-radius:10px; background:#fff; font-size:1rem; transition:border-color .15s ease; min-height:44px;
+      width:100%; padding:1rem .75rem .3rem; border:1px solid #d1d5db; border-radius:10px; background:#fff; font-size:1rem; min-height:44px; transition:border-color .15s;
     }
-    :where(.user-page) .form-group.floating input:focus{ outline:none; border-color:var(--dunkelblau) }
+    :where(.user-page) .form-group.floating input:focus{ outline:none; border-color:var(--dunkelblau); }
     :where(.user-page) .form-group.floating label{
       position:absolute; top:50%; left:.75rem; transform:translateY(-50%); color:#6b7280; font-size:.95rem; transition:all .15s; pointer-events:none; background:#fff; padding:0 .25rem;
     }
@@ -160,60 +139,51 @@
     :where(.user-page) .form-group.floating input:not(:placeholder-shown) + label{
       top:0; left:.6rem; font-size:.78rem; color:var(--dunkelblau);
     }
-    :where(.user-page) .form-group.floating input[readonly]{ background:#f9fafb; color:#6b7280 }
+    :where(.user-page) .form-group.floating input[readonly]{ background:#f9fafb; color:#6b7280; }
 
     /* Buttons */
-    :where(.user-page) .btn{ padding:.6rem .9rem; border:none; border-radius:10px; cursor:pointer; font-size:.95rem; min-height:44px }
-    :where(.user-page) .btn-primary{ background:var(--dunkelblau); color:#fff }
-    :where(.user-page) .btn-secondary{ background:#eef2f7 }
-    :where(.user-page) .btn-danger{ background:#c62828; color:#fff }
+    :where(.user-page) .btn{ padding:.6rem .9rem; border:none; border-radius:10px; cursor:pointer; font-size:.95rem; min-height:44px; }
+    :where(.user-page) .btn-primary{ background:var(--dunkelblau); color:#fff; }
+    :where(.user-page) .btn-secondary{ background:#eef2f7; }
+    :where(.user-page) .btn-danger{ background:#c62828; color:#fff; }
 
     /* Editor */
-    :where(.user-page) #editPanelOuter{ display:none }
-    :where(.user-page) #editPanel .editor-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.25rem; align-items:start; margin-bottom:.25rem }
-    @media (max-width:900px){ :where(.user-page) #editPanel .editor-row{ grid-template-columns:1fr 1fr } }
-    @media (max-width:640px){ :where(.user-page) #editPanel .editor-row{ grid-template-columns:1fr } }
+    :where(.user-page) #editPanelOuter{ display:none; }
+    :where(.user-page) #editPanel .editor-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.25rem; align-items:start; margin-bottom:.25rem; }
+    @media (max-width:900px){ :where(.user-page) #editPanel .editor-row{ grid-template-columns:1fr 1fr; } }
+    @media (max-width:640px){ :where(.user-page) #editPanel .editor-row{ grid-template-columns:1fr; } }
 
-    :where(.user-page) #rolesSection{ margin-top:1rem }
-    :where(.user-page) #rolesSection h4{ margin:.2rem 0 .8rem; font-size:1.05rem; color:var(--dunkelblau); font-weight:700 }
-    :where(.user-page) .roles-grid{ display:flex; gap:1rem 1.25rem; flex-wrap:wrap }
-    :where(.user-page) .role-check{ display:flex; align-items:center; gap:.6rem; padding:.45rem .6rem; border-radius:12px; border:1px solid #e5e7eb; background:#fff }
-    :where(.user-page) .role-check input[type="checkbox"]{ width:24px; height:24px; accent-color: var(--dunkelblau) }
-    :where(.user-page) .role-check .role-badge{ font-size:.82rem }
+    :where(.user-page) #rolesSection{ margin-top:1rem; }
+    :where(.user-page) #rolesSection h4{ margin:.2rem 0 .8rem; font-size:1.05rem; color:var(--dunkelblau); font-weight:700; }
+    :where(.user-page) .roles-grid{ display:flex; gap:1rem 1.25rem; flex-wrap:wrap; }
+    :where(.user-page) .role-check{ display:flex; align-items:center; gap:.6rem; padding:.45rem .6rem; border-radius:12px; border:1px solid #e5e7eb; background:#fff; }
+    :where(.user-page) .role-check input[type="checkbox"]{ width:24px; height:24px; accent-color: var(--dunkelblau); }
+    :where(.user-page) .role-check .role-badge{ font-size:.82rem; }
 
-    :where(.user-page) .editor-actions{ display:flex; gap:.8rem; margin-top:1.1rem }
-    :where(.user-page) .editor-actions .btn{ width:auto }
+    :where(.user-page) .editor-actions{ display:flex; gap:.8rem; margin-top:1.1rem; }
+    :where(.user-page) .editor-actions .btn{ width:auto; }
 
-    /* --- Mobile Kartenlayout + Kebab oben neben Name --- */
+    /* Mobile: Kartenlayout + 3 Punkte oben rechts (neben Name) */
     @media (max-width:720px){
-      :where(.user-page) .user-table thead{ display:none }
-      :where(.user-page) .user-table, 
-      :where(.user-page) .user-table tbody, 
-      :where(.user-page) .user-table tr, 
-      :where(.user-page) .user-table td{ display:block; width:100% }
+      :where(.user-page) .user-table thead{ display:none; }
+      :where(.user-page) .user-table, :where(.user-page) .user-table tbody, :where(.user-page) .user-table tr, :where(.user-page) .user-table td{ display:block; width:100%; }
       :where(.user-page) .user-table tr{
-        position: relative; /* für Kebab oben rechts */
-        background:#fff; border:1px solid #e5e7eb; border-radius:12px;
-        padding:.6rem .6rem .2rem; margin-bottom:.8rem; box-shadow:0 1px 4px rgba(0,0,0,.06);
+        position:relative; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:.6rem .6rem .2rem; margin-bottom:.8rem; box-shadow:0 1px 4px rgba(0,0,0,.06);
       }
-      :where(.user-page) .user-table td{ border:none; padding:.35rem .25rem }
-      /* nur zeigen, wenn Label vorhanden → verhindert „zwei Punkte“ bei Actions */
+      :where(.user-page) .user-table td{ border:none; padding:.35rem .25rem; }
       :where(.user-page) .user-table td[data-label]:not([data-label=""])::before{
         content:attr(data-label) ": "; font-weight:600; color:#6b7280; display:inline-block; min-width:120px;
       }
-      /* E-Mail unter Label, E-Mail selbst ohne Umbruch */
-      :where(.user-page) .user-table td[data-label="E-Mail-Adresse"]::before{ display:block; margin-bottom:.15rem }
-      :where(.user-page) .user-table td[data-label="E-Mail-Adresse"] .email-val{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block }
-      /* Kebab oben rechts an der Karte (neben dem Namen-Bereich) */
-      :where(.user-page) .actions-cell{
-        position:absolute; top:.4rem; right:.4rem; width:auto; padding:0; text-align:right;
-      }
+      /* E-Mail unter Label, Wert ohne Umbruch */
+      :where(.user-page) .user-table td[data-label="E-Mail-Adresse"]::before{ display:block; margin-bottom:.15rem; }
+      :where(.user-page) .user-table td[data-label="E-Mail-Adresse"] .email-val{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+      /* 3 Punkte oben rechts */
+      :where(.user-page) .actions-cell{ position:absolute; top:.35rem; right:.35rem; width:auto; padding:0; text-align:right; }
       :where(.user-page) .actions-cell::before{ content:""; display:none !important; }
-      /* Werte sonst dürfen umbrechen */
-      :where(.user-page) .nowrap{ white-space:normal; overflow:visible; text-overflow:clip }
+      :where(.user-page) .nowrap{ white-space:normal; overflow:visible; text-overflow:clip; }
     }
 
-    /* Toast (unten mittig, viewport-fixiert) */
+    /* Toast (unten mittig) */
     :where(.user-page) #toast{
       position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
       background:#111827; color:#e5e7eb; border:1px solid #243244; padding:.8rem 1rem; border-radius:12px;
@@ -221,20 +191,16 @@
     }
 
     /* Modal */
-    :where(.user-page) .modal-backdrop{
-      position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:10000;
-    }
-    :where(.user-page) .modal{
-      position:fixed; inset:0; display:none; z-index:10001; align-items:center; justify-content:center; padding:1rem;
-    }
+    :where(.user-page) .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:10000; }
+    :where(.user-page) .modal{ position:fixed; inset:0; display:none; z-index:10001; align-items:center; justify-content:center; padding:1rem; }
     :where(.user-page) .modal .modal-card{
       background:#fff; color:#111; border-radius:14px; width:min(520px, 96vw);
       box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem; border:1px solid #e5e7eb;
     }
-    :where(.user-page) .modal h4{ margin:.25rem 0 .5rem; font-size:1.05rem; color:#111 }
-    :where(.user-page) .modal p{ margin:.35rem 0 .9rem; color:#374151 }
-    :where(.user-page) .modal .modal-actions{ display:flex; gap:.6rem; justify-content:flex-end }
-    :where(.user-page) .modal .btn{ min-width:120px }
+    :where(.user-page) .modal .modal-actions{ display:flex; gap:.6rem; justify-content:flex-end; }
+    :where(.user-page) .modal h4{ margin:.25rem 0 .5rem; font-size:1.05rem; color:#111; }
+    :where(.user-page) .modal p{ margin:.35rem 0 .9rem; color:#374151; }
+    :where(.user-page) .modal .btn{ min-width:120px; }
   </style>
 </head>
 <body>
@@ -245,7 +211,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="profile">
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg" />
-      <h2 id="userName">Benutzer</h2>
+      <h2 id="sidebarUserName">Benutzer</h2>
       <p>Teilnehmer</p>
     </div>
     <nav class="menu">
@@ -262,7 +228,7 @@
 
   <!-- Content -->
   <main class="content" id="content">
-    <!-- Benutzerverwaltung (gekapselt) -->
+    <!-- ===== views/benutzer.html (Fragment) – BEGIN ===== -->
     <div class="user-page">
       <h2 class="page-title">Benutzerverwaltung</h2>
 
@@ -308,7 +274,7 @@
         </div>
       </div>
 
-      <!-- Editor (separat) -->
+      <!-- Editor separat -->
       <div id="editPanelOuter" class="card" style="display:none;">
         <div id="editPanel"></div>
       </div>
@@ -329,20 +295,16 @@
         </div>
       </div>
     </div>
+    <!-- ===== views/benutzer.html – END ===== -->
   </main>
 
-  <!-- JS (ohne Firebase-Abhängigkeit) -->
   <script type="module">
-    // Shell: Mobile Sidebar Toggle (standalone)
+    /* Shell: Mobile Toggle – nur für diese Seite */
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
-    if (menuToggle) {
-      menuToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("active");
-      });
-    }
+    if (menuToggle) menuToggle.addEventListener("click", ()=> sidebar.classList.toggle("active"));
 
-    // ---------------- Benutzerverwaltung ----------------
+    /* ---------------- Benutzerverwaltung ---------------- */
     const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
 
     const userList = document.getElementById("userList");
@@ -443,16 +405,13 @@
     }
 
     function updateNavigationDisplayName(newName){
-      const ids = ["navUserName","sidebarUserName"];
-      ids.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = newName || "Ohne Namen"; });
-      document.querySelectorAll("[data-user-name]").forEach(el => el.textContent = newName || "Ohne Namen");
+      document.querySelectorAll("#navUserName, #sidebarUserName, [data-user-name]").forEach(el=>{
+        el.textContent = newName || "Ohne Namen";
+      });
     }
 
     function openEditor(user){
-      const initial = {
-        name: user.displayName || "",
-        roles: extractRoles(user)
-      };
+      const initial = { name: user.displayName || "", roles: extractRoles(user) };
 
       editPanelOuter.style.display = "block";
       editPanel.innerHTML = `
@@ -594,7 +553,7 @@
         msg.style.color = "red"; msg.textContent = "❌ E-Mail und Passwort sind erforderlich.";
         return;
       }
-      msg.textContent = ""; // Bestätigung via Toast
+      msg.textContent = ""; // Toast statt Inline
 
       try{
         const res = await fetch(API_BASE + "/createUser", {
