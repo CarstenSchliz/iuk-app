@@ -34,7 +34,7 @@
 
     .card{
       background:#fff; padding:1.25rem; border-radius:12px;
-      box-shadow:0 2px 6px rgba(0,0,0,.08); margin-bottom:1.5rem;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08); margin-bottom:1.5rem;
     }
     .card h3{ color:var(--dunkelblau); margin:0 0 1rem; font-size:1.1rem }
 
@@ -59,14 +59,20 @@
     .role-an{    background:var(--role-an-bg);    border-color: var(--role-an-bd);    color: var(--role-an-fg) }
 
     .actions-cell{ position:relative; width:44px; text-align:right }
-    .kebab-btn{ background:transparent; border:none; cursor:pointer; padding:.3rem .4rem; font-size:1.2rem; color:#374151; border-radius:8px }
+    .kebab-btn{
+      background:transparent; border:none; cursor:pointer; padding:.3rem .4rem;
+      font-size:1.2rem; color:#374151; border-radius:8px; display:inline-flex; line-height:1; vertical-align:middle;
+    }
     .kebab-btn:focus-visible{ outline:2px solid var(--dunkelblau) }
     .kebab-menu{
-      position:absolute; right:0; top:calc(100% + 6px); min-width:180px; z-index:20;
+      position:absolute; right:0; top:calc(100% + 6px); min-width:200px; z-index:20;
       background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,.12);
       display:none; overflow:hidden;
     }
-    .kebab-menu button{ width:100%; background:transparent; border:none; text-align:left; cursor:pointer; padding:.7rem .9rem; font-size:.92rem; display:flex; gap:.5rem; align-items:center }
+    .kebab-menu button{
+      width:100%; background:transparent; border:none; text-align:left; cursor:pointer;
+      padding:.7rem .9rem; font-size:.92rem; display:flex; gap:.5rem; align-items:center
+    }
     .kebab-menu button:hover{ background:#f8fafc }
 
     .form-msg{ margin-top:.5rem; font-weight:600 }
@@ -120,7 +126,10 @@
       .user-table td[data-label]::before{
         content:attr(data-label) ": "; font-weight:600; color:#6b7280; display:inline-block; min-width:120px;
       }
-      /* Mobile: Werte dürfen umbrechen */
+      /* E-Mail: Label in eigener Zeile, E-Mail darunter ohne Umbruch */
+      .user-table td[data-label="E-Mail-Adresse"]::before{ display:block; margin-bottom:.15rem }
+      .user-table td[data-label="E-Mail-Adresse"] .email-val{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block }
+      /* Werte sonst dürfen umbrechen */
       .nowrap{ white-space:normal; overflow:visible; text-overflow:clip }
       .user-table .actions-cell{ position:static; text-align:right; padding-top:.4rem }
       .kebab-menu{ position:fixed; right:.9rem; bottom:1rem; top:auto }
@@ -237,7 +246,7 @@
       }).join("") + '</div>';
     }
 
-    function buildKebab(cell, onEdit, user){
+    function buildKebab(cell, onEdit, onDelete, user){
       cell.classList.add("actions-cell");
       const btn = document.createElement("button");
       btn.className = "kebab-btn"; btn.setAttribute("aria-label","Aktionen");
@@ -245,7 +254,10 @@
 
       const menu = document.createElement("div");
       menu.className = "kebab-menu";
-      menu.innerHTML = `<button class="act-edit"><i class="bi bi-pencil"></i><span>Bearbeiten</span></button>`;
+      menu.innerHTML = `
+        <button class="act-edit"><i class="bi bi-pencil"></i><span>Bearbeiten</span></button>
+        <button class="act-del"  style="color:#b91c1c;"><i class="bi bi-trash"></i><span>Nutzer löschen</span></button>
+      `;
 
       btn.addEventListener("click", (e)=>{
         e.stopPropagation();
@@ -254,7 +266,12 @@
         menu.style.display = open ? "none":"block";
       });
       document.addEventListener("click", ()=> menu.style.display="none");
-      menu.querySelector(".act-edit").addEventListener("click", ()=>{ menu.style.display="none"; onEdit(user); });
+      menu.querySelector(".act-edit").addEventListener("click", ()=>{
+        menu.style.display="none"; onEdit(user);
+      });
+      menu.querySelector(".act-del").addEventListener("click", ()=>{
+        menu.style.display="none"; onDelete(user);
+      });
 
       cell.appendChild(btn); cell.appendChild(menu);
     }
@@ -305,7 +322,6 @@
 
         <div class="editor-actions">
           <button class="btn btn-secondary" id="edCancel"><i class="bi bi-x-lg"></i> Abbrechen</button>
-          <button class="btn btn-secondary" id="edBack"><i class="bi bi-arrow-left"></i> Zurück</button>
           <button class="btn btn-primary"  id="edSave"><i class="bi bi-save"></i> Speichern</button>
         </div>
       `;
@@ -317,13 +333,6 @@
           cb.checked = initial.roles.includes(cb.value);
         });
         showToast("Änderungen verworfen");
-      };
-
-      // Zurück = Panel schließen
-      document.getElementById("edBack").onclick = () => {
-        editPanelOuter.style.display = "none";
-        editPanel.innerHTML = "";
-        document.querySelector(".card")?.scrollIntoView({ behavior:"smooth", block:"start" });
       };
 
       // Speichern
@@ -352,6 +361,26 @@
       };
     }
 
+    // ===== Löschen =====
+    async function deleteUserFlow(user){
+      const ok = confirm(`Nutzer wirklich löschen?\n\n${user.displayName || user.email || user.uid}`);
+      if (!ok) return;
+      try{
+        const res = await fetch(API_BASE + "/deleteUser", {
+          method:"POST", headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ uid: user.uid })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
+        showToast("Nutzer gelöscht");
+        await loadUsers();
+        // Falls gerade offen: Editor schließen
+        editPanelOuter.style.display = "none"; editPanel.innerHTML = "";
+      }catch(err){
+        showToast("Fehler: " + err.message);
+      }
+    }
+
     // ===== Liste =====
     function renderUsers(users){
       userList.innerHTML = "";
@@ -363,12 +392,12 @@
 
         tr.innerHTML = `
           <td class="nowrap td-name" data-label="Anzeigename" title="${name}"><b>${name}</b></td>
-          <td class="nowrap" data-label="E-Mail-Adresse" title="${mail}">${mail}</td>
+          <td class="nowrap" data-label="E-Mail-Adresse" title="${mail}"><span class="email-val">${mail}</span></td>
           <td class="td-roles" data-label="Rollen">${rolesToBadges(roles)}</td>
           <td class="actions-cell" data-label=""></td>
         `;
         const actionsCell = tr.querySelector(".actions-cell");
-        buildKebab(actionsCell, openEditor, { uid: u.uid, displayName:name, email:mail, roles });
+        buildKebab(actionsCell, openEditor, deleteUserFlow, { uid: u.uid, displayName:name, email:mail, roles });
 
         userList.appendChild(tr);
       });
