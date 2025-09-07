@@ -11,8 +11,8 @@
     :root{
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
+      --hellblau: rgb(100,160,220);
       --hellgrau: rgb(239,238,234);
-      --blassblau: #3399ff; /* angepasst */
       --text:#1f2937;
 
       /* Rollenfarben */
@@ -36,14 +36,24 @@
       background:#fff; padding:1.25rem; border-radius:12px;
       box-shadow:0 2px 6px rgba(0,0,0,0.08); margin-bottom:1.5rem;
     }
-    .user-page .card h3{ color:var(--blassblau); margin:0 0 1rem; font-size:1.1rem }
+    .user-page .card h3{
+      color:var(--hellblau);
+      margin:0 0 1rem;
+      font-size:1.1rem;
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+    }
 
     /* Tabelle */
     .user-page .user-table{ width:100%; border-collapse:collapse; font-size:.95rem; table-layout:fixed }
     .user-page .user-table th, .user-page .user-table td{
       border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle; text-align:left;
     }
-    .user-page .user-table th{ background:var(--blassblau); color:#fff; }
+    .user-page .user-table th{
+      background:var(--dunkelblau);
+      color:#fff;
+    }
 
     .user-page .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
     .user-page .td-name b{ font-weight:700 }
@@ -106,7 +116,7 @@
     @media (max-width:640px){ .user-page #editPanel .editor-row{ grid-template-columns:1fr } }
 
     .user-page #rolesSection{ margin-top:1rem }
-    .user-page #rolesSection h4{ margin:.2rem 0 .8rem; font-size:1.05rem; color:var(--blassblau); font-weight:700 }
+    .user-page #rolesSection h4{ margin:.2rem 0 .8rem; font-size:1.05rem; color:var(--hellblau); font-weight:700 }
     .user-page .roles-grid{ display:flex; gap:1rem 1.25rem; flex-wrap:wrap }
     .user-page .role-check{ display:flex; align-items:center; gap:.6rem; padding:.45rem .6rem; border-radius:12px; border:1px solid #e5e7eb; background:#fff }
     .user-page .role-check input[type="checkbox"]{ width:24px; height:24px; accent-color: var(--dunkelblau) }
