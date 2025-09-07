@@ -106,7 +106,7 @@
       cursor:pointer;
       color:#fff;
       font-weight:bold;
-      width:260px; /* Fix: gleiche Breite */
+      width:260px;
     }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
@@ -323,127 +323,46 @@
   <!-- Toast -->
   <div id="toast"></div>
 
+  <!-- Firebase -->
   <script type="module" src="../js/firebase.js"></script>
   <script>
-    // Fortschrittsanzeige
-    function updateProgress(listId, progressId) {
-      const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
-      const checked = Array.from(list).filter(cb => cb.checked).length;
-      const percent = Math.round((checked / list.length) * 100);
-      const bar = document.getElementById(progressId);
+    const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
 
-      bar.style.width = percent + "%";
-      bar.textContent = percent > 0 ? percent + "%" : "";
-
-      if (percent === 100) {
-        bar.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--drk-gruen");
-      } else if (percent >= 75) {
-        bar.style.backgroundColor = "limegreen";
-      } else if (percent >= 50) {
-        bar.style.backgroundColor = "gold";
-      } else if (percent >= 25) {
-        bar.style.backgroundColor = "orange";
-      } else if (percent > 0) {
-        bar.style.backgroundColor = "crimson";
-      } else {
-        bar.style.backgroundColor = "#e9ecef";
-      }
-      return percent;
-    }
-
-    function showToast(message, color = "#333", icon = "") {
-      const toast = document.getElementById("toast");
-      toast.innerHTML = icon ? `<i class="bi ${icon}"></i> ${message}` : message;
-      toast.style.backgroundColor = color;
-      toast.className = "show";
-      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-    }
-
-    // Nutzer-Auswahl (Beispiel)
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
 
+    // Nutzer laden
+    async function loadUsers(){
+      try{
+        const res = await fetch(API_BASE + "/listUsers");
+        const data = await res.json();
+        userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+        (data.users || []).forEach(u=>{
+          const opt = document.createElement("option");
+          opt.value = u.uid;
+          opt.textContent = u.displayName || u.email || u.uid;
+          userSelect.appendChild(opt);
+        });
+      }catch(err){
+        console.error("❌ Fehler beim Laden:", err);
+      }
+    }
+    loadUsers();
+
+    // Auswahl
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
         const name = userSelect.options[userSelect.selectedIndex].text;
         selectedUser.textContent = "Ausgewählt: " + name;
         confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
-
-        document.querySelectorAll("input[type='checkbox']").forEach(cb => {
-          cb.checked = false;
-          cb.disabled = false;
-        });
-        document.getElementById("grundActions").style.display = "none";
-        document.getElementById("optionalActions").style.display = "none";
-        document.getElementById("rejectActions").style.display = "none";
-
-        updateProgress("grund-list", "grund-progress");
-        updateProgress("verlauf-list", "verlauf-progress");
       } else {
         selectedUser.textContent = "";
         confirmUserSection.style.display = "none";
-        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => {
-          cb.checked = false;
-          cb.disabled = true;
-        });
-        updateProgress("grund-list", "grund-progress");
-        updateProgress("verlauf-list", "verlauf-progress");
       }
     });
-
-    // Modal Logik
-    const confirmModal = document.getElementById("confirmModal");
-    const confirmModalTitle = document.getElementById("confirmModalTitle");
-    const confirmModalText = document.getElementById("confirmModalText");
-    const confirmYes = document.getElementById("confirmYes");
-    const confirmCancel = document.getElementById("confirmCancel");
-    const rejectReasonBox = document.getElementById("rejectReasonBox");
-    const rejectReasonInput = document.getElementById("rejectReason");
-    let currentAction = null;
-
-    function openModal(action, title, text, showReason) {
-      currentAction = action;
-      confirmModalTitle.textContent = title;
-      confirmModalText.textContent = text;
-      rejectReasonBox.style.display = showReason ? "block" : "none";
-      confirmModal.style.display = "flex";
-      setTimeout(() => confirmModal.classList.add("show"), 10);
-    }
-
-    function closeModal() {
-      confirmModal.classList.remove("show");
-      setTimeout(() => {
-        confirmModal.style.display = "none";
-        rejectReasonInput.value = "";
-        currentAction = null;
-      }, 300);
-    }
-
-    document.getElementById("btnApproveGrund").addEventListener("click", () => {
-      openModal("approve", "Mitglied freigeben", "Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?", false);
-    });
-    document.getElementById("btnRejectGrund").addEventListener("click", () => {
-      openModal("reject", "Mitglied ablehnen", "Soll das Mitglied wirklich für den aktiven Dienst abgelehnt werden?", true);
-    });
-    document.getElementById("btnConfirmOptional").addEventListener("click", () => {
-      openModal("optional", "Optionale Voraussetzungen bestätigen", "Soll die Bestätigung wirklich per E-Mail an das Mitglied gesendet werden?", false);
-    });
-
-    confirmYes.addEventListener("click", () => {
-      closeModal();
-      if (currentAction === "approve") {
-        showToast("Mitglied wurde für den aktiven Dienst freigegeben! (Mail gesendet)", "green", "bi-check-circle");
-      } else if (currentAction === "reject") {
-        const reason = rejectReasonInput.value;
-        showToast("Mitglied wurde abgelehnt!" + (reason ? " Grund: " + reason : "") + " (Mail gesendet)", "red", "bi-x-circle");
-      } else if (currentAction === "optional") {
-        showToast("Bestätigung für optionale Voraussetzungen wurde gesendet!", "blue", "bi-envelope");
-      }
-    });
-    confirmCancel.addEventListener("click", closeModal);
   </script>
 </body>
 </html>
