@@ -269,6 +269,7 @@
         });
       }catch(err){
         console.error("❌ Fehler beim Laden:", err);
+        showToast("Es gab einen Fehler beim Laden der Nutzer.");
       }
     }
     loadUsers();
