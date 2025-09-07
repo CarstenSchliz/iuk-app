@@ -258,7 +258,7 @@
     // Nutzer laden
     async function loadUsers(){
       try{
-        const res = await fetch(API_BASE + "/listUsers");
+        const res = await fetch(API_BASE + "/listUsers");  // Deine API-Verbindung
         const data = await res.json();
         userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
         (data.users || []).forEach(u=>{
