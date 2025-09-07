@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zugangsvoraussetzungen</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="../assets/style.css">
 
   <style>
     :root {
@@ -113,6 +112,32 @@
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
 
+    /* Dropdown Styling */
+    select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--dunkelblau);
+      background: #fff;
+      font-size: 1rem;
+      color: var(--dunkelblau);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--softrot);
+      box-shadow: 0 0 4px rgba(228,100,80,0.5);
+    }
+    @media(min-width: 769px){
+      .select-user select {
+        max-width: 300px;
+      }
+    }
+
     /* Modal Overlay */
     #confirmModal {
       display:none;
@@ -129,6 +154,7 @@
       pointer-events:auto;
     }
 
+    /* Modal Box */
     #confirmModal .modal-box {
       position: relative;
       background:#fff; padding:2rem; border-radius:12px;
@@ -143,7 +169,10 @@
       transform:scale(1);
       opacity:1;
     }
-    #confirmModal h3 { color:var(--dunkelblau); margin-top:0; margin-bottom:1rem; }
+    #confirmModal h3 {
+      color:var(--dunkelblau);
+      margin-top:0; margin-bottom:1rem;
+    }
     #confirmModal input {
       width:100%; padding:0.6rem;
       border-radius:6px; border:1px solid #ccc;
@@ -210,7 +239,9 @@
     <!-- Grundvoraussetzungen -->
     <div class="card">
       <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
-      <div class="progress"><div id="grund-progress" class="progress-bar" style="width:0%"></div></div>
+      <div class="progress">
+        <div id="grund-progress" class="progress-bar" style="width:0%"></div>
+      </div>
       <ul class="checklist" id="grund-list">
         <li><input type="checkbox" data-id="fachdienst" disabled> Fachdienstausbildung Sanitätsdienst</li>
         <li><input type="checkbox" data-id="erstgespraech" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
@@ -223,7 +254,9 @@
     <!-- Optionale Voraussetzungen -->
     <div class="card">
       <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
-      <div class="progress"><div id="verlauf-progress" class="progress-bar" style="width:0%"></div></div>
+      <div class="progress">
+        <div id="verlauf-progress" class="progress-bar" style="width:0%"></div>
+      </div>
       <ul class="checklist" id="verlauf-list">
         <li><input type="checkbox" data-id="c1" disabled> C1 (Helfer-)Führerschein</li>
         <li><input type="checkbox" data-id="gruppenfuehrer" disabled> Gruppenführer Sanitätsdienst</li>
@@ -233,42 +266,51 @@
 
   <!-- Bestätigung -->
   <div class="card" style="margin-top:1.5rem;">
-    <h3><i class="bi bi-person-check"></i> Bestätigung durch Gruppenleiter</h3>
+    <h3><i class="bi bi-person-check"></i> Bestätigung durch Ausbilder</h3>
     <div id="confirmUserSection" style="display:none;">
       <p id="confirmText"></p>
 
+      <!-- Grundvoraussetzungen -->
       <div class="checklist">
-        <label><input type="checkbox" id="chkGrund" disabled> Alle Grundvoraussetzungen erfüllt</label>
+        <label><input type="checkbox" id="chkGrund"> Alle Grundvoraussetzungen erfüllt</label>
       </div>
       <div id="grundActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-green" id="btnApproveGrund"><i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben</button>
+        <button class="btn-confirm btn-green" id="btnApproveGrund">
+          <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
+        </button>
       </div>
 
+      <!-- Optionale -->
       <div class="checklist" style="margin-top:1rem;">
-        <label><input type="checkbox" id="chkOptional" disabled> Optionale Voraussetzungen erfüllt</label>
+        <label><input type="checkbox" id="chkOptional"> Optionale Voraussetzungen erfüllt</label>
       </div>
       <div id="optionalActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-blue" id="btnConfirmOptional"><i class="bi bi-envelope"></i> Bestätigung per Mail senden</button>
+        <button class="btn-confirm btn-blue" id="btnConfirmOptional">
+          <i class="bi bi-envelope"></i> Bestätigung per Mail senden
+        </button>
       </div>
 
       <hr style="margin:1rem 0;">
 
+      <!-- Ablehnung -->
       <div class="checklist" style="margin-top:1rem;">
-        <label><input type="checkbox" id="chkReject" disabled> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
+        <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
       <div id="rejectActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-red" id="btnRejectGrund"><i class="bi bi-x-circle"></i> Mitglied ablehnen</button>
+        <button class="btn-confirm btn-red" id="btnRejectGrund">
+          <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Modal -->
+  <!-- Popup -->
   <div id="confirmModal">
     <div class="modal-box">
       <h3 id="confirmModalTitle"></h3>
       <p id="confirmModalText"></p>
       <div id="rejectReasonBox" style="display:none; text-align:left; margin-bottom:1rem;">
-        <label for="rejectReason">Grund für Ablehnung (optional):</label>
+        <label for="rejectReason" style="font-size:0.9rem; color:#555;">Grund für Ablehnung (optional):</label>
         <input type="text" id="rejectReason" placeholder="Begründung eingeben...">
       </div>
       <div class="modal-actions">
@@ -278,13 +320,12 @@
     </div>
   </div>
 
+  <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- Firebase & Script -->
-  <script type="module">
-    import { auth, db } from "../js/firebase.js";
-    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+  <!-- Firebase -->
+  <script type="module" src="../js/firebase.js"></script>
+  <script>
     const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
 
     const userSelect = document.getElementById("userSelect");
@@ -292,115 +333,36 @@
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
 
-    const grundList = document.getElementById("grund-list");
-    const verlaufList = document.getElementById("verlauf-list");
-    const chkGrund = document.getElementById("chkGrund");
-    const chkOptional = document.getElementById("chkOptional");
-    const chkReject = document.getElementById("chkReject");
-
-    let currentUser = null;
-    let selectedUid = null;
-    let currentUserRoles = [];
-
-    function showToast(message, color="#333") {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.style.backgroundColor = color;
-      toast.className = "show";
-      setTimeout(() => toast.className = toast.className.replace("show",""), 3000);
-    }
-
-    function updateProgress(listId, progressId) {
-      const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
-      const checked = Array.from(list).filter(cb => cb.checked).length;
-      const percent = Math.round((checked / list.length) * 100);
-      const bar = document.getElementById(progressId);
-      bar.style.width = percent + "%";
-      bar.textContent = percent>0 ? percent+"%" : "";
-      bar.style.backgroundColor = percent===100 ? "green" : percent>=50 ? "gold" : "crimson";
-      return percent;
-    }
-
-    async function saveData() {
-      if (!selectedUid) return;
-      const grund = {};
-      grundList.querySelectorAll("input").forEach(cb => grund[cb.dataset.id] = cb.checked);
-      const optional = {};
-      verlaufList.querySelectorAll("input").forEach(cb => optional[cb.dataset.id] = cb.checked);
-      const data = {
-        grundvoraussetzungen: { ...grund, progress: updateProgress("grund-list","grund-progress") },
-        optionale: { ...optional, progress: updateProgress("verlauf-list","verlauf-progress") },
-        bestaetigung: {
-          grundErfuellt: chkGrund.checked,
-          optionalErfuellt: chkOptional.checked,
-          abgelehnt: chkReject.checked
-        },
-        meta: {
-          lastUpdated: new Date().toISOString(),
-          updatedBy: currentUser?.uid || null
-        }
-      };
-      await setDoc(doc(db,"zugangsvoraussetzungen",selectedUid), data, { merge:true });
-    }
-
-    async function loadData(uid) {
-      const snap = await getDoc(doc(db,"zugangsvoraussetzungen",uid));
-      if (!snap.exists()) return;
-      const data = snap.data();
-      grundList.querySelectorAll("input").forEach(cb => cb.checked = !!data.grundvoraussetzungen?.[cb.dataset.id]);
-      verlaufList.querySelectorAll("input").forEach(cb => cb.checked = !!data.optionale?.[cb.dataset.id]);
-      chkGrund.checked = !!data.bestaetigung?.grundErfuellt;
-      chkOptional.checked = !!data.bestaetigung?.optionalErfuellt;
-      chkReject.checked = !!data.bestaetigung?.abgelehnt;
-      updateProgress("grund-list","grund-progress");
-      updateProgress("verlauf-list","verlauf-progress");
-    }
-
-    async function loadUsers() {
-      try {
-        const res = await fetch(API_BASE+"/listUsers");
+    // Nutzer laden
+    async function loadUsers(){
+      try{
+        const res = await fetch(API_BASE + "/listUsers");
         const data = await res.json();
-        const users = (data.users||[]).sort((a,b)=>(a.displayName||"").localeCompare(b.displayName||""));
-        userSelect.innerHTML = '<option value="">-- bitte wählen --</option>';
-        users.forEach(u=>{
-          const opt=document.createElement("option");
-          opt.value=u.uid; opt.textContent=u.displayName||u.email||u.uid;
+        userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+        (data.users || []).forEach(u=>{
+          const opt = document.createElement("option");
+          opt.value = u.uid;
+          opt.textContent = u.displayName || u.email || u.uid;
           userSelect.appendChild(opt);
         });
-      } catch(err) {
-        console.error(err); showToast("Fehler beim Laden der Nutzer","red");
+      }catch(err){
+        console.error("❌ Fehler beim Laden:", err);
       }
     }
+    loadUsers();
 
-    userSelect.addEventListener("change", async ()=>{
-      selectedUid = userSelect.value;
-      if (selectedUid) {
+    // Auswahl
+    userSelect.addEventListener("change", () => {
+      if (userSelect.value) {
         const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: "+name;
-        confirmText.textContent = "Bestätigung für: "+name;
-        confirmUserSection.style.display="block";
-        await loadData(selectedUid);
+        selectedUser.textContent = "Ausgewählt: " + name;
+        confirmText.textContent = "Bestätigung für: " + name;
+        confirmUserSection.style.display = "block";
       } else {
-        confirmUserSection.style.display="none"; selectedUser.textContent="";
+        selectedUser.textContent = "";
+        confirmUserSection.style.display = "none";
       }
     });
-
-    [...grundList.querySelectorAll("input"),...verlaufList.querySelectorAll("input"),
-     chkGrund,chkOptional,chkReject].forEach(cb=>{
-      cb.addEventListener("change", ()=> saveData());
-    });
-
-    auth.onAuthStateChanged(async u=>{
-      currentUser=u;
-      if (!u) return;
-      await loadUsers();
-      const token=await u.getIdTokenResult();
-      currentUserRoles=token.claims.roles||[];
-      const allowed=currentUserRoles.includes("admin")||currentUserRoles.includes("gruppenleiter");
-      document.querySelectorAll("input[type=checkbox]").forEach(cb=>cb.disabled=!allowed);
-      document.querySelectorAll(".btn-confirm").forEach(btn=>btn.style.display=allowed?"inline-flex":"none");
-    });
-
   </script>
 </body>
 </html>
