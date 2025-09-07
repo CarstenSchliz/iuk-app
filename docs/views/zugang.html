@@ -27,9 +27,7 @@
       gap: 1.5rem;
     }
     @media(max-width: 768px){
-      .zugang-grid {
-        grid-template-columns: 1fr;
-      }
+      .zugang-grid { grid-template-columns: 1fr; }
     }
 
     .card {
@@ -48,11 +46,7 @@
       gap:0.5rem;
     }
 
-    .checklist {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+    .checklist { list-style: none; padding: 0; margin: 0; }
     .checklist li {
       margin: 0.6rem 0;
       display:flex;
@@ -61,9 +55,7 @@
       font-size:1rem;
     }
     .checklist input[type="checkbox"] {
-      width: 1.2rem;
-      height: 1.2rem;
-      cursor: pointer;
+      width: 1.2rem; height: 1.2rem; cursor: pointer;
     }
 
     .progress {
@@ -80,14 +72,10 @@
       font-size: 0.85rem;
       font-weight: bold;
       transition: width 0.3s ease, background-color 0.3s ease;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:flex; align-items:center; justify-content:center;
     }
 
-    .select-user {
-      margin-bottom: 1rem;
-    }
+    .select-user { margin-bottom: 1rem; }
 
     /* Ursprüngliches modernes Dropdown-Design */
     select {
@@ -110,9 +98,7 @@
       box-shadow: 0 0 4px rgba(228,100,80,0.5);
     }
     @media(min-width: 769px){
-      .select-user select {
-        max-width: 300px;
-      }
+      .select-user select { max-width: 300px; }
     }
 
     .selected-user, #confirmText {
@@ -142,19 +128,12 @@
 
     /* Modal Overlay */
     #confirmModal {
-      display:none;
-      position:fixed; top:0; left:0; width:100%; height:100%;
+      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
       background:rgba(0,0,0,0.6); z-index:9999;
       align-items:center; justify-content:center;
-      opacity:0;
-      transition: opacity 0.3s ease;
-      pointer-events:none;
+      opacity:0; transition: opacity 0.3s ease; pointer-events:none;
     }
-    #confirmModal.show {
-      display:flex;
-      opacity:1;
-      pointer-events:auto;
-    }
+    #confirmModal.show { display:flex; opacity:1; pointer-events:auto; }
 
     /* Modal Box */
     #confirmModal .modal-box {
@@ -163,37 +142,20 @@
       max-width:420px; width:90%;
       box-shadow:0 4px 15px rgba(0,0,0,0.3);
       text-align:center;
-      transform:scale(0.95);
-      opacity:0;
+      transform:scale(0.95); opacity:0;
       transition: all 0.3s ease;
     }
-    #confirmModal.show .modal-box {
-      transform:scale(1);
-      opacity:1;
-    }
-    #confirmModal h3 {
-      color:var(--dunkelblau);
-      margin-top:0; margin-bottom:1rem;
-    }
+    #confirmModal.show .modal-box { transform:scale(1); opacity:1; }
+    #confirmModal h3 { color:var(--dunkelblau); margin-top:0; margin-bottom:1rem; }
     #confirmModal input {
-      width:100%; padding:0.6rem;
-      border-radius:6px; border:1px solid #ccc;
-      margin-top:0.3rem;
+      width:100%; padding:0.6rem; border-radius:6px; border:1px solid #ccc; margin-top:0.3rem;
     }
     #confirmModal .modal-actions {
-      display:flex;
-      justify-content:center;
-      gap:1rem;
-      margin-top:1rem;
+      display:flex; justify-content:center; gap:1rem; margin-top:1rem;
     }
     #confirmModal .modal-actions button {
-      padding:0.6rem 1rem;
-      border:none;
-      border-radius:8px;
-      font-size:0.95rem;
-      font-weight:bold;
-      cursor:pointer;
-      min-width:140px;
+      padding:0.6rem 1rem; border:none; border-radius:8px;
+      font-size:0.95rem; font-weight:bold; cursor:pointer; min-width:140px;
     }
     #confirmYes { background:var(--dunkelblau); color:#fff; }
     #confirmCancel { background:var(--mittelgrau); color:#fff; }
@@ -209,25 +171,20 @@
       padding: 16px;
       position: fixed;
       z-index: 2000;
-      left: 50%;
-      bottom: 30px;
+      left: 50%; bottom: 30px;
       font-size: 1rem;
       opacity: 0;
       transform: translateX(-50%);
       transition: opacity 0.5s, bottom 0.5s;
     }
-    #toast.show {
-      visibility: visible;
-      opacity: 1;
-      bottom: 50px;
-    }
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
   </style>
 </head>
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
   <!-- Nutzer-Auswahl -->
-  <div class="card" style="margin-bottom:1.5rem;">
+  <div class="card" id="userSelectCard" style="margin-bottom:1.5rem; display:none;">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
     <div class="select-user">
       <select id="userSelect">
@@ -242,14 +199,14 @@
     <div class="card">
       <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
       <div class="progress">
-        <div id="grund-progress" class="progress-bar" style="width:0%"></div>
+        <div id="grund-progress" class="progress-bar"></div>
       </div>
       <ul class="checklist" id="grund-list">
-        <li><input type="checkbox" data-id="fachdienst" disabled> Fachdienstausbildung Sanitätsdienst</li>
-        <li><input type="checkbox" data-id="erstgespraech" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
-        <li><input type="checkbox" data-id="18jahre" disabled> Vollendung 18. Lebensjahr</li>
-        <li><input type="checkbox" data-id="hospitation" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
-        <li><input type="checkbox" data-id="mitwirken" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
+        <li><input type="checkbox" data-id="fachdienst"> Fachdienstausbildung Sanitätsdienst</li>
+        <li><input type="checkbox" data-id="erstgespraech"> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
+        <li><input type="checkbox" data-id="18jahre"> Vollendung 18. Lebensjahr</li>
+        <li><input type="checkbox" data-id="hospitation"> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
+        <li><input type="checkbox" data-id="mitwirken"> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
       </ul>
     </div>
 
@@ -257,11 +214,11 @@
     <div class="card">
       <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
       <div class="progress">
-        <div id="verlauf-progress" class="progress-bar" style="width:0%"></div>
+        <div id="verlauf-progress" class="progress-bar"></div>
       </div>
       <ul class="checklist" id="verlauf-list">
-        <li><input type="checkbox" data-id="c1" disabled> C1 (Helfer-)Führerschein</li>
-        <li><input type="checkbox" data-id="gruppenfuehrer" disabled> Gruppenführer Sanitätsdienst</li>
+        <li><input type="checkbox" data-id="c1"> C1 (Helfer-)Führerschein</li>
+        <li><input type="checkbox" data-id="gruppenfuehrer"> Gruppenführer Sanitätsdienst</li>
       </ul>
     </div>
   </div>
@@ -277,9 +234,7 @@
         <label><input type="checkbox" id="chkGrund"> Alle Grundvoraussetzungen erfüllt</label>
       </div>
       <div id="grundActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-green" id="btnApproveGrund">
-          <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
-        </button>
+        <button class="btn-confirm btn-green" id="btnApproveGrund"><i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben</button>
       </div>
 
       <!-- Optionale -->
@@ -287,9 +242,7 @@
         <label><input type="checkbox" id="chkOptional"> Optionale Voraussetzungen erfüllt</label>
       </div>
       <div id="optionalActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-blue" id="btnConfirmOptional">
-          <i class="bi bi-envelope"></i> Bestätigung per Mail senden
-        </button>
+        <button class="btn-confirm btn-blue" id="btnConfirmOptional"><i class="bi bi-envelope"></i> Bestätigung per Mail senden</button>
       </div>
 
       <hr style="margin:1rem 0;">
@@ -299,9 +252,7 @@
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
       <div id="rejectActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-red" id="btnRejectGrund">
-          <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
-        </button>
+        <button class="btn-confirm btn-red" id="btnRejectGrund"><i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen</button>
       </div>
     </div>
   </div>
@@ -327,58 +278,163 @@
 
   <script type="module">
     import { auth, db } from "../js/firebase.js";
-    import { collection, getDocs, doc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { collection, getDocs, doc, getDoc, setDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+    const userSelectCard = document.getElementById("userSelectCard");
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
+    const toast = document.getElementById("toast");
 
-    let canEdit = false;
+    let currentUser = null; // eingeloggter User
+    let activeUserId = null; // gewählter User (Dropdown oder eigener)
+
+    function showToast(msg, color="#333") {
+      toast.textContent = msg;
+      toast.style.backgroundColor = color;
+      toast.className = "show";
+      setTimeout(()=> toast.className = toast.className.replace("show",""), 3000);
+    }
+
+    function updateProgress(listId, progressId) {
+      const list = document.querySelectorAll(`#${listId} input`);
+      const checked = Array.from(list).filter(cb => cb.checked).length;
+      const percent = Math.round((checked / list.length) * 100);
+      const bar = document.getElementById(progressId);
+      bar.style.width = percent + "%";
+      bar.textContent = percent ? percent+"%" : "";
+      bar.style.backgroundColor =
+        percent===100 ? "var(--drk-gruen)" :
+        percent>=75 ? "limegreen" :
+        percent>=50 ? "gold" :
+        percent>=25 ? "orange" :
+        percent>0 ? "crimson" : "#e9ecef";
+      return percent;
+    }
+
+    async function saveChecklist(userId) {
+      if (!userId) return;
+      const grund = Array.from(document.querySelectorAll("#grund-list input")).map(cb=>({id:cb.dataset.id,checked:cb.checked}));
+      const verlauf = Array.from(document.querySelectorAll("#verlauf-list input")).map(cb=>({id:cb.dataset.id,checked:cb.checked}));
+      await setDoc(doc(db,"zugang",userId), {
+        grund, verlauf,
+        grundProgress: updateProgress("grund-list","grund-progress"),
+        verlaufProgress: updateProgress("verlauf-list","verlauf-progress")
+      }, {merge:true});
+    }
+
+    async function loadChecklist(userId) {
+      const snap = await getDoc(doc(db,"zugang",userId));
+      if (!snap.exists()) return;
+      const data = snap.data();
+      if (data.grund) data.grund.forEach(c=>{
+        const el=document.querySelector(`#grund-list input[data-id='${c.id}']`);
+        if(el) el.checked=c.checked;
+      });
+      if (data.verlauf) data.verlauf.forEach(c=>{
+        const el=document.querySelector(`#verlauf-list input[data-id='${c.id}']`);
+        if(el) el.checked=c.checked;
+      });
+      updateProgress("grund-list","grund-progress");
+      updateProgress("verlauf-list","verlauf-progress");
+    }
 
     // Nutzerliste laden
     async function loadUsers() {
-      const q = query(collection(db, "users"), orderBy("displayName"));
-      const snapshot = await getDocs(q);
       userSelect.innerHTML = '<option value="">-- bitte wählen --</option>';
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        const opt = document.createElement("option");
-        opt.value = docSnap.id;
-        opt.textContent = data.displayName || data.email || docSnap.id;
+      const q = query(collection(db,"users"), orderBy("displayName"));
+      const snap = await getDocs(q);
+      snap.forEach(docSnap=>{
+        const d=docSnap.data();
+        const opt=document.createElement("option");
+        opt.value=docSnap.id;
+        opt.textContent=d.displayName||d.email||docSnap.id;
         userSelect.appendChild(opt);
       });
     }
 
-    // Rollen prüfen
-    auth.onAuthStateChanged(async (user) => {
-      if (!user) return;
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        const roles = data.roles || [];
-        canEdit = roles.includes("admin") || roles.includes("gruppenleiter");
+    // State
+    auth.onAuthStateChanged(async (user)=>{
+      if(!user) return;
+      currentUser=user;
+      const uSnap=await getDoc(doc(db,"users",user.uid));
+      let roles=[];
+      if(uSnap.exists()) roles=uSnap.data().roles||[];
+      const isGL=roles.includes("gruppenleiter")||roles.includes("admin");
+
+      if(isGL){ // Dropdown zeigen
+        userSelectCard.style.display="block";
+        await loadUsers();
+      } else { // Nur sich selbst
+        userSelectCard.style.display="none";
+        activeUserId=user.uid;
+        selectedUser.textContent="Dein Profil";
+        confirmText.textContent="Bestätigung für: "+(uSnap.data().displayName||user.email);
+        confirmUserSection.style.display="block";
+        await loadChecklist(user.uid);
       }
-      await loadUsers();
     });
 
     // Dropdown Auswahl
-    userSelect.addEventListener("change", () => {
-      if (userSelect.value) {
-        const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: " + name;
-        confirmText.textContent = "Bestätigung für: " + name;
-        confirmUserSection.style.display = "block";
-
-        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => {
-          cb.checked = false;
-          cb.disabled = !canEdit;
-        });
+    userSelect.addEventListener("change", async()=>{
+      activeUserId=userSelect.value||null;
+      if(activeUserId){
+        const name=userSelect.options[userSelect.selectedIndex].text;
+        selectedUser.textContent="Ausgewählt: "+name;
+        confirmText.textContent="Bestätigung für: "+name;
+        confirmUserSection.style.display="block";
+        await loadChecklist(activeUserId);
       } else {
-        selectedUser.textContent = "";
-        confirmUserSection.style.display = "none";
+        selectedUser.textContent=""; confirmUserSection.style.display="none";
       }
     });
+
+    // Events speichern
+    document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb=>{
+      cb.addEventListener("change",()=>saveChecklist(activeUserId));
+    });
+
+    // Modal + Bestätigung Buttons
+    const confirmModal=document.getElementById("confirmModal");
+    const confirmTitle=document.getElementById("confirmModalTitle");
+    const confirmTextModal=document.getElementById("confirmModalText");
+    const rejectBox=document.getElementById("rejectReasonBox");
+    const rejectInput=document.getElementById("rejectReason");
+    let action=null;
+
+    function openModal(a,title,text,showReason){
+      action=a;
+      confirmTitle.textContent=title;
+      confirmTextModal.textContent=text;
+      rejectBox.style.display=showReason?"block":"none";
+      confirmModal.style.display="flex";
+      setTimeout(()=>confirmModal.classList.add("show"),10);
+    }
+    function closeModal(){
+      confirmModal.classList.remove("show");
+      setTimeout(()=>confirmModal.style.display="none",300);
+    }
+
+    document.getElementById("btnApproveGrund").onclick=()=>openModal("approve","Mitglied freigeben","Soll das Mitglied wirklich freigegeben werden?",false);
+    document.getElementById("btnRejectGrund").onclick=()=>openModal("reject","Mitglied ablehnen","Soll das Mitglied wirklich abgelehnt werden?",true);
+    document.getElementById("btnConfirmOptional").onclick=()=>openModal("optional","Optionale Voraussetzungen bestätigen","Bestätigung per Mail senden?",false);
+
+    document.getElementById("confirmYes").onclick=async()=>{
+      if(!activeUserId){closeModal();return;}
+      if(action==="approve"){
+        await updateDoc(doc(db,"zugang",activeUserId),{status:"approved"});
+        showToast("Mitglied freigegeben","green");
+      } else if(action==="reject"){
+        await updateDoc(doc(db,"zugang",activeUserId),{status:"rejected",reason:rejectInput.value});
+        showToast("Mitglied abgelehnt","red");
+      } else if(action==="optional"){
+        await updateDoc(doc(db,"zugang",activeUserId),{optionalConfirmed:true});
+        showToast("Optionale Voraussetzungen bestätigt","blue");
+      }
+      closeModal();
+    };
+    document.getElementById("confirmCancel").onclick=closeModal;
   </script>
 </body>
 </html>
