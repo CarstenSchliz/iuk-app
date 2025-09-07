@@ -251,6 +251,12 @@
   </div>
 
   <script type="module">
+    // Funktion, um den Suchbegriff hervorzuheben
+function highlight(text, query) {
+  if (!query) return text;
+  const regex = new RegExp(`(${query})`, "gi");
+  return text.replace(regex, '<mark>$1</mark>');
+}
     const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
     let allUsers = [];
     let editorDirty = false;
@@ -262,6 +268,17 @@
     const editPanel = document.getElementById("editPanel");
     const toastEl = document.getElementById("toast");
     const searchInput = document.getElementById("searchInput");
+    // Suche in der gesamten Tabelle aktivieren
+searchInput.addEventListener("input", () => {
+  renderUsers(allUsers);  // Neu laden der Nutzerliste basierend auf dem Suchbegriff
+});
+    // Die Enter-Taste für die Suche aktivieren
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();  // Verhindern, dass die Seite neu geladen wird
+    renderUsers(allUsers);  // Neu laden der Nutzerliste
+  }
+});
     const clearSearch = document.getElementById("clearSearch");
 
     // Modal
@@ -450,20 +467,21 @@
       const q = searchInput.value.toLowerCase();
       userList.innerHTML = "";
 
-      const filtered = users.filter(u => {
-        const roles = extractRoles(u);
-        const roleLabels = roles.map(r => {
-          const def = ROLE_DEF.find(d => d.key === r);
-          return def ? def.label.toLowerCase() : r.toLowerCase();
-        });
-        return (
-          u.displayName?.toLowerCase().includes(q) ||
-          u.email?.toLowerCase().includes(q) ||
-          roles.some(r => r.toLowerCase().includes(q)) ||
-          roleLabels.some(lbl => lbl.includes(q))
-        );
-      });
-
+     const filtered = users.filter(u => {
+  const roles = extractRoles(u);
+  const roleLabels = roles.map(r => {
+    const def = ROLE_DEF.find(d => d.key === r);
+    return def ? def.label.toLowerCase() : r.toLowerCase();
+  });
+       
+  // Hier wird nach Name, E-Mail und Rollen gefiltert
+  return (
+    u.displayName?.toLowerCase().includes(q) ||  // Name filtern
+    u.email?.toLowerCase().includes(q) ||       // E-Mail filtern
+    roles.some(r => r.toLowerCase().includes(q)) ||  // Rollen filtern
+    roleLabels.some(lbl => lbl.includes(q))     // Labels für Rollen filtern
+  );
+});
       if (filtered.length === 0) {
         const tr = document.createElement("tr");
         tr.innerHTML = `<td colspan="4" style="text-align:center; padding:1rem; color:#6b7280;">
