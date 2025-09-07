@@ -81,6 +81,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      color: white; /* Schriftfarbe immer weiß */
     }
 
     .select-user {
@@ -141,7 +142,7 @@
     #toast {
       visibility: hidden;
       min-width: 250px;
-      background-color: #333;
+      background-color: var(--dunkelblau); /* Dunkelblauer Hintergrund für den Toast */
       color: #fff;
       text-align: center;
       border-radius: 8px;
@@ -254,8 +255,23 @@
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
 
-    // Dummy Users
-    userSelect.innerHTML += `<option value="1">Max Mustermann</option><option value="2">Erika Musterfrau</option>`;
+    // Nutzer laden
+    async function loadUsers(){
+      try{
+        const res = await fetch(API_BASE + "/listUsers");
+        const data = await res.json();
+        userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+        (data.users || []).forEach(u=>{
+          const opt = document.createElement("option");
+          opt.value = u.uid;
+          opt.textContent = u.displayName || u.email || u.uid;
+          userSelect.appendChild(opt);
+        });
+      }catch(err){
+        console.error("❌ Fehler beim Laden:", err);
+      }
+    }
+    loadUsers();
 
     // Auswahl
     userSelect.addEventListener("change", () => {
