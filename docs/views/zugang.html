@@ -53,7 +53,7 @@
       padding: 0;
       margin: 0;
     }
-    .checklist li {
+    .checklist li, .checklist label {
       margin: 0.6rem 0;
       display:flex;
       align-items:center;
@@ -107,11 +107,17 @@
       cursor:pointer;
       color:#fff;
       font-weight:bold;
-      width:260px; /* Fix: gleiche Breite */
+      width:260px;
     }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
+
+    /* Abstände als Utility-Klassen */
+    .mb-1 { margin-bottom: 1rem; }
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
 
     /* Dropdown Styling */
     select {
@@ -141,10 +147,10 @@
 
     /* Modal Overlay */
     #confirmModal {
-      display:none;
       position:fixed; top:0; left:0; width:100%; height:100%;
       background:rgba(0,0,0,0.6); z-index:9999;
       align-items:center; justify-content:center;
+      display:none;
       opacity:0;
       transition: opacity 0.3s ease;
       pointer-events:none;
@@ -226,10 +232,10 @@
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
   <!-- Nutzer-Auswahl -->
-  <div class="card" style="margin-bottom:1.5rem;">
+  <div class="card mb-1">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
     <div class="select-user">
-      <select id="userSelect">
+      <select id="userSelect" aria-label="Nutzer auswählen">
         <option value="">-- bitte wählen --</option>
         <option value="user1">Max Mustermann</option>
         <option value="user2">Anna Beispiel</option>
@@ -247,11 +253,11 @@
         <div id="grund-progress" class="progress-bar" style="width:0%"></div>
       </div>
       <ul class="checklist" id="grund-list">
-        <li><input type="checkbox" data-id="fachdienst" disabled> Fachdienstausbildung Sanitätsdienst</li>
-        <li><input type="checkbox" data-id="erstgespraech" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
-        <li><input type="checkbox" data-id="18jahre" disabled> Vollendung 18. Lebensjahr</li>
-        <li><input type="checkbox" data-id="hospitation" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
-        <li><input type="checkbox" data-id="mitwirken" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
+        <li><input type="checkbox" id="fachdienst" disabled><label for="fachdienst">Fachdienstausbildung Sanitätsdienst</label></li>
+        <li><input type="checkbox" id="erstgespraech" disabled><label for="erstgespraech">Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</label></li>
+        <li><input type="checkbox" id="18jahre" disabled><label for="18jahre">Vollendung 18. Lebensjahr</label></li>
+        <li><input type="checkbox" id="hospitation" disabled><label for="hospitation">Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</label></li>
+        <li><input type="checkbox" id="mitwirken" disabled><label for="mitwirken">min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</label></li>
       </ul>
     </div>
 
@@ -262,14 +268,14 @@
         <div id="verlauf-progress" class="progress-bar" style="width:0%"></div>
       </div>
       <ul class="checklist" id="verlauf-list">
-        <li><input type="checkbox" data-id="c1" disabled> C1 (Helfer-)Führerschein</li>
-        <li><input type="checkbox" data-id="gruppenfuehrer" disabled> Gruppenführer Sanitätsdienst</li>
+        <li><input type="checkbox" id="c1" disabled><label for="c1">C1 (Helfer-)Führerschein</label></li>
+        <li><input type="checkbox" id="gruppenfuehrer" disabled><label for="gruppenfuehrer">Gruppenführer Sanitätsdienst</label></li>
       </ul>
     </div>
   </div>
 
   <!-- Bestätigung -->
-  <div class="card" style="margin-top:1.5rem;">
+  <div class="card mt-3">
     <h3><i class="bi bi-person-check"></i> Bestätigung durch Ausbilder</h3>
     <div id="confirmUserSection" style="display:none;">
       <p id="confirmText"></p>
@@ -278,29 +284,29 @@
       <div class="checklist">
         <label><input type="checkbox" id="chkGrund"> Alle Grundvoraussetzungen erfüllt</label>
       </div>
-      <div id="grundActions" style="display:none; margin-top:0.5rem;">
+      <div id="grundActions" class="mt-1" style="display:none;">
         <button class="btn-confirm btn-green" id="btnApproveGrund">
           <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
         </button>
       </div>
 
       <!-- Optionale -->
-      <div class="checklist" style="margin-top:1rem;">
+      <div class="checklist mt-2">
         <label><input type="checkbox" id="chkOptional"> Optionale Voraussetzungen erfüllt</label>
       </div>
-      <div id="optionalActions" style="display:none; margin-top:0.5rem;">
+      <div id="optionalActions" class="mt-1" style="display:none;">
         <button class="btn-confirm btn-blue" id="btnConfirmOptional">
           <i class="bi bi-envelope"></i> Bestätigung per Mail senden
         </button>
       </div>
 
-      <hr style="margin:1rem 0;">
+      <hr class="mt-2 mb-1">
 
       <!-- Ablehnung -->
-      <div class="checklist" style="margin-top:1rem;">
+      <div class="checklist mt-2">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
-      <div id="rejectActions" style="display:none; margin-top:0.5rem;">
+      <div id="rejectActions" class="mt-1" style="display:none;">
         <button class="btn-confirm btn-red" id="btnRejectGrund">
           <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
         </button>
@@ -340,13 +346,13 @@
       if (percent === 100) {
         bar.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--drk-gruen");
       } else if (percent >= 75) {
-        bar.style.backgroundColor = "limegreen";
+        bar.style.backgroundColor = "var(--drk-gruen)";
       } else if (percent >= 50) {
-        bar.style.backgroundColor = "gold";
+        bar.style.backgroundColor = "var(--hellblau)";
       } else if (percent >= 25) {
-        bar.style.backgroundColor = "orange";
+        bar.style.backgroundColor = "var(--softrot)";
       } else if (percent > 0) {
-        bar.style.backgroundColor = "crimson";
+        bar.style.backgroundColor = "var(--mittelgrau)";
       } else {
         bar.style.backgroundColor = "#e9ecef";
       }
@@ -357,8 +363,8 @@
       const toast = document.getElementById("toast");
       toast.innerHTML = icon ? `<i class="bi ${icon}"></i> ${message}` : message;
       toast.style.backgroundColor = color;
-      toast.className = "show";
-      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+      toast.classList.add("show");
+      setTimeout(() => { toast.classList.remove("show"); }, 3000);
     }
 
     // Fortschrittsbalken Listener
@@ -382,8 +388,8 @@
         confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
 
-        // Reset beim Benutzerwechsel
-        document.querySelectorAll("input[type='checkbox']").forEach(cb => {
+        // Reset nur für Listen-Checkboxen
+        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => {
           cb.checked = false;
           cb.disabled = false;
         });
@@ -424,7 +430,6 @@
     chkReject.addEventListener("change", () => {
       rejectActions.style.display = chkReject.checked ? "block" : "none";
     });
-
     // Optionale
     const chkOptional = document.getElementById("chkOptional");
     const optionalActions = document.getElementById("optionalActions");
@@ -454,14 +459,12 @@
       confirmModalTitle.textContent = title;
       confirmModalText.textContent = text;
       rejectReasonBox.style.display = showReason ? "block" : "none";
-      confirmModal.style.display = "flex";
-      setTimeout(() => confirmModal.classList.add("show"), 10);
+      confirmModal.classList.add("show");
     }
 
     function closeModal() {
       confirmModal.classList.remove("show");
       setTimeout(() => {
-        confirmModal.style.display = "none";
         rejectReasonInput.value = "";
         currentAction = null;
       }, 300);
