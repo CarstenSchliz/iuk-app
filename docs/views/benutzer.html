@@ -117,6 +117,14 @@
     .user-page .editor-actions{ display:flex; gap:.8rem; margin-top:1.1rem }
     .user-page .editor-actions .btn{ width:auto }
 
+    /* Menüleiste fixieren */
+    .sidebar {
+      width: 250px; /* Feste Breite */
+      min-width: 250px;
+      max-width: 250px;
+      transition: none;
+    }
+
     @media (max-width:720px){
       .user-page .user-table thead{ display:none }
       .user-page .user-table, .user-page .user-table tbody, .user-page .user-table tr, .user-page .user-table td{ display:block; width:100% }
@@ -294,7 +302,7 @@
     }
 
     // Modal Confirm
-    function confirmDialog({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}){
+    function confirmDialog({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}) {
       modalTitle.textContent = title;
       modalMsg.textContent = message;
       modalOk.innerHTML = `<i class="bi bi-check2"></i> ${okText}`;
@@ -445,79 +453,78 @@
         showToast("Fehler: " + err.message);
       }
     }
+
     // Nutzerliste rendern
-   function renderUsers(users){
-  const q = searchInput.value.toLowerCase();
-  userList.innerHTML = "";
+    function renderUsers(users){
+      const q = searchInput.value.toLowerCase();
+      userList.innerHTML = "";
 
-  const filtered = users.filter(u => {
-    const roles = extractRoles(u);
-    const roleLabels = roles.map(r => {
-      const def = ROLE_DEF.find(d => d.key === r);
-      return def ? def.label.toLowerCase() : r.toLowerCase();
-    });
-    return (
-      u.displayName?.toLowerCase().includes(q) ||
-      u.email?.toLowerCase().includes(q) ||
-      roles.some(r => r.toLowerCase().includes(q)) ||
-      roleLabels.some(lbl => lbl.includes(q))
-    );
-  });
+      const filtered = users.filter(u => {
+        const roles = extractRoles(u);
+        const roleLabels = roles.map(r => {
+          const def = ROLE_DEF.find(d => d.key === r);
+          return def ? def.label.toLowerCase() : r.toLowerCase();
+        });
+        return (
+          u.displayName?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q) ||
+          roles.some(r => r.toLowerCase().includes(q)) ||
+          roleLabels.some(lbl => lbl.includes(q))
+        );
+      });
 
-  if (filtered.length === 0) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="4" style="text-align:center; padding:1rem; color:#6b7280;">
-      Keine Treffer gefunden
-    </td>`;
-    userList.appendChild(tr);
-    return;
-  }
+      if (filtered.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4" style="text-align:center; padding:1rem; color:#6b7280;">
+          Keine Treffer gefunden
+        </td>`;
+        userList.appendChild(tr);
+        return;
+      }
 
-  filtered.forEach(u => {
-    const tr = document.createElement("tr");
-    const name = u.displayName || "Ohne Namen";
-    const mail = u.email || "–";
-    const roles = extractRoles(u);
+      filtered.forEach(u => {
+        const tr = document.createElement("tr");
 
-    // Name
-    const tdName = document.createElement("td");
-    tdName.className = "nowrap td-name";
-    tdName.setAttribute("data-label","Anzeigename");
-    tdName.title = name;
-    tdName.innerHTML = `<b>${highlight(name, q)}</b>`;
-    tr.appendChild(tdName);
+        // Name
+        const tdName = document.createElement("td");
+        tdName.className = "nowrap td-name";
+        tdName.setAttribute("data-label","Anzeigename");
+        tdName.title = u.displayName || "Ohne Namen";
+        tdName.innerHTML = `<b>${highlight(u.displayName, q)}</b>`;
+        tr.appendChild(tdName);
 
-    // Mail
-    const tdMail = document.createElement("td");
-    tdMail.className = "nowrap";
-    tdMail.setAttribute("data-label","E-Mail-Adresse");
-    tdMail.title = mail;
-    tdMail.innerHTML = `<span class="email-val">${highlight(mail, q)}</span>`;
-    tr.appendChild(tdMail);
+        // Mail
+        const tdMail = document.createElement("td");
+        tdMail.className = "nowrap";
+        tdMail.setAttribute("data-label","E-Mail-Adresse");
+        tdMail.title = u.email || "–";
+        tdMail.innerHTML = `<span class="email-val">${highlight(u.email, q)}</span>`;
+        tr.appendChild(tdMail);
 
-    // Rollen
-    const tdRoles = document.createElement("td");
-    tdRoles.className = "td-roles";
-    tdRoles.setAttribute("data-label","Rollen");
-    tdRoles.innerHTML = rolesToBadges(roles);
-    if (q) {
-      tdRoles.innerHTML = tdRoles.innerHTML.replace(
-        new RegExp(q,"gi"),
-        match => `<mark>${match}</mark>`
-      );
+        // Rollen
+        const tdRoles = document.createElement("td");
+        tdRoles.className = "td-roles";
+        tdRoles.setAttribute("data-label","Rollen");
+        tdRoles.innerHTML = rolesToBadges(u.roles);
+        if (q) {
+          tdRoles.innerHTML = tdRoles.innerHTML.replace(
+            new RegExp(q,"gi"),
+            match => `<mark>${match}</mark>`
+          );
+        }
+        tr.appendChild(tdRoles);
+
+        // Aktionen
+        const tdActions = document.createElement("td");
+        tdActions.className = "actions-cell";
+        tdActions.setAttribute("data-label","");
+        buildKebab(tdActions, u);
+        tr.appendChild(tdActions);
+
+        userList.appendChild(tr);
+      });
     }
-    tr.appendChild(tdRoles);
 
-    // Aktionen
-    const tdActions = document.createElement("td");
-    tdActions.className = "actions-cell";
-    tdActions.setAttribute("data-label","");
-    buildKebab(tdActions, { uid: u.uid, displayName: name, email: mail, roles });
-    tr.appendChild(tdActions);
-
-    userList.appendChild(tr);
-  });
-}
     // Nutzer laden
     async function loadUsers(){
       userMsg.style.color = "orange"; userMsg.textContent = "⏳ Lade Nutzer...";
