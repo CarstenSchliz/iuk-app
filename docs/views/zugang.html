@@ -326,43 +326,55 @@
   <!-- Firebase -->
   <script type="module" src="../js/firebase.js"></script>
   <script>
-    const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
+ const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
 
-    const userSelect = document.getElementById("userSelect");
-    const selectedUser = document.getElementById("selectedUser");
-    const confirmUserSection = document.getElementById("confirmUserSection");
-    const confirmText = document.getElementById("confirmText");
+  const userSelect = document.getElementById("userSelect");
+  const selectedUser = document.getElementById("selectedUser");
+  const confirmUserSection = document.getElementById("confirmUserSection");
+  const confirmText = document.getElementById("confirmText");
 
-    // Nutzer laden
-    async function loadUsers(){
-      try{
-        const res = await fetch(API_BASE + "/listUsers");
-        const data = await res.json();
-        userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
-        (data.users || []).forEach(u=>{
-          const opt = document.createElement("option");
-          opt.value = u.uid;
-          opt.textContent = u.displayName || u.email || u.uid;
-          userSelect.appendChild(opt);
-        });
-      }catch(err){
-        console.error("❌ Fehler beim Laden:", err);
-      }
+  // Nutzer laden
+  async function loadUsers(){
+    try{
+      const res = await fetch(API_BASE + "/listUsers");
+      const data = await res.json();
+      userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+      (data.users || []).forEach(u=>{
+        const opt = document.createElement("option");
+        opt.value = u.uid;
+        opt.textContent = u.displayName || u.email || u.uid;
+        userSelect.appendChild(opt);
+      });
+    }catch(err){
+      console.error("❌ Fehler beim Laden:", err);
     }
-    loadUsers();
+  }
+  loadUsers();
 
-    // Auswahl
-    userSelect.addEventListener("change", () => {
-      if (userSelect.value) {
-        const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: " + name;
-        confirmText.textContent = "Bestätigung für: " + name;
-        confirmUserSection.style.display = "block";
-      } else {
-        selectedUser.textContent = "";
-        confirmUserSection.style.display = "none";
-      }
-    });
-  </script>
+  // Auswahl
+  userSelect.addEventListener("change", () => {
+    if (userSelect.value) {
+      const name = userSelect.options[userSelect.selectedIndex].text;
+      selectedUser.textContent = "Ausgewählt: " + name;
+      confirmText.textContent = "Bestätigung für: " + name;
+      confirmUserSection.style.display = "block";
+
+      // ✅ Checkboxen aktivieren
+      document.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb => {
+        cb.disabled = false;
+      });
+
+    } else {
+      selectedUser.textContent = "";
+      confirmUserSection.style.display = "none";
+
+      // ❌ Checkboxen wieder sperren und ggf. zurücksetzen
+      document.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb => {
+        cb.disabled = true;
+        cb.checked = false;
+      });
+    }
+  });
+</script>
 </body>
 </html>
