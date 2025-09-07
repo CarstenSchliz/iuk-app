@@ -30,7 +30,7 @@
     /* Sidebar */
     .sidebar {
       background: #fff;
-      width: 320px; /* etwas breiter für PC */
+      width: 340px; /* breiter für PC */
       display: flex;
       flex-direction: column;
       padding: 1.5rem 1rem;
@@ -73,9 +73,9 @@
     .menu button,
     .logout {
       position: relative;
-      display: block;       /* volle Breite */
+      display: block;
       width: 100%;
-      padding: 0.75rem 1.25rem; /* mehr Luft rechts/links */
+      padding: 0.75rem 1.25rem;
       background: transparent;
       border: none;
       font-size: 1rem;
@@ -85,9 +85,8 @@
       margin-bottom: 0.5rem;
       box-sizing: border-box;
       transition: background-color 0.25s ease, color 0.25s ease;
-      white-space: nowrap;      /* kein Umbruch */
-      overflow: hidden;
-      text-overflow: ellipsis;  /* falls doch zu lang */
+      white-space: normal;   /* kein Abschneiden */
+      overflow: visible;     /* alles sichtbar */
     }
 
     .menu button i {
@@ -155,10 +154,10 @@
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
-        left: -280px;  /* angepasst */
+        left: -300px; /* angepasst */
         top: 0;
         height: 100%;
-        width: 280px;  /* etwas breiter als vorher */
+        width: 300px; /* breiter für Handy */
         transition: left 0.3s;
         z-index: 1000;
       }
