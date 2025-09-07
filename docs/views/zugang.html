@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zugangsvoraussetzungen</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
   <style>
     :root {
       --softrot: rgb(228,100,80);
@@ -13,67 +14,222 @@
       --hellblau: rgb(100,160,220);
       --mittelgrau: rgb(180,180,180);
     }
-    body {
-      font-family: system-ui, sans-serif;
-      background:#f8f9fa;
-      padding:2rem;
+
+    .page-title {
+      color: var(--softrot);
+      margin-bottom: 1rem;
     }
-    .page-title { color: var(--softrot); margin-bottom: 1rem; }
-    .zugang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    @media(max-width: 768px){ .zugang-grid { grid-template-columns: 1fr; } }
-    .card { background: var(--card-bg, #fff); padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .card h3 { color: var(--hellblau); margin-top: 0; margin-bottom: 1rem; display:flex; align-items:center; gap:0.5rem; }
-    .checklist { list-style: none; padding: 0; margin: 0; }
-    .checklist li, .checklist label { margin: 0.6rem 0; display:flex; align-items:center; gap:0.5rem; font-size:1rem; }
-    .checklist input[type="checkbox"] { width: 1.2rem; height: 1.2rem; cursor: pointer; }
-    .progress { height: 22px; background-color: #e9ecef; border-radius: 12px; overflow: hidden; margin-bottom: 1rem; }
-    .progress-bar { height: 100%; text-align: center; color: #fff; font-size: 0.85rem; font-weight: bold; transition: width 0.3s ease, background-color 0.3s ease; display:flex; align-items:center; justify-content:center; }
-    .select-user { margin-bottom: 1rem; }
-    .selected-user, #confirmText { font-weight: bold; color: var(--dunkelblau); font-size: 1.05rem; margin-top: 1rem; }
-    .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
+
+    .zugang-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media(max-width: 768px){
+      .zugang-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg, #fff);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      color: var(--hellblau);
+      margin-top: 0;
+      margin-bottom: 1rem;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .checklist li {
+      margin: 0.6rem 0;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      font-size:1rem;
+    }
+    .checklist input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      cursor: pointer;
+    }
+
+    .progress {
+      height: 22px;
+      background-color: #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .progress-bar {
+      height: 100%;
+      text-align: center;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: width 0.3s ease, background-color 0.3s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .select-user {
+      margin-bottom: 1rem;
+    }
+    .selected-user, #confirmText {
+      font-weight: bold;
+      color: var(--dunkelblau);
+      font-size: 1.05rem;
+      margin-top: 1rem;
+    }
+
+    .btn-confirm {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:0.5rem;
+      margin:0.5rem 0.5rem 0 0;
+      padding:0.6rem 1rem;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      color:#fff;
+      font-weight:bold;
+      width:260px;
+    }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
-    /* Abstände */
-    .mb-1 { margin-bottom: 1rem; }
-    .mt-1 { margin-top: 0.5rem; }
-    .mt-2 { margin-top: 1rem; }
-    .mt-3 { margin-top: 1.5rem; }
-    /* Dropdown */
-    select { width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--dunkelblau); background: #fff; font-size: 1rem; color: var(--dunkelblau); cursor: pointer; appearance: none;
+
+    /* Dropdown Styling */
+    select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--dunkelblau);
+      background: #fff;
+      font-size: 1rem;
+      color: var(--dunkelblau);
+      cursor: pointer;
+      appearance: none;
       background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-      background-repeat: no-repeat; background-position: right 10px center;
+      background-repeat: no-repeat;
+      background-position: right 10px center;
     }
-    select:focus { outline: none; border-color: var(--softrot); box-shadow: 0 0 4px rgba(228,100,80,0.5); }
-    @media(min-width: 769px){ .select-user select { max-width: 300px; } }
-    /* Modal */
-    #confirmModal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; display:none; opacity:0; transition: opacity 0.3s ease; pointer-events:none; }
-    #confirmModal.show { display:flex; opacity:1; pointer-events:auto; }
-    #confirmModal .modal-box { position: relative; background:#fff; padding:2rem; border-radius:12px; max-width:420px; width:90%; box-shadow:0 4px 15px rgba(0,0,0,0.3); text-align:center; transform:scale(0.95); opacity:0; transition: all 0.3s ease; }
-    #confirmModal.show .modal-box { transform:scale(1); opacity:1; }
-    #confirmModal h3 { color:var(--dunkelblau); margin-top:0; margin-bottom:1rem; }
-    #confirmModal input { width:100%; padding:0.6rem; border-radius:6px; border:1px solid #ccc; margin-top:0.3rem; }
-    #confirmModal .modal-actions { display:flex; justify-content:center; gap:1rem; margin-top:1rem; }
-    #confirmModal .modal-actions button { padding:0.6rem 1rem; border:none; border-radius:8px; font-size:0.95rem; font-weight:bold; cursor:pointer; min-width:140px; }
+    select:focus {
+      outline: none;
+      border-color: var(--softrot);
+      box-shadow: 0 0 4px rgba(228,100,80,0.5);
+    }
+    @media(min-width: 769px){
+      .select-user select {
+        max-width: 300px;
+      }
+    }
+
+    /* Modal Overlay */
+    #confirmModal {
+      display:none;
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.6); z-index:9999;
+      align-items:center; justify-content:center;
+      opacity:0;
+      transition: opacity 0.3s ease;
+      pointer-events:none;
+    }
+    #confirmModal.show {
+      display:flex;
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    /* Modal Box */
+    #confirmModal .modal-box {
+      position: relative;
+      background:#fff; padding:2rem; border-radius:12px;
+      max-width:420px; width:90%;
+      box-shadow:0 4px 15px rgba(0,0,0,0.3);
+      text-align:center;
+      transform:scale(0.95);
+      opacity:0;
+      transition: all 0.3s ease;
+    }
+    #confirmModal.show .modal-box {
+      transform:scale(1);
+      opacity:1;
+    }
+    #confirmModal h3 {
+      color:var(--dunkelblau);
+      margin-top:0; margin-bottom:1rem;
+    }
+    #confirmModal input {
+      width:100%; padding:0.6rem;
+      border-radius:6px; border:1px solid #ccc;
+      margin-top:0.3rem;
+    }
+    #confirmModal .modal-actions {
+      display:flex;
+      justify-content:center;
+      gap:1rem;
+      margin-top:1rem;
+    }
+    #confirmModal .modal-actions button {
+      padding:0.6rem 1rem;
+      border:none;
+      border-radius:8px;
+      font-size:0.95rem;
+      font-weight:bold;
+      cursor:pointer;
+      min-width:140px;
+    }
     #confirmYes { background:var(--dunkelblau); color:#fff; }
     #confirmCancel { background:var(--mittelgrau); color:#fff; }
+
     /* Toast */
-    #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
-    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 2000;
+      left: 50%;
+      bottom: 30px;
+      font-size: 1rem;
+      opacity: 0;
+      transform: translateX(-50%);
+      transition: opacity 0.5s, bottom 0.5s;
+    }
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
   </style>
 </head>
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
   <!-- Nutzer-Auswahl -->
-  <div class="card mb-1">
+  <div class="card" style="margin-bottom:1.5rem;">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
     <div class="select-user">
-      <select id="userSelect" aria-label="Nutzer auswählen">
+      <select id="userSelect">
         <option value="">-- bitte wählen --</option>
-        <option value="user1">Max Mustermann</option>
-        <option value="user2">Anna Beispiel</option>
-        <option value="user3">Lukas Test</option>
       </select>
       <div id="selectedUser" class="selected-user"></div>
     </div>
@@ -83,54 +239,72 @@
     <!-- Grundvoraussetzungen -->
     <div class="card">
       <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
-      <div class="progress"><div id="grund-progress" class="progress-bar" style="width:0%"></div></div>
+      <div class="progress">
+        <div id="grund-progress" class="progress-bar" style="width:0%"></div>
+      </div>
       <ul class="checklist" id="grund-list">
-        <li><input type="checkbox" id="fachdienst" disabled><label for="fachdienst">Fachdienstausbildung Sanitätsdienst</label></li>
-        <li><input type="checkbox" id="erstgespraech" disabled><label for="erstgespraech">Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</label></li>
-        <li><input type="checkbox" id="18jahre" disabled><label for="18jahre">Vollendung 18. Lebensjahr</label></li>
-        <li><input type="checkbox" id="hospitation" disabled><label for="hospitation">Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</label></li>
-        <li><input type="checkbox" id="mitwirken" disabled><label for="mitwirken">min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</label></li>
+        <li><input type="checkbox" data-id="fachdienst" disabled> Fachdienstausbildung Sanitätsdienst</li>
+        <li><input type="checkbox" data-id="erstgespraech" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
+        <li><input type="checkbox" data-id="18jahre" disabled> Vollendung 18. Lebensjahr</li>
+        <li><input type="checkbox" data-id="hospitation" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
+        <li><input type="checkbox" data-id="mitwirken" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
       </ul>
     </div>
+
     <!-- Optionale Voraussetzungen -->
     <div class="card">
       <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
-      <div class="progress"><div id="verlauf-progress" class="progress-bar" style="width:0%"></div></div>
+      <div class="progress">
+        <div id="verlauf-progress" class="progress-bar" style="width:0%"></div>
+      </div>
       <ul class="checklist" id="verlauf-list">
-        <li><input type="checkbox" id="c1" disabled><label for="c1">C1 (Helfer-)Führerschein</label></li>
-        <li><input type="checkbox" id="gruppenfuehrer" disabled><label for="gruppenfuehrer">Gruppenführer Sanitätsdienst</label></li>
+        <li><input type="checkbox" data-id="c1" disabled> C1 (Helfer-)Führerschein</li>
+        <li><input type="checkbox" data-id="gruppenfuehrer" disabled> Gruppenführer Sanitätsdienst</li>
       </ul>
     </div>
   </div>
 
   <!-- Bestätigung -->
-  <div class="card mt-3">
+  <div class="card" style="margin-top:1.5rem;">
     <h3><i class="bi bi-person-check"></i> Bestätigung durch Ausbilder</h3>
     <div id="confirmUserSection" style="display:none;">
       <p id="confirmText"></p>
+
+      <!-- Grundvoraussetzungen -->
       <div class="checklist">
         <label><input type="checkbox" id="chkGrund"> Alle Grundvoraussetzungen erfüllt</label>
       </div>
-      <div id="grundActions" class="mt-1" style="display:none;">
-        <button class="btn-confirm btn-green" id="btnApproveGrund"><i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben</button>
+      <div id="grundActions" style="display:none; margin-top:0.5rem;">
+        <button class="btn-confirm btn-green" id="btnApproveGrund">
+          <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
+        </button>
       </div>
-      <div class="checklist mt-2">
+
+      <!-- Optionale -->
+      <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkOptional"> Optionale Voraussetzungen erfüllt</label>
       </div>
-      <div id="optionalActions" class="mt-1" style="display:none;">
-        <button class="btn-confirm btn-blue" id="btnConfirmOptional"><i class="bi bi-envelope"></i> Bestätigung per Mail senden</button>
+      <div id="optionalActions" style="display:none; margin-top:0.5rem;">
+        <button class="btn-confirm btn-blue" id="btnConfirmOptional">
+          <i class="bi bi-envelope"></i> Bestätigung per Mail senden
+        </button>
       </div>
-      <hr class="mt-2 mb-1">
-      <div class="checklist mt-2">
+
+      <hr style="margin:1rem 0;">
+
+      <!-- Ablehnung -->
+      <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
-      <div id="rejectActions" class="mt-1" style="display:none;">
-        <button class="btn-confirm btn-red" id="btnRejectGrund"><i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen</button>
+      <div id="rejectActions" style="display:none; margin-top:0.5rem;">
+        <button class="btn-confirm btn-red" id="btnRejectGrund">
+          <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Modal -->
+  <!-- Popup -->
   <div id="confirmModal">
     <div class="modal-box">
       <h3 id="confirmModalTitle"></h3>
@@ -149,347 +323,46 @@
   <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- Script -->
+  <!-- Firebase -->
+  <script type="module" src="../js/firebase.js"></script>
   <script>
-    function updateProgress(listId, progressId) {
-      const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
-      const checked = Array.from(list).filter(cb => cb.checked).length;
-      const percent = list.length ? Math.round((checked / list.length) * 100) : 0;
-      const bar = document.getElementById(progressId);
-      bar.style.width = percent + "%";
-      bar.textContent = percent > 0 ? percent + "%" : "";
-      if (percent === 100) {
-        bar.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--drk-gruen") || "rgb(0,150,80)";
-      } else if (percent >= 75) {
-        bar.style.backgroundColor = "var(--drk-gruen)";
-      } else if (percent >= 50) {
-        bar.style.backgroundColor = "var(--hellblau)";
-      } else if (percent >= 25) {
-        bar.style.backgroundColor = "var(--softrot)";
-      } else if (percent > 0) {
-        bar.style.backgroundColor = "var(--mittelgrau)";
-      } else {
-        bar.style.backgroundColor = "#e9ecef";
-      }
-      return percent;
-    }
-
-    function showToast(message, color = "#333", icon = "") {
-      const toast = document.getElementById("toast");
-      toast.innerHTML = icon ? `<i class="bi ${icon}"></i> ${message}` : message;
-      toast.style.backgroundColor = color;
-      toast.setAttribute("role", "status");
-      toast.setAttribute("aria-live", "polite");
-      toast.classList.add("show");
-      setTimeout(() => { toast.classList.remove("show"); }, 3000);
-    }
-
-    document.querySelectorAll("#grund-list input").forEach(cb => cb.addEventListener("change", () => updateProgress("grund-list", "grund-progress")));
-    document.querySelectorAll("#verlauf-list input").forEach(cb => cb.addEventListener("change", () => updateProgress("verlauf-list", "verlauf-progress")));
+    const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
 
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
 
+    // Nutzer laden
+    async function loadUsers(){
+      try{
+        const res = await fetch(API_BASE + "/listUsers");
+        const data = await res.json();
+        userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+        (data.users || []).forEach(u=>{
+          const opt = document.createElement("option");
+          opt.value = u.uid;
+          opt.textContent = u.displayName || u.email || u.uid;
+          userSelect.appendChild(opt);
+        });
+      }catch(err){
+        console.error("❌ Fehler beim Laden:", err);
+      }
+    }
+    loadUsers();
+
+    // Auswahl
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
         const name = userSelect.options[userSelect.selectedIndex].text;
         selectedUser.textContent = "Ausgewählt: " + name;
         confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
-        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => { cb.checked = false; cb.disabled = false; });
-        document.getElementById("grundActions").style.display = "none";
-        document.getElementById("optionalActions").style.display = "none";
-        document.getElementById("rejectActions").style.display = "none";
-        updateProgress("grund-list", "grund-progress");
-        updateProgress("verlauf-list", "verlauf-progress");
       } else {
         selectedUser.textContent = "";
         confirmUserSection.style.display = "none";
-        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => { cb.checked = false; cb.disabled = true; });
-        updateProgress("grund-list", "grund-progress");
-        updateProgress("verlauf-list", "verlauf-progress");
       }
     });
-
-    const chkGrund = document.getElementById("chkGrund");
-    const grundActions = document.getElementById("grundActions");
-    chkGrund.addEventListener("change", () => {
-      if (!userSelect.value) { showToast("Bitte zuerst einen Nutzer auswählen.", "#b91c1c", "bi-exclamation-triangle"); chkGrund.checked = false; return; }
-      const allChecked = Array.from(document.querySelectorAll("#grund-list input")).every(cb => cb.checked);
-      if (!allChecked && chkGrund.checked) { showToast("Alle Grundvoraussetzungen sind noch nicht erfüllt!", "red", "bi-x-circle"); chkGrund.checked = false; return; }
-      grundActions.style.display = chkGrund.checked ? "block" : "none";
-    });
-
-    const chkReject = document.getElementById("chkReject");
-    const rejectActions = document.getElementById("rejectActions");
-    chkReject.addEventListener("change", () => {
-      if (!userSelect.value) { showToast("Bitte zuerst einen Nutzer auswählen.", "#b91c1c", "bi-exclamation-triangle"); chkReject.checked = false; return; }
-      rejectActions.style.display = chkReject.checked ? "block" : "none";
-    });
-
-    const chkOptional = document.getElementById("chkOptional");
-    const optionalActions = document.getElementById("optionalActions");
-    chkOptional.addEventListener("change", () => {
-      if (!userSelect.value) { showToast("Bitte zuerst einen Nutzer auswählen.", "#b91c1c", "bi-exclamation-triangle"); chkOptional.checked = false; return; }
-      const allChecked = Array.from(document.querySelectorAll("#verlauf-list input")).every(cb => cb.checked);
-      if (!allChecked && chkOptional.checked) { showToast("Alle optionalen Voraussetzungen sind noch nicht erfüllt!", "red", "bi-x-circle"); chkOptional.checked = false; return; }
-      optionalActions.style.display = chkOptional.checked ? "block" : "none";
-    });
-
-    const confirmModal = document.getElementById("confirmModal");
-    const confirmModalTitle = document.getElementById("confirmModalTitle");
-    const confirmModalText = document.getElementById("confirmModalText");
-    const confirmYes = document.getElementById("confirmYes");
-    const confirmCancel = document.getElementById("confirmCancel");
-    const rejectReasonBox = document.getElementById("rejectReasonBox");
-    const rejectReasonInput = document.getElementById("rejectReason");
-    <!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zugangsvoraussetzungen</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <style>
-    :root {
-      --softrot: rgb(228,100,80);
-      --drk-gruen: rgb(0,150,80);
-      --dunkelblau: rgb(0,45,85);
-      --hellblau: rgb(100,160,220);
-      --mittelgrau: rgb(180,180,180);
-    }
-    body {
-      font-family: system-ui, sans-serif;
-      background:#f8f9fa;
-      padding:2rem;
-    }
-    .page-title { color: var(--softrot); margin-bottom: 1rem; }
-    .zugang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    @media(max-width: 768px){ .zugang-grid { grid-template-columns: 1fr; } }
-    .card { background: var(--card-bg, #fff); padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .card h3 { color: var(--hellblau); margin-top: 0; margin-bottom: 1rem; display:flex; align-items:center; gap:0.5rem; }
-    .checklist { list-style: none; padding: 0; margin: 0; }
-    .checklist li, .checklist label { margin: 0.6rem 0; display:flex; align-items:center; gap:0.5rem; font-size:1rem; }
-    .checklist input[type="checkbox"] { width: 1.2rem; height: 1.2rem; cursor: pointer; }
-    .progress { height: 22px; background-color: #e9ecef; border-radius: 12px; overflow: hidden; margin-bottom: 1rem; }
-    .progress-bar { height: 100%; text-align: center; color: #fff; font-size: 0.85rem; font-weight: bold; transition: width 0.3s ease, background-color 0.3s ease; display:flex; align-items:center; justify-content:center; }
-    .select-user { margin-bottom: 1rem; }
-    .selected-user, #confirmText { font-weight: bold; color: var(--dunkelblau); font-size: 1.05rem; margin-top: 1rem; }
-    .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
-    .btn-green { background: var(--drk-gruen); }
-    .btn-red { background: var(--softrot); }
-    .btn-blue { background: var(--dunkelblau); }
-    /* Abstände */
-    .mb-1 { margin-bottom: 1rem; }
-    .mt-1 { margin-top: 0.5rem; }
-    .mt-2 { margin-top: 1rem; }
-    .mt-3 { margin-top: 1.5rem; }
-    /* Dropdown */
-    select { width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--dunkelblau); background: #fff; font-size: 1rem; color: var(--dunkelblau); cursor: pointer; appearance: none;
-      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-      background-repeat: no-repeat; background-position: right 10px center;
-    }
-    select:focus { outline: none; border-color: var(--softrot); box-shadow: 0 0 4px rgba(228,100,80,0.5); }
-    @media(min-width: 769px){ .select-user select { max-width: 300px; } }
-    /* Modal */
-    #confirmModal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; display:none; opacity:0; transition: opacity 0.3s ease; pointer-events:none; }
-    #confirmModal.show { display:flex; opacity:1; pointer-events:auto; }
-    #confirmModal .modal-box { position: relative; background:#fff; padding:2rem; border-radius:12px; max-width:420px; width:90%; box-shadow:0 4px 15px rgba(0,0,0,0.3); text-align:center; transform:scale(0.95); opacity:0; transition: all 0.3s ease; }
-    #confirmModal.show .modal-box { transform:scale(1); opacity:1; }
-    #confirmModal h3 { color:var(--dunkelblau); margin-top:0; margin-bottom:1rem; }
-    #confirmModal input { width:100%; padding:0.6rem; border-radius:6px; border:1px solid #ccc; margin-top:0.3rem; }
-    #confirmModal .modal-actions { display:flex; justify-content:center; gap:1rem; margin-top:1rem; }
-    #confirmModal .modal-actions button { padding:0.6rem 1rem; border:none; border-radius:8px; font-size:0.95rem; font-weight:bold; cursor:pointer; min-width:140px; }
-    #confirmYes { background:var(--dunkelblau); color:#fff; }
-    #confirmCancel { background:var(--mittelgrau); color:#fff; }
-    /* Toast */
-    #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
-    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-  </style>
-</head>
-<body>
-  <h2 class="page-title">Zugangsvoraussetzungen</h2>
-
-  <!-- Nutzer-Auswahl -->
-  <div class="card mb-1">
-    <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
-    <div class="select-user">
-      <select id="userSelect" aria-label="Nutzer auswählen">
-        <option value="">-- bitte wählen --</option>
-        <option value="user1">Max Mustermann</option>
-        <option value="user2">Anna Beispiel</option>
-        <option value="user3">Lukas Test</option>
-      </select>
-      <div id="selectedUser" class="selected-user"></div>
-    </div>
-  </div>
-
-  <div class="zugang-grid">
-    <!-- Grundvoraussetzungen -->
-    <div class="card">
-      <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
-      <div class="progress"><div id="grund-progress" class="progress-bar" style="width:0%"></div></div>
-      <ul class="checklist" id="grund-list">
-        <li><input type="checkbox" id="fachdienst" disabled><label for="fachdienst">Fachdienstausbildung Sanitätsdienst</label></li>
-        <li><input type="checkbox" id="erstgespraech" disabled><label for="erstgespraech">Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</label></li>
-        <li><input type="checkbox" id="18jahre" disabled><label for="18jahre">Vollendung 18. Lebensjahr</label></li>
-        <li><input type="checkbox" id="hospitation" disabled><label for="hospitation">Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</label></li>
-        <li><input type="checkbox" id="mitwirken" disabled><label for="mitwirken">min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</label></li>
-      </ul>
-    </div>
-    <!-- Optionale Voraussetzungen -->
-    <div class="card">
-      <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
-      <div class="progress"><div id="verlauf-progress" class="progress-bar" style="width:0%"></div></div>
-      <ul class="checklist" id="verlauf-list">
-        <li><input type="checkbox" id="c1" disabled><label for="c1">C1 (Helfer-)Führerschein</label></li>
-        <li><input type="checkbox" id="gruppenfuehrer" disabled><label for="gruppenfuehrer">Gruppenführer Sanitätsdienst</label></li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Bestätigung -->
-  <div class="card mt-3">
-    <h3><i class="bi bi-person-check"></i> Bestätigung durch Ausbilder</h3>
-    <div id="confirmUserSection" style="display:none;">
-      <p id="confirmText"></p>
-      <div class="checklist">
-        <label><input type="checkbox" id="chkGrund"> Alle Grundvoraussetzungen erfüllt</label>
-      </div>
-      <div id="grundActions" class="mt-1" style="display:none;">
-        <button class="btn-confirm btn-green" id="btnApproveGrund"><i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben</button>
-      </div>
-      <div class="checklist mt-2">
-        <label><input type="checkbox" id="chkOptional"> Optionale Voraussetzungen erfüllt</label>
-      </div>
-      <div id="optionalActions" class="mt-1" style="display:none;">
-        <button class="btn-confirm btn-blue" id="btnConfirmOptional"><i class="bi bi-envelope"></i> Bestätigung per Mail senden</button>
-      </div>
-      <hr class="mt-2 mb-1">
-      <div class="checklist mt-2">
-        <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
-      </div>
-      <div id="rejectActions" class="mt-1" style="display:none;">
-        <button class="btn-confirm btn-red" id="btnRejectGrund"><i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal -->
-  <div id="confirmModal">
-    <div class="modal-box">
-      <h3 id="confirmModalTitle"></h3>
-      <p id="confirmModalText"></p>
-      <div id="rejectReasonBox" style="display:none; text-align:left; margin-bottom:1rem;">
-        <label for="rejectReason" style="font-size:0.9rem; color:#555;">Grund für Ablehnung (optional):</label>
-        <input type="text" id="rejectReason" placeholder="Begründung eingeben...">
-      </div>
-      <div class="modal-actions">
-        <button id="confirmYes">Bestätigung per E-Mail senden</button>
-        <button id="confirmCancel">Abbrechen</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast -->
-  <div id="toast"></div>
-
-  <!-- Script -->
-  <script>
-    function updateProgress(listId, progressId) {
-      const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
-      const checked = Array.from(list).filter(cb => cb.checked).length;
-      const percent = list.length ? Math.round((checked / list.length) * 100) : 0;
-      const bar = document.getElementById(progressId);
-      bar.style.width = percent + "%";
-      bar.textContent = percent > 0 ? percent + "%" : "";
-      if (percent === 100) {
-        bar.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--drk-gruen") || "rgb(0,150,80)";
-      } else if (percent >= 75) {
-        bar.style.backgroundColor = "var(--drk-gruen)";
-      } else if (percent >= 50) {
-        bar.style.backgroundColor = "var(--hellblau)";
-      } else if (percent >= 25) {
-        bar.style.backgroundColor = "var(--softrot)";
-      } else if (percent > 0) {
-        bar.style.backgroundColor = "var(--mittelgrau)";
-      } else {
-        bar.style.backgroundColor = "#e9ecef";
-      }
-      return percent;
-    }
-
-    function showToast(message, color = "#333", icon = "") {
-      const toast = document.getElementById("toast");
-      toast.innerHTML = icon ? `<i class="bi ${icon}"></i> ${message}` : message;
-      toast.style.backgroundColor = color;
-      toast.setAttribute("role", "status");
-      toast.setAttribute("aria-live", "polite");
-      toast.classList.add("show");
-      setTimeout(() => { toast.classList.remove("show"); }, 3000);
-    }
-
-    document.querySelectorAll("#grund-list input").forEach(cb => cb.addEventListener("change", () => updateProgress("grund-list", "grund-progress")));
-    document.querySelectorAll("#verlauf-list input").forEach(cb => cb.addEventListener("change", () => updateProgress("verlauf-list", "verlauf-progress")));
-
-    const userSelect = document.getElementById("userSelect");
-    const selectedUser = document.getElementById("selectedUser");
-    const confirmUserSection = document.getElementById("confirmUserSection");
-    const confirmText = document.getElementById("confirmText");
-
-    userSelect.addEventListener("change", () => {
-      if (userSelect.value) {
-        const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: " + name;
-        confirmText.textContent = "Bestätigung für: " + name;
-        confirmUserSection.style.display = "block";
-        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => { cb.checked = false; cb.disabled = false; });
-        document.getElementById("grundActions").style.display = "none";
-        document.getElementById("optionalActions").style.display = "none";
-        document.getElementById("rejectActions").style.display = "none";
-        updateProgress("grund-list", "grund-progress");
-        updateProgress("verlauf-list", "verlauf-progress");
-      } else {
-        selectedUser.textContent = "";
-        confirmUserSection.style.display = "none";
-        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => { cb.checked = false; cb.disabled = true; });
-        updateProgress("grund-list", "grund-progress");
-        updateProgress("verlauf-list", "verlauf-progress");
-      }
-    });
-
-    const chkGrund = document.getElementById("chkGrund");
-    const grundActions = document.getElementById("grundActions");
-    chkGrund.addEventListener("change", () => {
-      if (!userSelect.value) { showToast("Bitte zuerst einen Nutzer auswählen.", "#b91c1c", "bi-exclamation-triangle"); chkGrund.checked = false; return; }
-      const allChecked = Array.from(document.querySelectorAll("#grund-list input")).every(cb => cb.checked);
-      if (!allChecked && chkGrund.checked) { showToast("Alle Grundvoraussetzungen sind noch nicht erfüllt!", "red", "bi-x-circle"); chkGrund.checked = false; return; }
-      grundActions.style.display = chkGrund.checked ? "block" : "none";
-    });
-
-    const chkReject = document.getElementById("chkReject");
-    const rejectActions = document.getElementById("rejectActions");
-    chkReject.addEventListener("change", () => {
-      if (!userSelect.value) { showToast("Bitte zuerst einen Nutzer auswählen.", "#b91c1c", "bi-exclamation-triangle"); chkReject.checked = false; return; }
-      rejectActions.style.display = chkReject.checked ? "block" : "none";
-    });
-
-    const chkOptional = document.getElementById("chkOptional");
-    const optionalActions = document.getElementById("optionalActions");
-    chkOptional.addEventListener("change", () => {
-      if (!userSelect.value) { showToast("Bitte zuerst einen Nutzer auswählen.", "#b91c1c", "bi-exclamation-triangle"); chkOptional.checked = false; return; }
-      const allChecked = Array.from(document.querySelectorAll("#verlauf-list input")).every(cb => cb.checked);
-      if (!allChecked && chkOptional.checked) { showToast("Alle optionalen Voraussetzungen sind noch nicht erfüllt!", "red", "bi-x-circle"); chkOptional.checked = false; return; }
-      optionalActions.style.display = chkOptional.checked ? "block" : "none";
-    });
-
-    const confirmModal = document.getElementById("confirmModal");
-    const confirmModalTitle = document.getElementById("confirmModalTitle");
-    const confirmModalText = document.getElementById("confirmModalText");
-    const confirmYes = document.getElementById("confirmYes");
-    const confirmCancel = document.getElementById("confirmCancel");
-    const rejectReasonBox = document.getElementById("rejectReasonBox");
-    const rejectReasonInput = document.getElementById("rejectReason");
-    let currentAction =
+  </script>
+</body>
+</html>
