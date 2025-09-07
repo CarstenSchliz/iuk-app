@@ -75,7 +75,6 @@
     .progress-bar {
       height: 100%;
       text-align: center;
-      color: #fff;
       font-size: 0.85rem;
       font-weight: bold;
       transition: width 0.3s ease, background-color 0.3s ease;
@@ -136,22 +135,6 @@
       .select-user select {
         max-width: 300px;
       }
-    }
-
-    /* Modal Overlay */
-    #confirmModal {
-      display:none;
-      position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.6); z-index:9999;
-      align-items:center; justify-content:center;
-      opacity:0;
-      transition: opacity 0.3s ease;
-      pointer-events:none;
-    }
-    #confirmModal.show {
-      display:flex;
-      opacity:1;
-      pointer-events:auto;
     }
 
     /* Toast */
@@ -254,7 +237,7 @@
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
-      <div id="rejectActions" style="margin-top:0.5rem;">
+      <div id="rejectActions" style="display:none; margin-top:0.5rem;">
         <button class="btn-confirm btn-red" id="btnRejectGrund">
           <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
         </button>
@@ -265,33 +248,14 @@
   <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- Firebase -->
-  <script type="module" src="../js/firebase.js"></script>
   <script>
-    const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
-
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
 
-    // Nutzer laden
-    async function loadUsers(){
-      try{
-        const res = await fetch(API_BASE + "/listUsers");
-        const data = await res.json();
-        userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
-        (data.users || []).forEach(u=>{
-          const opt = document.createElement("option");
-          opt.value = u.uid;
-          opt.textContent = u.displayName || u.email || u.uid;
-          userSelect.appendChild(opt);
-        });
-      }catch(err){
-        console.error("❌ Fehler beim Laden:", err);
-      }
-    }
-    loadUsers();
+    // Dummy Users
+    userSelect.innerHTML += `<option value="1">Max Mustermann</option><option value="2">Erika Musterfrau</option>`;
 
     // Auswahl
     userSelect.addEventListener("change", () => {
@@ -301,7 +265,6 @@
         confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
 
-        // Checkboxen aktivieren
         document.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb => {
           cb.disabled = false;
         });
@@ -310,7 +273,6 @@
         selectedUser.textContent = "";
         confirmUserSection.style.display = "none";
 
-        // Checkboxen wieder sperren
         document.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb => {
           cb.disabled = true;
           cb.checked = false;
@@ -329,20 +291,22 @@
 
       const bar = document.getElementById(progressId);
       bar.style.width = percent + "%";
-      bar.textContent = percent + "%";
 
-      // Farben nach Vorgabe
+      // nur ab 20% Text anzeigen
+      bar.textContent = percent >= 20 ? percent + "%" : "";
+
+      // Farben nach Vorgabe (sattere Töne)
       if(type === "grund"){
-        if(percent === 20) bar.style.backgroundColor = "red";
-        else if(percent === 40) bar.style.backgroundColor = "orange";
-        else if(percent === 60) bar.style.backgroundColor = "yellow";
-        else if(percent === 80) bar.style.backgroundColor = "lightgreen";
-        else if(percent === 100) bar.style.backgroundColor = "green";
-        else bar.style.backgroundColor = "#e9ecef";
+        if(percent === 20){ bar.style.backgroundColor = "#b22222"; bar.style.color="white";}
+        else if(percent === 40){ bar.style.backgroundColor = "#ff8c00"; bar.style.color="white";}
+        else if(percent === 60){ bar.style.backgroundColor = "#daa520"; bar.style.color="black";}
+        else if(percent === 80){ bar.style.backgroundColor = "#6b8e23"; bar.style.color="black";}
+        else if(percent === 100){ bar.style.backgroundColor = "#006400"; bar.style.color="white";}
+        else { bar.style.backgroundColor = "#e9ecef"; bar.textContent=""; }
       } else if(type === "optional"){
-        if(percent === 50) bar.style.backgroundColor = "yellow";
-        else if(percent === 100) bar.style.backgroundColor = "green";
-        else bar.style.backgroundColor = "#e9ecef";
+        if(percent === 50){ bar.style.backgroundColor = "#daa520"; bar.style.color="black"; }
+        else if(percent === 100){ bar.style.backgroundColor = "#006400"; bar.style.color="white";}
+        else { bar.style.backgroundColor = "#e9ecef"; bar.textContent=""; }
       }
     }
 
@@ -365,8 +329,10 @@
     // Gruppenleiter-Checklogik
     const chkGrund = document.getElementById("chkGrund");
     const chkOptional = document.getElementById("chkOptional");
+    const chkReject = document.getElementById("chkReject");
     const grundActions = document.getElementById("grundActions");
     const optionalActions = document.getElementById("optionalActions");
+    const rejectActions = document.getElementById("rejectActions");
 
     chkGrund.addEventListener("change", ()=>{
       const allGrund = document.querySelectorAll('#grund-list input[type="checkbox"]');
@@ -388,6 +354,10 @@
         showToast("❌ Nicht alle optionalen Voraussetzungen sind erfüllt!");
       }
       optionalActions.style.display = chkOptional.checked ? "block" : "none";
+    });
+
+    chkReject.addEventListener("change", ()=>{
+      rejectActions.style.display = chkReject.checked ? "block" : "none";
     });
   </script>
 </body>
