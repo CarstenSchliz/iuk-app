@@ -23,10 +23,8 @@
     }
     *{box-sizing:border-box}
 
-    /* WICHTIG: Kein globales body-Layout mehr! */
     body{ margin:0; color:var(--text); }
 
-    /* Seite kapseln, damit nichts anderes leidet */
     .user-page{ padding:1rem; }
 
     .user-page .page-title{ color:var(--softrot); margin:0 0 1rem }
@@ -38,19 +36,18 @@
       background:#fff; padding:1.25rem; border-radius:12px;
       box-shadow:0 2px 6px rgba(0,0,0,0.08); margin-bottom:1.5rem;
     }
-    .user-page .card h3{ color:var(--softblau); margin:0 0 1rem; font-size:1.1rem }
+    .user-page .card h3{ color:var(--blassblau); margin:0 0 1rem; font-size:1.1rem }
 
     /* Tabelle */
     .user-page .user-table{ width:100%; border-collapse:collapse; font-size:.95rem; table-layout:fixed }
     .user-page .user-table th, .user-page .user-table td{
       border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle; text-align:left;
     }
-    .user-page .user-table th{ background:var(--blassblau); /* kein sticky, kein Clipping */ }
+    .user-page .user-table th{ background:var(--blassblau); }
 
-    /* Einzeilig (Desktop) */
     .user-page .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
     .user-page .td-name b{ font-weight:700 }
-    .user-page .td-roles{ white-space:normal } /* Rollen dürfen umbrechen */
+    .user-page .td-roles{ white-space:normal }
 
     /* Rollen-Badges */
     .user-page .role-badges{ display:flex; gap:.35rem; flex-wrap:wrap }
@@ -61,7 +58,7 @@
     .user-page .role-an{    background:var(--role-an-bg);    border-color: var(--role-an-bd);    color: var(--role-an-fg) }
 
     /* Actions */
-    .user-page .actions-cell{ position:relative; width:44px; text-align:right } /* immer relative, auch mobil */
+    .user-page .actions-cell{ position:relative; width:44px; text-align:right }
     .user-page .kebab-btn{
       background:transparent; border:none; cursor:pointer; padding:.3rem .4rem;
       font-size:1.2rem; color:#374151; border-radius:8px; display:inline-flex; line-height:1; vertical-align:middle;
@@ -69,7 +66,7 @@
     }
     .user-page .kebab-btn:focus-visible{ outline:2px solid var(--dunkelblau) }
     .user-page .kebab-menu{
-      position:absolute; right:0; top:calc(100% + 6px); min-width:200px; z-index:999; /* hoch genug */
+      position:absolute; right:0; top:calc(100% + 6px); min-width:200px; z-index:999;
       background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,.12);
       display:none; overflow:hidden;
     }
@@ -109,7 +106,7 @@
     @media (max-width:640px){ .user-page #editPanel .editor-row{ grid-template-columns:1fr } }
 
     .user-page #rolesSection{ margin-top:1rem }
-    .user-page #rolesSection h4{ margin:.2rem 0 .8rem; font-size:1.05rem; color:var(--dunkelblau); font-weight:700 }
+    .user-page #rolesSection h4{ margin:.2rem 0 .8rem; font-size:1.05rem; color:var(--blassblau); font-weight:700 }
     .user-page .roles-grid{ display:flex; gap:1rem 1.25rem; flex-wrap:wrap }
     .user-page .role-check{ display:flex; align-items:center; gap:.6rem; padding:.45rem .6rem; border-radius:12px; border:1px solid #e5e7eb; background:#fff }
     .user-page .role-check input[type="checkbox"]{ width:24px; height:24px; accent-color: var(--dunkelblau) }
@@ -130,16 +127,13 @@
       .user-page .user-table td[data-label]:not([data-label=""])::before{
         content:attr(data-label) ": "; font-weight:600; color:#6b7280; display:inline-block; min-width:120px;
       }
-      /* E-Mail: Label in eigener Zeile, E-Mail darunter ohne Umbruch */
       .user-page .user-table td[data-label="E-Mail-Adresse"]::before{ display:block; margin-bottom:.15rem }
       .user-page .user-table td[data-label="E-Mail-Adresse"] .email-val{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block }
-      /* Werte sonst dürfen umbrechen */
       .user-page .nowrap{ white-space:normal; overflow:visible; text-overflow:clip }
-      .user-page .actions-cell{ position:relative; text-align:right; padding-top:.4rem } /* relative beibehalten! */
-      /* Kebab-Menü bleibt an Button: keine mobile Repositionierung */
+      .user-page .actions-cell{ position:relative; text-align:right; padding-top:.4rem }
     }
 
-    /* Toast (unten mittig) */
+    /* Toast */
     .user-page #toast{
       position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
       background:#111827; color:#e5e7eb; border:1px solid #243244; padding:.8rem 1rem; border-radius:12px;
@@ -163,7 +157,7 @@
     .user-page .modal .modal-actions{ display:flex; gap:.6rem; justify-content:flex-end }
     .user-page .modal .btn{ min-width:120px }
 
-    /* Darkmode (falls vorhanden) */
+    /* Darkmode */
     body.dark .user-page .card, body.dark .user-page .user-table tr{ background:#1e1e1e; color:#f5f5f5; border-color:#374151 }
     body.dark .user-page .user-table th{ background:#0f172a; color:#e5e7eb }
     body.dark .user-page .user-table td{ border-color:#374151 }
@@ -335,7 +329,6 @@
         <button class="act-del"  style="color:#b91c1c;"><i class="bi bi-trash"></i><span>Nutzer löschen</span></button>
       `;
 
-      // Offen/zu
       const openMenu = (e) => {
         e?.stopPropagation?.();
         const isOpen = menu.style.display === "block";
@@ -343,16 +336,13 @@
         menu.style.display = isOpen ? "none" : "block";
       };
 
-      // Klick + Touch absichern
       btn.addEventListener("click", openMenu, { passive:true });
       btn.addEventListener("touchstart", openMenu, { passive:true });
 
-      // Schließen außerhalb
       const closeAll = () => menu.style.display = "none";
       document.addEventListener("click", closeAll);
       document.addEventListener("touchstart", closeAll, { passive:true });
 
-      // Actions
       menu.querySelector(".act-edit").addEventListener("click", ()=>{ menu.style.display="none"; onEdit(user); });
       menu.querySelector(".act-del").addEventListener("click", ()=>{ menu.style.display="none"; onDelete(user); });
 
@@ -409,14 +399,12 @@
         </div>
       `;
 
-      // Abbrechen => schließen
       document.getElementById("edCancel").onclick = () => {
         showToast("Änderungen verworfen");
         editPanelOuter.style.display = "none";
         editPanel.innerHTML = "";
       };
 
-      // Speichern
       document.getElementById("edSave").onclick = async () => {
         const newName = document.getElementById("edName").value.trim();
         const selected = Array.from(editPanel.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
@@ -433,7 +421,6 @@
           updateNavigationDisplayName(newName);
           await loadUsers();
 
-          // Editor schließen nach Erfolg
           editPanelOuter.style.display = "none";
           editPanel.innerHTML = "";
         }catch(err){
@@ -517,7 +504,7 @@
         msg.style.color = "red"; msg.textContent = "❌ E-Mail und Passwort sind erforderlich.";
         return;
       }
-      msg.textContent = ""; // nutzen Toast
+      msg.textContent = "";
 
       try{
         const res = await fetch(API_BASE + "/createUser", {
