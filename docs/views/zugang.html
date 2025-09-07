@@ -328,6 +328,8 @@
     import { db } from "../js/firebase.js";
     import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
+
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
@@ -340,12 +342,12 @@
 
     async function loadUsersFromCloud() {
       try {
-        const res = await fetch("https://listusers-a2gyli3wtq-uc.a.run.app");
-        const users = await res.json();
-        users.forEach(user => {
+        const res = await fetch(API_BASE + "/listUsers", { method:"GET" });
+        const data = await res.json();
+        (data.users || []).forEach(user => {
           const option = document.createElement("option");
           option.value = user.uid;
-          option.textContent = user.displayName || user.email || "(unbenannt)";
+          option.textContent = user.displayName || user.email || "(ohne Namen)";
           userSelect.appendChild(option);
         });
       } catch (err) {
@@ -408,7 +410,7 @@
       }
     });
 
-    // Fortschrittsbalken + Toast + Modal Logik bleibt wie gehabt (aus deinem alten Code)
+    // Fortschrittsbalken + Toast + Modal Logik bleibt wie gehabt
     function updateProgress(listId, progressId) {
       const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
       const checked = Array.from(list).filter(cb => cb.checked).length;
