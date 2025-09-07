@@ -258,6 +258,10 @@
   <script type="module">
     const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
 
+     // Globale Variablen
+  let allUsers = [];
+  let editorDirty = false;
+
     // DOM
     const userList = document.getElementById("userList");
     const userMsg  = document.getElementById("userMsg");
