@@ -15,18 +15,21 @@
       --blassblau: rgb(230,240,250);
       --text:#1f2937;
 
-      --hellblau: rgb(100,160,220); /* Hellblau wie bei Zugangsvoraussetzungen */
+      --hellblau: rgb(100,160,220);
 
       /* Rollenfarben */
-      --role-admin-bg:#ffe8e6; --role-admin-bd:#ffcdc6; --role-admin-fg:#9e1b1b;   /* rot */
-      --role-gl-bg:#fff6db;   --role-gl-bd:#fde8a6;   --role-gl-fg:#8a6b00;       /* gelb */
-      --role-hf-bg:#e8f6ec;   --role-hf-bd:#c7efd5;   --role-hf-fg:#0f6b2b;       /* grün */
-      --role-an-bg:#e6f0ff;   --role-an-bd:#cfe1ff;   --role-an-fg:#0d3b8a;       /* blau */
+      --role-admin-bg:#ffe8e6; --role-admin-bd:#ffcdc6; --role-admin-fg:#9e1b1b;
+      --role-gl-bg:#fff6db;   --role-gl-bd:#fde8a6;   --role-gl-fg:#8a6b00;
+      --role-hf-bg:#e8f6ec;   --role-hf-bd:#c7efd5;   --role-hf-fg:#0f6b2b;
+      --role-an-bg:#e6f0ff;   --role-an-bd:#cfe1ff;   --role-an-fg:#0d3b8a;
     }
     *{box-sizing:border-box}
 
     /* NICHT global body überschreiben, sonst Sidebar kaputt */
-    .user-page{ margin:0; color:var(--text); padding:1rem }
+    .user-page {
+      color:var(--text);
+      padding:1rem;
+    }
 
     .user-page .page-title{ color:var(--softrot); margin:0 0 1rem }
 
@@ -38,7 +41,6 @@
       box-shadow:0 2px 6px rgba(0,0,0,0.08); margin-bottom:1.5rem;
     }
 
-    /* Überschriften + Icons hellblau */
     .user-page .card h3{
       color:var(--hellblau);
       margin:0 0 1rem;
@@ -47,23 +49,17 @@
       align-items:center;
       gap:0.5rem;
     }
-    .user-page .card h3 i{
-      color:var(--hellblau);
-    }
 
-    /* Tabelle */
     .user-page .user-table{ width:100%; border-collapse:collapse; font-size:.95rem; table-layout:fixed }
     .user-page .user-table th, .user-page .user-table td{
       border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle; text-align:left;
     }
     .user-page .user-table th{ background:var(--blassblau); }
 
-    /* Einzeilig (Desktop) */
     .user-page .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
     .user-page .td-name b{ font-weight:700 }
-    .user-page .td-roles{ white-space:normal } /* Rollen dürfen umbrechen */
+    .user-page .td-roles{ white-space:normal }
 
-    /* Rollen-Badges */
     .user-page .role-badges{ display:flex; gap:.35rem; flex-wrap:wrap }
     .user-page .role-badge{ display:inline-block; padding:.18rem .55rem; border-radius:999px; font-size:.78rem; border:1px solid transparent; white-space:nowrap }
     .user-page .role-admin{ background:var(--role-admin-bg); border-color: var(--role-admin-bd); color: var(--role-admin-fg) }
@@ -71,14 +67,11 @@
     .user-page .role-hf{    background:var(--role-hf-bg);    border-color: var(--role-hf-bd);    color: var(--role-hf-fg) }
     .user-page .role-an{    background:var(--role-an-bg);    border-color: var(--role-an-bd);    color: var(--role-an-fg) }
 
-    /* Actions */
     .user-page .actions-cell{ position:relative; width:44px; text-align:right }
     .user-page .kebab-btn{
       background:transparent; border:none; cursor:pointer; padding:.3rem .4rem;
       font-size:1.2rem; color:#374151; border-radius:8px; display:inline-flex; line-height:1; vertical-align:middle;
-      pointer-events:auto;
     }
-    .user-page .kebab-btn:focus-visible{ outline:2px solid var(--dunkelblau) }
     .user-page .kebab-menu{
       position:absolute; right:0; top:calc(100% + 6px); min-width:200px; z-index:999;
       background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,.12);
@@ -92,7 +85,6 @@
 
     .user-page .form-msg{ margin-top:.5rem; font-weight:600 }
 
-    /* Floating fields */
     .user-page .form-group.floating{ position:relative; margin-bottom:1.25rem }
     .user-page .form-group.floating input{
       width:100%; padding:1rem .75rem .3rem .75rem; border:1px solid #d1d5db; border-radius:10px; background:#fff; font-size:1rem; transition:border-color .15s ease; min-height:44px;
@@ -107,17 +99,13 @@
     }
     .user-page .form-group.floating input[readonly]{ background:#f9fafb; color:#6b7280 }
 
-    /* Buttons */
     .user-page .btn{ padding:.6rem .9rem; border:none; border-radius:10px; cursor:pointer; font-size:.95rem; min-height:44px }
     .user-page .btn-primary{ background:var(--dunkelblau); color:#fff }
     .user-page .btn-secondary{ background:#eef2f7 }
     .user-page .btn-danger{ background:#c62828; color:#fff }
 
-    /* Editor */
     .user-page #editPanelOuter{ display:none }
     .user-page #editPanel .editor-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.25rem; align-items:start; margin-bottom:.25rem }
-    @media (max-width:900px){ .user-page #editPanel .editor-row{ grid-template-columns:1fr 1fr } }
-    @media (max-width:640px){ .user-page #editPanel .editor-row{ grid-template-columns:1fr } }
 
     .user-page #rolesSection{ margin-top:1rem }
     .user-page #rolesSection h4{ margin:.2rem 0 .8rem; font-size:1.05rem; color:var(--dunkelblau); font-weight:700 }
@@ -129,7 +117,6 @@
     .user-page .editor-actions{ display:flex; gap:.8rem; margin-top:1.1rem }
     .user-page .editor-actions .btn{ width:auto }
 
-    /* Mobile Kartenlayout */
     @media (max-width:720px){
       .user-page .user-table thead{ display:none }
       .user-page .user-table, .user-page .user-table tbody, .user-page .user-table tr, .user-page .user-table td{ display:block; width:100% }
@@ -147,14 +134,12 @@
       .user-page .actions-cell{ position:relative; text-align:right; padding-top:.4rem }
     }
 
-    /* Toast (unten mittig) */
     .user-page #toast{
       position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
       background:#111827; color:#e5e7eb; border:1px solid #243244; padding:.8rem 1rem; border-radius:12px;
       box-shadow:0 12px 30px rgba(0,0,0,.25); display:none; z-index:1000;
     }
 
-    /* Modal */
     .user-page .modal-backdrop{
       position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:999;
     }
@@ -166,12 +151,14 @@
       box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem 1rem 1rem;
       border:1px solid #e5e7eb;
     }
-    .user-page .modal h4{ margin:.25rem 0 .5rem; font-size:1.05rem; color:#111 }
-    .user-page .modal p{ margin:.35rem 0 .9rem; color:#374151 }
-    .user-page .modal .modal-actions{ display:flex; gap:.6rem; justify-content:flex-end }
-    .user-page .modal .btn{ min-width:120px }
 
-    /* Darkmode */
+    .user-page mark {
+      background: #fff3b0;
+      color: inherit;
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+
     body.dark .user-page .card, body.dark .user-page .user-table tr{ background:#1e1e1e; color:#f5f5f5; border-color:#374151 }
     body.dark .user-page .user-table th{ background:#0f172a; color:#e5e7eb }
     body.dark .user-page .user-table td{ border-color:#374151 }
@@ -192,7 +179,18 @@
       <!-- Nutzerliste -->
       <div class="card">
         <h3><i class="bi bi-people"></i> Benutzerübersicht</h3>
-<input type="text" id="searchInput" placeholder="🔍 Suchen..."style="margin:12px 0 14px; padding:8px; width:100%; border-radius:8px; border:1px solid #ccc;">
+        <div style="position:relative; margin:12px 0 14px;">
+          <i class="bi bi-search" 
+             style="position:absolute; left:10px; top:50%; transform:translateY(-50%);
+                    color:#6b7280; font-size:1rem;"></i>
+          <input type="text" id="searchInput" placeholder="Suchen..."
+            style="padding:8px 32px 8px 32px; width:100%; border-radius:8px; border:1px solid #ccc;">
+          <button id="clearSearch" type="button"
+            style="position:absolute; right:8px; top:50%; transform:translateY(-50%);
+                   background:none; border:none; font-size:1.2rem; color:#6b7280; cursor:pointer; display:none;">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
         <table class="user-table" aria-label="Liste der Benutzer">
           <thead>
             <tr>
@@ -204,7 +202,6 @@
           </thead>
           <tbody id="userList"></tbody>
         </table>
-
         <div id="userMsg" class="form-msg"></div>
       </div>
 
@@ -232,7 +229,7 @@
       </div>
     </div>
 
-    <!-- SEPARATER Editor-Kasten -->
+    <!-- Editor -->
     <div id="editPanelOuter" class="card" style="display:none;">
       <div id="editPanel"></div>
     </div>
@@ -240,7 +237,7 @@
     <!-- Toast -->
     <div id="toast" role="status" aria-live="polite"></div>
 
-    <!-- Modal + Backdrop -->
+    <!-- Modal -->
     <div id="modalBackdrop" class="modal-backdrop"></div>
     <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal-card">
@@ -256,10 +253,8 @@
 
   <script type="module">
     const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
-
-     // Globale Variablen
-  let allUsers = [];
-  let editorDirty = false;
+    let allUsers = [];
+    let editorDirty = false;
 
     // DOM
     const userList = document.getElementById("userList");
@@ -267,6 +262,8 @@
     const editPanelOuter = document.getElementById("editPanelOuter");
     const editPanel = document.getElementById("editPanel");
     const toastEl = document.getElementById("toast");
+    const searchInput = document.getElementById("searchInput");
+    const clearSearch = document.getElementById("clearSearch");
 
     // Modal
     const modal      = document.getElementById("modal");
@@ -289,33 +286,32 @@
       clearTimeout(showToast._t); showToast._t = setTimeout(()=> toastEl.style.display = "none", 2600);
     };
 
+    // Highlight
+    function highlight(text, query) {
+      if (!query) return text;
+      const regex = new RegExp(`(${query})`, "gi");
+      return text.replace(regex, '<mark>$1</mark>');
+    }
+
     // Modal Confirm
     function confirmDialog({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}){
       modalTitle.textContent = title;
       modalMsg.textContent = message;
       modalOk.innerHTML = `<i class="bi bi-check2"></i> ${okText}`;
       modalCancel.innerHTML = `<i class="bi bi-x-lg"></i> ${cancelText}`;
-
       return new Promise(resolve => {
         const close = (val) => {
-          modal.style.display = "none";
-          backdrop.style.display = "none";
-          document.removeEventListener("keydown", onKey);
-          resolve(val);
+          modal.style.display = "none"; backdrop.style.display = "none";
+          document.removeEventListener("keydown", onKey); resolve(val);
         };
         const onKey = (e) => { if (e.key === "Escape") close(false); };
-
-        backdrop.style.display = "block";
-        modal.style.display = "flex";
+        backdrop.style.display = "block"; modal.style.display = "flex";
         document.addEventListener("keydown", onKey);
-
-        modalOk.onclick = () => close(true);
-        modalCancel.onclick = () => close(false);
+        modalOk.onclick = () => close(true); modalCancel.onclick = () => close(false);
         backdrop.onclick = () => close(false);
       });
     }
-
-    // Helpers
+        // Rollen extrahieren
     function extractRoles(u){
       return Array.isArray(u.roles) ? u.roles : [];
     }
@@ -340,7 +336,7 @@
       cell.querySelector(".act-del").onclick = ()=>deleteUserFlow(user);
     }
 
-    // Global Kebab Listener
+    // Globaler Kebab Listener
     document.addEventListener("click",(e)=>{
       document.querySelectorAll(".kebab-menu").forEach(m=>m.style.display="none");
       if(e.target.closest(".kebab-btn")){
@@ -352,11 +348,7 @@
     // Editor
     function openEditor(user){
       if(editorDirty && !confirm("Ungespeicherte Änderungen verwerfen?")) return;
-
-      const initial = {
-        name: user.displayName || "",
-        roles: extractRoles(user)
-      };
+      const initial = { name: user.displayName || "", roles: extractRoles(user) };
 
       editPanelOuter.style.display = "block";
       editPanel.innerHTML = `
@@ -435,7 +427,7 @@
     async function deleteUserFlow(user){
       const title = "Nutzer löschen?";
       const who = user.displayName || user.email || user.uid;
-      const message = `Soll der Nutzer wirklich gelöscht werden?\\n\\n${who}`;
+      const message = `Soll der Nutzer wirklich gelöscht werden?\n\n${who}`;
       const ok = await confirmDialog({ title, message, okText:"Löschen", cancelText:"Abbrechen" });
       if (!ok) return;
 
@@ -453,35 +445,68 @@
         showToast("Fehler: " + err.message);
       }
     }
-
-    // Liste
+    // Nutzerliste rendern
     function renderUsers(users){
-      const q=searchInput.value.toLowerCase();
-      userList.innerHTML="";
-      users.filter(u=>{
-        return u.displayName?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q) || extractRoles(u).some(r=>r.includes(q));
-      }).forEach(u=>{
+      const q = searchInput.value.toLowerCase();
+      userList.innerHTML = "";
+
+      const filtered = users.filter(u => {
+        const roles = extractRoles(u);
+        const roleLabels = roles.map(r => {
+          const def = ROLE_DEF.find(d => d.key === r);
+          return def ? def.label.toLowerCase() : r.toLowerCase();
+        });
+        return (
+          u.displayName?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q) ||
+          roles.some(r => r.toLowerCase().includes(q)) ||
+          roleLabels.some(lbl => lbl.includes(q))
+        );
+      });
+
+      if (filtered.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4" style="text-align:center; padding:1rem; color:#6b7280;">Keine Treffer gefunden</td>`;
+        userList.appendChild(tr);
+        return;
+      }
+
+      filtered.forEach(u => {
         const tr = document.createElement("tr");
         const name = u.displayName || "Ohne Namen";
         const mail = u.email || "–";
         const roles = extractRoles(u);
-
         tr.innerHTML = `
-          <td class="nowrap td-name" data-label="Anzeigename" title="${name}"><b></b></td>
-          <td class="nowrap" data-label="E-Mail-Adresse" title="${mail}"><span class="email-val"></span></td>
-          <td class="td-roles" data-label="Rollen">${rolesToBadges(roles)}</td>
+          <td class="nowrap td-name" data-label="Anzeigename" title="${name}"><b>${highlight(name, q)}</b></td>
+          <td class="nowrap" data-label="E-Mail-Adresse" title="${mail}"><span class="email-val">${highlight(mail, q)}</span></td>
+          <td class="td-roles" data-label="Rollen">${rolesToBadges(roles).replace(new RegExp(q,"gi"), match => '<mark>'+match+'</mark>')}</td>
           <td class="actions-cell" data-label=""></td>
         `;
-        tr.querySelector(".td-name b").textContent=name;
-        tr.querySelector(".email-val").textContent=mail;
-        buildKebab(tr.querySelector(".actions-cell"), { uid: u.uid, displayName:name, email:mail, roles });
+        buildKebab(tr.querySelector(".actions-cell"), { uid: u.uid, displayName: name, email: mail, roles });
         userList.appendChild(tr);
       });
     }
 
+    // Suche-Events
+    searchInput.addEventListener("input", () => {
+      renderUsers(allUsers);
+      clearSearch.style.display = searchInput.value ? "block" : "none";
+    });
+    searchInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        renderUsers(allUsers);
+      }
+    });
+    clearSearch.addEventListener("click", () => {
+      searchInput.value="";
+      clearSearch.style.display="none";
+      renderUsers(allUsers);
+    });
+
+    // Nutzer laden
     async function loadUsers(){
-      userMsg.style.color = "orange";
-      userMsg.textContent = "⏳ Lade Nutzer...";
+      userMsg.style.color = "orange"; userMsg.textContent = "⏳ Lade Nutzer...";
       try{
         const res = await fetch(API_BASE + "/listUsers", { method:"GET" });
         const data = await res.json();
@@ -489,26 +514,30 @@
         renderUsers(allUsers);
         userMsg.textContent = "";
       }catch(err){
-        userMsg.style.color = "red";
-        userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
+        userMsg.style.color = "red"; userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
       }
     }
-
-    // Init
     loadUsers();
 
     // Neuer Nutzer
     const form = document.getElementById("createUserForm");
     const msg  = document.getElementById("createUserMsg");
+    const createBtn = document.getElementById("createBtn");
+
     form.addEventListener("submit", async (e)=>{
       e.preventDefault();
-      if(!form.reportValidity()) return;
       const email = document.getElementById("newEmail").value.trim();
       const pw    = document.getElementById("newPassword").value;
       const name  = document.getElementById("newName").value.trim();
 
-      const btn=document.getElementById("createBtn");
-      btn.disabled=true; btn.textContent="⏳ Erstellen...";
+      if (!email || !pw){
+        msg.style.color = "red"; msg.textContent = "❌ E-Mail und Passwort sind erforderlich.";
+        return;
+      }
+      msg.textContent = "";
+
+      createBtn.disabled=true;
+      createBtn.textContent="⏳ Erstelle...";
 
       try{
         const res = await fetch(API_BASE + "/createUser", {
@@ -524,7 +553,8 @@
       }catch(err){
         msg.style.color = "red"; msg.textContent = "❌ Fehler: " + err.message;
       }finally{
-        btn.disabled=false; btn.innerHTML='<i class="bi bi-save"></i> Benutzer erstellen';
+        createBtn.disabled=false;
+        createBtn.innerHTML='<i class="bi bi-save"></i> Benutzer erstellen';
       }
     });
   </script>
