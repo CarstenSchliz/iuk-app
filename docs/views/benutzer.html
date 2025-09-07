@@ -446,64 +446,78 @@
       }
     }
     // Nutzerliste rendern
-    function renderUsers(users){
-      const q = searchInput.value.toLowerCase();
-      userList.innerHTML = "";
+  function renderUsers(users){
+  const q = searchInput.value.toLowerCase();
+  userList.innerHTML = "";
 
-      const filtered = users.filter(u => {
-        const roles = extractRoles(u);
-        const roleLabels = roles.map(r => {
-          const def = ROLE_DEF.find(d => d.key === r);
-          return def ? def.label.toLowerCase() : r.toLowerCase();
-        });
-        return (
-          u.displayName?.toLowerCase().includes(q) ||
-          u.email?.toLowerCase().includes(q) ||
-          roles.some(r => r.toLowerCase().includes(q)) ||
-          roleLabels.some(lbl => lbl.includes(q))
-        );
-      });
+  const filtered = users.filter(u => {
+    const roles = extractRoles(u);
+    const roleLabels = roles.map(r => {
+      const def = ROLE_DEF.find(d => d.key === r);
+      return def ? def.label.toLowerCase() : r.toLowerCase();
+    });
+    return (
+      u.displayName?.toLowerCase().includes(q) ||
+      u.email?.toLowerCase().includes(q) ||
+      roles.some(r => r.toLowerCase().includes(q)) ||
+      roleLabels.some(lbl => lbl.includes(q))
+    );
+  });
 
-      if (filtered.length === 0) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="4" style="text-align:center; padding:1rem; color:#6b7280;">Keine Treffer gefunden</td>`;
-        userList.appendChild(tr);
-        return;
-      }
+  if (filtered.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4" style="text-align:center; padding:1rem; color:#6b7280;">
+      Keine Treffer gefunden
+    </td>`;
+    userList.appendChild(tr);
+    return;
+  }
 
-      filtered.forEach(u => {
-        const tr = document.createElement("tr");
-        const name = u.displayName || "Ohne Namen";
-        const mail = u.email || "–";
-        const roles = extractRoles(u);
-        tr.innerHTML = `
-          <td class="nowrap td-name" data-label="Anzeigename" title="${name}"><b>${highlight(name, q)}</b></td>
-          <td class="nowrap" data-label="E-Mail-Adresse" title="${mail}"><span class="email-val">${highlight(mail, q)}</span></td>
-          <td class="td-roles" data-label="Rollen">${rolesToBadges(roles).replace(new RegExp(q,"gi"), match => '<mark>'+match+'</mark>')}</td>
-          <td class="actions-cell" data-label=""></td>
-        `;
-        buildKebab(tr.querySelector(".actions-cell"), { uid: u.uid, displayName: name, email: mail, roles });
-        userList.appendChild(tr);
-      });
+  filtered.forEach(u => {
+    const tr = document.createElement("tr");
+    const name = u.displayName || "Ohne Namen";
+    const mail = u.email || "–";
+    const roles = extractRoles(u);
+
+    // Name
+    const tdName = document.createElement("td");
+    tdName.className = "nowrap td-name";
+    tdName.setAttribute("data-label","Anzeigename");
+    tdName.title = name;
+    tdName.innerHTML = `<b>${highlight(name, q)}</b>`;
+    tr.appendChild(tdName);
+
+    // Mail
+    const tdMail = document.createElement("td");
+    tdMail.className = "nowrap";
+    tdMail.setAttribute("data-label","E-Mail-Adresse");
+    tdMail.title = mail;
+    tdMail.innerHTML = `<span class="email-val">${highlight(mail, q)}</span>`;
+    tr.appendChild(tdMail);
+
+    // Rollen
+    const tdRoles = document.createElement("td");
+    tdRoles.className = "td-roles";
+    tdRoles.setAttribute("data-label","Rollen");
+    tdRoles.innerHTML = rolesToBadges(roles);
+    if (q) {
+      tdRoles.innerHTML = tdRoles.innerHTML.replace(
+        new RegExp(q,"gi"),
+        match => `<mark>${match}</mark>`
+      );
     }
+    tr.appendChild(tdRoles);
 
-    // Suche-Events
-    searchInput.addEventListener("input", () => {
-      renderUsers(allUsers);
-      clearSearch.style.display = searchInput.value ? "block" : "none";
-    });
-    searchInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        renderUsers(allUsers);
-      }
-    });
-    clearSearch.addEventListener("click", () => {
-      searchInput.value="";
-      clearSearch.style.display="none";
-      renderUsers(allUsers);
-    });
+    // Aktionen
+    const tdActions = document.createElement("td");
+    tdActions.className = "actions-cell";
+    tdActions.setAttribute("data-label","");
+    buildKebab(tdActions, { uid: u.uid, displayName: name, email: mail, roles });
+    tr.appendChild(tdActions);
 
+    userList.appendChild(tr);
+  });
+}
     // Nutzer laden
     async function loadUsers(){
       userMsg.style.color = "orange"; userMsg.textContent = "⏳ Lade Nutzer...";
