@@ -334,30 +334,132 @@
   <div id="toast"></div>
 
   <script>
-    function updateProgress(listId, progressId) {
-      const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
-      const checked = Array.from(list).filter(cb => cb.checked).length;
-      const percent = Math.round((checked / list.length) * 100);
-      const bar = document.getElementById(progressId);
+      // === NEU: Farb-Helpers ===
+  function lerpColor(a, b, t) {
+    const pa = hexToRgb(a), pb = hexToRgb(b);
+    const r = Math.round(pa.r + (pb.r - pa.r) * t);
+    const g = Math.round(pa.g + (pb.g - pa.g) * t);
+    const b2 = Math.round(pa.b + (pb.b - pa.b) * t);
+    return rgbToHex(r, g, b2);
+  }
+  function hexToRgb(hex) {
+    const x = hex.replace("#", "");
+    const full = x.length === 3 ? x.split("").map(c => c + c).join("") : x;
+    const int = parseInt(full, 16);
+    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
+  }
+  function rgbToHex(r, g, b) {
+    return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase();
+  }
 
-      bar.style.width = percent + "%";
-      bar.textContent = percent > 0 ? percent + "%" : "";
+  // Liefert einen linearen Farbverlauf (CSS background) je nach Prozent & Typ
+  // type: "grund" | "optional"
+  function getBarBackground(percent, type) {
+    // Farb-Stopps
+    const ROT_HELL   = "#FFC1C1";
+    const ROT        = "#D32F2F";
+    const GELB_HELL  = "#FFE680";
+    const GELB       = "#FFD400";
+    const HELLGRUEN  = "#8BC34A";
+    const DUNKELGRUEN= "#1E8E3E";
 
-      if (percent === 100) {
-        bar.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--drk-gruen");
-      } else if (percent >= 75) {
-        bar.style.backgroundColor = "var(--drk-gruen)";
-      } else if (percent >= 50) {
-        bar.style.backgroundColor = "var(--hellblau)";
-      } else if (percent >= 25) {
-        bar.style.backgroundColor = "var(--softrot)";
-      } else if (percent > 0) {
-        bar.style.backgroundColor = "var(--mittelgrau)";
-      } else {
-        bar.style.backgroundColor = "#e9ecef";
+    // Optional: 0–50 Gelb-Verlauf, 50–100 Gelb -> Grün
+    if (type === "optional") {
+      if (percent <= 0) return "#e9ecef";
+      if (percent <= 50) {
+        const t = Math.max(0, Math.min(1, percent / 50));
+        const c1 = lerpColor(ROT_HELL, GELB_HELL, t * 0.15); // ganz leichtes Anziehen
+        const c2 = lerpColor(GELB_HELL, GELB, t);
+        return `linear-gradient(to right, ${c1}, ${c2})`;
       }
-      return percent;
+      const t = Math.max(0, Math.min(1, (percent - 50) / 50));
+      const c1 = GELB;
+      const c2 = lerpColor(GELB, DUNKELGRUEN, t);
+      return `linear-gradient(to right, ${c1}, ${c2})`;
     }
+
+    // Grundvoraussetzungen:
+    // 0–20 Rot-Verlauf -> 20% Rot
+    if (percent <= 0) return "#e9ecef";
+    if (percent <= 20) {
+      const t = percent / 20;
+      const c1 = lerpColor(ROT_HELL, ROT, Math.max(0, Math.min(1, t * 0.5))); // sanfter Vorlauf
+      const c2 = lerpColor(ROT_HELL, ROT, Math.max(0, Math.min(1, t)));
+      return `linear-gradient(to right, ${c1}, ${c2})`;
+    }
+    // 20–40 Rot -> Gelb (Ziel: 40% Gelb)
+    if (percent <= 40) {
+      const t = (percent - 20) / 20;
+      const c1 = lerpColor(ROT, GELB, t * 0.3);
+      const c2 = lerpColor(ROT, GELB, t);
+      return `linear-gradient(to right, ${c1}, ${c2})`;
+    }
+    // 40–60 Gelb-Verlauf (Vorlauf innerhalb Gelb)
+    if (percent <= 60) {
+      const t = (percent - 40) / 20;
+      const c1 = lerpColor(GELB_HELL, GELB, Math.max(0, Math.min(1, t * 0.4)));
+      const c2 = lerpColor(GELB_HELL, GELB, t);
+      return `linear-gradient(to right, ${c1}, ${c2})`;
+    }
+    // 60–80 Gelb -> Hellgrün (Ziel: 80% Hellgrün)
+    if (percent <= 80) {
+      const t = (percent - 60) / 20;
+      const c1 = lerpColor(GELB, HELLGRUEN, t * 0.3);
+      const c2 = lerpColor(GELB, HELLGRUEN, t);
+      return `linear-gradient(to right, ${c1}, ${c2})`;
+    }
+    // 80–100 Hellgrün -> Dunkelgrün (Ziel: 100% Dunkelgrün)
+    const t = (percent - 80) / 20;
+    const c1 = lerpColor(HELLGRUEN, DUNKELGRUEN, t * 0.3);
+    const c2 = lerpColor(HELLGRUEN, DUNKELGRUEN, t);
+    return `linear-gradient(to right, ${c1}, ${c2})`;
+  }
+     function updateProgress(listId, progressId) {
+    const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
+    const checked = Array.from(list).filter(cb => cb.checked).length;
+    const percent = Math.round((checked / list.length) * 100);
+    const bar = document.getElementById(progressId);
+
+    bar.style.width = percent + "%";
+    bar.textContent = percent > 0 ? percent + "%" : "";
+
+    // Typ anhand der Progressbar-ID bestimmen
+    const type = (progressId === "grund-progress") ? "grund" : "optional";
+    const bg = getBarBackground(percent, type);
+
+    // Nur die Hintergrundfarbe/-verlauf setzen; sonst nichts ändern
+    // (background statt backgroundColor, damit Verläufe möglich sind)
+    if (bg === "#e9ecef") {
+      bar.style.background = "#e9ecef";
+    } else {
+      bar.style.background = bg;
+    }
+
+    return percent;
+  }
+    function updateProgress(listId, progressId) {
+    const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
+    const checked = Array.from(list).filter(cb => cb.checked).length;
+    const percent = Math.round((checked / list.length) * 100);
+    const bar = document.getElementById(progressId);
+
+    bar.style.width = percent + "%";
+    bar.textContent = percent > 0 ? percent + "%" : "";
+
+    // Typ anhand der Progressbar-ID bestimmen
+    const type = (progressId === "grund-progress") ? "grund" : "optional";
+    const bg = getBarBackground(percent, type);
+
+    // Nur die Hintergrundfarbe/-verlauf setzen; sonst nichts ändern
+    // (background statt backgroundColor, damit Verläufe möglich sind)
+    if (bg === "#e9ecef") {
+      bar.style.background = "#e9ecef";
+    } else {
+      bar.style.background = bg;
+    }
+
+    return percent;
+  }
 
     function showToast(message, color = "#333", icon = "") {
       const toast = document.getElementById("toast");
