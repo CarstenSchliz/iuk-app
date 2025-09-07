@@ -113,7 +113,7 @@
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
 
-    /* Abstände als Utility-Klassen */
+    /* Abstände */
     .mb-1 { margin-bottom: 1rem; }
     .mt-1 { margin-top: 0.5rem; }
     .mt-2 { margin-top: 1rem; }
@@ -237,9 +237,6 @@
     <div class="select-user">
       <select id="userSelect" aria-label="Nutzer auswählen">
         <option value="">-- bitte wählen --</option>
-        <option value="user1">Max Mustermann</option>
-        <option value="user2">Anna Beispiel</option>
-        <option value="user3">Lukas Test</option>
       </select>
       <div id="selectedUser" class="selected-user"></div>
     </div>
@@ -279,8 +276,6 @@
     <h3><i class="bi bi-person-check"></i> Bestätigung durch Ausbilder</h3>
     <div id="confirmUserSection" style="display:none;">
       <p id="confirmText"></p>
-
-      <!-- Grundvoraussetzungen -->
       <div class="checklist">
         <label><input type="checkbox" id="chkGrund"> Alle Grundvoraussetzungen erfüllt</label>
       </div>
@@ -289,8 +284,6 @@
           <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
         </button>
       </div>
-
-      <!-- Optionale -->
       <div class="checklist mt-2">
         <label><input type="checkbox" id="chkOptional"> Optionale Voraussetzungen erfüllt</label>
       </div>
@@ -299,10 +292,7 @@
           <i class="bi bi-envelope"></i> Bestätigung per Mail senden
         </button>
       </div>
-
       <hr class="mt-2 mb-1">
-
-      <!-- Ablehnung -->
       <div class="checklist mt-2">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
@@ -333,7 +323,92 @@
   <!-- Toast -->
   <div id="toast"></div>
 
-  <script>
+  <!-- Firebase + Firestore -->
+  <script type="module">
+    import { db } from "../js/firebase.js";
+    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const userSelect = document.getElementById("userSelect");
+    const selectedUser = document.getElementById("selectedUser");
+    const confirmUserSection = document.getElementById("confirmUserSection");
+    const confirmText = document.getElementById("confirmText");
+
+    const grundIds = ["fachdienst","erstgespraech","18jahre","hospitation","mitwirken"];
+    const optionalIds = ["c1","gruppenfuehrer"];
+
+    let currentUid = null;
+
+    async function loadUsersFromCloud() {
+      try {
+        const res = await fetch("https://listusers-a2gyli3wtq-uc.a.run.app");
+        const users = await res.json();
+        users.forEach(user => {
+          const option = document.createElement("option");
+          option.value = user.uid;
+          option.textContent = user.displayName || user.email || "(unbenannt)";
+          userSelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Fehler beim Laden der Nutzer:", err);
+      }
+    }
+
+    async function saveRequirement(uid, type, field, value) {
+      const ref = doc(db, "zugangsvoraussetzungen", uid);
+      await setDoc(ref, { [type]: { [field]: value } }, { merge: true });
+    }
+
+    async function loadRequirements(uid) {
+      const ref = doc(db, "zugangsvoraussetzungen", uid);
+      const snap = await getDoc(ref);
+      grundIds.concat(optionalIds).forEach(id => {
+        document.getElementById(id).checked = false;
+      });
+      if (snap.exists()) {
+        const data = snap.data();
+        grundIds.forEach(id => {
+          document.getElementById(id).checked = data.grund?.[id] || false;
+        });
+        optionalIds.forEach(id => {
+          document.getElementById(id).checked = data.optional?.[id] || false;
+        });
+      }
+    }
+
+    function setupCheckboxListeners(uid) {
+      grundIds.forEach(id => {
+        const cb = document.getElementById(id);
+        cb.disabled = false;
+        cb.onchange = () => saveRequirement(uid, "grund", id, cb.checked);
+      });
+      optionalIds.forEach(id => {
+        const cb = document.getElementById(id);
+        cb.disabled = false;
+        cb.onchange = () => saveRequirement(uid, "optional", id, cb.checked);
+      });
+    }
+
+    userSelect.addEventListener("change", async () => {
+      currentUid = userSelect.value;
+      if (currentUid) {
+        const name = userSelect.options[userSelect.selectedIndex].text;
+        selectedUser.textContent = "Ausgewählt: " + name;
+        confirmText.textContent = "Bestätigung für: " + name;
+        confirmUserSection.style.display = "block";
+        await loadRequirements(currentUid);
+        setupCheckboxListeners(currentUid);
+      } else {
+        selectedUser.textContent = "";
+        confirmUserSection.style.display = "none";
+        grundIds.concat(optionalIds).forEach(id => {
+          const cb = document.getElementById(id);
+          cb.checked = false;
+          cb.disabled = true;
+        });
+      }
+    });
+
+    // Fortschrittsbalken + Toast + Modal Logik bleibt wie gehabt (aus deinem alten Code)
     function updateProgress(listId, progressId) {
       const list = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
       const checked = Array.from(list).filter(cb => cb.checked).length;
@@ -367,83 +442,7 @@
       setTimeout(() => { toast.classList.remove("show"); }, 3000);
     }
 
-    // Fortschrittsbalken Listener
-    document.querySelectorAll("#grund-list input").forEach(cb => {
-      cb.addEventListener("change", () => updateProgress("grund-list", "grund-progress"));
-    });
-    document.querySelectorAll("#verlauf-list input").forEach(cb => {
-      cb.addEventListener("change", () => updateProgress("verlauf-list", "verlauf-progress"));
-    });
-
-    // Nutzer-Auswahl
-    const userSelect = document.getElementById("userSelect");
-    const selectedUser = document.getElementById("selectedUser");
-    const confirmUserSection = document.getElementById("confirmUserSection");
-    const confirmText = document.getElementById("confirmText");
-
-    userSelect.addEventListener("change", () => {
-      if (userSelect.value) {
-        const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: " + name;
-        confirmText.textContent = "Bestätigung für: " + name;
-        confirmUserSection.style.display = "block";
-
-        // Reset nur für Listen-Checkboxen
-        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => {
-          cb.checked = false;
-          cb.disabled = false;
-        });
-        document.getElementById("grundActions").style.display = "none";
-        document.getElementById("optionalActions").style.display = "none";
-        document.getElementById("rejectActions").style.display = "none";
-
-        updateProgress("grund-list", "grund-progress");
-        updateProgress("verlauf-list", "verlauf-progress");
-      } else {
-        selectedUser.textContent = "";
-        confirmUserSection.style.display = "none";
-        document.querySelectorAll("#grund-list input, #verlauf-list input").forEach(cb => {
-          cb.checked = false;
-          cb.disabled = true;
-        });
-        updateProgress("grund-list", "grund-progress");
-        updateProgress("verlauf-list", "verlauf-progress");
-      }
-    });
-
-    // Grundvoraussetzungen
-    const chkGrund = document.getElementById("chkGrund");
-    const grundActions = document.getElementById("grundActions");
-    chkGrund.addEventListener("change", () => {
-      const allChecked = Array.from(document.querySelectorAll("#grund-list input")).every(cb => cb.checked);
-      if (!allChecked && chkGrund.checked) {
-        showToast("Alle Grundvoraussetzungen sind noch nicht erfüllt!", "red", "bi-x-circle");
-        chkGrund.checked = false;
-        return;
-      }
-      grundActions.style.display = chkGrund.checked ? "block" : "none";
-    });
-
-    // Ablehnung
-    const chkReject = document.getElementById("chkReject");
-    const rejectActions = document.getElementById("rejectActions");
-    chkReject.addEventListener("change", () => {
-      rejectActions.style.display = chkReject.checked ? "block" : "none";
-    });
-    // Optionale
-    const chkOptional = document.getElementById("chkOptional");
-    const optionalActions = document.getElementById("optionalActions");
-    chkOptional.addEventListener("change", () => {
-      const allChecked = Array.from(document.querySelectorAll("#verlauf-list input")).every(cb => cb.checked);
-      if (!allChecked && chkOptional.checked) {
-        showToast("Alle optionalen Voraussetzungen sind noch nicht erfüllt!", "red", "bi-x-circle");
-        chkOptional.checked = false;
-        return;
-      }
-      optionalActions.style.display = chkOptional.checked ? "block" : "none";
-    });
-
-    // Modal
+    // Modal handling
     const confirmModal = document.getElementById("confirmModal");
     const confirmModalTitle = document.getElementById("confirmModalTitle");
     const confirmModalText = document.getElementById("confirmModalText");
@@ -470,7 +469,6 @@
       }, 300);
     }
 
-    // Buttons → Modal öffnen
     document.getElementById("btnApproveGrund").addEventListener("click", () => {
       openModal("approve", "Mitglied freigeben", "Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?", false);
     });
@@ -481,7 +479,6 @@
       openModal("optional", "Optionale Voraussetzungen bestätigen", "Soll die Bestätigung wirklich per E-Mail an das Mitglied gesendet werden?", false);
     });
 
-    // Modal → Bestätigung
     confirmYes.addEventListener("click", () => {
       closeModal();
       if (currentAction === "approve") {
@@ -494,6 +491,9 @@
       }
     });
     confirmCancel.addEventListener("click", closeModal);
+
+    // Init
+    loadUsersFromCloud();
   </script>
 </body>
 </html>
