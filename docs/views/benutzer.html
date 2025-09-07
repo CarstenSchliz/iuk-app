@@ -12,14 +12,14 @@
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --hellgrau: rgb(239,238,234);
-      --blassblau: rgb(230,240,250);
+      --blassblau: #3399ff; /* angepasst auf den Blauton aus deiner Beispiel-Seite */
       --text:#1f2937;
 
       /* Rollenfarben */
-      --role-admin-bg:#ffe8e6; --role-admin-bd:#ffcdc6; --role-admin-fg:#9e1b1b;   /* rot */
-      --role-gl-bg:#fff6db;   --role-gl-bd:#fde8a6;   --role-gl-fg:#8a6b00;       /* gelb */
-      --role-hf-bg:#e8f6ec;   --role-hf-bd:#c7efd5;   --role-hf-fg:#0f6b2b;       /* grün */
-      --role-an-bg:#e6f0ff;   --role-an-bd:#cfe1ff;   --role-an-fg:#0d3b8a;       /* blau */
+      --role-admin-bg:#ffe8e6; --role-admin-bd:#ffcdc6; --role-admin-fg:#9e1b1b;
+      --role-gl-bg:#fff6db;   --role-gl-bd:#fde8a6;   --role-gl-fg:#8a6b00;
+      --role-hf-bg:#e8f6ec;   --role-hf-bd:#c7efd5;   --role-hf-fg:#0f6b2b;
+      --role-an-bg:#e6f0ff;   --role-an-bd:#cfe1ff;   --role-an-fg:#0d3b8a;
     }
     *{box-sizing:border-box}
 
@@ -43,7 +43,7 @@
     .user-page .user-table th, .user-page .user-table td{
       border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle; text-align:left;
     }
-    .user-page .user-table th{ background:var(--blassblau); }
+    .user-page .user-table th{ background:var(--blassblau); color:#fff; }
 
     .user-page .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
     .user-page .td-name b{ font-weight:700 }
