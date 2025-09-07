@@ -26,7 +26,7 @@
     *{box-sizing:border-box}
 
     /* NICHT global body überschreiben, sonst Sidebar kaputt */
-    .user-page{ margin:0; color:var(--text); padding:1rem; }
+    .user-page{ margin:0; color:var(--text); padding:1rem; width:100%; max-width:unset; }
 
     .user-page .page-title{ color:var(--softrot); margin:0 0 1rem }
 
@@ -192,6 +192,7 @@
       <!-- Nutzerliste -->
       <div class="card">
         <h3><i class="bi bi-people"></i> Benutzerübersicht</h3>
+        <input type="text" id="searchInput" placeholder="🔍 Suchen..." style="margin-bottom:10px; padding:6px; width:100%; border-radius:8px; border:1px solid #ccc;">
 
         <table class="user-table" aria-label="Liste der Benutzer">
           <thead>
@@ -225,7 +226,7 @@
               <input type="text" id="newName" placeholder=" " autocomplete="name" />
               <label for="newName">Anzeigename (optional)</label>
             </div>
-            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Benutzer erstellen</button>
+            <button type="submit" class="btn btn-primary" id="createBtn"><i class="bi bi-save"></i> Benutzer erstellen</button>
             <div id="createUserMsg" class="form-msg"></div>
           </form>
         </div>
@@ -313,13 +314,7 @@
 
     // Helpers
     function extractRoles(u){
-      let roles = Array.isArray(u.roles) ? u.roles : [];
-      if (!roles.length){
-        ROLE_DEF.forEach(r => { if (u[r.key]) roles.push(r.key); });
-        if (u.admin && !roles.includes("admin")) roles.push("admin");
-      }
-      const allowed = new Set(ROLE_DEF.map(r=>r.key));
-      return Array.from(new Set(roles.filter(r=>allowed.has(r))));
+      return Array.isArray(u.roles) ? u.roles : [];
     }
 
     function rolesToBadges(roles){
@@ -330,47 +325,31 @@
       }).join("") + '</div>';
     }
 
-    function buildKebab(cell, onEdit, onDelete, user){
+    function buildKebab(cell, user){
       cell.classList.add("actions-cell");
-      const btn = document.createElement("button");
-      btn.className = "kebab-btn"; btn.setAttribute("aria-label","Aktionen");
-      btn.innerHTML = '<i class="bi bi-three-dots-vertical"></i>';
-
-      const menu = document.createElement("div");
-      menu.className = "kebab-menu";
-      menu.innerHTML = `
-        <button class="act-edit"><i class="bi bi-pencil"></i><span>Bearbeiten</span></button>
-        <button class="act-del"  style="color:#b91c1c;"><i class="bi bi-trash"></i><span>Nutzer löschen</span></button>
-      `;
-
-      const openMenu = (e) => {
-        e?.stopPropagation?.();
-        const isOpen = menu.style.display === "block";
-        document.querySelectorAll(".user-page .kebab-menu").forEach(m=>m.style.display="none");
-        menu.style.display = isOpen ? "none" : "block";
-      };
-
-      btn.addEventListener("click", openMenu, { passive:true });
-      btn.addEventListener("touchstart", openMenu, { passive:true });
-
-      const closeAll = () => menu.style.display = "none";
-      document.addEventListener("click", closeAll);
-      document.addEventListener("touchstart", closeAll, { passive:true });
-
-      menu.querySelector(".act-edit").addEventListener("click", ()=>{ menu.style.display="none"; onEdit(user); });
-      menu.querySelector(".act-del").addEventListener("click", ()=>{ menu.style.display="none"; onDelete(user); });
-
-      cell.appendChild(btn); cell.appendChild(menu);
+      cell.innerHTML = `
+        <button class="kebab-btn" aria-label="Aktionen"><i class="bi bi-three-dots-vertical"></i></button>
+        <div class="kebab-menu">
+          <button class="act-edit"><i class="bi bi-pencil"></i><span>Bearbeiten</span></button>
+          <button class="act-del"  style="color:#b91c1c;"><i class="bi bi-trash"></i><span>Nutzer löschen</span></button>
+        </div>`;
+      cell.querySelector(".act-edit").onclick = ()=>openEditor(user);
+      cell.querySelector(".act-del").onclick = ()=>deleteUserFlow(user);
     }
 
-    function updateNavigationDisplayName(newName){
-      const ids = ["navUserName","sidebarUserName"];
-      ids.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = newName || "Ohne Namen"; });
-      document.querySelectorAll("[data-user-name]").forEach(el => el.textContent = newName || "Ohne Namen");
-    }
+    // Global Kebab Listener
+    document.addEventListener("click",(e)=>{
+      document.querySelectorAll(".kebab-menu").forEach(m=>m.style.display="none");
+      if(e.target.closest(".kebab-btn")){
+        const menu=e.target.closest(".actions-cell").querySelector(".kebab-menu");
+        menu.style.display="block"; e.stopPropagation();
+      }
+    });
 
     // Editor
     function openEditor(user){
+      if(editorDirty && !confirm("Ungespeicherte Änderungen verwerfen?")) return;
+
       const initial = {
         name: user.displayName || "",
         roles: extractRoles(user)
@@ -379,7 +358,6 @@
       editPanelOuter.style.display = "block";
       editPanel.innerHTML = `
         <h3 style="margin-top:0;">Nutzer bearbeiten</h3>
-
         <div class="editor-row">
           <div class="form-group floating">
             <input type="text" id="edName" placeholder=" " value="${initial.name}">
@@ -394,7 +372,6 @@
             <label for="edUID">UID</label>
           </div>
         </div>
-
         <div id="rolesSection">
           <h4>Rollen</h4>
           <div class="roles-grid">
@@ -406,12 +383,16 @@
             `).join("")}
           </div>
         </div>
-
         <div class="editor-actions">
           <button class="btn btn-secondary" id="edCancel"><i class="bi bi-x-lg"></i> Abbrechen</button>
           <button class="btn btn-primary"  id="edSave"><i class="bi bi-save"></i> Speichern</button>
         </div>
       `;
+
+      editorDirty=false;
+      editPanel.querySelectorAll("input").forEach(inp=>{
+        inp.addEventListener("input",()=>editorDirty=true);
+      });
 
       document.getElementById("edCancel").onclick = () => {
         showToast("Änderungen verworfen");
@@ -420,6 +401,8 @@
       };
 
       document.getElementById("edSave").onclick = async () => {
+        const btn=document.getElementById("edSave");
+        btn.disabled=true; btn.textContent="⏳ Speichern...";
         const newName = document.getElementById("edName").value.trim();
         const selected = Array.from(editPanel.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
 
@@ -432,13 +415,15 @@
           if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
 
           showToast("Gespeichert");
-          updateNavigationDisplayName(newName);
           await loadUsers();
 
           editPanelOuter.style.display = "none";
           editPanel.innerHTML = "";
+          editorDirty=false;
         }catch(err){
           showToast("Fehler: " + err.message);
+        }finally{
+          btn.disabled=false; btn.innerHTML='<i class="bi bi-save"></i> Speichern';
         }
       };
     }
@@ -447,7 +432,7 @@
     async function deleteUserFlow(user){
       const title = "Nutzer löschen?";
       const who = user.displayName || user.email || user.uid;
-      const message = `Soll der Nutzer wirklich gelöscht werden?\n\n${who}`;
+      const message = `Soll der Nutzer wirklich gelöscht werden?\\n\\n${who}`;
       const ok = await confirmDialog({ title, message, okText:"Löschen", cancelText:"Abbrechen" });
       if (!ok) return;
 
@@ -468,22 +453,25 @@
 
     // Liste
     function renderUsers(users){
-      userList.innerHTML = "";
-      users.forEach(u=>{
+      const q=searchInput.value.toLowerCase();
+      userList.innerHTML="";
+      users.filter(u=>{
+        return u.displayName?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q) || extractRoles(u).some(r=>r.includes(q));
+      }).forEach(u=>{
         const tr = document.createElement("tr");
         const name = u.displayName || "Ohne Namen";
         const mail = u.email || "–";
         const roles = extractRoles(u);
 
         tr.innerHTML = `
-          <td class="nowrap td-name" data-label="Anzeigename" title="${name}"><b>${name}</b></td>
-          <td class="nowrap" data-label="E-Mail-Adresse" title="${mail}"><span class="email-val">${mail}</span></td>
+          <td class="nowrap td-name" data-label="Anzeigename" title="${name}"><b></b></td>
+          <td class="nowrap" data-label="E-Mail-Adresse" title="${mail}"><span class="email-val"></span></td>
           <td class="td-roles" data-label="Rollen">${rolesToBadges(roles)}</td>
           <td class="actions-cell" data-label=""></td>
         `;
-        const actionsCell = tr.querySelector(".actions-cell");
-        buildKebab(actionsCell, openEditor, deleteUserFlow, { uid: u.uid, displayName:name, email:mail, roles });
-
+        tr.querySelector(".td-name b").textContent=name;
+        tr.querySelector(".email-val").textContent=mail;
+        buildKebab(tr.querySelector(".actions-cell"), { uid: u.uid, displayName:name, email:mail, roles });
         userList.appendChild(tr);
       });
     }
@@ -494,7 +482,8 @@
       try{
         const res = await fetch(API_BASE + "/listUsers", { method:"GET" });
         const data = await res.json();
-        renderUsers(data.users || []);
+        allUsers=(data.users||[]).sort((a,b)=>(a.displayName||a.email||"").localeCompare(b.displayName||b.email||"","de",{sensitivity:"base"}));
+        renderUsers(allUsers);
         userMsg.textContent = "";
       }catch(err){
         userMsg.style.color = "red";
@@ -510,15 +499,13 @@
     const msg  = document.getElementById("createUserMsg");
     form.addEventListener("submit", async (e)=>{
       e.preventDefault();
+      if(!form.reportValidity()) return;
       const email = document.getElementById("newEmail").value.trim();
       const pw    = document.getElementById("newPassword").value;
       const name  = document.getElementById("newName").value.trim();
 
-      if (!email || !pw){
-        msg.style.color = "red"; msg.textContent = "❌ E-Mail und Passwort sind erforderlich.";
-        return;
-      }
-      msg.textContent = "";
+      const btn=document.getElementById("createBtn");
+      btn.disabled=true; btn.textContent="⏳ Erstellen...";
 
       try{
         const res = await fetch(API_BASE + "/createUser", {
@@ -533,6 +520,8 @@
         await loadUsers();
       }catch(err){
         msg.style.color = "red"; msg.textContent = "❌ Fehler: " + err.message;
+      }finally{
+        btn.disabled=false; btn.innerHTML='<i class="bi bi-save"></i> Benutzer erstellen';
       }
     });
   </script>
