@@ -250,82 +250,53 @@
   <div id="toast"></div>
 
   <script>
+    // Firebase Firestore und Auth importieren
+    import { db } from "./docs/js/firebase.js"; // Stelle sicher, dass du den richtigen Pfad verwendest!
+
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
 
-    // Nutzer laden
-    async function loadUsers(){
-      try{
-        const res = await fetch(API_BASE + "/listUsers");  // Deine API-Verbindung
-        const data = await res.json();
-        userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
-        (data.users || []).forEach(u=>{
-          const opt = document.createElement("option");
-          opt.value = u.uid;
-          opt.textContent = u.displayName || u.email || u.uid;
-          userSelect.appendChild(opt);
-        });
-      }catch(err){
-        console.error("❌ Fehler beim Laden:", err);
+    // Nutzer laden und ins Dropdown füllen
+    async function loadUsers() {
+      try {
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.get();
+
+        if (!snapshot.empty) {
+          userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+          snapshot.forEach(doc => {
+            const user = doc.data();
+            const opt = document.createElement("option");
+            opt.value = doc.id;
+            opt.textContent = user.displayName || user.email || doc.id;
+            userSelect.appendChild(opt);
+          });
+        } else {
+          showToast("Es wurden keine Nutzer gefunden.");
+        }
+      } catch (error) {
+        console.error("Fehler beim Laden der Nutzer:", error);
         showToast("Es gab einen Fehler beim Laden der Nutzer.");
       }
     }
+
+    // Nutzer laden, wenn die Seite geladen wird
     loadUsers();
 
-    // Auswahl
+    // Auswahl des Nutzers
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
         const name = userSelect.options[userSelect.selectedIndex].text;
         selectedUser.textContent = "Ausgewählt: " + name;
         confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
-
-        document.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb => {
-          cb.disabled = false;
-        });
-
       } else {
         selectedUser.textContent = "";
         confirmUserSection.style.display = "none";
-
-        document.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb => {
-          cb.disabled = true;
-          cb.checked = false;
-        });
-        updateProgress("grund-list","grund-progress","grund");
-        updateProgress("verlauf-list","verlauf-progress","optional");
       }
     });
-
-    // Fortschritt aktualisieren
-    function updateProgress(listId, progressId, type){
-      const checkboxes = document.querySelectorAll(`#${listId} input[type="checkbox"]`);
-      const checked = [...checkboxes].filter(cb=>cb.checked).length;
-      const total = checkboxes.length;
-      const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
-
-      const bar = document.getElementById(progressId);
-      bar.style.width = percent + "%";
-
-      // nur ab 20% Text anzeigen
-      bar.textContent = percent >= 20 ? percent + "%" : "";
-
-      // Farben nach Vorgabe (sattere Töne)
-      if(type === "grund"){
-        if(percent === 20){ bar.style.backgroundColor = "#b22222"; bar.style.color="white";}
-        else if(percent === 40){ bar.style.backgroundColor = "#ff8c00"; bar.style.color="white";}
-        else if(percent === 60){ bar.style.backgroundColor = "#daa520"; bar.style.color="black";}
-        else if(percent === 80){ bar.style.backgroundColor = "#6b8e23"; bar.style.color="black";}
-        else if(percent === 100){ bar.style.backgroundColor = "#006400"; bar.style.color="white";}
-        else { bar.style.backgroundColor = "#e9ecef"; bar.textContent=""; }
-      } else if(type === "optional"){
-        if(percent === 50){ bar.style.backgroundColor = "#daa520"; bar.style.color="black"; }
-        else if(percent === 100){ bar.style.backgroundColor = "#006400"; bar.style.color="white";}
-        else { bar.style.backgroundColor = "#e9ecef"; bar.textContent=""; }
-      }
-    }
 
     // Toast anzeigen
     function showToast(msg){
@@ -334,48 +305,6 @@
       toast.className = "show";
       setTimeout(()=>{ toast.className = toast.className.replace("show",""); }, 3000);
     }
-
-    // Eventlistener für Fortschritt
-    document.querySelectorAll('#grund-list input[type="checkbox"]').forEach(cb=>{
-      cb.addEventListener("change", ()=>updateProgress("grund-list","grund-progress","grund"));
-    });
-    document.querySelectorAll('#verlauf-list input[type="checkbox"]').forEach(cb=>{
-      cb.addEventListener("change", ()=>updateProgress("verlauf-list","verlauf-progress","optional"));
-    });
-
-    // Gruppenleiter-Checklogik
-    const chkGrund = document.getElementById("chkGrund");
-    const chkOptional = document.getElementById("chkOptional");
-    const chkReject = document.getElementById("chkReject");
-    const grundActions = document.getElementById("grundActions");
-    const optionalActions = document.getElementById("optionalActions");
-    const rejectActions = document.getElementById("rejectActions");
-
-    chkGrund.addEventListener("change", ()=>{
-      const allGrund = document.querySelectorAll('#grund-list input[type="checkbox"]');
-      const allChecked = [...allGrund].every(cb=>cb.checked);
-
-      if(chkGrund.checked && !allChecked){
-        chkGrund.checked = false;
-        showToast("❌ Nicht alle Grundvoraussetzungen sind erfüllt!");
-      }
-      grundActions.style.display = chkGrund.checked ? "block" : "none";
-    });
-
-    chkOptional.addEventListener("change", ()=>{
-      const allOpt = document.querySelectorAll('#verlauf-list input[type="checkbox"]');
-      const allChecked = [...allOpt].every(cb=>cb.checked);
-
-      if(chkOptional.checked && !allChecked){
-        chkOptional.checked = false;
-        showToast("❌ Nicht alle optionalen Voraussetzungen sind erfüllt!");
-      }
-      optionalActions.style.display = chkOptional.checked ? "block" : "none";
-    });
-
-    chkReject.addEventListener("change", ()=>{
-      rejectActions.style.display = chkReject.checked ? "block" : "none";
-    });
   </script>
 </body>
 </html>
