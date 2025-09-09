@@ -11,9 +11,8 @@
       --drk-gruen: rgb(0,150,80);
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
+      --mittelgrau: rgb(180,180,180);
     }
-
-    body { font-family: system-ui, sans-serif; margin:0; padding:1rem; background:#f9fafb; }
 
     .page-title { color: var(--softrot); margin-bottom: 1rem; }
 
@@ -31,7 +30,6 @@
       padding: 1.5rem;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom:1.5rem;
     }
     .card h3 {
       color: var(--hellblau);
@@ -83,52 +81,55 @@
       margin-top: 1rem;
     }
 
-    .btn-confirm {
-      display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
-      margin-top:0.5rem; padding:0.7rem 1.2rem;
-      border:none; border-radius:10px; cursor:pointer;
-      color:#fff; font-weight:600; font-size:0.95rem;
-      box-shadow:0 2px 4px rgba(0,0,0,0.1); transition:transform .15s;
-    }
-    .btn-confirm:hover{ transform:translateY(-1px); }
+    .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
 
-    #toast {
-      position:fixed; left:50%; bottom:20px; transform:translateX(-50%);
-      background:var(--dunkelblau); color:#fff;
-      padding:12px 20px; border-radius:8px;
-      display:none; z-index:2000;
-      box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--dunkelblau);
+      background: #fff;
+      font-size: 1rem;
+      color: var(--dunkelblau);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
     }
+    select:focus { outline: none; border-color: var(--dunkelblau); box-shadow: none; }
+    @media(min-width: 769px){ .select-user select { max-width: 300px; } }
 
-    /* Modal modern */
-    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1500; }
-    .modal{ position:fixed; inset:0; display:none; z-index:1600; align-items:center; justify-content:center; padding:1rem; }
+    #toast { visibility: hidden; min-width: 250px; background-color: var(--dunkelblau); color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+
+    /* Modal (Design wie Benutzerverwaltung) */
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1999;
+    }
+    .modal{
+      position:fixed; inset:0; display:none; z-index:2000; align-items:center; justify-content:center; padding:1rem;
+    }
     .modal .modal-card{
-      background:#fff; border-radius:14px; width:min(420px, 95vw);
-      box-shadow:0 20px 60px rgba(0,0,0,.25);
-      padding:1.25rem 1.5rem;
+      background:#fff; color:#111; border-radius:14px; width:min(520px, 96vw);
+      box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem 1rem 1rem;
       border:1px solid #e5e7eb;
-      animation:fadeIn .25s ease;
     }
-    .modal h4{ margin-top:0; margin-bottom:.6rem; color:var(--dunkelblau); }
-    .modal p{ margin:.2rem 0 1rem; color:#374151; line-height:1.4; }
-    .modal .modal-actions{ display:flex; gap:.8rem; justify-content:flex-end; }
+    .modal .modal-actions{ display:flex; gap:.8rem; justify-content:flex-end; margin-top:1rem; }
     .modal .btn{ padding:.6rem 1rem; border:none; border-radius:10px; font-size:.95rem; cursor:pointer; }
-    .modal .btn-secondary{ background:#e5e7eb; }
-    .modal .btn-primary{ background:var(--drk-gruen); color:#fff; }
-    .modal .btn-danger{ background:var(--softrot); color:#fff; }
-
-    @keyframes fadeIn{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+    .modal .btn-secondary{ background:#eef2f7 }
+    .modal .btn-primary{ background:var(--drk-gruen); color:#fff }
+    .modal .btn-danger{ background:var(--softrot); color:#fff }
   </style>
 </head>
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
   <!-- Nutzer-Auswahl -->
-  <div class="card">
+  <div class="card" style="margin-bottom:1.5rem;">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
     <div class="select-user">
       <select id="userSelect">
@@ -173,7 +174,7 @@
   </div>
 
   <!-- Bestätigung -->
-  <div class="card">
+  <div class="card" style="margin-top:1.5rem;">
     <h3><i class="bi bi-person-check"></i> Bestätigung durch den Gruppenleiter</h3>
     <div id="confirmUserSection" style="display:none;">
       <p id="confirmText"></p>
@@ -181,16 +182,16 @@
       <div class="checklist">
         <label><input type="checkbox" id="chkGrund" disabled> Alle Grundvoraussetzungen erfüllt</label>
       </div>
-      <div id="grundActions" style="display:none;">
+      <div id="grundActions" style="display:none; margin-top:0.5rem;">
         <button class="btn-confirm btn-green" data-action="freigeben">
-          <i class="bi bi-check-circle"></i> Mitglied freigeben
+          <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
         </button>
       </div>
 
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkOptional" disabled> Optionale Voraussetzungen erfüllt</label>
       </div>
-      <div id="optionalActions" style="display:none;">
+      <div id="optionalActions" style="display:none; margin-top:0.5rem;">
         <button class="btn-confirm btn-blue" data-action="mail">
           <i class="bi bi-envelope"></i> Bestätigung per Mail senden
         </button>
@@ -201,20 +202,19 @@
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
-      <div id="rejectActions" style="display:none;">
+      <div id="rejectActions" style="display:none; margin-top:0.5rem;">
         <button class="btn-confirm btn-red" data-action="ablehnen">
-          <i class="bi bi-x-circle"></i> Mitglied ablehnen
+          <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- Modal -->
+  <!-- Modal (wie in Benutzerverwaltung) -->
   <div id="modalBackdrop" class="modal-backdrop"></div>
-  <div id="modal" class="modal" role="dialog" aria-modal="true">
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
       <h4 id="modalTitle">Bestätigen</h4>
       <p id="modalMessage">Bist du sicher?</p>
@@ -240,7 +240,15 @@
     const chkOptional = document.getElementById("chkOptional");
     const chkReject = document.getElementById("chkReject");
 
+    // Toast (unverändert)
     const toast = document.getElementById("toast");
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(()=>toast.classList.remove("show"), 2600);
+    }
+
+    // Modal wie in Benutzerverwaltung
     const modal = document.getElementById("modal");
     const backdrop = document.getElementById("modalBackdrop");
     const modalTitle = document.getElementById("modalTitle");
@@ -248,28 +256,24 @@
     const modalOk = document.getElementById("modalOk");
     const modalCancel = document.getElementById("modalCancel");
 
-    function showToast(msg){
-      toast.textContent = msg;
-      toast.style.display = "block";
-      setTimeout(()=>toast.style.display="none", 2500);
-    }
-
-    function openModal(title, message){
+    function openModal({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}){
       modalTitle.textContent = title;
       modalMessage.textContent = message;
+      modalOk.innerHTML = `<i class="bi bi-check2"></i> ${okText}`;
+      modalCancel.innerHTML = `<i class="bi bi-x-lg"></i> ${cancelText}`;
       modal.style.display = "flex";
       backdrop.style.display = "block";
       return new Promise(resolve=>{
-        modalOk.onclick = ()=>{ closeModal(); resolve(true); };
-        modalCancel.onclick = ()=>{ closeModal(); resolve(false); };
-        backdrop.onclick = ()=>{ closeModal(); resolve(false); };
+        const close = (val) => { modal.style.display="none"; backdrop.style.display="none"; resolve(val); };
+        const onEsc = (e)=>{ if(e.key==="Escape"){ document.removeEventListener("keydown", onEsc); close(false); } };
+        document.addEventListener("keydown", onEsc);
+        modalOk.onclick = ()=>{ document.removeEventListener("keydown", onEsc); close(true); };
+        modalCancel.onclick = ()=>{ document.removeEventListener("keydown", onEsc); close(false); };
+        backdrop.onclick = ()=>{ document.removeEventListener("keydown", onEsc); close(false); };
       });
     }
-    function closeModal(){
-      modal.style.display = "none";
-      backdrop.style.display = "none";
-    }
 
+    // Prozentfarben & Anzeige
     function setProgressColor(bar, percent) {
       if (percent === 0) {
         bar.style.backgroundColor = "#e9ecef";
@@ -279,11 +283,11 @@
         else if (percent <= 40) bar.style.backgroundColor = "orange";
         else if (percent <= 60) bar.style.backgroundColor = "gold";
         else if (percent <= 80) bar.style.backgroundColor = "lightgreen";
-        else bar.style.backgroundColor = "green";
-
+        else bar.style.backgroundColor = "var(--drk-gruen)"; // 100% dunkelgrün aus deinem Theme
         bar.textContent = percent + "%";
       }
     }
+
     function updateProgress(boxes, bar, gate) {
       const total = boxes.length;
       const checked = Array.from(boxes).filter(b => b.checked).length;
@@ -294,6 +298,7 @@
       if (percent !== 100) gate.checked = false;
     }
 
+    // Nutzer auswählen (unverändert, plus Reset der Buttons)
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
         const name = userSelect.options[userSelect.selectedIndex].text;
@@ -307,6 +312,11 @@
         chkOptional.disabled = true; chkOptional.checked = false;
         chkReject.checked = false;
 
+        // Buttons einklappen
+        document.getElementById("grundActions").style.display = "none";
+        document.getElementById("optionalActions").style.display = "none";
+        document.getElementById("rejectActions").style.display = "none";
+
         updateProgress(grundBoxes, grundProgress, chkGrund);
         updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
       } else {
@@ -315,6 +325,7 @@
       }
     });
 
+    // Fortschritt live updaten
     document.getElementById("grund-list").addEventListener("change", () => {
       updateProgress(grundBoxes, grundProgress, chkGrund);
     });
@@ -322,6 +333,7 @@
       updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
     });
 
+    // Buttons zeigen, wenn Checkboxen aktiv sind
     chkGrund.addEventListener("change", () => {
       document.getElementById("grundActions").style.display = chkGrund.checked ? "block" : "none";
     });
@@ -332,30 +344,30 @@
       document.getElementById("rejectActions").style.display = e.target.checked ? "block" : "none";
     });
 
-    // Buttons mit Modal
+    // Aktionen mit Modal
     document.body.addEventListener("click", async (e)=>{
-      if(e.target.closest("[data-action]")){
-        const action = e.target.closest("[data-action]").dataset.action;
-        let title, message, success;
+      const btn = e.target.closest("[data-action]");
+      if(!btn) return;
+      const action = btn.dataset.action;
+      let title, message, okText = "Bestätigen";
 
-        if(action==="freigeben"){
-          title="Mitglied freigeben";
-          message="Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?";
-          success="✅ Mitglied freigegeben!";
-        }
-        if(action==="mail"){
-          title="Bestätigung senden";
-          message="Soll eine Bestätigung per Mail gesendet werden?";
-          success="📧 Mail gesendet!";
-        }
-        if(action==="ablehnen"){
-          title="Mitglied ablehnen";
-          message="Soll das Mitglied wirklich für den aktiven Dienst abgelehnt werden?";
-          success="❌ Mitglied abgelehnt!";
-        }
+      if(action==="freigeben"){
+        title="Mitglied freigeben";
+        message="Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?";
+      } else if(action==="mail"){
+        title="Bestätigung per Mail senden";
+        message="Soll eine Bestätigung per Mail gesendet werden?";
+      } else if(action==="ablehnen"){
+        title="Mitglied ablehnen";
+        message="Soll das Mitglied wirklich für den aktiven Dienst abgelehnt werden?";
+        okText="Ablehnen";
+      }
 
-        const ok = await openModal(title,message);
-        if(ok) showToast(success);
+      const ok = await openModal({ title, message, okText });
+      if(ok){
+        if(action==="freigeben") showToast("Mitglied freigegeben");
+        if(action==="mail")      showToast("Mail gesendet");
+        if(action==="ablehnen")  showToast("Mitglied abgelehnt");
       }
     });
   </script>
