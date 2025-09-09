@@ -12,7 +12,7 @@
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
       --mittelgrau: rgb(180,180,180);
-      --hellgruene-progress: rgb(204, 255, 204); /* Dezente hellgrüne Farbe */
+      --hellgruene-progress: #a1d88f; /* Kräftigeres Hellgrün für 80% */
     }
 
     .page-title { color: var(--softrot); margin-bottom: 1rem; }
@@ -82,9 +82,7 @@
       margin-top: 1rem;
     }
 
-    .btn-confirm {
-      display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px;
-    }
+    .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
@@ -287,7 +285,7 @@
         if (percent <= 20) bar.style.backgroundColor = "red";
         else if (percent <= 40) bar.style.backgroundColor = "orange";
         else if (percent <= 60) bar.style.backgroundColor = "gold";
-        else if (percent <= 80) bar.style.backgroundColor = "var(--hellgruene-progress)"; /* Dezenteres hellgrün */
+        else if (percent <= 80) bar.style.backgroundColor = "var(--hellgruene-progress)"; /* Kräftigeres Hellgrün */
         else bar.style.backgroundColor = "var(--drk-gruen)"; // 100% dunkelgrün aus deinem Theme
         bar.textContent = percent + "%";
       }
