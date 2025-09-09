@@ -23,11 +23,42 @@
       margin-bottom: 2rem;
     }
 
-    .category h3 {
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .category-header h3 {
       color: var(--dunkelblau);
-      margin-bottom: 1rem;
-      border-bottom: 2px solid var(--mittelgrau);
-      padding-bottom: 0.3rem;
+      margin: 0.5rem 0;
+      flex-grow: 1;
+    }
+
+    .category .progress {
+      height: 22px;
+      background-color: #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 0.5rem 0 1rem 0;
+    }
+    .category .progress-bar {
+      height: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: width 0.3s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: white;
+      background: var(--hellblau);
+    }
+
+    .subcategory-container {
+      margin-top: 0.5rem;
     }
 
     .module-card {
@@ -79,10 +110,6 @@
       height: 1.1rem;
       cursor: pointer;
     }
-    .levels input[disabled] {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
 
     /* Darkmode */
     body.dark .module-card { background:#1a1a1a; color:#f5f5f5; }
@@ -90,14 +117,12 @@
   </style>
 </head>
 <body>
-  <h2 class="page-title"><i class="bi bi-journal"></i> Lernmodule</h2>
+  <h2 class="page-title">Lernmodule</h2>
 
-  <!-- Kategorien -->
   <div id="modulesContainer"></div>
 
   <script>
-    const currentRole = "Helfer"; // später dynamisch aus Firebase Userrollen laden
-
+    // Kategorien und Subkategorien
     const categories = {
       "Fahrzeugkunde": [
         "IT", "Hardware", "Bedienung", "KFZ", "Funk", "Material im Heck",
@@ -120,55 +145,90 @@
       ]
     };
 
+    // Icons für Kategorien
+    const categoryIcons = {
+      "Fahrzeugkunde": "bi-truck",
+      "Software": "bi-pc-display",
+      "LARDIS": "bi-diagram-3",
+      "Einsatztaktik": "bi-shield"
+    };
+
     const container = document.getElementById("modulesContainer");
 
     // Rendern
     Object.keys(categories).forEach(cat => {
       const section = document.createElement("div");
       section.className = "category";
-      section.innerHTML = `<h3>${cat}</h3>`;
-      
+
+      // Header mit Icon + Titel
+      const header = document.createElement("div");
+      header.className = "category-header";
+      header.innerHTML = `<i class="bi ${categoryIcons[cat]}"></i><h3>${cat}</h3><i class="bi bi-chevron-down"></i>`;
+      section.appendChild(header);
+
+      // Fortschrittsbalken für Kategorie
+      const catProgress = document.createElement("div");
+      catProgress.className = "progress";
+      catProgress.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
+      section.appendChild(catProgress);
+
+      // Subkategorien
+      const subContainer = document.createElement("div");
+      subContainer.className = "subcategory-container";
+
       categories[cat].forEach(sub => {
         const card = document.createElement("div");
         card.className = "module-card";
         card.innerHTML = `
           <h4>${sub}</h4>
-          <div class="progress"><div class="progress-bar" style="width:0%">0%</div></div>
+          <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
           <ul class="levels">
-            <li><input type="checkbox" data-level="gelernt"> gelernt (vom Nutzer)</li>
-            <li><input type="checkbox" data-level="aufsicht" disabled> unter Aufsicht angewendet</li>
-            <li><input type="checkbox" data-level="selbststaendig" disabled> selbstständig angewendet</li>
-            <li><input type="checkbox" data-level="sicher" disabled> sichere Anwendung</li>
+            <li><input type="checkbox" data-level="gelernt"> gelernt</li>
+            <li><input type="checkbox" data-level="aufsicht"> unter Aufsicht angewendet</li>
+            <li><input type="checkbox" data-level="selbststaendig"> selbstständig angewendet</li>
+            <li><input type="checkbox" data-level="sicher"> sichere Anwendung</li>
           </ul>
         `;
-        section.appendChild(card);
+        subContainer.appendChild(card);
       });
 
+      section.appendChild(subContainer);
       container.appendChild(section);
-    });
 
-    // Rollen- und Fortschrittslogik
-    document.querySelectorAll(".module-card").forEach(card => {
-      const checkboxes = card.querySelectorAll("input[type=checkbox]");
-      const progressBar = card.querySelector(".progress-bar");
-
-      // Rolle beachten
-      checkboxes.forEach(cb => {
-        if (cb.dataset.level === "gelernt") {
-          cb.disabled = false;
-        } else if (currentRole === "Admin" || currentRole === "Gruppenleiter") {
-          cb.disabled = false;
-        }
+      // Einklapp-Funktion
+      const chevron = header.querySelector(".bi-chevron-down");
+      header.addEventListener("click", () => {
+        subContainer.style.display = subContainer.style.display === "none" ? "block" : "none";
+        chevron.classList.toggle("bi-chevron-down");
+        chevron.classList.toggle("bi-chevron-right");
       });
 
-      // Fortschrittsberechnung
-      checkboxes.forEach(cb => {
-        cb.addEventListener("change", () => {
-          const total = checkboxes.length;
-          const done = Array.from(checkboxes).filter(c => c.checked).length;
-          const percent = Math.round((done / total) * 100);
-          progressBar.style.width = percent + "%";
-          progressBar.textContent = percent + "%";
+      // Fortschritts-Logik für Kategorie
+      const catProgressBar = catProgress.querySelector(".progress-bar");
+
+      function updateCategoryProgress() {
+        const allChecks = subContainer.querySelectorAll("input[type=checkbox]");
+        const total = allChecks.length;
+        const done = Array.from(allChecks).filter(c => c.checked).length;
+        const percent = Math.round((done / total) * 100);
+        catProgressBar.style.width = percent + "%";
+        catProgressBar.textContent = percent > 0 ? percent + "%" : "";
+      }
+
+      // Subkategorien-Logik
+      subContainer.querySelectorAll(".module-card").forEach(card => {
+        const checkboxes = card.querySelectorAll("input[type=checkbox]");
+        const progressBar = card.querySelector(".progress-bar");
+
+        checkboxes.forEach(cb => {
+          cb.addEventListener("change", () => {
+            const total = checkboxes.length;
+            const done = Array.from(checkboxes).filter(c => c.checked).length;
+            const percent = Math.round((done / total) * 100);
+            progressBar.style.width = percent + "%";
+            progressBar.textContent = percent > 0 ? percent + "%" : "";
+            updateCategoryProgress();
+          });
         });
       });
     });
