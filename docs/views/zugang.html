@@ -12,6 +12,7 @@
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
       --mittelgrau: rgb(180,180,180);
+      --hellgruene-progress: rgb(204, 255, 204); /* Dezente hellgrüne Farbe */
     }
 
     .page-title { color: var(--softrot); margin-bottom: 1rem; }
@@ -81,7 +82,9 @@
       margin-top: 1rem;
     }
 
-    .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
+    .btn-confirm {
+      display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px;
+    }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
@@ -118,10 +121,12 @@
       box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem 1rem 1rem;
       border:1px solid #e5e7eb;
     }
+    .modal h4{ font-size:1.2rem; font-weight:600; margin-top:0; margin-bottom:.6rem; color:var(--dunkelblau); }
+    .modal p{ margin:.2rem 0 1rem; color:#374151; line-height:1.4; }
     .modal .modal-actions{ display:flex; gap:.8rem; justify-content:flex-end; margin-top:1rem; }
     .modal .btn{ padding:.6rem 1rem; border:none; border-radius:10px; font-size:.95rem; cursor:pointer; }
     .modal .btn-secondary{ background:#eef2f7 }
-    .modal .btn-primary{ background:var(--drk-gruen); color:#fff }
+    .modal .btn-primary{ background:var(--dunkelblau); color:#fff }
     .modal .btn-danger{ background:var(--softrot); color:#fff }
   </style>
 </head>
@@ -202,7 +207,7 @@
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
-      <div id="rejectActions" style="display:none; margin-top:0.5rem;">
+      <div id="rejectActions" style="margin-top:0.5rem; display:none;">
         <button class="btn-confirm btn-red" data-action="ablehnen">
           <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
         </button>
@@ -282,7 +287,7 @@
         if (percent <= 20) bar.style.backgroundColor = "red";
         else if (percent <= 40) bar.style.backgroundColor = "orange";
         else if (percent <= 60) bar.style.backgroundColor = "gold";
-        else if (percent <= 80) bar.style.backgroundColor = "lightgreen";
+        else if (percent <= 80) bar.style.backgroundColor = "var(--hellgruene-progress)"; /* Dezenteres hellgrün */
         else bar.style.backgroundColor = "var(--drk-gruen)"; // 100% dunkelgrün aus deinem Theme
         bar.textContent = percent + "%";
       }
