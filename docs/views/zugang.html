@@ -17,6 +17,15 @@
 
     .page-title { color: var(--softrot); margin-bottom: 1rem; }
 
+    .zugang-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media(max-width: 768px){
+      .zugang-grid { grid-template-columns: 1fr; }
+    }
+
     .card {
       background: #fff;
       padding: 1.5rem;
@@ -66,6 +75,14 @@
       color: white;
     }
 
+    .select-user { margin-bottom: 1rem; }
+    .selected-user, #confirmText {
+      font-weight: bold;
+      color: var(--dunkelblau);
+      font-size: 1.05rem;
+      margin-top: 1rem;
+    }
+
     .btn-confirm {
       display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
       margin-top:0.5rem; padding:0.7rem 1.2rem;
@@ -110,37 +127,57 @@
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
-  <!-- Grundvoraussetzungen -->
+  <!-- Nutzer-Auswahl -->
   <div class="card">
-    <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
-    <div class="progress">
-      <div id="grund-progress" class="progress-bar" style="width:0%">0</div>
+    <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
+    <div class="select-user">
+      <select id="userSelect">
+        <option value="">-- bitte wählen --</option>
+        <option value="u1">Max Mustermann</option>
+        <option value="u2">Erika Musterfrau</option>
+        <option value="u3">Hans Helfer</option>
+        <option value="u4">Sabine Sanitäterin</option>
+        <option value="u5">Peter Praktikant</option>
+      </select>
+      <div id="selectedUser" class="selected-user"></div>
     </div>
-    <ul class="checklist" id="grund-list">
-      <li><input type="checkbox" disabled> Fachdienstausbildung Sanitätsdienst</li>
-      <li><input type="checkbox" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
-      <li><input type="checkbox" disabled> Vollendung 18. Lebensjahr</li>
-      <li><input type="checkbox" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
-      <li><input type="checkbox" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
-    </ul>
   </div>
 
-  <!-- Optionale Voraussetzungen -->
-  <div class="card">
-    <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
-    <div class="progress">
-      <div id="verlauf-progress" class="progress-bar" style="width:0%">0</div>
+  <div class="zugang-grid">
+    <!-- Grundvoraussetzungen -->
+    <div class="card">
+      <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
+      <div class="progress">
+        <div id="grund-progress" class="progress-bar" style="width:0%">0</div>
+      </div>
+      <ul class="checklist" id="grund-list">
+        <li><input type="checkbox" disabled> Fachdienstausbildung Sanitätsdienst</li>
+        <li><input type="checkbox" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
+        <li><input type="checkbox" disabled> Vollendung 18. Lebensjahr</li>
+        <li><input type="checkbox" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
+        <li><input type="checkbox" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
+      </ul>
     </div>
-    <ul class="checklist" id="verlauf-list">
-      <li><input type="checkbox" disabled> C1 (Helfer-)Führerschein</li>
-      <li><input type="checkbox" disabled> Gruppenführer Sanitätsdienst</li>
-    </ul>
+
+    <!-- Optionale Voraussetzungen -->
+    <div class="card">
+      <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
+      <div class="progress">
+        <div id="verlauf-progress" class="progress-bar" style="width:0%">0</div>
+      </div>
+      <ul class="checklist" id="verlauf-list">
+        <li><input type="checkbox" disabled> C1 (Helfer-)Führerschein</li>
+        <li><input type="checkbox" disabled> Gruppenführer Sanitätsdienst</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Bestätigung -->
   <div class="card">
     <h3><i class="bi bi-person-check"></i> Bestätigung durch den Gruppenleiter</h3>
-    <div>
+    <div id="confirmUserSection" style="display:none;">
+      <p id="confirmText"></p>
+
       <div class="checklist">
         <label><input type="checkbox" id="chkGrund" disabled> Alle Grundvoraussetzungen erfüllt</label>
       </div>
@@ -189,6 +226,11 @@
   </div>
 
   <script>
+    const userSelect = document.getElementById("userSelect");
+    const selectedUser = document.getElementById("selectedUser");
+    const confirmUserSection = document.getElementById("confirmUserSection");
+    const confirmText = document.getElementById("confirmText");
+
     const grundBoxes = document.querySelectorAll("#grund-list input");
     const verlaufBoxes = document.querySelectorAll("#verlauf-list input");
     const grundProgress = document.getElementById("grund-progress");
@@ -252,6 +294,27 @@
       if (percent !== 100) gate.checked = false;
     }
 
+    userSelect.addEventListener("change", () => {
+      if (userSelect.value) {
+        const name = userSelect.options[userSelect.selectedIndex].text;
+        selectedUser.textContent = "Ausgewählt: " + name;
+        confirmText.textContent = "Bestätigung für: " + name;
+        confirmUserSection.style.display = "block";
+
+        grundBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
+        verlaufBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
+        chkGrund.disabled = true; chkGrund.checked = false;
+        chkOptional.disabled = true; chkOptional.checked = false;
+        chkReject.checked = false;
+
+        updateProgress(grundBoxes, grundProgress, chkGrund);
+        updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
+      } else {
+        selectedUser.textContent = "";
+        confirmUserSection.style.display = "none";
+      }
+    });
+
     document.getElementById("grund-list").addEventListener("change", () => {
       updateProgress(grundBoxes, grundProgress, chkGrund);
     });
@@ -269,6 +332,7 @@
       document.getElementById("rejectActions").style.display = e.target.checked ? "block" : "none";
     });
 
+    // Buttons mit Modal
     document.body.addEventListener("click", async (e)=>{
       if(e.target.closest("[data-action]")){
         const action = e.target.closest("[data-action]").dataset.action;
