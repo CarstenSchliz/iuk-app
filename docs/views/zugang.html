@@ -11,27 +11,18 @@
       --drk-gruen: rgb(0,150,80);
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
-      --mittelgrau: rgb(180,180,180);
     }
 
-    body { font-family: sans-serif; }
+    body { font-family: system-ui, sans-serif; margin:0; padding:1rem; background:#f9fafb; }
 
     .page-title { color: var(--softrot); margin-bottom: 1rem; }
-
-    .zugang-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-    @media(max-width: 768px){
-      .zugang-grid { grid-template-columns: 1fr; }
-    }
 
     .card {
       background: #fff;
       padding: 1.5rem;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom:1.5rem;
     }
     .card h3 {
       color: var(--hellblau);
@@ -75,115 +66,97 @@
       color: white;
     }
 
-    .select-user { margin-bottom: 1rem; }
-    .selected-user, #confirmText {
-      font-weight: bold;
-      color: var(--dunkelblau);
-      font-size: 1.05rem;
-      margin-top: 1rem;
+    .btn-confirm {
+      display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
+      margin-top:0.5rem; padding:0.7rem 1.2rem;
+      border:none; border-radius:10px; cursor:pointer;
+      color:#fff; font-weight:600; font-size:0.95rem;
+      box-shadow:0 2px 4px rgba(0,0,0,0.1); transition:transform .15s;
     }
-
-    .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
+    .btn-confirm:hover{ transform:translateY(-1px); }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
 
-    select {
-      width: 100%;
-      padding: 0.6rem;
-      border-radius: 8px;
-      border: 1px solid var(--dunkelblau);
-      background: #fff;
-      font-size: 1rem;
-      color: var(--dunkelblau);
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
+    #toast {
+      position:fixed; left:50%; bottom:20px; transform:translateX(-50%);
+      background:var(--dunkelblau); color:#fff;
+      padding:12px 20px; border-radius:8px;
+      display:none; z-index:2000;
+      box-shadow:0 4px 12px rgba(0,0,0,0.2);
     }
-    select:focus { outline: none; border-color: var(--dunkelblau); box-shadow: none; }
-    @media(min-width: 769px){ .select-user select { max-width: 300px; } }
 
-    #toast { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); background:var(--dunkelblau); color:#fff; padding:12px 20px; border-radius:8px; display:none; z-index:2000; }
-
-    /* Modal */
+    /* Modal modern */
     .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1500; }
     .modal{ position:fixed; inset:0; display:none; z-index:1600; align-items:center; justify-content:center; padding:1rem; }
-    .modal .modal-card{ background:#fff; border-radius:14px; width:min(400px, 96vw); box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem; }
-    .modal .modal-actions{ display:flex; gap:.8rem; margin-top:1rem; justify-content:flex-end; }
+    .modal .modal-card{
+      background:#fff; border-radius:14px; width:min(420px, 95vw);
+      box-shadow:0 20px 60px rgba(0,0,0,.25);
+      padding:1.25rem 1.5rem;
+      border:1px solid #e5e7eb;
+      animation:fadeIn .25s ease;
+    }
+    .modal h4{ margin-top:0; margin-bottom:.6rem; color:var(--dunkelblau); }
+    .modal p{ margin:.2rem 0 1rem; color:#374151; line-height:1.4; }
+    .modal .modal-actions{ display:flex; gap:.8rem; justify-content:flex-end; }
+    .modal .btn{ padding:.6rem 1rem; border:none; border-radius:10px; font-size:.95rem; cursor:pointer; }
+    .modal .btn-secondary{ background:#e5e7eb; }
+    .modal .btn-primary{ background:var(--drk-gruen); color:#fff; }
+    .modal .btn-danger{ background:var(--softrot); color:#fff; }
+
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
   </style>
 </head>
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
-  <!-- Nutzer-Auswahl -->
-  <div class="card" style="margin-bottom:1.5rem;">
-    <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
-    <div class="select-user">
-      <select id="userSelect">
-        <option value="">-- bitte wählen --</option>
-        <option value="u1">Max Mustermann</option>
-        <option value="u2">Erika Musterfrau</option>
-        <option value="u3">Hans Helfer</option>
-        <option value="u4">Sabine Sanitäterin</option>
-        <option value="u5">Peter Praktikant</option>
-      </select>
-      <div id="selectedUser" class="selected-user"></div>
+  <!-- Grundvoraussetzungen -->
+  <div class="card">
+    <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
+    <div class="progress">
+      <div id="grund-progress" class="progress-bar" style="width:0%">0</div>
     </div>
+    <ul class="checklist" id="grund-list">
+      <li><input type="checkbox" disabled> Fachdienstausbildung Sanitätsdienst</li>
+      <li><input type="checkbox" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
+      <li><input type="checkbox" disabled> Vollendung 18. Lebensjahr</li>
+      <li><input type="checkbox" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
+      <li><input type="checkbox" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
+    </ul>
   </div>
 
-  <div class="zugang-grid">
-    <!-- Grundvoraussetzungen -->
-    <div class="card">
-      <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
-      <div class="progress">
-        <div id="grund-progress" class="progress-bar" style="width:0%">0</div>
-      </div>
-      <ul class="checklist" id="grund-list">
-        <li><input type="checkbox" disabled> Fachdienstausbildung Sanitätsdienst</li>
-        <li><input type="checkbox" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
-        <li><input type="checkbox" disabled> Vollendung 18. Lebensjahr</li>
-        <li><input type="checkbox" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
-        <li><input type="checkbox" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
-      </ul>
-      <div id="grundActions" style="margin-top:0.5rem; display:none;">
-        <button class="btn-confirm btn-green" data-action="freigeben">
-          <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
-        </button>
-      </div>
+  <!-- Optionale Voraussetzungen -->
+  <div class="card">
+    <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
+    <div class="progress">
+      <div id="verlauf-progress" class="progress-bar" style="width:0%">0</div>
     </div>
-
-    <!-- Optionale Voraussetzungen -->
-    <div class="card">
-      <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
-      <div class="progress">
-        <div id="verlauf-progress" class="progress-bar" style="width:0%">0</div>
-      </div>
-      <ul class="checklist" id="verlauf-list">
-        <li><input type="checkbox" disabled> C1 (Helfer-)Führerschein</li>
-        <li><input type="checkbox" disabled> Gruppenführer Sanitätsdienst</li>
-      </ul>
-      <div id="optionalActions" style="margin-top:0.5rem; display:none;">
-        <button class="btn-confirm btn-blue" data-action="mail">
-          <i class="bi bi-envelope"></i> Bestätigung per Mail senden
-        </button>
-      </div>
-    </div>
+    <ul class="checklist" id="verlauf-list">
+      <li><input type="checkbox" disabled> C1 (Helfer-)Führerschein</li>
+      <li><input type="checkbox" disabled> Gruppenführer Sanitätsdienst</li>
+    </ul>
   </div>
 
   <!-- Bestätigung -->
-  <div class="card" style="margin-top:1.5rem;">
+  <div class="card">
     <h3><i class="bi bi-person-check"></i> Bestätigung durch den Gruppenleiter</h3>
-    <div id="confirmUserSection" style="display:none;">
-      <p id="confirmText"></p>
-
+    <div>
       <div class="checklist">
         <label><input type="checkbox" id="chkGrund" disabled> Alle Grundvoraussetzungen erfüllt</label>
+      </div>
+      <div id="grundActions" style="display:none;">
+        <button class="btn-confirm btn-green" data-action="freigeben">
+          <i class="bi bi-check-circle"></i> Mitglied freigeben
+        </button>
       </div>
 
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkOptional" disabled> Optionale Voraussetzungen erfüllt</label>
+      </div>
+      <div id="optionalActions" style="display:none;">
+        <button class="btn-confirm btn-blue" data-action="mail">
+          <i class="bi bi-envelope"></i> Bestätigung per Mail senden
+        </button>
       </div>
 
       <hr style="margin:1rem 0;">
@@ -191,9 +164,9 @@
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
-      <div id="rejectActions" style="margin-top:0.5rem; display:none;">
+      <div id="rejectActions" style="display:none;">
         <button class="btn-confirm btn-red" data-action="ablehnen">
-          <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
+          <i class="bi bi-x-circle"></i> Mitglied ablehnen
         </button>
       </div>
     </div>
@@ -209,18 +182,13 @@
       <h4 id="modalTitle">Bestätigen</h4>
       <p id="modalMessage">Bist du sicher?</p>
       <div class="modal-actions">
-        <button id="modalCancel" class="btn btn-secondary">Abbrechen</button>
-        <button id="modalOk" class="btn btn-green">OK</button>
+        <button id="modalCancel" class="btn btn-secondary"><i class="bi bi-x-lg"></i> Abbrechen</button>
+        <button id="modalOk" class="btn btn-primary"><i class="bi bi-check2"></i> OK</button>
       </div>
     </div>
   </div>
 
   <script>
-    const userSelect = document.getElementById("userSelect");
-    const selectedUser = document.getElementById("selectedUser");
-    const confirmUserSection = document.getElementById("confirmUserSection");
-    const confirmText = document.getElementById("confirmText");
-
     const grundBoxes = document.querySelectorAll("#grund-list input");
     const verlaufBoxes = document.querySelectorAll("#verlauf-list input");
     const grundProgress = document.getElementById("grund-progress");
@@ -255,7 +223,6 @@
         backdrop.onclick = ()=>{ closeModal(); resolve(false); };
       });
     }
-
     function closeModal(){
       modal.style.display = "none";
       backdrop.style.display = "none";
@@ -275,7 +242,6 @@
         bar.textContent = percent + "%";
       }
     }
-
     function updateProgress(boxes, bar, gate) {
       const total = boxes.length;
       const checked = Array.from(boxes).filter(b => b.checked).length;
@@ -285,27 +251,6 @@
       gate.disabled = percent !== 100;
       if (percent !== 100) gate.checked = false;
     }
-
-    userSelect.addEventListener("change", () => {
-      if (userSelect.value) {
-        const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: " + name;
-        confirmText.textContent = "Bestätigung für: " + name;
-        confirmUserSection.style.display = "block";
-
-        grundBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
-        verlaufBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
-        chkGrund.disabled = true; chkGrund.checked = false;
-        chkOptional.disabled = true; chkOptional.checked = false;
-        chkReject.checked = false;
-
-        updateProgress(grundBoxes, grundProgress, chkGrund);
-        updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
-      } else {
-        selectedUser.textContent = "";
-        confirmUserSection.style.display = "none";
-      }
-    });
 
     document.getElementById("grund-list").addEventListener("change", () => {
       updateProgress(grundBoxes, grundProgress, chkGrund);
@@ -324,11 +269,9 @@
       document.getElementById("rejectActions").style.display = e.target.checked ? "block" : "none";
     });
 
-    // Button-Aktionen mit Modal
     document.body.addEventListener("click", async (e)=>{
       if(e.target.closest("[data-action]")){
-        const btn = e.target.closest("[data-action]");
-        const action = btn.dataset.action;
+        const action = e.target.closest("[data-action]").dataset.action;
         let title, message, success;
 
         if(action==="freigeben"){
