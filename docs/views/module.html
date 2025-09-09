@@ -68,10 +68,12 @@
 </head>
 <body>
   <h2 class="page-title">Lernmodule</h2>
-
   <div id="modulesContainer"></div>
 
-  <script>
+  <script type="module">
+    import { auth, db } from "../js/firebase.js";
+    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
     // --- Daten ---
     const categories = {
       "Fahrzeugkunde": [
@@ -101,14 +103,14 @@
       span.className = 'category-icon';
       if(name === "Fahrzeugkunde"){ 
         const i = document.createElement('i');
-        i.className = "bi bi-truck-front"; // Fahrzeug ähnlich Rettungswagen
+        i.className = "bi bi-truck-front";
         i.style.fontSize = "1.4rem";
         span.appendChild(i);
         return span;
       }
       if(name === "Einsatztaktik"){ 
         const i = document.createElement('i');
-        i.className = "bi bi-diagram-3"; // Symbol für Führung/Organisation
+        i.className = "bi bi-diagram-3";
         i.style.fontSize = "1.4rem";
         span.appendChild(i);
         return span;
@@ -139,98 +141,130 @@
 
     const container = document.getElementById("modulesContainer");
 
-    Object.keys(categories).forEach(catName=>{
-      const section = document.createElement('div'); section.className = 'category';
+    // --- Hauptfunktion ---
+    auth.onAuthStateChanged(async user=>{
+      if(!user){ window.location.href="../index.html"; return; }
 
-      // Header
-      const header = document.createElement('div'); header.className = 'category-header';
-      const iconEl = getCategoryIconEl(catName);
-      const title = document.createElement('h3'); title.textContent = catName;
-      const toggle = document.createElement('i'); toggle.className = 'bi bi-plus-circle toggle-btn';
-      header.append(iconEl, title, toggle);
-      section.appendChild(header);
+      // Rolle laden
+      const userDoc = await getDoc(doc(db,"users",user.uid));
+      const role = userDoc.exists() ? (userDoc.data().role || "anwärter") : "anwärter";
 
-      // Querstrich
-      const sep = document.createElement('hr');
-      sep.className = "category-separator";
-      section.appendChild(sep);
+      // Module rendern
+      Object.keys(categories).forEach(catName=>{
+        const section=document.createElement('div'); section.className='category';
 
-      // Kategorie-Fortschritt
-      const catProgWrap = document.createElement('div'); catProgWrap.className = 'progress';
-      catProgWrap.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
-      const catProgBar = catProgWrap.querySelector('.progress-bar');
-      section.appendChild(catProgWrap);
+        // Header
+        const header=document.createElement('div'); header.className='category-header';
+        const iconEl=getCategoryIconEl(catName);
+        const title=document.createElement('h3'); title.textContent=catName;
+        const toggle=document.createElement('i'); toggle.className='bi bi-plus-circle toggle-btn';
+        header.append(iconEl,title,toggle);
+        section.appendChild(header);
 
-      // Subcontainer
-      const subWrap = document.createElement('div'); subWrap.className = 'subcategory-container'; subWrap.style.display = 'none';
+        // Querstrich
+        const sep=document.createElement('hr'); sep.className="category-separator"; section.appendChild(sep);
 
-      // Kategorie-Update
-      function updateCategory(){
-        const subs = subWrap.querySelectorAll('.module-card .progress-bar');
-        if(!subs.length){ catProgBar.style.width = '0%'; catProgBar.style.background = catColor(0); catProgBar.textContent = ''; return; }
-        const vals = Array.from(subs).map(el => parseInt(el.dataset.percent || '0', 10));
-        const avg = Math.round(vals.reduce((a,b)=>a+b,0) / vals.length);
-        catProgBar.style.width = avg + '%';
-        catProgBar.style.background = catColor(avg);
-        catProgBar.textContent = avg > 0 ? (avg + '%') : '';
-      }
+        // Kategorie-Fortschritt
+        const catProgWrap=document.createElement('div'); catProgWrap.className='progress';
+        catProgWrap.innerHTML=`<div class="progress-bar" style="width:0%"></div>`;
+        const catProgBar=catProgWrap.querySelector('.progress-bar');
+        section.appendChild(catProgWrap);
 
-      // Subkarten
-      categories[catName].forEach(sub=>{
-        const card = document.createElement('div'); card.className = 'module-card';
-        card.innerHTML = `
-          <h4>${sub}</h4>
-          <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
-          <ul class="levels">
-            <li><label><input type="checkbox" data-step="1"> gelernt</label></li>
-            <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
-            <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
-            <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
-          </ul>
-        `;
-        subWrap.appendChild(card);
+        // Subcontainer
+        const subWrap=document.createElement('div'); subWrap.className='subcategory-container'; subWrap.style.display='none';
 
-        const cb = card.querySelectorAll('input[type="checkbox"]');
-        const pb = card.querySelector('.progress-bar');
-
-        function enforce(){
-          cb[0].disabled = false;
-          cb[1].disabled = !cb[0].checked; if(cb[1].disabled) cb[1].checked = false;
-          cb[2].disabled = !cb[1].checked; if(cb[2].disabled) cb[2].checked = false;
-          cb[3].disabled = !cb[2].checked; if(cb[3].disabled) cb[3].checked = false;
-        }
-        function percent(){
-          if(cb[3].checked) return 100;
-          if(cb[2].checked) return 75;
-          if(cb[1].checked) return 50;
-          if(cb[0].checked) return 25;
-          return 0;
-        }
-        function updateSub(){
-          const p = percent();
-          pb.style.width = p + '%';
-          pb.style.background = subColor(p);
-          pb.textContent = p > 0 ? (p + '%') : '';
-          pb.dataset.percent = p;
-          updateCategory();
+        // Kategorie-Update
+        function updateCategory(){
+          const subs=subWrap.querySelectorAll('.module-card .progress-bar');
+          if(!subs.length){ catProgBar.style.width='0%'; catProgBar.style.background=catColor(0); catProgBar.textContent=''; return; }
+          const vals=Array.from(subs).map(el=>parseInt(el.dataset.percent||'0',10));
+          const avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+          catProgBar.style.width=avg+'%'; catProgBar.style.background=catColor(avg);
+          catProgBar.textContent=avg>0?(avg+'%'):'';
         }
 
-        enforce(); updateSub();
-        cb.forEach(c => c.addEventListener('change', ()=>{ enforce(); updateSub(); }));
+        // Subkarten
+        categories[catName].forEach(async sub=>{
+          const card=document.createElement('div'); card.className='module-card';
+          card.innerHTML=`
+            <h4>${sub}</h4>
+            <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
+            <ul class="levels">
+              <li><label><input type="checkbox" data-step="1"> gelernt</label></li>
+              <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
+              <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
+              <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
+            </ul>
+          `;
+          subWrap.appendChild(card);
+
+          const cb=card.querySelectorAll('input[type="checkbox"]');
+          const pb=card.querySelector('.progress-bar');
+          const docRef=doc(db,"users",user.uid,"modules",`${catName}_${sub}`);
+
+          // Laden aus Firestore
+          const snap=await getDoc(docRef);
+          if(snap.exists()){
+            const data=snap.data();
+            cb[0].checked=!!data.learned;
+            cb[1].checked=!!data.supervised;
+            cb[2].checked=!!data.independent;
+            cb[3].checked=!!data.secure;
+          }
+
+          function enforce(){
+            cb[0].disabled = false;
+            if(role === "anwärter"){
+              cb[1].disabled=true; cb[2].disabled=true; cb[3].disabled=true;
+              cb[1].checked=false; cb[2].checked=false; cb[3].checked=false;
+              return;
+            }
+            cb[1].disabled=!cb[0].checked; if(cb[1].disabled) cb[1].checked=false;
+            cb[2].disabled=!cb[1].checked; if(cb[2].disabled) cb[2].checked=false;
+            cb[3].disabled=!cb[2].checked; if(cb[3].disabled) cb[3].checked=false;
+          }
+
+          function percent(){
+            if(cb[3].checked) return 100;
+            if(cb[2].checked) return 75;
+            if(cb[1].checked) return 50;
+            if(cb[0].checked) return 25;
+            return 0;
+          }
+
+          async function updateSub(){
+            const p=percent();
+            pb.style.width=p+'%'; pb.style.background=subColor(p);
+            pb.textContent=p>0?(p+'%'):'';
+            pb.dataset.percent=p;
+            updateCategory();
+
+            // speichern
+            await setDoc(docRef,{
+              learned: cb[0].checked,
+              supervised: cb[1].checked,
+              independent: cb[2].checked,
+              secure: cb[3].checked
+            });
+          }
+
+          enforce(); await updateSub();
+          cb.forEach(c=>c.addEventListener('change',async()=>{ enforce(); await updateSub(); }));
+        });
+
+        section.appendChild(subWrap);
+        container.appendChild(section);
+
+        // Toggle
+        header.addEventListener('click', ()=>{
+          const open=subWrap.style.display==='block';
+          subWrap.style.display=open?'none':'block';
+          toggle.classList.toggle('bi-plus-circle',open);
+          toggle.classList.toggle('bi-dash-circle',!open);
+        });
+
+        updateCategory();
       });
-
-      section.appendChild(subWrap);
-      container.appendChild(section);
-
-      // Toggle
-      header.addEventListener('click', ()=>{
-        const open = subWrap.style.display === 'block';
-        subWrap.style.display = open ? 'none' : 'block';
-        toggle.classList.toggle('bi-plus-circle', open);
-        toggle.classList.toggle('bi-dash-circle', !open);
-      });
-
-      updateCategory();
     });
   </script>
 </body>
