@@ -12,6 +12,10 @@
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
       --mittelgrau: rgb(180,180,180);
+      --gelb: #ffc107;
+      --orange: #fd7e14;
+      --hellgruen: #28a745;
+      --dunkelgruen: #155724;
     }
 
     .page-title {
@@ -37,14 +41,19 @@
       flex-grow: 1;
     }
 
-    .category .progress {
+    .toggle-btn {
+      font-size: 1.3rem;
+      color: var(--dunkelblau);
+    }
+
+    .progress {
       height: 22px;
       background-color: #e9ecef;
       border-radius: 12px;
       overflow: hidden;
       margin: 0.5rem 0 1rem 0;
     }
-    .category .progress-bar {
+    .progress-bar {
       height: 100%;
       text-align: center;
       font-size: 0.85rem;
@@ -54,7 +63,6 @@
       align-items:center;
       justify-content:center;
       color: white;
-      background: var(--hellblau);
     }
 
     .subcategory-container {
@@ -72,26 +80,6 @@
     .module-card h4 {
       margin: 0 0 0.8rem 0;
       color: var(--hellblau);
-    }
-
-    .progress {
-      height: 22px;
-      background-color: #e9ecef;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 1rem;
-    }
-    .progress-bar {
-      height: 100%;
-      text-align: center;
-      font-size: 0.85rem;
-      font-weight: bold;
-      transition: width 0.3s ease;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color: white;
-      background: var(--hellblau);
     }
 
     .levels {
@@ -122,51 +110,63 @@
   <div id="modulesContainer"></div>
 
   <script>
-    // Kategorien und Subkategorien
+    // Kategorien + Subkategorien
     const categories = {
       "Fahrzeugkunde": [
         "IT", "Hardware", "Bedienung", "KFZ", "Funk", "Material im Heck",
         "Notstromaggregat", "Mastbedienung und Funktionen", "CO", "Messgerät", "Kaffeemaschine"
       ],
       "Software": [
-        "HDMI-Switch", "DECT-Telefonie", "LARDIS", "GSM", "Mobilfunk", "Voice-over-IP", "Linkus", "EDP"
+        "HDMI-Switch", "DECT-Telefonie", "LARDIS", "GSM", "Mobilfunk",
+        "Voice-over-IP", "Linkus", "EDP"
       ],
       "LARDIS": [
-        "Startvorgang", "Manuell", "Neustart", "LARDIS Desktop", "Desktop-Symbol", "Wahlgruppe", "Kanal",
-        "Headset", "Ja", "Nein", "Lautstärkemöglichkeiten", "PTT-Möglichkeit",
-        "Schnellwahl am Schwanenhals", "Status melden", "Zurücksetzen auf Standard",
-        "Pegeln", "Mikrofon", "Headset"
+        "Startvorgang", "Manuell", "Neustart", "LARDIS Desktop", "Desktop-Symbol",
+        "Wahlgruppe", "Kanal", "Headset", "Ja", "Nein", "Lautstärkemöglichkeiten",
+        "PTT-Möglichkeit", "Schnellwahl am Schwanenhals", "Status melden",
+        "Zurücksetzen auf Standard", "Pegeln", "Mikrofon", "Headset"
       ],
       "Einsatztaktik": [
-        "Ticketsystem", "MANF-Konzept", "Nutzung", "Direktruf", "Tetra SDS", "Externe Internet-Einspeisung",
-        "Verhalten im Alarmfall", "SOP", "Einsatzbeginn", "Ende", "Führungskräfte-Kennzeichnung",
-        "Funktionsträger im ELW", "Schulung aller Standard-Einsatzregeln", "Kenntnisse",
-        "Kliniken", "Funkrufnamen", "Einsatzmittel und ihre Möglichkeiten"
+        "Ticketsystem", "MANF-Konzept", "Nutzung", "Direktruf", "Tetra SDS",
+        "Externe Internet-Einspeisung", "Verhalten im Alarmfall", "SOP",
+        "Einsatzbeginn", "Ende", "Führungskräfte-Kennzeichnung",
+        "Funktionsträger im ELW", "Schulung aller Standard-Einsatzregeln",
+        "Kenntnisse", "Kliniken", "Funkrufnamen",
+        "Einsatzmittel und ihre Möglichkeiten"
       ]
     };
 
-    // Icons für Kategorien
+    // Icons für Hauptkategorien
     const categoryIcons = {
-      "Fahrzeugkunde": "bi-truck",
-      "Software": "bi-pc-display",
-      "LARDIS": "bi-diagram-3",
-      "Einsatztaktik": "bi-shield"
+      "Fahrzeugkunde": "bi-truck-front",   // Einsatzfahrzeug
+      "Software": "bi-cpu",               // Chip
+      "LARDIS": "bi-display",             // Bildschirm
+      "Einsatztaktik": "bi-person-badge"  // Einsatzkraft
     };
 
     const container = document.getElementById("modulesContainer");
+
+    // Farb-Logik für Fortschritt
+    function getBarColor(percent) {
+      if (percent === 0) return "#e9ecef";
+      if (percent <= 25) return getComputedStyle(document.documentElement).getPropertyValue("--gelb");
+      if (percent <= 50) return getComputedStyle(document.documentElement).getPropertyValue("--orange");
+      if (percent <= 75) return getComputedStyle(document.documentElement).getPropertyValue("--hellgruen");
+      return getComputedStyle(document.documentElement).getPropertyValue("--dunkelgruen");
+    }
 
     // Rendern
     Object.keys(categories).forEach(cat => {
       const section = document.createElement("div");
       section.className = "category";
 
-      // Header mit Icon + Titel
+      // Header mit Icon + Titel + Toggle
       const header = document.createElement("div");
       header.className = "category-header";
-      header.innerHTML = `<i class="bi ${categoryIcons[cat]}"></i><h3>${cat}</h3><i class="bi bi-chevron-down"></i>`;
+      header.innerHTML = `<i class="bi ${categoryIcons[cat]}"></i><h3>${cat}</h3><i class="bi bi-plus-circle toggle-btn"></i>`;
       section.appendChild(header);
 
-      // Fortschrittsbalken für Kategorie
+      // Hauptkategorie-Fortschritt
       const catProgress = document.createElement("div");
       catProgress.className = "progress";
       catProgress.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
@@ -175,6 +175,7 @@
       // Subkategorien
       const subContainer = document.createElement("div");
       subContainer.className = "subcategory-container";
+      subContainer.style.display = "none";
 
       categories[cat].forEach(sub => {
         const card = document.createElement("div");
@@ -183,10 +184,10 @@
           <h4>${sub}</h4>
           <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
           <ul class="levels">
-            <li><input type="checkbox" data-level="gelernt"> gelernt</li>
-            <li><input type="checkbox" data-level="aufsicht"> unter Aufsicht angewendet</li>
-            <li><input type="checkbox" data-level="selbststaendig"> selbstständig angewendet</li>
-            <li><input type="checkbox" data-level="sicher"> sichere Anwendung</li>
+            <li><input type="checkbox" data-step="1"> gelernt</li>
+            <li><input type="checkbox" data-step="2"> unter Aufsicht angewendet</li>
+            <li><input type="checkbox" data-step="3"> selbstständig angewendet</li>
+            <li><input type="checkbox" data-step="4"> sichere Anwendung</li>
           </ul>
         `;
         subContainer.appendChild(card);
@@ -195,39 +196,56 @@
       section.appendChild(subContainer);
       container.appendChild(section);
 
-      // Einklapp-Funktion
-      const chevron = header.querySelector(".bi-chevron-down");
+      // Toggle Logik (+ / -)
+      const toggleBtn = header.querySelector(".toggle-btn");
       header.addEventListener("click", () => {
-        subContainer.style.display = subContainer.style.display === "none" ? "block" : "none";
-        chevron.classList.toggle("bi-chevron-down");
-        chevron.classList.toggle("bi-chevron-right");
+        const isVisible = subContainer.style.display === "block";
+        subContainer.style.display = isVisible ? "none" : "block";
+        toggleBtn.classList.toggle("bi-plus-circle", isVisible);
+        toggleBtn.classList.toggle("bi-dash-circle", !isVisible);
       });
 
-      // Fortschritts-Logik für Kategorie
+      // Kategorie-Fortschritt aktualisieren
       const catProgressBar = catProgress.querySelector(".progress-bar");
 
       function updateCategoryProgress() {
-        const allChecks = subContainer.querySelectorAll("input[type=checkbox]");
-        const total = allChecks.length;
-        const done = Array.from(allChecks).filter(c => c.checked).length;
-        const percent = Math.round((done / total) * 100);
-        catProgressBar.style.width = percent + "%";
-        catProgressBar.textContent = percent > 0 ? percent + "%" : "";
+        const allSubs = subContainer.querySelectorAll(".module-card .progress-bar");
+        if (allSubs.length === 0) return;
+        const values = Array.from(allSubs).map(pb => parseInt(pb.dataset.percent || 0));
+        const avg = Math.round(values.reduce((a,b)=>a+b,0) / values.length);
+        catProgressBar.style.width = avg + "%";
+        catProgressBar.style.background = getBarColor(avg);
+        catProgressBar.textContent = avg > 0 ? avg + "%" : "";
       }
 
-      // Subkategorien-Logik
+      // Subkategorie-Logik
       subContainer.querySelectorAll(".module-card").forEach(card => {
         const checkboxes = card.querySelectorAll("input[type=checkbox]");
         const progressBar = card.querySelector(".progress-bar");
 
-        checkboxes.forEach(cb => {
+        function updateSubProgress() {
+          let percent = 0;
+          if (checkboxes[3].checked) percent = 100;
+          else if (checkboxes[2].checked) percent = 75;
+          else if (checkboxes[1].checked) percent = 50;
+          else if (checkboxes[0].checked) percent = 25;
+          progressBar.style.width = percent + "%";
+          progressBar.style.background = getBarColor(percent);
+          progressBar.textContent = percent > 0 ? percent + "%" : "";
+          progressBar.dataset.percent = percent;
+          updateCategoryProgress();
+        }
+
+        checkboxes.forEach((cb, index) => {
           cb.addEventListener("change", () => {
-            const total = checkboxes.length;
-            const done = Array.from(checkboxes).filter(c => c.checked).length;
-            const percent = Math.round((done / total) * 100);
-            progressBar.style.width = percent + "%";
-            progressBar.textContent = percent > 0 ? percent + "%" : "";
-            updateCategoryProgress();
+            if (cb.checked) {
+              // alle vorherigen setzen
+              for (let i = 0; i < index; i++) checkboxes[i].checked = true;
+            } else {
+              // alle folgenden entfernen
+              for (let i = index+1; i < checkboxes.length; i++) checkboxes[i].checked = false;
+            }
+            updateSubProgress();
           });
         });
       });
