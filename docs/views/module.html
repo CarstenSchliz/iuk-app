@@ -74,7 +74,7 @@
     import { auth, db } from "../js/firebase.js";
     import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    // --- Daten ---
+    // --- Kategorien & Subkategorien ---
     const categories = {
       "Fahrzeugkunde": [
         "IT","Hardware","Bedienung","KFZ","Funk","Material im Heck",
@@ -102,27 +102,20 @@
       const span = document.createElement('span');
       span.className = 'category-icon';
       if(name === "Fahrzeugkunde"){ 
-        const i = document.createElement('i');
-        i.className = "bi bi-truck-front";
-        i.style.fontSize = "1.4rem";
-        span.appendChild(i);
+        span.innerHTML = '<i class="bi bi-truck-front" style="font-size:1.4rem;"></i>';
         return span;
       }
       if(name === "Einsatztaktik"){ 
-        const i = document.createElement('i');
-        i.className = "bi bi-diagram-3";
-        i.style.fontSize = "1.4rem";
-        span.appendChild(i);
+        span.innerHTML = '<i class="bi bi-diagram-3" style="font-size:1.4rem;"></i>';
         return span;
       }
-      const i = document.createElement('i');
-      i.className = (name === "Software") ? "bi bi-cpu" : "bi bi-display";
-      i.style.fontSize = "1.4rem";
-      span.appendChild(i);
+      span.innerHTML = (name === "Software")
+        ? '<i class="bi bi-cpu" style="font-size:1.4rem;"></i>'
+        : '<i class="bi bi-display" style="font-size:1.4rem;"></i>';
       return span;
     }
 
-    // --- Farblogik ---
+    // --- Farben ---
     function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
     function subColor(p){
       if(p === 25) return getCSS("--rot");
@@ -149,7 +142,7 @@
       const userDoc = await getDoc(doc(db,"users",user.uid));
       const role = userDoc.exists() ? (userDoc.data().role || "anwärter") : "anwärter";
 
-      // Module rendern
+      // Kategorien rendern
       Object.keys(categories).forEach(catName=>{
         const section=document.createElement('div'); section.className='category';
 
@@ -162,7 +155,7 @@
         section.appendChild(header);
 
         // Querstrich
-        const sep=document.createElement('hr'); sep.className="category-separator"; section.appendChild(sep);
+        section.appendChild(Object.assign(document.createElement('hr'), { className:"category-separator" }));
 
         // Kategorie-Fortschritt
         const catProgWrap=document.createElement('div'); catProgWrap.className='progress';
@@ -212,18 +205,24 @@
             cb[3].checked=!!data.secure;
           }
 
+          // Rollen- und Stufen-Logik
           function enforce(){
-            cb[0].disabled = false;
+            cb[0].disabled = false; // "gelernt" immer erlaubt
+
             if(role === "anwärter"){
-              cb[1].disabled=true; cb[2].disabled=true; cb[3].disabled=true;
-              cb[1].checked=false; cb[2].checked=false; cb[3].checked=false;
+              cb[1].disabled=true; cb[1].checked=false;
+              cb[2].disabled=true; cb[2].checked=false;
+              cb[3].disabled=true; cb[3].checked=false;
               return;
             }
+
+            // Helfer, Gruppenleiter, Admin → aufbauende Logik
             cb[1].disabled=!cb[0].checked; if(cb[1].disabled) cb[1].checked=false;
             cb[2].disabled=!cb[1].checked; if(cb[2].disabled) cb[2].checked=false;
             cb[3].disabled=!cb[2].checked; if(cb[3].disabled) cb[3].checked=false;
           }
 
+          // Prozent berechnen
           function percent(){
             if(cb[3].checked) return 100;
             if(cb[2].checked) return 75;
@@ -232,6 +231,7 @@
             return 0;
           }
 
+          // Update & speichern
           async function updateSub(){
             const p=percent();
             pb.style.width=p+'%'; pb.style.background=subColor(p);
@@ -239,7 +239,6 @@
             pb.dataset.percent=p;
             updateCategory();
 
-            // speichern
             await setDoc(docRef,{
               learned: cb[0].checked,
               supervised: cb[1].checked,
