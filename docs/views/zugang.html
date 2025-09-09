@@ -13,28 +13,140 @@
       --hellblau: rgb(100,160,220);
       --mittelgrau: rgb(180,180,180);
     }
+
     .page-title { color: var(--softrot); margin-bottom: 1rem; }
-    .zugang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    @media(max-width: 768px){ .zugang-grid { grid-template-columns: 1fr; } }
-    .card { background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .card h3 { color: var(--hellblau); margin-top: 0; margin-bottom: 1rem; display:flex; align-items:center; gap:0.5rem; }
+
+    .zugang-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media(max-width: 768px){
+      .zugang-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg, #fff);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      color: var(--hellblau);
+      margin-top: 0;
+      margin-bottom: 1rem;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+
     .checklist { list-style: none; padding: 0; margin: 0; }
-    .checklist li { margin: 0.6rem 0; display:flex; align-items:center; gap:0.5rem; font-size:1rem; }
-    .checklist input[type="checkbox"] { width: 1.2rem; height: 1.2rem; cursor: pointer; }
-    .progress { height: 22px; background-color: #e9ecef; border-radius: 12px; overflow: hidden; margin-bottom: 1rem; }
-    .progress-bar { height: 100%; text-align: center; font-size: 0.85rem; font-weight: bold; transition: width 0.3s ease, background-color 0.3s ease; display:flex; align-items:center; justify-content:center; color: white; }
+    .checklist li {
+      margin: 0.6rem 0;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      font-size:1rem;
+    }
+    .checklist input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      cursor: pointer;
+    }
+
+    .progress {
+      height: 22px;
+      background-color: #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .progress-bar {
+      height: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: width 0.3s ease, background-color 0.3s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: white; /* Schriftfarbe immer weiß */
+    }
+
     .select-user { margin-bottom: 1rem; }
-    .selected-user, #confirmText { font-weight: bold; color: var(--dunkelblau); font-size: 1.05rem; margin-top: 1rem; }
-    .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
+    .selected-user, #confirmText {
+      font-weight: bold;
+      color: var(--dunkelblau);
+      font-size: 1.05rem;
+      margin-top: 1rem;
+    }
+
+    .btn-confirm {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:0.5rem;
+      margin:0.5rem 0.5rem 0 0;
+      padding:0.6rem 1rem;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      color:#fff;
+      font-weight:bold;
+      width:260px;
+    }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
-    select { width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--dunkelblau); background: #fff; font-size: 1rem; color: var(--dunkelblau); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; }
-    /* keine rote Umrandung mehr */
-    select:focus { outline: none; box-shadow: none; border-color: var(--dunkelblau); }
-    @media(min-width: 769px){ .select-user select { max-width: 300px; } }
-    #toast { visibility: hidden; min-width: 250px; background-color: var(--dunkelblau); color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
-    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+
+    /* Dropdown Styling */
+    select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--dunkelblau);
+      background: #fff;
+      font-size: 1rem;
+      color: var(--dunkelblau);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    /* Rote Umrandung beim Fokus komplett entfernen */
+    select:focus {
+      outline: none;
+      border-color: var(--dunkelblau);
+      box-shadow: none;
+    }
+    @media(min-width: 769px){
+      .select-user select { max-width: 300px; }
+    }
+
+    /* Toast */
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: var(--dunkelblau); /* Dunkelblauer Hintergrund für den Toast */
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 2000;
+      left: 50%;
+      bottom: 30px;
+      font-size: 1rem;
+      opacity: 0;
+      transform: translateX(-50%);
+      transition: opacity 0.5s, bottom 0.5s;
+    }
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
   </style>
 </head>
 <body>
@@ -56,7 +168,7 @@
     <div class="card">
       <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
       <div class="progress">
-        <div id="grund-progress" class="progress-bar" style="width:0%">0%</div>
+        <div id="grund-progress" class="progress-bar" style="width:0%"></div>
       </div>
       <ul class="checklist" id="grund-list">
         <li><input type="checkbox" data-id="fachdienst" disabled> Fachdienstausbildung Sanitätsdienst</li>
@@ -71,7 +183,7 @@
     <div class="card">
       <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
       <div class="progress">
-        <div id="verlauf-progress" class="progress-bar" style="width:0%">0%</div>
+        <div id="verlauf-progress" class="progress-bar" style="width:0%"></div>
       </div>
       <ul class="checklist" id="verlauf-list">
         <li><input type="checkbox" data-id="c1" disabled> C1 (Helfer-)Führerschein</li>
@@ -85,6 +197,8 @@
     <h3><i class="bi bi-person-check"></i> Bestätigung durch den Gruppenleiter</h3>
     <div id="confirmUserSection" style="display:none;">
       <p id="confirmText"></p>
+
+      <!-- Grundvoraussetzungen -->
       <div class="checklist">
         <label><input type="checkbox" id="chkGrund" disabled> Alle Grundvoraussetzungen erfüllt</label>
       </div>
@@ -93,6 +207,8 @@
           <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
         </button>
       </div>
+
+      <!-- Optionale -->
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkOptional" disabled> Optionale Voraussetzungen erfüllt</label>
       </div>
@@ -101,7 +217,10 @@
           <i class="bi bi-envelope"></i> Bestätigung per Mail senden
         </button>
       </div>
+
       <hr style="margin:1rem 0;">
+
+      <!-- Ablehnung -->
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
@@ -113,57 +232,117 @@
     </div>
   </div>
 
+  <!-- Toast -->
   <div id="toast"></div>
 
   <script>
+    // Firebase Firestore und Auth importieren
+    // (wie in deinem Ursprungscode belassen)
+    import { db } from "./docs/js/firebase.js"; // Stelle sicher, dass du den richtigen Pfad verwendest!
+
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
-    const grundList = document.querySelectorAll("#grund-list input[type='checkbox']");
-    const verlaufList = document.querySelectorAll("#verlauf-list input[type='checkbox']");
+
+    const grundListEl = document.getElementById("grund-list");
+    const verlaufListEl = document.getElementById("verlauf-list");
+    const grundBoxes = grundListEl.querySelectorAll('input[type="checkbox"]');
+    const verlaufBoxes = verlaufListEl.querySelectorAll('input[type="checkbox"]');
+
     const grundProgress = document.getElementById("grund-progress");
     const verlaufProgress = document.getElementById("verlauf-progress");
+
     const chkGrund = document.getElementById("chkGrund");
     const chkOptional = document.getElementById("chkOptional");
 
-    // Dummy-User
+    // ---- Dummy-User als Fallback ----
     const testUsers = [
-      { id: "u1", displayName: "Max Mustermann" },
-      { id: "u2", displayName: "Erika Musterfrau" },
-      { id: "u3", displayName: "Hans Helfer" },
-      { id: "u4", displayName: "Sabine Sanitäterin" }
+      { id: "u1", displayName: "Max Mustermann", email: "max@example.com" },
+      { id: "u2", displayName: "Erika Musterfrau", email: "erika@example.com" },
+      { id: "u3", displayName: "Hans Helfer", email: "hans@example.com" },
+      { id: "u4", displayName: "Sabine Sanitäterin", email: "sabine@example.com" }
     ];
 
-    function loadUsers() {
-      userSelect.innerHTML = '<option value="">-- bitte wählen --</option>';
-      testUsers.forEach(u => {
-        const opt = document.createElement("option");
-        opt.value = u.id;
-        opt.textContent = u.displayName;
-        userSelect.appendChild(opt);
-      });
+    // Nutzer laden und ins Dropdown füllen
+    async function loadUsers() {
+      try {
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.get();
+
+        // Dropdown resetten
+        userSelect.innerHTML = '<option value="">-- bitte wählen --</option>';
+
+        if (!snapshot.empty) {
+          snapshot.forEach(doc => {
+            const user = doc.data();
+            const opt = document.createElement("option");
+            opt.value = doc.id;
+            opt.textContent = user.displayName || user.email || doc.id;
+            userSelect.appendChild(opt);
+          });
+        } else {
+          // Fallback: Dummy-Nutzer
+          testUsers.forEach(u => {
+            const opt = document.createElement("option");
+            opt.value = u.id;
+            opt.textContent = u.displayName || u.email || u.id;
+            userSelect.appendChild(opt);
+          });
+          showToast("Dummy-User wurden geladen (Testmodus).");
+        }
+      } catch (error) {
+        console.error("Fehler beim Laden der Nutzer:", error);
+        // Fallback: Dummy-Nutzer
+        userSelect.innerHTML = '<option value="">-- bitte wählen --</option>';
+        testUsers.forEach(u => {
+          const opt = document.createElement("option");
+          opt.value = u.id;
+          opt.textContent = u.displayName || u.email || u.id;
+          userSelect.appendChild(opt);
+        });
+        showToast("Dummy-User wurden geladen (wegen Fehler).");
+      }
     }
 
-    function updateProgress(list, progressBar, chkAll) {
-      const total = list.length;
-      const checked = Array.from(list).filter(cb => cb.checked).length;
-      const percent = Math.round((checked / total) * 100);
+    // Farblogik für die Progressbar nach Quartilen
+    function setProgressColor(progressBar, percent) {
+      // Auf das nächst-höhere Quartil mappen (0,25,50,75,100)
+      let step = 0;
+      if (percent === 0) step = 0;
+      else if (percent <= 25) step = 25;
+      else if (percent <= 50) step = 50;
+      else if (percent <= 75) step = 75;
+      else step = 100;
+
+      switch(step){
+        case 25: progressBar.style.backgroundColor = "red"; break;
+        case 50: progressBar.style.backgroundColor = "gold"; break;
+        case 75: progressBar.style.backgroundColor = "lightgreen"; break;
+        case 100: progressBar.style.backgroundColor = "green"; break;
+        default: progressBar.style.backgroundColor = "#e9ecef"; break;
+      }
+    }
+
+    function updateProgress(listNodeList, progressBar, gateCheckbox) {
+      const total = listNodeList.length;
+      const checked = Array.from(listNodeList).filter(cb => cb.checked).length;
+      const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
+
       progressBar.style.width = percent + "%";
       progressBar.textContent = percent + "%";
+      setProgressColor(progressBar, percent);
 
-      // Farben je nach Fortschritt
-      if (percent === 25) progressBar.style.backgroundColor = "red";
-      else if (percent === 50) progressBar.style.backgroundColor = "gold";
-      else if (percent === 75) progressBar.style.backgroundColor = "lightgreen";
-      else if (percent === 100) progressBar.style.backgroundColor = "green";
-      else progressBar.style.backgroundColor = "#e9ecef";
-
-      // "Alle erfüllt"-Checkbox nur wenn 100%
-      chkAll.disabled = !(percent === 100);
-      chkAll.checked = percent === 100;
+      // Gate-Checkbox nur aktiv, wenn wirklich 100%
+      if (percent === 100) {
+        gateCheckbox.disabled = false;
+      } else {
+        gateCheckbox.disabled = true;
+        gateCheckbox.checked = false; // nicht auto-abhaken
+      }
     }
 
+    // Nutzerwechsel
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
         const name = userSelect.options[userSelect.selectedIndex].text;
@@ -171,29 +350,40 @@
         confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
 
-        // Checkboxes aktivieren
-        grundList.forEach(cb => { cb.disabled = false; cb.checked = false; });
-        verlaufList.forEach(cb => { cb.disabled = false; cb.checked = false; });
+        // Alle Checkboxen aktivieren & zurücksetzen
+        grundBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
+        verlaufBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
+
+        // Gate-Checkboxen sperren/entkoppeln bis 100%
         chkGrund.disabled = true; chkGrund.checked = false;
         chkOptional.disabled = true; chkOptional.checked = false;
 
-        // Reset Progress
-        updateProgress(grundList, grundProgress, chkGrund);
-        updateProgress(verlaufList, verlaufProgress, chkOptional);
-
-        // Listener hinzufügen
-        grundList.forEach(cb => cb.addEventListener("change", () => {
-          updateProgress(grundList, grundProgress, chkGrund);
-        }));
-        verlaufList.forEach(cb => cb.addEventListener("change", () => {
-          updateProgress(verlaufList, verlaufProgress, chkOptional);
-        }));
+        // Fortschritt zurücksetzen
+        updateProgress(grundBoxes, grundProgress, chkGrund);
+        updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
       } else {
         selectedUser.textContent = "";
         confirmUserSection.style.display = "none";
       }
     });
 
+    // Delegierte Listener für Änderungen in den Listen
+    grundListEl.addEventListener("change", () => {
+      updateProgress(grundBoxes, grundProgress, chkGrund);
+    });
+    verlaufListEl.addEventListener("change", () => {
+      updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
+    });
+
+    // Toast anzeigen
+    function showToast(msg){
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.className = "show";
+      setTimeout(()=>{ toast.className = toast.className.replace("show",""); }, 3000);
+    }
+
+    // Nutzer laden, wenn die Seite geladen wird
     loadUsers();
   </script>
 </body>
