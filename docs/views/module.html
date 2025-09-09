@@ -33,6 +33,12 @@
     }
     .toggle-btn{ font-size:1.4rem; color:var(--dunkelblau); }
 
+    .category-separator {
+      border: none;
+      border-top: 2px solid var(--mittelgrau);
+      margin: 0.3rem 0 0.8rem 0;
+    }
+
     .progress{
       height:22px; background:#e9ecef; border-radius:12px; overflow:hidden; margin:.5rem 0 1rem 0;
     }
@@ -116,7 +122,6 @@
 
     // --- Farblogik ---
     function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-    // Subkategorien: exakt 25/50/75/100
     function subColor(p){
       if(p === 25) return getCSS("--rot");
       if(p === 50) return getCSS("--gelb");
@@ -124,7 +129,6 @@
       if(p === 100) return getCSS("--dunkelgruen");
       return "#e9ecef";
     }
-    // Hauptkategorien: bis-Logik
     function catColor(p){
       if(p === 0) return "#e9ecef";
       if(p <= 25) return getCSS("--rot");
@@ -146,6 +150,11 @@
       header.append(iconEl, title, toggle);
       section.appendChild(header);
 
+      // Querstrich
+      const sep = document.createElement('hr');
+      sep.className = "category-separator";
+      section.appendChild(sep);
+
       // Kategorie-Fortschritt
       const catProgWrap = document.createElement('div'); catProgWrap.className = 'progress';
       catProgWrap.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
@@ -155,7 +164,7 @@
       // Subcontainer
       const subWrap = document.createElement('div'); subWrap.className = 'subcategory-container'; subWrap.style.display = 'none';
 
-      // --- Kategorie-Update ---
+      // Kategorie-Update
       function updateCategory(){
         const subs = subWrap.querySelectorAll('.module-card .progress-bar');
         if(!subs.length){ catProgBar.style.width = '0%'; catProgBar.style.background = catColor(0); catProgBar.textContent = ''; return; }
@@ -185,7 +194,7 @@
         const pb = card.querySelector('.progress-bar');
 
         function enforce(){
-          cb[0].disabled = false;                 
+          cb[0].disabled = false;
           cb[1].disabled = !cb[0].checked; if(cb[1].disabled) cb[1].checked = false;
           cb[2].disabled = !cb[1].checked; if(cb[2].disabled) cb[2].checked = false;
           cb[3].disabled = !cb[2].checked; if(cb[3].disabled) cb[3].checked = false;
