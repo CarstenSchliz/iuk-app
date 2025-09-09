@@ -62,7 +62,7 @@
     .checklist input[type="checkbox"] {
       width: 1.2rem;
       height: 1.2rem;
-      cursor: pointer;
+      cursor: not-allowed;
     }
 
     .progress {
@@ -81,7 +81,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      color: white; /* Schriftfarbe immer weiß */
+      color: white;
     }
 
     .select-user {
@@ -142,7 +142,7 @@
     #toast {
       visibility: hidden;
       min-width: 250px;
-      background-color: var(--dunkelblau); /* Dunkelblauer Hintergrund für den Toast */
+      background-color: var(--dunkelblau);
       color: #fff;
       text-align: center;
       border-radius: 8px;
@@ -250,53 +250,86 @@
   <div id="toast"></div>
 
   <script>
-    // Firebase Firestore und Auth importieren
-    import { db } from "./docs/js/firebase.js"; // Stelle sicher, dass du den richtigen Pfad verwendest!
+    // ---- Testdaten ----
+    const testUsers = [
+      { id: "u1", displayName: "Max Mustermann", email: "max@example.com",
+        grund: ["fachdienst","erstgespraech","18jahre","hospitation","mitwirken"], optional: ["c1","gruppenfuehrer"] },
+      { id: "u2", displayName: "Erika Musterfrau", email: "erika@example.com",
+        grund: ["fachdienst","erstgespraech","18jahre"], optional: ["c1"] },
+      { id: "u3", displayName: "Hans Huber", email: "hans@example.com",
+        grund: ["fachdienst","18jahre"], optional: [] },
+      { id: "u4", displayName: "Sophie Schmidt", email: "sophie@example.com",
+        grund: ["fachdienst","erstgespraech","18jahre","mitwirken"], optional: [] }
+    ];
 
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
 
-    // Nutzer laden und ins Dropdown füllen
-    async function loadUsers() {
-      try {
-        const usersRef = db.collection('users');
-        const snapshot = await usersRef.get();
+    const grundList = document.getElementById("grund-list");
+    const verlaufList = document.getElementById("verlauf-list");
 
-        if (!snapshot.empty) {
-          userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
-          snapshot.forEach(doc => {
-            const user = doc.data();
-            const opt = document.createElement("option");
-            opt.value = doc.id;
-            opt.textContent = user.displayName || user.email || doc.id;
-            userSelect.appendChild(opt);
-          });
-        } else {
-          showToast("Es wurden keine Nutzer gefunden.");
-        }
-      } catch (error) {
-        console.error("Fehler beim Laden der Nutzer:", error);
-        showToast("Es gab einen Fehler beim Laden der Nutzer.");
-      }
+    const grundProgress = document.getElementById("grund-progress");
+    const verlaufProgress = document.getElementById("verlauf-progress");
+
+    // Dummy-User ins Dropdown füllen
+    function loadUsers() {
+      userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+      testUsers.forEach(user => {
+        const opt = document.createElement("option");
+        opt.value = user.id;
+        opt.textContent = user.displayName || user.email || user.id;
+        userSelect.appendChild(opt);
+      });
     }
 
-    // Nutzer laden, wenn die Seite geladen wird
     loadUsers();
 
     // Auswahl des Nutzers
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
-        const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: " + name;
-        confirmText.textContent = "Bestätigung für: " + name;
+        const user = testUsers.find(u => u.id === userSelect.value);
+        selectedUser.textContent = "Ausgewählt: " + user.displayName;
+        confirmText.textContent = "Bestätigung für: " + user.displayName;
         confirmUserSection.style.display = "block";
+
+        setChecklist(user);
       } else {
         selectedUser.textContent = "";
         confirmUserSection.style.display = "none";
       }
     });
+
+    function setChecklist(user){
+      // alle Checkboxen resetten
+      grundList.querySelectorAll("input[type=checkbox]").forEach(chk => {
+        chk.checked = user.grund.includes(chk.dataset.id);
+      });
+      verlaufList.querySelectorAll("input[type=checkbox]").forEach(chk => {
+        chk.checked = user.optional.includes(chk.dataset.id);
+      });
+
+      updateProgress();
+    }
+
+    function updateProgress(){
+      const grundBoxes = grundList.querySelectorAll("input[type=checkbox]");
+      const grundChecked = [...grundBoxes].filter(chk => chk.checked).length;
+      const grundTotal = grundBoxes.length;
+      const grundPercent = Math.round((grundChecked/grundTotal)*100);
+      grundProgress.style.width = grundPercent+"%";
+      grundProgress.style.backgroundColor = grundPercent===100 ? "var(--drk-gruen)" : "var(--hellblau)";
+      grundProgress.textContent = grundPercent+"%";
+
+      const verlaufBoxes = verlaufList.querySelectorAll("input[type=checkbox]");
+      const verlaufChecked = [...verlaufBoxes].filter(chk => chk.checked).length;
+      const verlaufTotal = verlaufBoxes.length;
+      const verlaufPercent = Math.round((verlaufChecked/verlaufTotal)*100);
+      verlaufProgress.style.width = verlaufPercent+"%";
+      verlaufProgress.style.backgroundColor = verlaufPercent===100 ? "var(--drk-gruen)" : "var(--hellblau)";
+      verlaufProgress.textContent = verlaufPercent+"%";
+    }
 
     // Toast anzeigen
     function showToast(msg){
