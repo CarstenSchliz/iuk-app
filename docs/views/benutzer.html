@@ -6,7 +6,7 @@
   <title>Benutzerverwaltung</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    :root{
+    :root {
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --hellgrau: rgb(239,238,234);
@@ -20,8 +20,8 @@
       --role-hf-bg:#e8f6ec;   --role-hf-bd:#c7efd5;   --role-hf-fg:#0f6b2b;
       --role-an-bg:#e6f0ff;   --role-an-bd:#cfe1ff;   --role-an-fg:#0d3b8a;
     }
-    *{box-sizing:border-box}
 
+    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -30,15 +30,15 @@
       background: var(--hellgrau);
     }
 
-    /* Sidebar bleibt immer breit */
+    /* Sidebar bleibt immer fixiert */
     .sidebar {
       background: #fff;
-      width: 340px; /* Sidebar bleibt breit */
+      width: 340px; 
       display: flex;
       flex-direction: column;
       padding: 1.5rem 1rem;
       box-sizing: border-box;
-      position: fixed; /* Sidebar fixiert */
+      position: fixed;
       top: 0;
       left: 0;
       bottom: 0;
@@ -106,24 +106,6 @@
       background: var(--hoverblau);
     }
 
-    /* Animiertes Bändchen */
-    .menu button::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 0;
-      background: transparent;
-      border-radius: 4px 0 0 4px;
-      transition: width 0.25s ease, background-color 0.25s ease;
-    }
-
-    .menu button:hover::before {
-      width: 5px;
-      background: var(--hoverblau);
-    }
-
     .menu button.active {
       background: var(--blassblau);
       font-weight: bold;
@@ -140,13 +122,6 @@
       margin-bottom: 0.8rem;
     }
 
-    .version {
-      font-size: 0.8rem;
-      text-align: center;
-      color: #555;
-    }
-
-    /* Content */
     .content {
       flex-grow: 1;
       background: var(--hellgrau);
@@ -155,7 +130,6 @@
       margin-left: 340px; /* Sicherstellen, dass der Content nach der Sidebar angezeigt wird */
     }
 
-    /* Benutzerverwaltungsseite Styling */
     .user-page {
       padding: 1rem;
       color: var(--text);
@@ -305,6 +279,7 @@
       color: var(--dunkelblau);
     }
 
+    /* Mobile responsive */
     @media (max-width: 720px) {
       .user-page .user-table thead {
         display: none;
@@ -355,73 +330,96 @@
   </style>
 </head>
 <body>
-  <div class="user-page">
-    <h2 class="page-title">Benutzerverwaltung</h2>
+  <div class="sidebar">
+    <!-- Sidebar Content (fixiert) -->
+    <div class="profile">
+      <img src="assets/avatar-default.png" alt="Profilbild">
+      <h2>Max Mustermann</h2>
+      <p>Teilnehmer</p>
+    </div>
 
-    <div class="settings-grid">
-      <!-- Nutzerliste -->
-      <div class="card">
-        <h3><i class="bi bi-people"></i> Benutzerübersicht</h3>
-        <div style="position:relative; margin:12px 0 14px;">
-          <i class="bi bi-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#6b7280; font-size:1rem;"></i>
-          <input type="text" id="searchInput" placeholder="Suchen..." style="padding:8px 32px 8px 32px; width:100%; border-radius:8px; border:1px solid #ccc;">
-          <button id="clearSearch" type="button" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:1.2rem; color:#6b7280; cursor:pointer; display:none;">
-            <i class="bi bi-x-lg"></i>
-          </button>
+    <div class="menu">
+      <button><i class="bi bi-person"></i> Persönliche Daten</button>
+      <button><i class="bi bi-key"></i> Zugangsvoraussetzungen</button>
+      <button><i class="bi bi-speedometer2"></i> Dashboard</button>
+      <button><i class="bi bi-journal"></i> Lernmodule</button>
+      <button><i class="bi bi-folder2"></i> Lernmaterialien</button>
+      <button><i class="bi bi-people"></i> Benutzerverwaltung</button>
+    </div>
+
+    <button class="logout"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    <div class="version">Version 1.0.0</div>
+  </div>
+
+  <div class="content">
+    <div class="user-page">
+      <h2 class="page-title">Benutzerverwaltung</h2>
+
+      <div class="settings-grid">
+        <!-- Nutzerliste -->
+        <div class="card">
+          <h3><i class="bi bi-people"></i> Benutzerübersicht</h3>
+          <div style="position:relative; margin:12px 0 14px;">
+            <i class="bi bi-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#6b7280; font-size:1rem;"></i>
+            <input type="text" id="searchInput" placeholder="Suchen..." style="padding:8px 32px 8px 32px; width:100%; border-radius:8px; border:1px solid #ccc;">
+            <button id="clearSearch" type="button" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:1.2rem; color:#6b7280; cursor:pointer; display:none;">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <table class="user-table" aria-label="Liste der Benutzer">
+            <thead>
+              <tr>
+                <th>Anzeigename</th>
+                <th>E-Mail-Adresse</th>
+                <th>Rollen</th>
+                <th style="width:44px;"></th>
+              </tr>
+            </thead>
+            <tbody id="userList"></tbody>
+          </table>
+          <div id="userMsg" class="form-msg"></div>
         </div>
-        <table class="user-table" aria-label="Liste der Benutzer">
-          <thead>
-            <tr>
-              <th>Anzeigename</th>
-              <th>E-Mail-Adresse</th>
-              <th>Rollen</th>
-              <th style="width:44px;"></th>
-            </tr>
-          </thead>
-          <tbody id="userList"></tbody>
-        </table>
-        <div id="userMsg" class="form-msg"></div>
+
+        <!-- Neuer Nutzer -->
+        <div class="card">
+          <h3><i class="bi bi-person-plus"></i> Neuen Nutzer anlegen</h3>
+          <form id="createUserForm" novalidate>
+            <div class="form-group floating">
+              <input type="email" id="newEmail" placeholder=" " required inputmode="email" autocomplete="email" />
+              <label for="newEmail">E-Mail</label>
+            </div>
+            <div class="form-group floating">
+              <input type="password" id="newPassword" placeholder=" " required autocomplete="new-password" minlength="6" />
+              <label for="newPassword">Passwort</label>
+            </div>
+            <div class="form-group floating">
+              <input type="text" id="newName" placeholder=" " autocomplete="name" />
+              <label for="newName">Anzeigename (optional)</label>
+            </div>
+            <button type="submit" class="btn btn-primary" id="createBtn"><i class="bi bi-save"></i> Benutzer erstellen</button>
+            <div id="createUserMsg" class="form-msg"></div>
+          </form>
+        </div>
       </div>
 
-      <!-- Neuer Nutzer -->
-      <div class="card">
-        <h3><i class="bi bi-person-plus"></i> Neuen Nutzer anlegen</h3>
-        <form id="createUserForm" novalidate>
-          <div class="form-group floating">
-            <input type="email" id="newEmail" placeholder=" " required inputmode="email" autocomplete="email" />
-            <label for="newEmail">E-Mail</label>
-          </div>
-          <div class="form-group floating">
-            <input type="password" id="newPassword" placeholder=" " required autocomplete="new-password" minlength="6" />
-            <label for="newPassword">Passwort</label>
-          </div>
-          <div class="form-group floating">
-            <input type="text" id="newName" placeholder=" " autocomplete="name" />
-            <label for="newName">Anzeigename (optional)</label>
-          </div>
-          <button type="submit" class="btn btn-primary" id="createBtn"><i class="bi bi-save"></i> Benutzer erstellen</button>
-          <div id="createUserMsg" class="form-msg"></div>
-        </form>
+      <!-- Editor -->
+      <div id="editPanelOuter" class="card" style="display:none;">
+        <div id="editPanel"></div>
       </div>
-    </div>
 
-    <!-- Editor -->
-    <div id="editPanelOuter" class="card" style="display:none;">
-      <div id="editPanel"></div>
-    </div>
+      <!-- Toast -->
+      <div id="toast" role="status" aria-live="polite"></div>
 
-    <!-- Toast -->
-    <div id="toast" role="status" aria-live="polite"></div>
-
-    <!-- Modal -->
-    <div id="modalBackdrop" class="modal-backdrop"></div>
-    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal-card">
-        <h4 id="modalTitle">Bestätigen</h4>
-        <p id="modalMessage">Bist du sicher?</p>
-        <div class="modal-actions">
-          <button id="modalCancel" class="btn btn-secondary"><i class="bi bi-x-lg"></i> Abbrechen</button>
-          <button id="modalOk" class="btn btn-danger"><i class="bi bi-trash"></i> Löschen</button>
+      <!-- Modal -->
+      <div id="modalBackdrop" class="modal-backdrop"></div>
+      <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-card">
+          <h4 id="modalTitle">Bestätigen</h4>
+          <p id="modalMessage">Bist du sicher?</p>
+          <div class="modal-actions">
+            <button id="modalCancel" class="btn btn-secondary"><i class="bi bi-x-lg"></i> Abbrechen</button>
+            <button id="modalOk" class="btn btn-danger"><i class="bi bi-trash"></i> Löschen</button>
+          </div>
         </div>
       </div>
     </div>
@@ -679,7 +677,7 @@
       try{
         const res = await fetch(API_BASE + "/listUsers", { method:"GET" });
         const data = await res.json();
-        allUsers = (data.users || []).sort((a, b) => (a.displayName || a.email || "").localeCompare(b.displayName || b.email || "", "de", { sensitivity: "base" }));
+        allUsers = (data.users || []).sort((a,b)=>(a.displayName || a.email || "").localeCompare(b.displayName || b.email || "", "de", { sensitivity: "base" }));
         renderUsers(allUsers);
         userMsg.textContent = "";
       }catch(err){
