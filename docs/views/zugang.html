@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zugangsvoraussetzungen</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
   <style>
     :root {
       --softrot: rgb(228,100,80);
@@ -14,30 +13,24 @@
       --hellblau: rgb(100,160,220);
       --mittelgrau: rgb(180,180,180);
     }
-
     .page-title {
       color: var(--softrot);
       margin-bottom: 1rem;
     }
-
     .zugang-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
     }
     @media(max-width: 768px){
-      .zugang-grid {
-        grid-template-columns: 1fr;
-      }
+      .zugang-grid { grid-template-columns: 1fr; }
     }
-
     .card {
       background: var(--card-bg, #fff);
       padding: 1.5rem;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-
     .card h3 {
       color: var(--hellblau);
       margin-top: 0;
@@ -46,7 +39,6 @@
       align-items:center;
       gap:0.5rem;
     }
-
     .checklist {
       list-style: none;
       padding: 0;
@@ -62,9 +54,8 @@
     .checklist input[type="checkbox"] {
       width: 1.2rem;
       height: 1.2rem;
-      cursor: not-allowed;
+      cursor: pointer;
     }
-
     .progress {
       height: 22px;
       background-color: #e9ecef;
@@ -83,17 +74,13 @@
       justify-content:center;
       color: white;
     }
-
-    .select-user {
-      margin-bottom: 1rem;
-    }
+    .select-user { margin-bottom: 1rem; }
     .selected-user, #confirmText {
       font-weight: bold;
       color: var(--dunkelblau);
       font-size: 1.05rem;
       margin-top: 1rem;
     }
-
     .btn-confirm {
       display:inline-flex;
       align-items:center;
@@ -111,7 +98,6 @@
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
-
     /* Dropdown Styling */
     select {
       width: 100%;
@@ -133,11 +119,8 @@
       box-shadow: 0 0 4px rgba(228,100,80,0.5);
     }
     @media(min-width: 769px){
-      .select-user select {
-        max-width: 300px;
-      }
+      .select-user select { max-width: 300px; }
     }
-
     /* Toast */
     #toast {
       visibility: hidden;
@@ -250,33 +233,32 @@
   <div id="toast"></div>
 
   <script>
-    // ---- Testdaten ----
-    const testUsers = [
-      { id: "u1", displayName: "Max Mustermann", email: "max@example.com",
-        grund: ["fachdienst","erstgespraech","18jahre","hospitation","mitwirken"], optional: ["c1","gruppenfuehrer"] },
-      { id: "u2", displayName: "Erika Musterfrau", email: "erika@example.com",
-        grund: ["fachdienst","erstgespraech","18jahre"], optional: ["c1"] },
-      { id: "u3", displayName: "Hans Huber", email: "hans@example.com",
-        grund: ["fachdienst","18jahre"], optional: [] },
-      { id: "u4", displayName: "Sophie Schmidt", email: "sophie@example.com",
-        grund: ["fachdienst","erstgespraech","18jahre","mitwirken"], optional: [] }
-    ];
+    // Firestore Import (wenn du es brauchst)
+    // import { db } from "./docs/js/firebase.js";
 
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
 
-    const grundList = document.getElementById("grund-list");
-    const verlaufList = document.getElementById("verlauf-list");
+    // Dummy-User
+    const testUsers = [
+      { id: "u1", displayName: "Max Mustermann", email: "max@example.com" },
+      { id: "u2", displayName: "Erika Musterfrau", email: "erika@example.com" },
+      { id: "u3", displayName: "Hans Helfer", email: "hans@example.com" },
+      { id: "u4", displayName: "Sabine Sanitäterin", email: "sabine@example.com" }
+    ];
 
-    const grundProgress = document.getElementById("grund-progress");
-    const verlaufProgress = document.getElementById("verlauf-progress");
-
-    // Dummy-User ins Dropdown füllen
+    // Nutzer laden (hier nur Dummy)
     function loadUsers() {
-      userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
-      testUsers.forEach(user => {
+      fillUserDropdown(testUsers);
+      showToast("Dummy-User wurden geladen (Testmodus).");
+    }
+
+    // Dropdown füllen
+    function fillUserDropdown(users) {
+      userSelect.innerHTML = '<option value="">-- bitte wählen --</option>';
+      users.forEach(user => {
         const opt = document.createElement("option");
         opt.value = user.id;
         opt.textContent = user.displayName || user.email || user.id;
@@ -284,52 +266,21 @@
       });
     }
 
+    // Aufruf beim Laden
     loadUsers();
 
     // Auswahl des Nutzers
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
-        const user = testUsers.find(u => u.id === userSelect.value);
-        selectedUser.textContent = "Ausgewählt: " + user.displayName;
-        confirmText.textContent = "Bestätigung für: " + user.displayName;
+        const name = userSelect.options[userSelect.selectedIndex].text;
+        selectedUser.textContent = "Ausgewählt: " + name;
+        confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
-
-        setChecklist(user);
       } else {
         selectedUser.textContent = "";
         confirmUserSection.style.display = "none";
       }
     });
-
-    function setChecklist(user){
-      // alle Checkboxen resetten
-      grundList.querySelectorAll("input[type=checkbox]").forEach(chk => {
-        chk.checked = user.grund.includes(chk.dataset.id);
-      });
-      verlaufList.querySelectorAll("input[type=checkbox]").forEach(chk => {
-        chk.checked = user.optional.includes(chk.dataset.id);
-      });
-
-      updateProgress();
-    }
-
-    function updateProgress(){
-      const grundBoxes = grundList.querySelectorAll("input[type=checkbox]");
-      const grundChecked = [...grundBoxes].filter(chk => chk.checked).length;
-      const grundTotal = grundBoxes.length;
-      const grundPercent = Math.round((grundChecked/grundTotal)*100);
-      grundProgress.style.width = grundPercent+"%";
-      grundProgress.style.backgroundColor = grundPercent===100 ? "var(--drk-gruen)" : "var(--hellblau)";
-      grundProgress.textContent = grundPercent+"%";
-
-      const verlaufBoxes = verlaufList.querySelectorAll("input[type=checkbox]");
-      const verlaufChecked = [...verlaufBoxes].filter(chk => chk.checked).length;
-      const verlaufTotal = verlaufBoxes.length;
-      const verlaufPercent = Math.round((verlaufChecked/verlaufTotal)*100);
-      verlaufProgress.style.width = verlaufPercent+"%";
-      verlaufProgress.style.backgroundColor = verlaufPercent===100 ? "var(--drk-gruen)" : "var(--hellblau)";
-      verlaufProgress.textContent = verlaufPercent+"%";
-    }
 
     // Toast anzeigen
     function showToast(msg){
