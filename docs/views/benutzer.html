@@ -14,7 +14,6 @@
       --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
       --text:#1f2937;
-
       --hellblau: rgb(100,160,220);
 
       /* Rollenfarben */
@@ -34,9 +33,12 @@
 
     .user-page .settings-grid{ 
       display:grid; 
-      grid-template-columns:1fr; /* geändert: nur eine Spalte */
+      grid-template-columns: 2fr 1fr; /* zwei Spalten: links groß, rechts schmal */
       gap:1.5rem; 
       align-items:start;
+    }
+    @media (max-width:768px){
+      .user-page .settings-grid{ grid-template-columns:1fr; }
     }
 
     .user-page .card{
@@ -251,7 +253,7 @@
   </div>
 
   <script type="module">
-    /* dein kompletter JS-Code bleibt identisch */
+    /* dein kompletter JS-Code bleibt identisch (plus kleine Such-Verbesserung) */
     const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
     let allUsers = [];
     let editorDirty = false;
@@ -435,7 +437,7 @@
     }
 
     function renderUsers(users){
-      const q = searchInput.value.toLowerCase();
+      const q = (searchInput.value || "").toLowerCase();
       userList.innerHTML = "";
 
       const filtered = users.filter(u => {
@@ -445,10 +447,10 @@
           return def ? def.label.toLowerCase() : r.toLowerCase();
         });
         return (
-          u.displayName?.toLowerCase().includes(q) ||
-          u.email?.toLowerCase().includes(q) ||
-          roles.some(r => r.toLowerCase().includes(q)) ||
-          roleLabels.some(lbl => lbl.includes(q))
+          (u.displayName||"").toLowerCase().includes(q) ||
+          (u.email||"").toLowerCase().includes(q) ||
+          roles.some(r => (r||"").toLowerCase().includes(q)) ||
+          roleLabels.some(lbl => (lbl||"").includes(q))
         );
       });
 
@@ -512,6 +514,18 @@
     }
     loadUsers();
 
+    // Suche: live filtern & clear-Button
+    searchInput.addEventListener("input", ()=>{
+      renderUsers(allUsers);
+      clearSearch.style.display = searchInput.value ? "block" : "none";
+    });
+    clearSearch.addEventListener("click", ()=>{
+      searchInput.value = "";
+      clearSearch.style.display = "none";
+      renderUsers(allUsers);
+    });
+
+    // Neuer Nutzer
     const form = document.getElementById("createUserForm");
     const msg  = document.getElementById("createUserMsg");
     const createBtn = document.getElementById("createBtn");
@@ -541,6 +555,7 @@
 
         showToast("Benutzer erstellt");
         form.reset();
+        clearSearch.click(); // Suche zurücksetzen
         await loadUsers();
       }catch(err){
         msg.style.color = "red"; msg.textContent = "❌ Fehler: " + err.message;
