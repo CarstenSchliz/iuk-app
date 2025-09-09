@@ -68,13 +68,11 @@
 </head>
 <body>
   <h2 class="page-title">Lernmodule</h2>
+
   <div id="modulesContainer"></div>
 
-  <script type="module">
-    import { auth, db } from "../js/firebase.js";
-    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-    // --- Kategorien & Subkategorien ---
+  <script>
+    // --- Daten ---
     const categories = {
       "Fahrzeugkunde": [
         "IT","Hardware","Bedienung","KFZ","Funk","Material im Heck",
@@ -102,20 +100,27 @@
       const span = document.createElement('span');
       span.className = 'category-icon';
       if(name === "Fahrzeugkunde"){ 
-        span.innerHTML = '<i class="bi bi-truck-front" style="font-size:1.4rem;"></i>';
+        const i = document.createElement('i');
+        i.className = "bi bi-truck-front"; // Fahrzeug ähnlich Rettungswagen
+        i.style.fontSize = "1.4rem";
+        span.appendChild(i);
         return span;
       }
       if(name === "Einsatztaktik"){ 
-        span.innerHTML = '<i class="bi bi-diagram-3" style="font-size:1.4rem;"></i>';
+        const i = document.createElement('i');
+        i.className = "bi bi-diagram-3"; // Symbol für Führung/Organisation
+        i.style.fontSize = "1.4rem";
+        span.appendChild(i);
         return span;
       }
-      span.innerHTML = (name === "Software")
-        ? '<i class="bi bi-cpu" style="font-size:1.4rem;"></i>'
-        : '<i class="bi bi-display" style="font-size:1.4rem;"></i>';
+      const i = document.createElement('i');
+      i.className = (name === "Software") ? "bi bi-cpu" : "bi bi-display";
+      i.style.fontSize = "1.4rem";
+      span.appendChild(i);
       return span;
     }
 
-    // --- Farben ---
+    // --- Farblogik ---
     function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
     function subColor(p){
       if(p === 25) return getCSS("--rot");
@@ -134,136 +139,98 @@
 
     const container = document.getElementById("modulesContainer");
 
-    // --- Hauptfunktion ---
-    auth.onAuthStateChanged(async user=>{
-      if(!user){ window.location.href="../index.html"; return; }
+    Object.keys(categories).forEach(catName=>{
+      const section = document.createElement('div'); section.className = 'category';
 
-      // Rolle laden
-      const userDoc = await getDoc(doc(db,"users",user.uid));
-      const role = userDoc.exists() ? (userDoc.data().role || "anwärter") : "anwärter";
+      // Header
+      const header = document.createElement('div'); header.className = 'category-header';
+      const iconEl = getCategoryIconEl(catName);
+      const title = document.createElement('h3'); title.textContent = catName;
+      const toggle = document.createElement('i'); toggle.className = 'bi bi-plus-circle toggle-btn';
+      header.append(iconEl, title, toggle);
+      section.appendChild(header);
 
-      // Kategorien rendern
-      Object.keys(categories).forEach(catName=>{
-        const section=document.createElement('div'); section.className='category';
+      // Querstrich
+      const sep = document.createElement('hr');
+      sep.className = "category-separator";
+      section.appendChild(sep);
 
-        // Header
-        const header=document.createElement('div'); header.className='category-header';
-        const iconEl=getCategoryIconEl(catName);
-        const title=document.createElement('h3'); title.textContent=catName;
-        const toggle=document.createElement('i'); toggle.className='bi bi-plus-circle toggle-btn';
-        header.append(iconEl,title,toggle);
-        section.appendChild(header);
+      // Kategorie-Fortschritt
+      const catProgWrap = document.createElement('div'); catProgWrap.className = 'progress';
+      catProgWrap.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
+      const catProgBar = catProgWrap.querySelector('.progress-bar');
+      section.appendChild(catProgWrap);
 
-        // Querstrich
-        section.appendChild(Object.assign(document.createElement('hr'), { className:"category-separator" }));
+      // Subcontainer
+      const subWrap = document.createElement('div'); subWrap.className = 'subcategory-container'; subWrap.style.display = 'none';
 
-        // Kategorie-Fortschritt
-        const catProgWrap=document.createElement('div'); catProgWrap.className='progress';
-        catProgWrap.innerHTML=`<div class="progress-bar" style="width:0%"></div>`;
-        const catProgBar=catProgWrap.querySelector('.progress-bar');
-        section.appendChild(catProgWrap);
+      // Kategorie-Update
+      function updateCategory(){
+        const subs = subWrap.querySelectorAll('.module-card .progress-bar');
+        if(!subs.length){ catProgBar.style.width = '0%'; catProgBar.style.background = catColor(0); catProgBar.textContent = ''; return; }
+        const vals = Array.from(subs).map(el => parseInt(el.dataset.percent || '0', 10));
+        const avg = Math.round(vals.reduce((a,b)=>a+b,0) / vals.length);
+        catProgBar.style.width = avg + '%';
+        catProgBar.style.background = catColor(avg);
+        catProgBar.textContent = avg > 0 ? (avg + '%') : '';
+      }
 
-        // Subcontainer
-        const subWrap=document.createElement('div'); subWrap.className='subcategory-container'; subWrap.style.display='none';
+      // Subkarten
+      categories[catName].forEach(sub=>{
+        const card = document.createElement('div'); card.className = 'module-card';
+        card.innerHTML = `
+          <h4>${sub}</h4>
+          <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
+          <ul class="levels">
+            <li><label><input type="checkbox" data-step="1"> gelernt</label></li>
+            <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
+            <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
+            <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
+          </ul>
+        `;
+        subWrap.appendChild(card);
 
-        // Kategorie-Update
-        function updateCategory(){
-          const subs=subWrap.querySelectorAll('.module-card .progress-bar');
-          if(!subs.length){ catProgBar.style.width='0%'; catProgBar.style.background=catColor(0); catProgBar.textContent=''; return; }
-          const vals=Array.from(subs).map(el=>parseInt(el.dataset.percent||'0',10));
-          const avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
-          catProgBar.style.width=avg+'%'; catProgBar.style.background=catColor(avg);
-          catProgBar.textContent=avg>0?(avg+'%'):'';
+        const cb = card.querySelectorAll('input[type="checkbox"]');
+        const pb = card.querySelector('.progress-bar');
+
+        function enforce(){
+          cb[0].disabled = false;
+          cb[1].disabled = !cb[0].checked; if(cb[1].disabled) cb[1].checked = false;
+          cb[2].disabled = !cb[1].checked; if(cb[2].disabled) cb[2].checked = false;
+          cb[3].disabled = !cb[2].checked; if(cb[3].disabled) cb[3].checked = false;
+        }
+        function percent(){
+          if(cb[3].checked) return 100;
+          if(cb[2].checked) return 75;
+          if(cb[1].checked) return 50;
+          if(cb[0].checked) return 25;
+          return 0;
+        }
+        function updateSub(){
+          const p = percent();
+          pb.style.width = p + '%';
+          pb.style.background = subColor(p);
+          pb.textContent = p > 0 ? (p + '%') : '';
+          pb.dataset.percent = p;
+          updateCategory();
         }
 
-        // Subkarten
-        categories[catName].forEach(async sub=>{
-          const card=document.createElement('div'); card.className='module-card';
-          card.innerHTML=`
-            <h4>${sub}</h4>
-            <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
-            <ul class="levels">
-              <li><label><input type="checkbox" data-step="1"> gelernt</label></li>
-              <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
-              <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
-              <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
-            </ul>
-          `;
-          subWrap.appendChild(card);
-
-          const cb=card.querySelectorAll('input[type="checkbox"]');
-          const pb=card.querySelector('.progress-bar');
-          const docRef=doc(db,"users",user.uid,"modules",`${catName}_${sub}`);
-
-          // Laden aus Firestore
-          const snap=await getDoc(docRef);
-          if(snap.exists()){
-            const data=snap.data();
-            cb[0].checked=!!data.learned;
-            cb[1].checked=!!data.supervised;
-            cb[2].checked=!!data.independent;
-            cb[3].checked=!!data.secure;
-          }
-
-          // Rollen- und Stufen-Logik
-          function enforce(){
-            cb[0].disabled = false; // "gelernt" immer erlaubt
-
-            if(role === "anwärter"){
-              cb[1].disabled=true; cb[1].checked=false;
-              cb[2].disabled=true; cb[2].checked=false;
-              cb[3].disabled=true; cb[3].checked=false;
-              return;
-            }
-
-            // Helfer, Gruppenleiter, Admin → aufbauende Logik
-            cb[1].disabled=!cb[0].checked; if(cb[1].disabled) cb[1].checked=false;
-            cb[2].disabled=!cb[1].checked; if(cb[2].disabled) cb[2].checked=false;
-            cb[3].disabled=!cb[2].checked; if(cb[3].disabled) cb[3].checked=false;
-          }
-
-          // Prozent berechnen
-          function percent(){
-            if(cb[3].checked) return 100;
-            if(cb[2].checked) return 75;
-            if(cb[1].checked) return 50;
-            if(cb[0].checked) return 25;
-            return 0;
-          }
-
-          // Update & speichern
-          async function updateSub(){
-            const p=percent();
-            pb.style.width=p+'%'; pb.style.background=subColor(p);
-            pb.textContent=p>0?(p+'%'):'';
-            pb.dataset.percent=p;
-            updateCategory();
-
-            await setDoc(docRef,{
-              learned: cb[0].checked,
-              supervised: cb[1].checked,
-              independent: cb[2].checked,
-              secure: cb[3].checked
-            });
-          }
-
-          enforce(); await updateSub();
-          cb.forEach(c=>c.addEventListener('change',async()=>{ enforce(); await updateSub(); }));
-        });
-
-        section.appendChild(subWrap);
-        container.appendChild(section);
-
-        // Toggle
-        header.addEventListener('click', ()=>{
-          const open=subWrap.style.display==='block';
-          subWrap.style.display=open?'none':'block';
-          toggle.classList.toggle('bi-plus-circle',open);
-          toggle.classList.toggle('bi-dash-circle',!open);
-        });
-
-        updateCategory();
+        enforce(); updateSub();
+        cb.forEach(c => c.addEventListener('change', ()=>{ enforce(); updateSub(); }));
       });
+
+      section.appendChild(subWrap);
+      container.appendChild(section);
+
+      // Toggle
+      header.addEventListener('click', ()=>{
+        const open = subWrap.style.display === 'block';
+        subWrap.style.display = open ? 'none' : 'block';
+        toggle.classList.toggle('bi-plus-circle', open);
+        toggle.classList.toggle('bi-dash-circle', !open);
+      });
+
+      updateCategory();
     });
   </script>
 </body>
