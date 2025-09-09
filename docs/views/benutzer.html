@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Benutzerverwaltung</title>
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
   <style>
     :root{
       --softrot: rgb(228,100,80);
@@ -14,7 +12,6 @@
       --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
       --text:#1f2937;
-
       --hellblau: rgb(100,160,220);
 
       /* Rollenfarben */
@@ -41,6 +38,11 @@
       flex-direction: column;
       padding: 1.5rem 1rem;
       box-sizing: border-box;
+      position: fixed; /* Sidebar fixiert */
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 1000;
     }
 
     .profile {
@@ -150,6 +152,7 @@
       background: var(--hellgrau);
       padding: 2rem 3rem;
       overflow-y: auto;
+      margin-left: 340px; /* Sicherstellen, dass der Content nach der Sidebar angezeigt wird */
     }
 
     /* Benutzerverwaltungsseite Styling */
@@ -352,130 +355,375 @@
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <div class="profile">
-      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
-      <input type="file" id="profileUpload" accept="image/*" style="display:none;">
-      <h2 id="userName">Lädt...</h2>
-      <p>Teilnehmer</p>
-    </div>
-    <div class="menu">
-      <button data-page="persoenlich"><i class="bi bi-person"></i> Persönliche Daten</button>
-      <button data-page="zugang"><i class="bi bi-key"></i> Zugangsvoraussetzungen</button>
-      <button data-page="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
-      <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
-      <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
-      <button data-page="benutzer"><i class="bi bi-people"></i> Benutzerverwaltung</button>
-    </div>
-    <button class="logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
-    <div class="version">Version 1.0.0</div>
-  </div>
+  <div class="user-page">
+    <h2 class="page-title">Benutzerverwaltung</h2>
 
-  <div class="content">
-    <h1>Willkommen in deiner persönlichen IuK Lernwelt</h1>
-    <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
+    <div class="settings-grid">
+      <!-- Nutzerliste -->
+      <div class="card">
+        <h3><i class="bi bi-people"></i> Benutzerübersicht</h3>
+        <div style="position:relative; margin:12px 0 14px;">
+          <i class="bi bi-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#6b7280; font-size:1rem;"></i>
+          <input type="text" id="searchInput" placeholder="Suchen..." style="padding:8px 32px 8px 32px; width:100%; border-radius:8px; border:1px solid #ccc;">
+          <button id="clearSearch" type="button" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:1.2rem; color:#6b7280; cursor:pointer; display:none;">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <table class="user-table" aria-label="Liste der Benutzer">
+          <thead>
+            <tr>
+              <th>Anzeigename</th>
+              <th>E-Mail-Adresse</th>
+              <th>Rollen</th>
+              <th style="width:44px;"></th>
+            </tr>
+          </thead>
+          <tbody id="userList"></tbody>
+        </table>
+        <div id="userMsg" class="form-msg"></div>
+      </div>
+
+      <!-- Neuer Nutzer -->
+      <div class="card">
+        <h3><i class="bi bi-person-plus"></i> Neuen Nutzer anlegen</h3>
+        <form id="createUserForm" novalidate>
+          <div class="form-group floating">
+            <input type="email" id="newEmail" placeholder=" " required inputmode="email" autocomplete="email" />
+            <label for="newEmail">E-Mail</label>
+          </div>
+          <div class="form-group floating">
+            <input type="password" id="newPassword" placeholder=" " required autocomplete="new-password" minlength="6" />
+            <label for="newPassword">Passwort</label>
+          </div>
+          <div class="form-group floating">
+            <input type="text" id="newName" placeholder=" " autocomplete="name" />
+            <label for="newName">Anzeigename (optional)</label>
+          </div>
+          <button type="submit" class="btn btn-primary" id="createBtn"><i class="bi bi-save"></i> Benutzer erstellen</button>
+          <div id="createUserMsg" class="form-msg"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Editor -->
+    <div id="editPanelOuter" class="card" style="display:none;">
+      <div id="editPanel"></div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <!-- Modal -->
+    <div id="modalBackdrop" class="modal-backdrop"></div>
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <h4 id="modalTitle">Bestätigen</h4>
+        <p id="modalMessage">Bist du sicher?</p>
+        <div class="modal-actions">
+          <button id="modalCancel" class="btn btn-secondary"><i class="bi bi-x-lg"></i> Abbrechen</button>
+          <button id="modalOk" class="btn btn-danger"><i class="bi bi-trash"></i> Löschen</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script type="module">
-    import { auth, logout, observeAuthState, uploadProfileImage } from "./js/firebase.js";
+    const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
+    let allUsers = [];
+    let editorDirty = false;
 
-    // Sidebar Toggle (mobil)
-    const menuToggle = document.getElementById("menuToggle");
-    const sidebar = document.getElementById("sidebar");
-    if (menuToggle) {
-      menuToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("active");
+    const userList = document.getElementById("userList");
+    const userMsg = document.getElementById("userMsg");
+    const editPanelOuter = document.getElementById("editPanelOuter");
+    const editPanel = document.getElementById("editPanel");
+    const toastEl = document.getElementById("toast");
+    const searchInput = document.getElementById("searchInput");
+    const clearSearch = document.getElementById("clearSearch");
+
+    const modal = document.getElementById("modal");
+    const backdrop = document.getElementById("modalBackdrop");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalMsg = document.getElementById("modalMessage");
+    const modalOk = document.getElementById("modalOk");
+    const modalCancel = document.getElementById("modalCancel");
+
+    const ROLE_DEF = [
+      { key:"admin", label:"Admin", cls:"role-admin" },
+      { key:"gruppenleiter", label:"Gruppenleiter", cls:"role-gl" },
+      { key:"helfer", label:"Helfer", cls:"role-hf" },
+      { key:"anwärter", label:"Anwärter", cls:"role-an" },
+    ];
+
+    const showToast = (msg) => {
+      toastEl.textContent = msg; toastEl.style.display = "block";
+      clearTimeout(showToast._t); showToast._t = setTimeout(()=> toastEl.style.display = "none", 2600);
+    };
+
+    function highlight(text, query) {
+      if (!query) return text;
+      const regex = new RegExp(`(${query})`, "gi");
+      return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    function confirmDialog({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}) {
+      modalTitle.textContent = title;
+      modalMsg.textContent = message;
+      modalOk.innerHTML = `<i class="bi bi-check2"></i> ${okText}`;
+      modalCancel.innerHTML = `<i class="bi bi-x-lg"></i> ${cancelText}`;
+      return new Promise(resolve => {
+        const close = (val) => {
+          modal.style.display = "none"; backdrop.style.display = "none";
+          document.removeEventListener("keydown", onKey); resolve(val);
+        };
+        const onKey = (e) => { if (e.key === "Escape") close(false); };
+        backdrop.style.display = "block"; modal.style.display = "flex";
+        document.addEventListener("keydown", onKey);
+        modalOk.onclick = () => close(true); modalCancel.onclick = () => close(false);
+        backdrop.onclick = () => close(false);
       });
     }
 
-    // Seitenwechsel
-    const content = document.getElementById("content");
-    const buttons = document.querySelectorAll(".menu button");
+    function extractRoles(u){ return Array.isArray(u.roles) ? u.roles : []; }
 
-    async function loadPage(page) {
-      try {
-        const res = await fetch(`views/${page}.html`);
-        if (!res.ok) throw new Error("Seite nicht gefunden");
-        const html = await res.text();
-        content.innerHTML = html;
+    function rolesToBadges(roles){
+      if (!roles?.length) return '<span style="color:#9ca3af">–</span>';
+      return '<div class="role-badges">' + roles.map(r=>{
+        const def = ROLE_DEF.find(d=>d.key===r);
+        return `<span class="role-badge ${def?.cls||""}">${def?.label||r}</span>`;
+      }).join("") + '</div>';
+    }
 
-        // eingebettete Scripts neu laden
-        content.querySelectorAll("script").forEach(oldScript => {
-          const newScript = document.createElement("script");
-          if (oldScript.type) newScript.type = oldScript.type;
-          if (oldScript.src) newScript.src = oldScript.src;
-          else newScript.textContent = oldScript.textContent;
-          content.appendChild(newScript);
+    function buildKebab(cell, user){
+      cell.classList.add("actions-cell");
+      cell.innerHTML = `
+        <button class="kebab-btn" aria-label="Aktionen"><i class="bi bi-three-dots-vertical"></i></button>
+        <div class="kebab-menu">
+          <button class="act-edit"><i class="bi bi-pencil"></i><span>Bearbeiten</span></button>
+          <button class="act-del" style="color:#b91c1c;"><i class="bi bi-trash"></i><span>Nutzer löschen</span></button>
+        </div>`;
+      cell.querySelector(".act-edit").onclick = ()=>openEditor(user);
+      cell.querySelector(".act-del").onclick = ()=>deleteUserFlow(user);
+    }
+
+    document.addEventListener("click",(e)=>{
+      document.querySelectorAll(".kebab-menu").forEach(m=>m.style.display="none");
+      if(e.target.closest(".kebab-btn")){
+        const menu=e.target.closest(".actions-cell").querySelector(".kebab-menu");
+        menu.style.display="block"; e.stopPropagation();
+      }
+    });
+
+    function openEditor(user){
+      if(editorDirty && !confirm("Ungespeicherte Änderungen verwerfen?")) return;
+      const initial = { name: user.displayName || "", roles: extractRoles(user) };
+
+      editPanelOuter.style.display = "block";
+      editPanel.innerHTML = `
+        <h3 style="margin-top:0;">Nutzer bearbeiten</h3>
+        <div class="editor-row">
+          <div class="form-group floating">
+            <input type="text" id="edName" placeholder=" " value="${initial.name}">
+            <label for="edName">Anzeigename</label>
+          </div>
+          <div class="form-group floating">
+            <input type="email" id="edEmail" placeholder=" " value="${user.email || ""}" readonly>
+            <label for="edEmail">E-Mail-Adresse</label>
+          </div>
+          <div class="form-group floating">
+            <input type="text" id="edUID" placeholder=" " value="${user.uid}" readonly>
+            <label for="edUID">UID</label>
+          </div>
+        </div>
+        <div id="rolesSection">
+          <h4>Rollen</h4>
+          <div class="roles-grid">
+            ${ROLE_DEF.map(r => `
+              <label class="role-check">
+                <input type="checkbox" value="${r.key}" ${initial.roles.includes(r.key) ? "checked":""} />
+                <span class="role-badge ${r.cls}">${r.label}</span>
+              </label>
+            `).join("")}
+          </div>
+        </div>
+        <div class="editor-actions">
+          <button class="btn btn-secondary" id="edCancel"><i class="bi bi-x-lg"></i> Abbrechen</button>
+          <button class="btn btn-primary"  id="edSave"><i class="bi bi-save"></i> Speichern</button>
+        </div>
+      `;
+
+      editorDirty=false;
+      editPanel.querySelectorAll("input").forEach(inp=>{ inp.addEventListener("input",()=>editorDirty=true); });
+
+      document.getElementById("edCancel").onclick = () => {
+        showToast("Änderungen verworfen");
+        editPanelOuter.style.display = "none";
+        editPanel.innerHTML = "";
+      };
+
+      document.getElementById("edSave").onclick = async () => {
+        const btn=document.getElementById("edSave");
+        btn.disabled=true; btn.textContent="⏳ Speichern...";
+        const newName = document.getElementById("edName").value.trim();
+        const selected = Array.from(editPanel.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
+
+        try{
+          const res = await fetch(API_BASE + "/updateUser", {
+            method:"POST", headers:{ "Content-Type":"application/json" },
+            body: JSON.stringify({ uid: user.uid, displayName: newName, roles: selected })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
+
+          showToast("Gespeichert");
+          await loadUsers();
+
+          editPanelOuter.style.display = "none";
+          editPanel.innerHTML = "";
+          editorDirty=false;
+        }catch(err){
+          showToast("Fehler: " + err.message);
+        }finally{
+          btn.disabled=false; btn.innerHTML='<i class="bi bi-save"></i> Speichern';
+        }
+      };
+    }
+
+    async function deleteUserFlow(user){
+      const title = "Nutzer löschen?";
+      const who = user.displayName || user.email || user.uid;
+      const message = `Soll der Nutzer wirklich gelöscht werden?\n\n${who}`;
+      const ok = await confirmDialog({ title, message, okText:"Löschen", cancelText:"Abbrechen" });
+      if (!ok) return;
+
+      try{
+        const res = await fetch(API_BASE + "/deleteUser", {
+          method:"POST", headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ uid: user.uid })
         });
-      } catch (err) {
-        content.innerHTML = `<h2>Fehler</h2><p>${err.message}</p>`;
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
+        showToast("Nutzer gelöscht");
+        await loadUsers();
+        editPanelOuter.style.display = "none"; editPanel.innerHTML = "";
+      }catch(err){
+        showToast("Fehler: " + err.message);
       }
     }
 
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const page = btn.getAttribute("data-page");
-        loadPage(page);
-        sidebar.classList.remove("active");
-        buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+    function renderUsers(users){
+      const q = searchInput.value.toLowerCase();
+      userList.innerHTML = "";
+
+      const filtered = users.filter(u => {
+        const roles = extractRoles(u);
+        const roleLabels = roles.map(r => {
+          const def = ROLE_DEF.find(d => d.key === r);
+          return def ? def.label.toLowerCase() : r.toLowerCase();
+        });
+        return (
+          u.displayName?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q) ||
+          roles.some(r => r.toLowerCase().includes(q)) ||
+          roleLabels.some(lbl => lbl.includes(q))
+        );
       });
-    });
 
-    // Profilbild Upload
-    const profileImg = document.getElementById("profileImg");
-    const profileUpload = document.getElementById("profileUpload");
-
-    profileImg.addEventListener("click", () => profileUpload.click());
-
-    profileUpload.addEventListener("change", async (event) => {
-      const file = event.target.files[0];
-      const user = auth.currentUser;
-      if (file && user) {
-        try {
-          const url = await uploadProfileImage(user, file);
-          profileImg.src = url; // direkt von Firebase
-          alert("✅ Profilbild aktualisiert!");
-        } catch (err) {
-          alert("❌ Fehler beim Hochladen: " + err.message);
-        }
+      if (filtered.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4" style="text-align:center; padding:1rem; color:#6b7280;">Keine Treffer gefunden</td>`;
+        userList.appendChild(tr);
+        return;
       }
-    });
 
-    // Logout
-    const logoutBtn = document.getElementById("logoutBtn");
-    logoutBtn.addEventListener("click", async () => {
-      await logout();
-      window.location.href = "index.html";
-    });
+      filtered.forEach(u => {
+        const tr = document.createElement("tr");
+        const name = u.displayName || "Ohne Namen";
+        const mail = u.email || "–";
+        const roles = extractRoles(u);
 
-    // Login-Check + Userdaten
-    const userName = document.getElementById("userName");
-    observeAuthState(user => {
-      if (user) {
-        userName.textContent = user.displayName || user.email.split("@")[0];
+        const tdName = document.createElement("td");
+        tdName.className = "nowrap td-name";
+        tdName.setAttribute("data-label","Anzeigename");
+        tdName.title = name;
+        tdName.innerHTML = `<b>${highlight(name, q)}</b>`;
+        tr.appendChild(tdName);
 
-        if (user.photoURL) {
-          profileImg.src = user.photoURL; // Nur online verfügbar
-        } else {
-          profileImg.src = "assets/avatar-default.png";
+        const tdMail = document.createElement("td");
+        tdMail.className = "nowrap";
+        tdMail.setAttribute("data-label","E-Mail-Adresse");
+        tdMail.title = mail;
+        tdMail.innerHTML = `<span class="email-val">${highlight(mail, q)}</span>`;
+        tr.appendChild(tdMail);
+
+        const tdRoles = document.createElement("td");
+        tdRoles.className = "td-roles";
+        tdRoles.setAttribute("data-label","Rollen");
+        tdRoles.innerHTML = rolesToBadges(roles);
+        if (q) {
+          tdRoles.innerHTML = tdRoles.innerHTML.replace(new RegExp(q,"gi"), match => `<mark>${match}</mark>`);
         }
-      } else {
-        window.location.href = "index.html";
-      }
-    });
+        tr.appendChild(tdRoles);
 
-    // Darkmode
-    if (localStorage.getItem("theme") === "dark") {
-      document.body.classList.add("dark");
+        const tdActions = document.createElement("td");
+        tdActions.className = "actions-cell";
+        tdActions.setAttribute("data-label","");
+        buildKebab(tdActions, { uid: u.uid, displayName: name, email: mail, roles });
+        tr.appendChild(tdActions);
+
+        userList.appendChild(tr);
+      });
     }
-    window.addEventListener("toggleTheme", () => {
-      if (document.body.classList.contains("dark")) {
-        document.body.classList.remove("dark");
-        localStorage.setItem("theme", "light");
-      } else {
-        document.body.classList.add("dark");
-        localStorage.setItem("theme", "dark");
+
+    async function loadUsers(){
+      userMsg.style.color = "orange"; userMsg.textContent = "⏳ Lade Nutzer...";
+      try{
+        const res = await fetch(API_BASE + "/listUsers", { method:"GET" });
+        const data = await res.json();
+        allUsers = (data.users || []).sort((a, b) => (a.displayName || a.email || "").localeCompare(b.displayName || b.email || "", "de", { sensitivity: "base" }));
+        renderUsers(allUsers);
+        userMsg.textContent = "";
+      }catch(err){
+        userMsg.style.color = "red"; userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
+      }
+    }
+
+    loadUsers();
+
+    const form = document.getElementById("createUserForm");
+    const msg  = document.getElementById("createUserMsg");
+    const createBtn = document.getElementById("createBtn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("newEmail").value.trim();
+      const pw = document.getElementById("newPassword").value;
+      const name = document.getElementById("newName").value.trim();
+
+      if (!email || !pw) {
+        msg.style.color = "red"; msg.textContent = "❌ E-Mail und Passwort sind erforderlich.";
+        return;
+      }
+      msg.textContent = "";
+
+      createBtn.disabled = true;
+      createBtn.textContent = "⏳ Erstelle...";
+
+      try {
+        const res = await fetch(API_BASE + "/createUser", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password: pw, displayName: name })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
+
+        showToast("Benutzer erstellt");
+        form.reset();
+        await loadUsers();
+      } catch (err) {
+        msg.style.color = "red"; msg.textContent = "❌ Fehler: " + err.message;
+      } finally {
+        createBtn.disabled = false;
+        createBtn.innerHTML = '<i class="bi bi-save"></i> Benutzer erstellen';
       }
     });
   </script>
