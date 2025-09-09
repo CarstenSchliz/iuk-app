@@ -14,6 +14,8 @@
       --mittelgrau: rgb(180,180,180);
     }
 
+    body { font-family: sans-serif; }
+
     .page-title { color: var(--softrot); margin-bottom: 1rem; }
 
     .zugang-grid {
@@ -103,8 +105,13 @@
     select:focus { outline: none; border-color: var(--dunkelblau); box-shadow: none; }
     @media(min-width: 769px){ .select-user select { max-width: 300px; } }
 
-    #toast { visibility: hidden; min-width: 250px; background-color: var(--dunkelblau); color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
-    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+    #toast { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); background:var(--dunkelblau); color:#fff; padding:12px 20px; border-radius:8px; display:none; z-index:2000; }
+
+    /* Modal */
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1500; }
+    .modal{ position:fixed; inset:0; display:none; z-index:1600; align-items:center; justify-content:center; padding:1rem; }
+    .modal .modal-card{ background:#fff; border-radius:14px; width:min(400px, 96vw); box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem; }
+    .modal .modal-actions{ display:flex; gap:.8rem; margin-top:1rem; justify-content:flex-end; }
   </style>
 </head>
 <body>
@@ -131,7 +138,7 @@
     <div class="card">
       <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
       <div class="progress">
-        <div id="grund-progress" class="progress-bar" style="width:0%">0%</div>
+        <div id="grund-progress" class="progress-bar" style="width:0%">0</div>
       </div>
       <ul class="checklist" id="grund-list">
         <li><input type="checkbox" disabled> Fachdienstausbildung Sanitätsdienst</li>
@@ -140,18 +147,28 @@
         <li><input type="checkbox" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
         <li><input type="checkbox" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
       </ul>
+      <div id="grundActions" style="margin-top:0.5rem; display:none;">
+        <button class="btn-confirm btn-green" data-action="freigeben">
+          <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
+        </button>
+      </div>
     </div>
 
     <!-- Optionale Voraussetzungen -->
     <div class="card">
       <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
       <div class="progress">
-        <div id="verlauf-progress" class="progress-bar" style="width:0%">0%</div>
+        <div id="verlauf-progress" class="progress-bar" style="width:0%">0</div>
       </div>
       <ul class="checklist" id="verlauf-list">
         <li><input type="checkbox" disabled> C1 (Helfer-)Führerschein</li>
         <li><input type="checkbox" disabled> Gruppenführer Sanitätsdienst</li>
       </ul>
+      <div id="optionalActions" style="margin-top:0.5rem; display:none;">
+        <button class="btn-confirm btn-blue" data-action="mail">
+          <i class="bi bi-envelope"></i> Bestätigung per Mail senden
+        </button>
+      </div>
     </div>
   </div>
 
@@ -164,19 +181,9 @@
       <div class="checklist">
         <label><input type="checkbox" id="chkGrund" disabled> Alle Grundvoraussetzungen erfüllt</label>
       </div>
-      <div id="grundActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-green">
-          <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
-        </button>
-      </div>
 
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkOptional" disabled> Optionale Voraussetzungen erfüllt</label>
-      </div>
-      <div id="optionalActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-blue">
-          <i class="bi bi-envelope"></i> Bestätigung per Mail senden
-        </button>
       </div>
 
       <hr style="margin:1rem 0;">
@@ -184,15 +191,29 @@
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
-      <div id="rejectActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-red">
+      <div id="rejectActions" style="margin-top:0.5rem; display:none;">
+        <button class="btn-confirm btn-red" data-action="ablehnen">
           <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
         </button>
       </div>
     </div>
   </div>
 
+  <!-- Toast -->
   <div id="toast"></div>
+
+  <!-- Modal -->
+  <div id="modalBackdrop" class="modal-backdrop"></div>
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h4 id="modalTitle">Bestätigen</h4>
+      <p id="modalMessage">Bist du sicher?</p>
+      <div class="modal-actions">
+        <button id="modalCancel" class="btn btn-secondary">Abbrechen</button>
+        <button id="modalOk" class="btn btn-green">OK</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const userSelect = document.getElementById("userSelect");
@@ -207,13 +228,52 @@
 
     const chkGrund = document.getElementById("chkGrund");
     const chkOptional = document.getElementById("chkOptional");
+    const chkReject = document.getElementById("chkReject");
+
+    const toast = document.getElementById("toast");
+    const modal = document.getElementById("modal");
+    const backdrop = document.getElementById("modalBackdrop");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalMessage = document.getElementById("modalMessage");
+    const modalOk = document.getElementById("modalOk");
+    const modalCancel = document.getElementById("modalCancel");
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(()=>toast.style.display="none", 2500);
+    }
+
+    function openModal(title, message){
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      modal.style.display = "flex";
+      backdrop.style.display = "block";
+      return new Promise(resolve=>{
+        modalOk.onclick = ()=>{ closeModal(); resolve(true); };
+        modalCancel.onclick = ()=>{ closeModal(); resolve(false); };
+        backdrop.onclick = ()=>{ closeModal(); resolve(false); };
+      });
+    }
+
+    function closeModal(){
+      modal.style.display = "none";
+      backdrop.style.display = "none";
+    }
 
     function setProgressColor(bar, percent) {
-      if (percent === 0) bar.style.backgroundColor = "#e9ecef";
-      else if (percent <= 25) bar.style.backgroundColor = "red";
-      else if (percent <= 50) bar.style.backgroundColor = "gold";
-      else if (percent <= 75) bar.style.backgroundColor = "lightgreen";
-      else bar.style.backgroundColor = "green";
+      if (percent === 0) {
+        bar.style.backgroundColor = "#e9ecef";
+        bar.textContent = "0";
+      } else {
+        if (percent <= 20) bar.style.backgroundColor = "red";
+        else if (percent <= 40) bar.style.backgroundColor = "orange";
+        else if (percent <= 60) bar.style.backgroundColor = "gold";
+        else if (percent <= 80) bar.style.backgroundColor = "lightgreen";
+        else bar.style.backgroundColor = "green";
+
+        bar.textContent = percent + "%";
+      }
     }
 
     function updateProgress(boxes, bar, gate) {
@@ -221,7 +281,6 @@
       const checked = Array.from(boxes).filter(b => b.checked).length;
       const percent = Math.round((checked / total) * 100);
       bar.style.width = percent + "%";
-      bar.textContent = percent + "%";
       setProgressColor(bar, percent);
       gate.disabled = percent !== 100;
       if (percent !== 100) gate.checked = false;
@@ -238,6 +297,7 @@
         verlaufBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
         chkGrund.disabled = true; chkGrund.checked = false;
         chkOptional.disabled = true; chkOptional.checked = false;
+        chkReject.checked = false;
 
         updateProgress(grundBoxes, grundProgress, chkGrund);
         updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
@@ -252,6 +312,44 @@
     });
     document.getElementById("verlauf-list").addEventListener("change", () => {
       updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
+    });
+
+    chkGrund.addEventListener("change", () => {
+      document.getElementById("grundActions").style.display = chkGrund.checked ? "block" : "none";
+    });
+    chkOptional.addEventListener("change", () => {
+      document.getElementById("optionalActions").style.display = chkOptional.checked ? "block" : "none";
+    });
+    chkReject.addEventListener("change", (e) => {
+      document.getElementById("rejectActions").style.display = e.target.checked ? "block" : "none";
+    });
+
+    // Button-Aktionen mit Modal
+    document.body.addEventListener("click", async (e)=>{
+      if(e.target.closest("[data-action]")){
+        const btn = e.target.closest("[data-action]");
+        const action = btn.dataset.action;
+        let title, message, success;
+
+        if(action==="freigeben"){
+          title="Mitglied freigeben";
+          message="Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?";
+          success="✅ Mitglied freigegeben!";
+        }
+        if(action==="mail"){
+          title="Bestätigung senden";
+          message="Soll eine Bestätigung per Mail gesendet werden?";
+          success="📧 Mail gesendet!";
+        }
+        if(action==="ablehnen"){
+          title="Mitglied ablehnen";
+          message="Soll das Mitglied wirklich für den aktiven Dienst abgelehnt werden?";
+          success="❌ Mitglied abgelehnt!";
+        }
+
+        const ok = await openModal(title,message);
+        if(ok) showToast(success);
+      }
     });
   </script>
 </body>
