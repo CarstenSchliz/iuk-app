@@ -50,7 +50,8 @@
     .module-card h4{ margin:0 0 .8rem 0; color:var(--hellblau); }
 
     .levels{ list-style:none; padding:0; margin:0; }
-    .levels li{ display:flex; align-items:center; gap:.5rem; margin:.5rem 0; }
+    .levels li{ margin:.5rem 0; }
+    .levels li label{ display:flex; align-items:center; gap:.5rem; cursor:pointer; }
     .levels input[type="checkbox"]{ width:1.1rem; height:1.1rem; cursor:pointer; }
     .levels input[disabled]{ cursor:not-allowed; opacity:.6; }
 
@@ -88,79 +89,106 @@
       ]
     };
 
-    // Icons (SVG für Fahrzeug & Einsatzkraft, Bootstrap für andere)
-    const SVG_FZG = `<svg viewBox="0 0 64 64" width="28" height="28"><g fill="currentColor"><rect x="10" y="26" width="36" height="14" rx="3"/><circle cx="20" cy="44" r="5"/><circle cx="40" cy="44" r="5"/></g><rect x="26" y="17" width="6" height="3" fill="#2b76ff"/></svg>`;
-    const SVG_EK = `<svg viewBox="0 0 64 64" width="28" height="28"><circle cx="32" cy="18" r="6" fill="currentColor"/><path d="M24 16 q8 -8 16 0 v3 h-16z" fill="currentColor"/><path d="M20 30 h24 v20 h-24z" fill="currentColor" opacity="0.9"/><rect x="42" y="28" width="4" height="10" fill="currentColor"/></svg>`;
-
+    // --- Icons ---
     function getCategoryIconEl(name){
       const span = document.createElement('span');
       span.className = 'category-icon';
-      if(name==="Fahrzeugkunde"){ span.innerHTML = SVG_FZG; return span; }
-      if(name==="Einsatztaktik"){ span.innerHTML = SVG_EK; return span; }
+      if(name === "Fahrzeugkunde"){ 
+        const i = document.createElement('i');
+        i.className = "bi bi-truck-front"; // Fahrzeug ähnlich Rettungswagen
+        i.style.fontSize = "1.4rem";
+        span.appendChild(i);
+        return span;
+      }
+      if(name === "Einsatztaktik"){ 
+        const i = document.createElement('i');
+        i.className = "bi bi-diagram-3"; // Symbol für Führung/Organisation
+        i.style.fontSize = "1.4rem";
+        span.appendChild(i);
+        return span;
+      }
       const i = document.createElement('i');
-      i.className = name==="Software" ? "bi bi-cpu" : "bi bi-display";
-      i.style.fontSize="1.4rem";
+      i.className = (name === "Software") ? "bi bi-cpu" : "bi bi-display";
+      i.style.fontSize = "1.4rem";
       span.appendChild(i);
       return span;
     }
 
+    // --- Farblogik ---
     function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-
-    // Farben: Sub vs Kategorie
+    // Subkategorien: exakt 25/50/75/100
     function subColor(p){
-      if(p===25) return getCSS("--rot");
-      if(p===50) return getCSS("--gelb");
-      if(p===75) return getCSS("--hellgruen");
-      if(p===100) return getCSS("--dunkelgruen");
+      if(p === 25) return getCSS("--rot");
+      if(p === 50) return getCSS("--gelb");
+      if(p === 75) return getCSS("--hellgruen");
+      if(p === 100) return getCSS("--dunkelgruen");
       return "#e9ecef";
     }
+    // Hauptkategorien: bis-Logik
     function catColor(p){
-      if(p===0) return "#e9ecef";
-      if(p<=25) return getCSS("--rot");
-      if(p<=50) return getCSS("--gelb");
-      if(p<=75) return getCSS("--hellgruen");
+      if(p === 0) return "#e9ecef";
+      if(p <= 25) return getCSS("--rot");
+      if(p <= 50) return getCSS("--gelb");
+      if(p <= 75) return getCSS("--hellgruen");
       return getCSS("--dunkelgruen");
     }
 
-    const container=document.getElementById("modulesContainer");
+    const container = document.getElementById("modulesContainer");
 
     Object.keys(categories).forEach(catName=>{
-      const section=document.createElement("div"); section.className="category";
-      const header=document.createElement("div"); header.className="category-header";
-      const iconEl=getCategoryIconEl(catName); const title=document.createElement("h3"); title.textContent=catName;
-      const toggle=document.createElement("i"); toggle.className="bi bi-plus-circle toggle-btn";
-      header.append(iconEl,title,toggle); section.appendChild(header);
+      const section = document.createElement('div'); section.className = 'category';
 
-      const catProgWrap=document.createElement("div"); catProgWrap.className="progress";
-      catProgWrap.innerHTML=`<div class="progress-bar" style="width:0%"></div>`;
-      const catProgBar=catProgWrap.querySelector(".progress-bar"); section.appendChild(catProgWrap);
+      // Header
+      const header = document.createElement('div'); header.className = 'category-header';
+      const iconEl = getCategoryIconEl(catName);
+      const title = document.createElement('h3'); title.textContent = catName;
+      const toggle = document.createElement('i'); toggle.className = 'bi bi-plus-circle toggle-btn';
+      header.append(iconEl, title, toggle);
+      section.appendChild(header);
 
-      const subWrap=document.createElement("div"); subWrap.className="subcategory-container"; subWrap.style.display="none";
+      // Kategorie-Fortschritt
+      const catProgWrap = document.createElement('div'); catProgWrap.className = 'progress';
+      catProgWrap.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
+      const catProgBar = catProgWrap.querySelector('.progress-bar');
+      section.appendChild(catProgWrap);
 
+      // Subcontainer
+      const subWrap = document.createElement('div'); subWrap.className = 'subcategory-container'; subWrap.style.display = 'none';
+
+      // --- Kategorie-Update ---
+      function updateCategory(){
+        const subs = subWrap.querySelectorAll('.module-card .progress-bar');
+        if(!subs.length){ catProgBar.style.width = '0%'; catProgBar.style.background = catColor(0); catProgBar.textContent = ''; return; }
+        const vals = Array.from(subs).map(el => parseInt(el.dataset.percent || '0', 10));
+        const avg = Math.round(vals.reduce((a,b)=>a+b,0) / vals.length);
+        catProgBar.style.width = avg + '%';
+        catProgBar.style.background = catColor(avg);
+        catProgBar.textContent = avg > 0 ? (avg + '%') : '';
+      }
+
+      // Subkarten
       categories[catName].forEach(sub=>{
-        const card=document.createElement("div"); card.className="module-card";
-        card.innerHTML=`
+        const card = document.createElement('div'); card.className = 'module-card';
+        card.innerHTML = `
           <h4>${sub}</h4>
           <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
           <ul class="levels">
-            <li><input type="checkbox" data-step="1"> gelernt</li>
-            <li><input type="checkbox" data-step="2"> unter Aufsicht angewendet</li>
-            <li><input type="checkbox" data-step="3"> selbstständig angewendet</li>
-            <li><input type="checkbox" data-step="4"> sichere Anwendung</li>
-          </ul>`;
+            <li><label><input type="checkbox" data-step="1"> gelernt</label></li>
+            <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
+            <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
+            <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
+          </ul>
+        `;
         subWrap.appendChild(card);
 
-        const cb=card.querySelectorAll("input[type=checkbox]");
-        const pb=card.querySelector(".progress-bar");
+        const cb = card.querySelectorAll('input[type="checkbox"]');
+        const pb = card.querySelector('.progress-bar');
 
         function enforce(){
-          cb[0].disabled=false;
-          cb[1].disabled=!cb[0].checked;
-          if(cb[1].disabled) cb[1].checked=false;
-          cb[2].disabled=!cb[1].checked;
-          if(cb[2].disabled) cb[2].checked=false;
-          cb[3].disabled=!cb[2].checked;
-          if(cb[3].disabled) cb[3].checked=false;
+          cb[0].disabled = false;                 
+          cb[1].disabled = !cb[0].checked; if(cb[1].disabled) cb[1].checked = false;
+          cb[2].disabled = !cb[1].checked; if(cb[2].disabled) cb[2].checked = false;
+          cb[3].disabled = !cb[2].checked; if(cb[3].disabled) cb[3].checked = false;
         }
         function percent(){
           if(cb[3].checked) return 100;
@@ -170,33 +198,29 @@
           return 0;
         }
         function updateSub(){
-          const p=percent();
-          pb.style.width=p+"%"; pb.style.background=subColor(p);
-          pb.textContent=p>0? p+"%":"";
-          pb.dataset.percent=p;
+          const p = percent();
+          pb.style.width = p + '%';
+          pb.style.background = subColor(p);
+          pb.textContent = p > 0 ? (p + '%') : '';
+          pb.dataset.percent = p;
           updateCategory();
         }
+
         enforce(); updateSub();
-        cb.forEach(c=>c.addEventListener("change",()=>{ enforce(); updateSub(); }));
+        cb.forEach(c => c.addEventListener('change', ()=>{ enforce(); updateSub(); }));
       });
 
-      section.appendChild(subWrap); container.appendChild(section);
+      section.appendChild(subWrap);
+      container.appendChild(section);
 
-      header.addEventListener("click",()=>{
-        const open=subWrap.style.display==="block";
-        subWrap.style.display=open?"none":"block";
-        toggle.classList.toggle("bi-plus-circle",open);
-        toggle.classList.toggle("bi-dash-circle",!open);
+      // Toggle
+      header.addEventListener('click', ()=>{
+        const open = subWrap.style.display === 'block';
+        subWrap.style.display = open ? 'none' : 'block';
+        toggle.classList.toggle('bi-plus-circle', open);
+        toggle.classList.toggle('bi-dash-circle', !open);
       });
 
-      function updateCategory(){
-        const subs=subWrap.querySelectorAll(".module-card .progress-bar");
-        if(!subs.length){ catProgBar.style.width="0%"; catProgBar.textContent=""; return; }
-        const vals=Array.from(subs).map(el=>parseInt(el.dataset.percent||"0",10));
-        const avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
-        catProgBar.style.width=avg+"%"; catProgBar.style.background=catColor(avg);
-        catProgBar.textContent=avg>0? avg+"%":"";
-      }
       updateCategory();
     });
   </script>
