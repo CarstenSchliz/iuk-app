@@ -26,7 +26,7 @@
     }
 
     .card {
-      background: var(--card-bg, #fff);
+      background: #fff;
       padding: 1.5rem;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -70,7 +70,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      color: white; /* Schriftfarbe immer weiß */
+      color: white;
     }
 
     .select-user { margin-bottom: 1rem; }
@@ -81,25 +81,11 @@
       margin-top: 1rem;
     }
 
-    .btn-confirm {
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:0.5rem;
-      margin:0.5rem 0.5rem 0 0;
-      padding:0.6rem 1rem;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      color:#fff;
-      font-weight:bold;
-      width:260px;
-    }
+    .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
     .btn-green { background: var(--drk-gruen); }
     .btn-red { background: var(--softrot); }
     .btn-blue { background: var(--dunkelblau); }
 
-    /* Dropdown Styling */
     select {
       width: 100%;
       padding: 0.6rem;
@@ -114,39 +100,11 @@
       background-repeat: no-repeat;
       background-position: right 10px center;
     }
-    /* Rote Umrandung beim Fokus komplett entfernen */
-    select:focus {
-      outline: none;
-      border-color: var(--dunkelblau);
-      box-shadow: none;
-    }
-    @media(min-width: 769px){
-      .select-user select { max-width: 300px; }
-    }
+    select:focus { outline: none; border-color: var(--dunkelblau); box-shadow: none; }
+    @media(min-width: 769px){ .select-user select { max-width: 300px; } }
 
-    /* Toast */
-    #toast {
-      visibility: hidden;
-      min-width: 250px;
-      background-color: var(--dunkelblau); /* Dunkelblauer Hintergrund für den Toast */
-      color: #fff;
-      text-align: center;
-      border-radius: 8px;
-      padding: 16px;
-      position: fixed;
-      z-index: 2000;
-      left: 50%;
-      bottom: 30px;
-      font-size: 1rem;
-      opacity: 0;
-      transform: translateX(-50%);
-      transition: opacity 0.5s, bottom 0.5s;
-    }
-    #toast.show {
-      visibility: visible;
-      opacity: 1;
-      bottom: 50px;
-    }
+    #toast { visibility: hidden; min-width: 250px; background-color: var(--dunkelblau); color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
   </style>
 </head>
 <body>
@@ -158,6 +116,11 @@
     <div class="select-user">
       <select id="userSelect">
         <option value="">-- bitte wählen --</option>
+        <option value="u1">Max Mustermann</option>
+        <option value="u2">Erika Musterfrau</option>
+        <option value="u3">Hans Helfer</option>
+        <option value="u4">Sabine Sanitäterin</option>
+        <option value="u5">Peter Praktikant</option>
       </select>
       <div id="selectedUser" class="selected-user"></div>
     </div>
@@ -168,14 +131,14 @@
     <div class="card">
       <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
       <div class="progress">
-        <div id="grund-progress" class="progress-bar" style="width:0%"></div>
+        <div id="grund-progress" class="progress-bar" style="width:0%">0%</div>
       </div>
       <ul class="checklist" id="grund-list">
-        <li><input type="checkbox" data-id="fachdienst" disabled> Fachdienstausbildung Sanitätsdienst</li>
-        <li><input type="checkbox" data-id="erstgespraech" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
-        <li><input type="checkbox" data-id="18jahre" disabled> Vollendung 18. Lebensjahr</li>
-        <li><input type="checkbox" data-id="hospitation" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
-        <li><input type="checkbox" data-id="mitwirken" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
+        <li><input type="checkbox" disabled> Fachdienstausbildung Sanitätsdienst</li>
+        <li><input type="checkbox" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
+        <li><input type="checkbox" disabled> Vollendung 18. Lebensjahr</li>
+        <li><input type="checkbox" disabled> Hospitation 1 Dienst in der Integrierten Leitstelle Bodensee-Oberschwaben</li>
+        <li><input type="checkbox" disabled> min. 2-jähriges aktives Mitwirken im Sanitäts- oder Rettungsdienst</li>
       </ul>
     </div>
 
@@ -183,11 +146,11 @@
     <div class="card">
       <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
       <div class="progress">
-        <div id="verlauf-progress" class="progress-bar" style="width:0%"></div>
+        <div id="verlauf-progress" class="progress-bar" style="width:0%">0%</div>
       </div>
       <ul class="checklist" id="verlauf-list">
-        <li><input type="checkbox" data-id="c1" disabled> C1 (Helfer-)Führerschein</li>
-        <li><input type="checkbox" data-id="gruppenfuehrer" disabled> Gruppenführer Sanitätsdienst</li>
+        <li><input type="checkbox" disabled> C1 (Helfer-)Führerschein</li>
+        <li><input type="checkbox" disabled> Gruppenführer Sanitätsdienst</li>
       </ul>
     </div>
   </div>
@@ -198,151 +161,72 @@
     <div id="confirmUserSection" style="display:none;">
       <p id="confirmText"></p>
 
-      <!-- Grundvoraussetzungen -->
       <div class="checklist">
         <label><input type="checkbox" id="chkGrund" disabled> Alle Grundvoraussetzungen erfüllt</label>
       </div>
       <div id="grundActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-green" id="btnApproveGrund">
+        <button class="btn-confirm btn-green">
           <i class="bi bi-check-circle"></i> Mitglied für den aktiven Dienst freigeben
         </button>
       </div>
 
-      <!-- Optionale -->
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkOptional" disabled> Optionale Voraussetzungen erfüllt</label>
       </div>
       <div id="optionalActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-blue" id="btnConfirmOptional">
+        <button class="btn-confirm btn-blue">
           <i class="bi bi-envelope"></i> Bestätigung per Mail senden
         </button>
       </div>
 
       <hr style="margin:1rem 0;">
 
-      <!-- Ablehnung -->
       <div class="checklist" style="margin-top:1rem;">
         <label><input type="checkbox" id="chkReject"> Soll für den aktiven Dienst <strong>nicht</strong> freigegeben werden</label>
       </div>
       <div id="rejectActions" style="display:none; margin-top:0.5rem;">
-        <button class="btn-confirm btn-red" id="btnRejectGrund">
+        <button class="btn-confirm btn-red">
           <i class="bi bi-x-circle"></i> Mitglied für den aktiven Dienst ablehnen
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="toast"></div>
 
   <script>
-    // Firebase Firestore und Auth importieren
-    // (wie in deinem Ursprungscode belassen)
-    import { db } from "./docs/js/firebase.js"; // Stelle sicher, dass du den richtigen Pfad verwendest!
-
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
 
-    const grundListEl = document.getElementById("grund-list");
-    const verlaufListEl = document.getElementById("verlauf-list");
-    const grundBoxes = grundListEl.querySelectorAll('input[type="checkbox"]');
-    const verlaufBoxes = verlaufListEl.querySelectorAll('input[type="checkbox"]');
-
+    const grundBoxes = document.querySelectorAll("#grund-list input");
+    const verlaufBoxes = document.querySelectorAll("#verlauf-list input");
     const grundProgress = document.getElementById("grund-progress");
     const verlaufProgress = document.getElementById("verlauf-progress");
 
     const chkGrund = document.getElementById("chkGrund");
     const chkOptional = document.getElementById("chkOptional");
 
-    // ---- Dummy-User als Fallback ----
-    const testUsers = [
-      { id: "u1", displayName: "Max Mustermann", email: "max@example.com" },
-      { id: "u2", displayName: "Erika Musterfrau", email: "erika@example.com" },
-      { id: "u3", displayName: "Hans Helfer", email: "hans@example.com" },
-      { id: "u4", displayName: "Sabine Sanitäterin", email: "sabine@example.com" }
-    ];
-
-    // Nutzer laden und ins Dropdown füllen
-    async function loadUsers() {
-      try {
-        const usersRef = db.collection('users');
-        const snapshot = await usersRef.get();
-
-        // Dropdown resetten
-        userSelect.innerHTML = '<option value="">-- bitte wählen --</option>';
-
-        if (!snapshot.empty) {
-          snapshot.forEach(doc => {
-            const user = doc.data();
-            const opt = document.createElement("option");
-            opt.value = doc.id;
-            opt.textContent = user.displayName || user.email || doc.id;
-            userSelect.appendChild(opt);
-          });
-        } else {
-          // Fallback: Dummy-Nutzer
-          testUsers.forEach(u => {
-            const opt = document.createElement("option");
-            opt.value = u.id;
-            opt.textContent = u.displayName || u.email || u.id;
-            userSelect.appendChild(opt);
-          });
-          showToast("Dummy-User wurden geladen (Testmodus).");
-        }
-      } catch (error) {
-        console.error("Fehler beim Laden der Nutzer:", error);
-        // Fallback: Dummy-Nutzer
-        userSelect.innerHTML = '<option value="">-- bitte wählen --</option>';
-        testUsers.forEach(u => {
-          const opt = document.createElement("option");
-          opt.value = u.id;
-          opt.textContent = u.displayName || u.email || u.id;
-          userSelect.appendChild(opt);
-        });
-        showToast("Dummy-User wurden geladen (wegen Fehler).");
-      }
+    function setProgressColor(bar, percent) {
+      if (percent === 0) bar.style.backgroundColor = "#e9ecef";
+      else if (percent <= 25) bar.style.backgroundColor = "red";
+      else if (percent <= 50) bar.style.backgroundColor = "gold";
+      else if (percent <= 75) bar.style.backgroundColor = "lightgreen";
+      else bar.style.backgroundColor = "green";
     }
 
-    // Farblogik für die Progressbar nach Quartilen
-    function setProgressColor(progressBar, percent) {
-      // Auf das nächst-höhere Quartil mappen (0,25,50,75,100)
-      let step = 0;
-      if (percent === 0) step = 0;
-      else if (percent <= 25) step = 25;
-      else if (percent <= 50) step = 50;
-      else if (percent <= 75) step = 75;
-      else step = 100;
-
-      switch(step){
-        case 25: progressBar.style.backgroundColor = "red"; break;
-        case 50: progressBar.style.backgroundColor = "gold"; break;
-        case 75: progressBar.style.backgroundColor = "lightgreen"; break;
-        case 100: progressBar.style.backgroundColor = "green"; break;
-        default: progressBar.style.backgroundColor = "#e9ecef"; break;
-      }
+    function updateProgress(boxes, bar, gate) {
+      const total = boxes.length;
+      const checked = Array.from(boxes).filter(b => b.checked).length;
+      const percent = Math.round((checked / total) * 100);
+      bar.style.width = percent + "%";
+      bar.textContent = percent + "%";
+      setProgressColor(bar, percent);
+      gate.disabled = percent !== 100;
+      if (percent !== 100) gate.checked = false;
     }
 
-    function updateProgress(listNodeList, progressBar, gateCheckbox) {
-      const total = listNodeList.length;
-      const checked = Array.from(listNodeList).filter(cb => cb.checked).length;
-      const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
-
-      progressBar.style.width = percent + "%";
-      progressBar.textContent = percent + "%";
-      setProgressColor(progressBar, percent);
-
-      // Gate-Checkbox nur aktiv, wenn wirklich 100%
-      if (percent === 100) {
-        gateCheckbox.disabled = false;
-      } else {
-        gateCheckbox.disabled = true;
-        gateCheckbox.checked = false; // nicht auto-abhaken
-      }
-    }
-
-    // Nutzerwechsel
     userSelect.addEventListener("change", () => {
       if (userSelect.value) {
         const name = userSelect.options[userSelect.selectedIndex].text;
@@ -350,15 +234,11 @@
         confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
 
-        // Alle Checkboxen aktivieren & zurücksetzen
         grundBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
         verlaufBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
-
-        // Gate-Checkboxen sperren/entkoppeln bis 100%
         chkGrund.disabled = true; chkGrund.checked = false;
         chkOptional.disabled = true; chkOptional.checked = false;
 
-        // Fortschritt zurücksetzen
         updateProgress(grundBoxes, grundProgress, chkGrund);
         updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
       } else {
@@ -367,24 +247,12 @@
       }
     });
 
-    // Delegierte Listener für Änderungen in den Listen
-    grundListEl.addEventListener("change", () => {
+    document.getElementById("grund-list").addEventListener("change", () => {
       updateProgress(grundBoxes, grundProgress, chkGrund);
     });
-    verlaufListEl.addEventListener("change", () => {
+    document.getElementById("verlauf-list").addEventListener("change", () => {
       updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
     });
-
-    // Toast anzeigen
-    function showToast(msg){
-      const toast = document.getElementById("toast");
-      toast.textContent = msg;
-      toast.className = "show";
-      setTimeout(()=>{ toast.className = toast.className.replace("show",""); }, 3000);
-    }
-
-    // Nutzer laden, wenn die Seite geladen wird
-    loadUsers();
   </script>
 </body>
 </html>
