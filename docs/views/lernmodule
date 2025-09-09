@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lernmodule</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <style>
+    :root {
+      --softrot: rgb(228,100,80);
+      --dunkelblau: rgb(0,45,85);
+      --hellblau: rgb(100,160,220);
+      --mittelgrau: rgb(180,180,180);
+    }
+
+    .page-title {
+      color: var(--softrot);
+      margin-bottom: 1rem;
+    }
+
+    .category {
+      margin-bottom: 2rem;
+    }
+
+    .category h3 {
+      color: var(--dunkelblau);
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--mittelgrau);
+      padding-bottom: 0.3rem;
+    }
+
+    .module-card {
+      background: #fff;
+      padding: 1.2rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 1.2rem;
+    }
+
+    .module-card h4 {
+      margin: 0 0 0.8rem 0;
+      color: var(--hellblau);
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+
+    .progress {
+      height: 22px;
+      background-color: #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .progress-bar {
+      height: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: width 0.3s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: white;
+      background: var(--hellblau);
+    }
+
+    .levels {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .levels li {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .levels input[type="checkbox"] {
+      width: 1.1rem;
+      height: 1.1rem;
+      cursor: pointer;
+    }
+    .levels input[disabled] {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* Darkmode */
+    body.dark .module-card { background:#1a1a1a; color:#f5f5f5; }
+    body.dark .module-card h4 { color: var(--hellblau); }
+  </style>
+</head>
+<body>
+  <h2 class="page-title"><i class="bi bi-journal"></i> Lernmodule</h2>
+
+  <div class="category">
+    <h3>Fahrzeugkunde</h3>
+
+    <div class="module-card">
+      <h4><i class="bi bi-cpu"></i> IT</h4>
+      <div class="progress">
+        <div class="progress-bar" style="width:0%">0%</div>
+      </div>
+      <ul class="levels">
+        <li><input type="checkbox" data-level="gelernt"> gelernt (vom Nutzer)</li>
+        <li><input type="checkbox" data-level="aufsicht" disabled> unter Aufsicht angewendet</li>
+        <li><input type="checkbox" data-level="selbststaendig" disabled> selbstständig angewendet</li>
+        <li><input type="checkbox" data-level="sicher" disabled> sichere Anwendung</li>
+      </ul>
+    </div>
+
+    <div class="module-card">
+      <h4><i class="bi bi-hdd"></i> Hardware</h4>
+      <div class="progress">
+        <div class="progress-bar" style="width:0%">0%</div>
+      </div>
+      <ul class="levels">
+        <li><input type="checkbox" data-level="gelernt"> gelernt (vom Nutzer)</li>
+        <li><input type="checkbox" data-level="aufsicht" disabled> unter Aufsicht angewendet</li>
+        <li><input type="checkbox" data-level="selbststaendig" disabled> selbstständig angewendet</li>
+        <li><input type="checkbox" data-level="sicher" disabled> sichere Anwendung</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // 👉 später kommt die Rollen-Logik hierhin
+    const currentRole = "Helfer"; // Demo: "Admin", "Gruppenleiter" oder "Helfer"
+
+    document.querySelectorAll(".module-card").forEach(card => {
+      const checkboxes = card.querySelectorAll("input[type=checkbox]");
+      const progressBar = card.querySelector(".progress-bar");
+
+      // Rollen-Logik: nur "gelernt" frei, andere für Admin/Gruppenleiter
+      checkboxes.forEach(cb => {
+        if (cb.dataset.level === "gelernt") {
+          cb.disabled = false;
+        } else if (currentRole === "Admin" || currentRole === "Gruppenleiter") {
+          cb.disabled = false;
+        }
+      });
+
+      // Fortschrittsberechnung
+      checkboxes.forEach(cb => {
+        cb.addEventListener("change", () => {
+          const total = checkboxes.length;
+          const done = Array.from(checkboxes).filter(c => c.checked).length;
+          const percent = Math.round((done / total) * 100);
+          progressBar.style.width = percent + "%";
+          progressBar.textContent = percent + "%";
+        });
+      });
+    });
+  </script>
+</body>
+</html>
