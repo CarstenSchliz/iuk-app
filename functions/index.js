@@ -4,10 +4,11 @@ const functionsV1 = require("firebase-functions/v1"); // für Auth-Trigger
 const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
 
+// --- Admin SDK Initialisierung ---
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    projectId: process.env.GCLOUD_PROJECT,
+    projectId: "iuk-app", // <- HIER deine Projekt-ID hart gesetzt
   });
 }
 const db = admin.firestore();
