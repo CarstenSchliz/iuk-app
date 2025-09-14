@@ -6,7 +6,8 @@ const cors = require("cors")({ origin: true });
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    projectId: process.env.GCLOUD_PROJECT, // explizit, um sicherzugehen
+    credential: admin.credential.applicationDefault(),
+    projectId: process.env.GCLOUD_PROJECT,
   });
 }
 const db = admin.firestore();
@@ -250,3 +251,16 @@ exports.onAuthDelete = functionsV1
       console.error("❌ Fehler beim Firestore-Löschen:", err);
     }
   });
+
+// ==== Testfunktion ====
+// Zum schnellen Prüfen, ob Firestore von Functions aus beschreibbar ist
+exports.testWrite = onRequest(async (req, res) => {
+  try {
+    await db.collection("users").doc("test123").set({ hello: "world", ts: new Date() });
+    console.log("✅ Test-Dokument geschrieben.");
+    res.json({ success: true });
+  } catch (err) {
+    console.error("❌ Fehler beim Test-Write:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
