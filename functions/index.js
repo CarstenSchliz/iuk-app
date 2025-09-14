@@ -5,7 +5,9 @@ const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
 
 if (!admin.apps.length) {
-  admin.initializeApp();
+  admin.initializeApp({
+    projectId: process.env.GCLOUD_PROJECT, // explizit, um sicherzugehen
+  });
 }
 const db = admin.firestore();
 
@@ -213,27 +215,27 @@ exports.onAuthCreate = functionsV1
     const userDoc = {
       uid: user.uid,
       email: user.email || null,
-      emailVerified: !!user.emailVerified,
       displayName: user.displayName || null,
-      photoURL: user.photoURL || null,
-      providerIds: (user.providerData || []).map((p) => p.providerId),
       createdAt: now,
-      updatedAt: now,
-      status: "active",
-      roles: ["anwärter"], // 👈 Default-Rolle
-      profile: { firstName: null, lastName: null, phone: null },
-      settings: { language: "de", theme: "system" },
+      roles: ["anwärter"], // Default-Rolle
     };
 
-    await db.collection("users").doc(user.uid).set(userDoc, { merge: true });
+    try {
+      await db.collection("users").doc(user.uid).set(userDoc, { merge: true });
+      console.log(`✅ Firestore-Dokument für ${user.uid} angelegt.`);
+    } catch (err) {
+      console.error("❌ Fehler beim Firestore-Write:", err);
+    }
 
-    // Default-Claim: Anwärter
-    await admin.auth().setCustomUserClaims(
-      user.uid,
-      buildClaimsWithRoles({}, ["anwärter"])
-    );
-
-    console.log(`onAuthCreate: Profil & Claims für ${user.uid} angelegt.`);
+    try {
+      await admin.auth().setCustomUserClaims(
+        user.uid,
+        buildClaimsWithRoles({}, ["anwärter"])
+      );
+      console.log(`✅ Claims für ${user.uid} gesetzt.`);
+    } catch (err) {
+      console.error("❌ Fehler beim Claims-Setzen:", err);
+    }
   });
 
 // Beim Löschen eines Accounts das Firestore-Dokument entfernen
@@ -241,6 +243,10 @@ exports.onAuthDelete = functionsV1
   .region("us-central1")
   .auth.user()
   .onDelete(async (user) => {
-    await db.collection("users").doc(user.uid).delete().catch(() => {});
-    console.log(`onAuthDelete: Profil für ${user.uid} entfernt.`);
+    try {
+      await db.collection("users").doc(user.uid).delete();
+      console.log(`✅ Firestore-Dokument für ${user.uid} gelöscht.`);
+    } catch (err) {
+      console.error("❌ Fehler beim Firestore-Löschen:", err);
+    }
   });
