@@ -5,11 +5,9 @@ const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
 
 // --- Admin SDK Initialisierung ---
+// Wichtig: OHNE projectId, das holt sich Functions automatisch
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    projectId: "iuk-app", // <- HIER deine Projekt-ID hart gesetzt
-  });
+  admin.initializeApp();
 }
 const db = admin.firestore();
 
