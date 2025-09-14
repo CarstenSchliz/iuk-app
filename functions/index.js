@@ -1,16 +1,16 @@
 // functions/index.js
 const { onRequest } = require("firebase-functions/v2/https");
-const functionsV1 = require("firebase-functions/v1"); // Auth-Trigger (1st gen)
+const functionsV1 = require("firebase-functions/v1"); // für Auth-Trigger
 const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
 
 if (!admin.apps.length) {
-  // Default-Initialisierung: nimmt automatisch das richtige Projekt & Credentials
+  // Default-Init, nimmt automatisch das richtige Projekt + Credentials
   admin.initializeApp();
 }
 const db = admin.firestore();
 
-// ===== optionales CORS/Fehler-Wrapper =====
+// ===== CORS/Fehler-Wrapper =====
 const USE_AUTH = false;
 function handleRequest(handler) {
   return (req, res) => {
@@ -68,7 +68,7 @@ function buildClaimsWithRoles(existingClaims = {}, roles = []) {
   return claims;
 }
 
-// ===== v2 HTTP-Funktionen: explizit mit App Engine default Service Account laufen lassen =====
+// ===== Standard-Options für HTTP-Funktionen =====
 const RUN_OPTS = { region: "us-central1", serviceAccount: "iuk-app@appspot.gserviceaccount.com" };
 
 // Neuen Nutzer anlegen
@@ -139,7 +139,7 @@ exports.listUsers = onRequest(RUN_OPTS, handleRequest(async (req, res) => {
   res.json({ users });
 }));
 
-// ===== Diagnose: WhoAmI (zeigt Projekt & Service Account, hilft bei NOT_FOUND) =====
+// ===== Diagnose: WhoAmI =====
 exports.whoami = onRequest(RUN_OPTS, async (req, res) => {
   try {
     const email = await fetch("http://metadata/computeMetadata/v1/instance/service-accounts/default/email", {
@@ -157,19 +157,25 @@ exports.whoami = onRequest(RUN_OPTS, async (req, res) => {
   }
 });
 
-// ===== Test: Firestore-Write aus v2 =====
+// ===== Test: Firestore-Write mit Debug =====
 exports.testWrite = onRequest(RUN_OPTS, async (req, res) => {
   try {
-    await db.collection("users").doc("test123").set({ hello: "world", ts: new Date() }, { merge: true });
-    console.log("✅ Test-Dokument geschrieben.");
-    res.json({ success: true });
+    const projectId = admin.app().options.projectId;
+    console.log("📌 Firestore Project ID laut Admin SDK:", projectId);
+
+    await db.collection("users").doc("test123").set({
+      hello: "world",
+      ts: new Date(),
+    }, { merge: true });
+
+    res.json({ success: true, projectId });
   } catch (err) {
     console.error("❌ Fehler beim Test-Write:", err);
     res.status(500).json({ error: err.message || String(err) });
   }
 });
 
-// ===== Auth Trigger (1st gen) =====
+// ===== Auth Trigger =====
 exports.onAuthCreate = functionsV1.region("us-central1").auth.user().onCreate(async (user) => {
   const now = admin.firestore.FieldValue.serverTimestamp();
   const userDoc = {
