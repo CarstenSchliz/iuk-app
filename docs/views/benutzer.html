@@ -573,6 +573,17 @@
         createBtn.innerHTML='<i class="bi bi-save"></i> Benutzer erstellen';
       }
     });
+
+    // 🔎 Suchfeld-Events hinzufügen
+    searchInput.addEventListener("input", () => {
+      renderUsers(allUsers);
+      clearSearch.style.display = searchInput.value ? "block" : "none";
+    });
+    clearSearch.addEventListener("click", () => {
+      searchInput.value = "";
+      clearSearch.style.display = "none";
+      renderUsers(allUsers);
+    });
   </script>
 </body>
 </html>
