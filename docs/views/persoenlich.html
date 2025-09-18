@@ -1,29 +1,79 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Persönliche Einstellungen</title>
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
+    /* ================================
+       THEME: zentrale Farb-Variablen
+       ================================ */
     :root {
+      /* Markencolors */
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
-      --hellgrau: rgb(239,238,234);
+
+      /* Light Theme */
+      --bg: #f3f4f6;                /* Seitenhintergrund */
+      --text: #1f2937;              /* Standardtext */
+      --heading: #002d55;           /* Überschriften */
+      --link: #e06862;
+
+      --card-bg: #ffffff;
+      --card-border: #e5e7eb;
+
+      --input-bg: #ffffff;
+      --input-fg: #111827;
+      --input-border: #d1d5db;
+      --input-readonly-bg: #f9fafb;
+      --input-readonly-fg: #555;
+
+      --button-secondary-bg: #eef2f7;
+      --button-secondary-fg: #111;
+
+      --modal-bg: #ffffff;
+      --modal-heading: #002d55;
+
       --blassblau: rgb(230,240,250);
     }
+    body.dark {
+      /* Dark Theme */
+      --bg: #121212;
+      --text: #f3f4f6;
+      --heading: #f3f4f6;
+      --link: #ff9f9f;
 
+      --card-bg: #1e1e1e;
+      --card-border: #374151;
+
+      --input-bg: #2a2a2a;
+      --input-fg: #f3f4f6;
+      --input-border: #555;
+      --input-readonly-bg: #333333;
+      --input-readonly-fg: #bdbdbd;
+
+      --button-secondary-bg: #2b2b2b;
+      --button-secondary-fg: #e8e8e8;
+
+      --modal-bg: #1e1e1e;
+      --modal-heading: #f3f4f6;
+    }
+
+    /* Grundlayout */
+    html, body { margin:0; padding:0; }
     body {
-      background: var(--hellgrau);
-      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1rem;
     }
 
     .page-title {
       color: var(--softrot);
-      margin-bottom: 1rem;
+      margin: 0 0 1rem;
     }
 
     .settings-grid {
@@ -31,210 +81,198 @@
       grid-template-columns: 2fr 1fr;
       gap: 1.5rem;
     }
-    @media(max-width: 768px){
+    @media (max-width: 768px) {
       .settings-grid { grid-template-columns: 1fr; }
     }
 
     .card {
-      background: var(--card-bg, #fff);
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
       margin-bottom: 1.5rem;
     }
     .card + .card { margin-top: 1.5rem; }
 
     .card h3 {
       color: var(--hellblau);
-      margin-top: 0;
-      margin-bottom: 1rem;
+      margin: 0 0 1rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
     }
 
-    /* Floating Label */
-    .form-group.floating {
-      position: relative;
-      margin-bottom: 1.5rem;
+    /* Bessere Lesbarkeit auf Mobile: Cards nicht vollflächig */
+    @media (max-width: 768px) {
+      .card {
+        max-width: 560px;
+        margin: 0 auto 1.5rem;
+      }
     }
+
+    /* Floating Labels */
+    .form-group.floating { position: relative; margin-bottom: 1.2rem; }
     .form-group.floating input {
       width: 100%;
-      padding: 1rem 0.75rem 0.25rem 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: #fff;
+      padding: 1rem .75rem .3rem .75rem;
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--input-fg);
       font-size: 1rem;
+      transition: border-color .15s ease, background .15s ease, color .15s ease;
       min-height: 44px;
-    }
-    .form-group.floating input:focus + label,
-    .form-group.floating input:not(:placeholder-shown) + label {
-      top: 0;
-      left: 0.6rem;
-      font-size: 0.8rem;
-      color: var(--dunkelblau);
+      box-sizing: border-box;
     }
     .form-group.floating label {
       position: absolute;
       top: 50%;
-      left: 0.75rem;
+      left: .75rem;
       transform: translateY(-50%);
-      color: #777;
-      font-size: 0.95rem;
-      transition: all 0.2s ease;
+      color: #6b7280;
+      font-size: .95rem;
+      transition: all .15s;
       pointer-events: none;
-      background: var(--card-bg, #fff);
-      padding: 0 0.25rem;
+      background: var(--card-bg);
+      padding: 0 .25rem;
+    }
+    .form-group.floating input:focus + label,
+    .form-group.floating input:not(:placeholder-shown) + label {
+      top: .1rem;
+      left: .6rem;
+      font-size: .78rem;
+      color: var(--heading);
     }
 
-    /* Readonly Felder grau */
+    /* readonly Felder klar kennzeichnen */
     .form-group.floating input[readonly] {
-      background: #f9fafb;
-      color: #555;
+      background: var(--input-readonly-bg) !important;
+      color: var(--input-readonly-fg);
+      cursor: not-allowed;
     }
 
-    /* Nur Felder mit Inhalt blassblau */
+    /* Nur Edit-Felder bekommen blassblau bei Inhalt */
     .form-group.floating input:not(:placeholder-shown):not([readonly]) {
       background: var(--blassblau);
       border-color: var(--dunkelblau);
     }
 
     .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
     }
-    @media(max-width:768px){
+    @media (max-width:768px) {
       .form-row { grid-template-columns: 1fr; }
     }
 
-    .form-actions {
-      display:flex;
-      gap:1rem;
-      margin-top:1rem;
-    }
-
-    .btn-primary, .btn-secondary {
-      padding:0.6rem 1rem;
+    /* Buttons */
+    .form-actions { display:flex; gap:1rem; margin-top:1rem; }
+    .btn {
+      padding:.6rem 1rem;
       border:none;
-      border-radius:8px;
+      border-radius:10px;
       cursor:pointer;
-      font-size:0.95rem;
+      font-size:.95rem;
       min-height:44px;
-      min-width:140px;
-      display:flex;
+      min-width:140px;               /* gleiche Mindestbreite */
+      display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap:0.5rem;
+      gap:.5rem;
     }
     .btn-primary { background: var(--dunkelblau); color: #fff; }
-    .btn-secondary { background:#eee; }
+    .btn-secondary { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
+    .btn-accent { background: var(--dunkelblau); color: #fff; }
 
-    .btn-accent {
-      padding:0.6rem 1rem;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      font-size:0.95rem;
-      min-height:44px;
-      min-width:140px;
-      background: var(--dunkelblau);
-      color:#fff;
-    }
+    .form-msg { margin-top:.5rem; font-weight:600; }
 
-    .form-msg {
-      margin-top:0.5rem;
-      font-weight:bold;
-    }
-
-    .list { list-style:none; padding:0; margin:0; }
+    .list { list-style:none; margin:0; padding:0; }
     .list li {
-      padding:0.6rem 0;
-      border-bottom:1px solid #eee;
-      cursor:pointer;
+      padding:.6rem 0; border-bottom:1px solid var(--card-border); cursor:pointer;
+      display:flex; align-items:center; gap:.5rem;
     }
 
-    /* Darkmode */
-    body.dark {
-      --card-bg: #1e1e1e;
-      background: #121212;
-      color: #f0f0f0;
-    }
-    body.dark .card { background: #1e1e1e; color:#f0f0f0; }
-    body.dark .form-group.floating input {
-      background:#2a2a2a;
-      color:#f0f0f0;
-      border:1px solid #555;
-    }
-    body.dark .form-group.floating input[readonly] {
-      background: #333;
-      color: #aaa;
-    }
-    body.dark .form-group.floating label {
-      background: #1e1e1e;
-      color: #aaa;
-    }
-    body.dark .btn-secondary { background:#333; color:#eee; }
-
-    /* Modal */
+    /* ================================
+       Modal (Passwort ändern) – wie index
+       ================================ */
     .modal {
-      position: fixed; inset:0;
-      display:none;
-      justify-content:center;
-      align-items:center;
+      position: fixed; inset: 0;
+      display: none;
+      justify-content: center; align-items: center;
       background: rgba(0,0,0,0.5);
-      z-index:1000;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity .3s ease;
     }
-    .modal.show { display:flex; }
+    .modal.show { display:flex; opacity:1; }
     .modal-content {
-      background:#fff;
-      padding:2rem;
-      border-radius:16px;
-      max-width:500px;
-      width:90%;
-      text-align:center;
+      background: var(--modal-bg);
+      color: var(--text);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      width: 92%;
+      max-width: 520px;
+      box-sizing: border-box;
+      transform: scale(.97);
+      transition: transform .25s ease, opacity .25s ease;
+      opacity: 1;
     }
+    .modal.show .modal-content { transform: scale(1); }
+
     .modal-content h2 {
-      color:var(--dunkelblau);
-      font-size:1.4rem;
-      margin:0.5rem 0 1.2rem 0;
+      color: var(--modal-heading);
+      font-size: 1.4rem;
+      margin: .3rem 0 1.1rem;
+      text-align: center;
     }
-    .modal-actions {
-      display:flex;
-      gap:1rem;
-      margin-top:1rem;
-    }
+
+    .modal-actions { display:flex; gap:1rem; margin-top:1rem; }
     .modal-actions button {
-      flex:1;
-      padding:0.7rem;
-      border:none;
-      border-radius:6px;
-      font-size:0.95rem;
-      font-weight:bold;
-      cursor:pointer;
-      min-height:44px;
+      flex:1; padding:.7rem; border:none; border-radius:6px;
+      font-size:.95rem; font-weight:bold; cursor:pointer; min-height:44px;
     }
-    .modal-actions .primary { background: var(--dunkelblau); color:#fff; }
-    .modal-actions .close { background: var(--hellgrau); color:#333; }
-    body.dark .modal-content { background:#1e1e1e; color:#f0f0f0; }
+    .modal-actions .primary { background: var(--dunkelblau); color: #fff; }
+    .modal-actions .close   { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
+
+    /* Regeln unter dem Feld (damit Label nicht überlappt) */
+    #pass-rules {
+      font-size:.85rem;
+      text-align:left;
+      margin: 6px 0 12px 2px;
+      line-height: 1.35;
+    }
+
+    /* Mobile: Popup angenehme Breite */
+    @media (max-width: 768px) {
+      .modal-content { width: 92%; max-width: 420px; }
+    }
   </style>
 </head>
 <body>
   <h2 class="page-title">Einstellungen</h2>
 
   <div class="settings-grid">
+    <!-- Linke Spalte -->
     <div>
       <!-- Persönliche Daten -->
       <div class="card">
         <h3><i class="bi bi-person"></i> Persönliche Daten</h3>
-        <form id="profileForm">
+        <form id="profileForm" novalidate>
           <div class="form-group floating">
             <input type="text" id="name" placeholder=" ">
             <label for="name">Name</label>
           </div>
+
           <div class="form-group floating">
             <input type="email" id="email" placeholder=" " readonly>
             <label for="email">E-Mail-Adresse</label>
           </div>
+
           <div class="form-row">
-            <div class="form-group floating">
+            <div class="form-group floating" title="Rollen werden vom Administrator vergeben">
               <input type="text" id="roles" placeholder=" " readonly>
               <label for="roles">Rollen</label>
             </div>
@@ -243,15 +281,16 @@
               <label for="uid">UID</label>
             </div>
           </div>
+
           <div class="form-actions">
-            <button type="button" id="backBtn" class="btn-secondary">
+            <button type="button" id="backBtn" class="btn btn-secondary">
               <i class="bi bi-arrow-left"></i> Zurück
             </button>
-            <button type="button" id="saveBtn" class="btn-primary">
+            <button type="button" id="saveBtn" class="btn btn-primary">
               <i class="bi bi-save"></i> Speichern
             </button>
           </div>
-          <div id="profileMsg" class="form-msg"></div>
+          <div id="profileMsg" class="form-msg" aria-live="polite"></div>
         </form>
       </div>
 
@@ -264,11 +303,13 @@
       </div>
     </div>
 
+    <!-- Rechte Spalte -->
     <div>
+      <!-- Erscheinungsbild -->
       <div class="card">
         <h3><i class="bi bi-palette"></i> Erscheinungsbild</h3>
         <p>Aktuelles Theme: <span id="themeLabel">Hell</span></p>
-        <button id="themeToggle" class="btn-accent">
+        <button id="themeToggle" class="btn btn-accent">
           <i class="bi bi-moon"></i> Zu Dunkelmodus wechseln
         </button>
       </div>
@@ -276,136 +317,219 @@
   </div>
 
   <!-- Passwort ändern Modal -->
-  <div id="pwdModal" class="modal">
+  <div id="pwdModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pwdTitle">
     <div class="modal-content">
-      <h2>Passwort ändern</h2>
+      <h2 id="pwdTitle">Passwort ändern</h2>
+
       <div class="form-group floating">
-        <input type="password" id="currentPwd" placeholder=" ">
+        <input type="password" id="currentPwd" placeholder=" " autocomplete="current-password">
         <label for="currentPwd">Aktuelles Passwort</label>
       </div>
+
       <div class="form-group floating">
-        <input type="password" id="newPwd" placeholder=" ">
+        <input type="password" id="newPwd" placeholder=" " autocomplete="new-password" title="Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen">
         <label for="newPwd">Neues Passwort</label>
       </div>
-      <!-- Regeln separat, damit Label nicht überlappt -->
-      <div id="pass-rules" style="text-align:left; font-size:0.85rem; margin:6px 0 1rem 2px;">
+
+      <!-- Regeln separat, damit die Labels nicht überlappen -->
+      <div id="pass-rules">
         <div id="rule-length">❌ Mindestens 8 Zeichen</div>
         <div id="rule-number">❌ Mindestens 1 Zahl</div>
         <div id="rule-uppercase">❌ Mindestens 1 Großbuchstabe</div>
         <div id="rule-special">❌ Mindestens 1 Sonderzeichen</div>
       </div>
+
       <div class="form-group floating">
-        <input type="password" id="repeatPwd" placeholder=" ">
+        <input type="password" id="repeatPwd" placeholder=" " autocomplete="new-password">
         <label for="repeatPwd">Neues Passwort wiederholen</label>
       </div>
+
       <div class="modal-actions">
-        <button id="savePwd" class="primary">Speichern</button>
-        <button id="cancelPwd" class="close">Zurück</button>
+        <button id="savePwd" class="primary" type="button"><i class="bi bi-save"></i> Speichern</button>
+        <button id="cancelPwd" class="close" type="button"><i class="bi bi-x-lg"></i> Zurück</button>
       </div>
-      <div id="pwdMsg" class="form-msg"></div>
+
+      <div id="pwdMsg" class="form-msg" aria-live="polite"></div>
     </div>
   </div>
 
   <script type="module">
-    import { auth, updateUserProfile, observeAuthState, getUserRoles, changePassword, translateFirebaseError } from "./js/firebase.js";
+    /*********** Firebase ***********/
+    import {
+      auth,
+      updateUserProfile,
+      observeAuthState,
+      getUserRoles,
+      translateFirebaseError
+    } from "./js/firebase.js";
 
-    const nameField = document.getElementById("name");
+    import {
+      EmailAuthProvider,
+      reauthenticateWithCredential,
+      updatePassword
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    /*********** DOM ***********/
+    const nameField  = document.getElementById("name");
     const emailField = document.getElementById("email");
     const rolesField = document.getElementById("roles");
-    const uidField = document.getElementById("uid");
-    const profileMsg = document.getElementById("profileMsg");
-    const backBtn = document.getElementById("backBtn");
-    const saveBtn = document.getElementById("saveBtn");
+    const uidField   = document.getElementById("uid");
 
-    // Sidebar-Infos
+    const saveBtn    = document.getElementById("saveBtn");
+    const backBtn    = document.getElementById("backBtn");
+    const profileMsg = document.getElementById("profileMsg");
+
+    const themeBtn   = document.getElementById("themeToggle");
+    const themeLabel = document.getElementById("themeLabel");
+
+    const changePasswordLink = document.getElementById("changePassword");
+    const pwdModal   = document.getElementById("pwdModal");
+    const currentPwd = document.getElementById("currentPwd");
+    const newPwd     = document.getElementById("newPwd");
+    const repeatPwd  = document.getElementById("repeatPwd");
+    const savePwdBtn = document.getElementById("savePwd");
+    const cancelPwd  = document.getElementById("cancelPwd");
+    const pwdMsg     = document.getElementById("pwdMsg");
+
+    // Sidebar (falls vorhanden)
     const sidebarName = document.getElementById("userName");
     const sidebarRole = document.getElementById("userRole");
+
+    /*********** Utils ***********/
+    const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
     const roleRanking = ["admin","gruppenleiter","helfer","anwärter"];
+    const highestRole = (roles=[]) => {
+      const r = roles.map(x => (x||"").toLowerCase());
+      const h = roleRanking.find(k => r.includes(k));
+      return h ? cap(h) : "";
+    };
+    const strongPw = (p) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(p);
 
+    function showProfileMsg(text, color) {
+      profileMsg.textContent = text;
+      profileMsg.style.color = color;
+    }
+
+    /*********** Daten laden ***********/
     observeAuthState(async (user) => {
-      if(user){
-        emailField.value = user.email || "";
-        nameField.value = user.displayName || "";
-        uidField.value = user.uid;
+      if (!user) return;
+      emailField.value = user.email || "";
+      nameField.value  = user.displayName || "";
+      uidField.value   = user.uid || "";
 
+      try {
         const roles = await getUserRoles(user.uid);
-        const formatted = roles.map(r => r.charAt(0).toUpperCase()+r.slice(1)).join(", ");
-        rolesField.value = formatted;
+        rolesField.value = (roles || []).map(cap).join(", ");
 
-        if (sidebarName) sidebarName.textContent = user.displayName || user.email.split("@")[0];
-        if (sidebarRole) {
-          const highest = roleRanking.find(r => roles.includes(r));
-          sidebarRole.textContent = highest ? highest.charAt(0).toUpperCase()+highest.slice(1) : "";
-        }
+        if (sidebarName) sidebarName.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "");
+        if (sidebarRole) sidebarRole.textContent = highestRole(roles);
+      } catch (e) {
+        rolesField.value = "—";
+        console.warn("Rollen konnten nicht geladen werden:", e);
       }
     });
 
+    /*********** Name speichern ***********/
     saveBtn.addEventListener("click", async () => {
       const user = auth.currentUser;
       const newName = nameField.value.trim();
-      if(!user){ profileMsg.textContent="❌ Kein Benutzer eingeloggt."; profileMsg.style.color="red"; return; }
-      if(!newName){ profileMsg.textContent="❌ Bitte Namen eingeben."; profileMsg.style.color="red"; return; }
-      try{
-        await updateUserProfile(user, { displayName:newName });
-        if(sidebarName) sidebarName.textContent = newName;
-        profileMsg.textContent="✅ Name geändert!";
-        profileMsg.style.color="green";
-      }catch(err){
-        profileMsg.textContent="❌ Fehler: "+err.message;
-        profileMsg.style.color="red";
+
+      if (!user) { showProfileMsg("❌ Kein Benutzer eingeloggt.", "red"); return; }
+      if (!newName) { showProfileMsg("❌ Bitte Namen eingeben.", "red"); return; }
+
+      try {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = "⏳ Speichern...";
+        await updateUserProfile(user, { displayName: newName });
+        if (sidebarName) sidebarName.textContent = newName;
+        showProfileMsg("✅ Name geändert!", "green");
+      } catch (err) {
+        showProfileMsg("❌ " + (err?.code ? translateFirebaseError(err.code) : err.message), "red");
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
       }
     });
 
-    backBtn.addEventListener("click", ()=>{ window.location.href="app.html"; });
+    /*********** Zurück ***********/
+    backBtn.addEventListener("click", () => { window.location.href = "app.html"; });
 
-    // Darkmode
-    const themeBtn=document.getElementById("themeToggle"), themeLabel=document.getElementById("themeLabel");
+    /*********** Theme-Toggle ***********/
     function setTheme(mode){
-      if(mode==="dark"){
+      if(mode === "dark"){
         document.body.classList.add("dark");
         themeLabel.textContent="Dunkel";
-        themeBtn.innerHTML='<i class="bi bi-sun"></i> Zu Hellmodus wechseln';
+        themeBtn.innerHTML = '<i class="bi bi-sun"></i> Zu Hellmodus wechseln';
         localStorage.setItem("theme","dark");
-      }else{
+      } else {
         document.body.classList.remove("dark");
         themeLabel.textContent="Hell";
-        themeBtn.innerHTML='<i class="bi bi-moon"></i> Zu Dunkelmodus wechseln';
+        themeBtn.innerHTML = '<i class="bi bi-moon"></i> Zu Dunkelmodus wechseln';
         localStorage.setItem("theme","light");
       }
     }
-    setTheme(localStorage.getItem("theme")||"light");
-    themeBtn.addEventListener("click",()=>setTheme(document.body.classList.contains("dark")?"light":"dark"));
-
-    // Passwort Modal
-    const pwdModal=document.getElementById("pwdModal");
-    const changePasswordLink=document.getElementById("changePassword");
-    const cancelPwd=document.getElementById("cancelPwd");
-    const savePwd=document.getElementById("savePwd");
-    const pwdMsg=document.getElementById("pwdMsg");
-    const currentPwd=document.getElementById("currentPwd");
-    const newPwd=document.getElementById("newPwd");
-    const repeatPwd=document.getElementById("repeatPwd");
-
-    newPwd.addEventListener("input", ()=>{
-      const val=newPwd.value;
-      document.getElementById("rule-length").textContent = val.length>=8?"✅ Mindestens 8 Zeichen":"❌ Mindestens 8 Zeichen";
-      document.getElementById("rule-number").textContent = /[0-9]/.test(val)?"✅ Mindestens 1 Zahl":"❌ Mindestens 1 Zahl";
-      document.getElementById("rule-uppercase").textContent = /[A-Z]/.test(val)?"✅ Mindestens 1 Großbuchstabe":"❌ Mindestens 1 Großbuchstabe";
-      document.getElementById("rule-special").textContent = /[^A-Za-z0-9]/.test(val)?"✅ Mindestens 1 Sonderzeichen":"❌ Mindestens 1 Sonderzeichen";
+    setTheme(localStorage.getItem("theme") || "light");
+    themeBtn.addEventListener("click", () => {
+      setTheme(document.body.classList.contains("dark") ? "light" : "dark");
     });
 
-    changePasswordLink.addEventListener("click", ()=> pwdModal.classList.add("show"));
-    cancelPwd.addEventListener("click", ()=>{ pwdModal.classList.remove("show"); currentPwd.value=""; newPwd.value=""; repeatPwd.value=""; pwdMsg.textContent=""; });
-    savePwd.addEventListener("click", async ()=>{
-      const user=auth.currentUser;
-      if(!user){ pwdMsg.textContent="❌ Kein Benutzer eingeloggt."; pwdMsg.style.color="red"; return; }
-      if(newPwd.value!==repeatPwd.value){ pwdMsg.textContent="❌ Die Passwörter stimmen nicht überein."; pwdMsg.style.color="red"; return; }
-      try{
-        await changePassword(user, currentPwd.value, newPwd.value);
-        pwdMsg.textContent="✅ Passwort geändert!"; pwdMsg.style.color="green";
-        setTimeout(()=>pwdModal.classList.remove("show"),1500);
-      }catch(err){
-        pwdMsg.textContent="❌ Fehler: "+translateFirebaseError(err.code); pwdMsg.style.color="red";
+    /*********** Passwort ändern ***********/
+    // Regeln live updaten
+    function updateRules(val) {
+      document.getElementById("rule-length").textContent    = val.length >= 8       ? "✅ Mindestens 8 Zeichen"      : "❌ Mindestens 8 Zeichen";
+      document.getElementById("rule-number").textContent    = /[0-9]/.test(val)     ? "✅ Mindestens 1 Zahl"          : "❌ Mindestens 1 Zahl";
+      document.getElementById("rule-uppercase").textContent = /[A-Z]/.test(val)     ? "✅ Mindestens 1 Großbuchstabe" : "❌ Mindestens 1 Großbuchstabe";
+      document.getElementById("rule-special").textContent   = /[^A-Za-z0-9]/.test(val) ? "✅ Mindestens 1 Sonderzeichen" : "❌ Mindestens 1 Sonderzeichen";
+    }
+    newPwd.addEventListener("input", () => updateRules(newPwd.value));
+
+    // Modal öffnen/schließen
+    function openPwd() {
+      pwdModal.style.display = "flex";
+      setTimeout(() => pwdModal.classList.add("show"), 10);
+      setTimeout(() => currentPwd.focus(), 60);
+    }
+    function closePwd() {
+      pwdModal.classList.remove("show");
+      setTimeout(() => { pwdModal.style.display = "none"; }, 250);
+      currentPwd.value = ""; newPwd.value = ""; repeatPwd.value = "";
+      pwdMsg.textContent = ""; pwdMsg.removeAttribute("style");
+      updateRules("");
+    }
+    changePasswordLink.addEventListener("click", openPwd);
+    cancelPwd.addEventListener("click", closePwd);
+
+    // Speichern (Re-Auth + Update)
+    savePwdBtn.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Kein Benutzer eingeloggt."; return; }
+
+      const cur = currentPwd.value.trim();
+      const neu = newPwd.value.trim();
+      const rep = repeatPwd.value.trim();
+
+      if (!cur)                { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Bitte aktuelles Passwort eingeben."; return; }
+      if (!strongPw(neu))      { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Passwort erfüllt nicht die Anforderungen."; return; }
+      if (neu !== rep)         { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Die neuen Passwörter stimmen nicht überein."; return; }
+      if (cur === neu)         { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Neues Passwort darf nicht dem alten entsprechen."; return; }
+
+      try {
+        savePwdBtn.disabled = true;
+        savePwdBtn.innerHTML = "⏳ Speichern...";
+        // Re-Auth
+        const cred = EmailAuthProvider.credential(user.email, cur);
+        await reauthenticateWithCredential(user, cred);
+        // Update
+        await updatePassword(user, neu);
+        pwdMsg.style.color="green"; pwdMsg.textContent="✅ Passwort erfolgreich geändert.";
+        setTimeout(closePwd, 900);
+      } catch (err) {
+        console.error(err);
+        pwdMsg.style.color="red";
+        pwdMsg.textContent = "❌ " + (err?.code ? translateFirebaseError(err.code) : err?.message || "Unbekannter Fehler");
+      } finally {
+        savePwdBtn.disabled = false;
+        savePwdBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
       }
     });
   </script>
