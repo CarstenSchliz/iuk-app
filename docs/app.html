@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>IuK Lernwelt – App</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#002D55">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#002D55" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
 
   <style>
     :root {
-      --softrot: rgb(228,100,80);
-      --dunkelblau: rgb(0,45,85);
-      --hellgrau: rgb(239,238,234);
-      --mittelgrau: rgb(180,180,180);
-      --blassblau: rgb(230,240,250);
+      --softrot: rgb(228, 100, 80);
+      --dunkelblau: rgb(0, 45, 85);
+      --hellgrau: rgb(239, 238, 234);
+      --mittelgrau: rgb(180, 180, 180);
+      --blassblau: rgb(230, 240, 250);
       --hoverblau: #cfe4f9;
     }
 
@@ -30,7 +33,7 @@
     /* Sidebar */
     .sidebar {
       background: #fff;
-      width: 340px; /* breiter für PC */
+      width: 340px;
       display: flex;
       flex-direction: column;
       padding: 1.5rem 1rem;
@@ -85,12 +88,12 @@
       margin-bottom: 0.5rem;
       box-sizing: border-box;
       transition: background-color 0.25s ease, color 0.25s ease;
-      white-space: normal;   /* kein Abschneiden */
-      overflow: visible;     /* alles sichtbar */
+      white-space: normal;
+      overflow: visible;
     }
 
     .menu button i {
-      color: inherit; /* Icon übernimmt Textfarbe */
+      color: inherit;
     }
 
     .menu button:hover,
@@ -98,7 +101,6 @@
       background: var(--hoverblau);
     }
 
-    /* Animiertes Bändchen */
     .menu button::before {
       content: "";
       position: absolute;
@@ -154,14 +156,16 @@
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
-        left: -300px; /* angepasst */
+        left: -300px;
         top: 0;
         height: 100%;
-        width: 300px; /* breiter für Handy */
+        width: 300px;
         transition: left 0.3s;
         z-index: 1000;
       }
-      .sidebar.active { left: 0; }
+      .sidebar.active {
+        left: 0;
+      }
       .menu-toggle {
         display: block;
         position: fixed;
@@ -176,16 +180,29 @@
         cursor: pointer;
         z-index: 1100;
       }
-      .content { padding: 5rem 1.5rem 2rem 1.5rem; }
+      .content {
+        padding: 5rem 1.5rem 2rem 1.5rem;
+      }
     }
 
     /* Darkmode */
-    body.dark { background: #0d0d0d; color: #f5f5f5; }
-    body.dark .sidebar { background: #1a1a1a; color: #f5f5f5; }
+    body.dark {
+      background: #0d0d0d;
+      color: #f5f5f5;
+    }
+    body.dark .sidebar {
+      background: #1a1a1a;
+      color: #f5f5f5;
+    }
     body.dark .menu button,
-    body.dark .logout { color: #f5f5f5; }
+    body.dark .logout {
+      color: #f5f5f5;
+    }
     body.dark .menu button:hover,
-    body.dark .logout:hover { background: var(--hoverblau); color: #000; }
+    body.dark .logout:hover {
+      background: var(--hoverblau);
+      color: #000;
+    }
     body.dark .menu button.active {
       background: var(--blassblau);
       font-weight: bold;
@@ -195,7 +212,9 @@
       background: var(--dunkelblau);
     }
     body.dark .profile h2,
-    body.dark .profile p { color: #f5f5f5; }
+    body.dark .profile p {
+      color: #f5f5f5;
+    }
   </style>
 </head>
 <body>
@@ -207,10 +226,10 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
-      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
-      <input type="file" id="profileUpload" accept="image/*" style="display:none;">
+      <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg" />
+      <input type="file" id="profileUpload" accept="image/*" style="display: none" />
       <h2 id="userName">Lädt...</h2>
-      <p id="userRoleLabel">Teilnehmer</p>
+      <p>Teilnehmer</p>
     </div>
 
     <div class="menu">
@@ -220,12 +239,14 @@
       <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
       <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
       <!-- Benutzerverwaltung nur sichtbar für Admins / Gruppenleiter -->
-      <button data-page="benutzer" id="nav-users" style="display:none;">
+      <button data-page="benutzer" id="nav-users" style="display: none">
         <i class="bi bi-people"></i> Benutzerverwaltung
       </button>
     </div>
 
-    <button class="logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    <button class="logout" id="logoutBtn">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
     <div class="version">Version 1.0.0</div>
   </div>
 
@@ -237,7 +258,13 @@
 
   <!-- Firebase / Auth -->
   <script type="module">
-    import { auth, logout, observeAuthState, uploadProfileImage, getUserRoles } from "./js/firebase.js";
+    import {
+      auth,
+      logout,
+      uploadProfileImage,
+      getUserRoles,
+    } from "./js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
@@ -260,7 +287,7 @@
         content.innerHTML = html;
 
         // eingebettete Scripts neu laden
-        content.querySelectorAll("script").forEach(oldScript => {
+        content.querySelectorAll("script").forEach((oldScript) => {
           const newScript = document.createElement("script");
           if (oldScript.type) newScript.type = oldScript.type;
           if (oldScript.src) newScript.src = oldScript.src;
@@ -272,12 +299,12 @@
       }
     }
 
-    buttons.forEach(btn => {
+    buttons.forEach((btn) => {
       btn.addEventListener("click", () => {
         const page = btn.getAttribute("data-page");
         loadPage(page);
         sidebar.classList.remove("active");
-        buttons.forEach(b => b.classList.remove("active"));
+        buttons.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
       });
     });
@@ -294,7 +321,7 @@
       if (file && user) {
         try {
           const url = await uploadProfileImage(user, file);
-          profileImg.src = url; // direkt von Firebase
+          profileImg.src = url;
           alert("✅ Profilbild aktualisiert!");
         } catch (err) {
           alert("❌ Fehler beim Hochladen: " + err.message);
@@ -311,29 +338,21 @@
 
     // Login-Check + Userdaten + Rollen
     const userName = document.getElementById("userName");
-    const userRoleLabel = document.getElementById("userRoleLabel");
     const navUsers = document.getElementById("nav-users");
 
-    observeAuthState(async (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
-
         if (user.photoURL) {
           profileImg.src = user.photoURL;
         } else {
           profileImg.src = "assets/avatar-default.png";
         }
 
-        // Rollen abfragen
-        try {
-          const roles = await getUserRoles(user.uid);
-          if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-            navUsers.style.display = "block";
-          }
-          userRoleLabel.textContent = roles.join(", ") || "Teilnehmer";
-        } catch (err) {
-          console.error("Fehler beim Laden der Rollen:", err);
-          userRoleLabel.textContent = "Teilnehmer";
+        // 🔑 Rollen aus Firestore prüfen
+        const roles = await getUserRoles(user.uid);
+        if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+          navUsers.style.display = "block";
         }
       } else {
         window.location.href = "index.html";
