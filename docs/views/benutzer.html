@@ -29,6 +29,7 @@
     .user-page {
       color:var(--text);
       padding:1rem;
+      display:none; /* <- NEU: erst nach Auth/Role-Check anzeigen */
     }
 
     .user-page .page-title{ color:var(--softrot); margin:0 0 1rem }
@@ -250,12 +251,29 @@
   </div>
 
   <script type="module">
-    // ✅ richtige Region verwenden
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    // 🔑 Firebase Config (bitte anpassen!)
+    const firebaseConfig = {
+      apiKey: "DEIN_API_KEY",
+      authDomain: "DEIN_PROJECT_ID.firebaseapp.com",
+      projectId: "DEIN_PROJECT_ID",
+      appId: "DEINE_APP_ID"
+    };
+
+    // ✅ richtige Region verwenden (passt zu deinem Backend)
     const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
+
+    // Firebase init
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // ====== State ======
     let allUsers = [];
     let editorDirty = false;
 
-    // DOM
+    // ====== DOM ======
     const userList = document.getElementById("userList");
     const userMsg  = document.getElementById("userMsg");
     const editPanelOuter = document.getElementById("editPanelOuter");
@@ -279,13 +297,12 @@
       { key:"anwärter",      label:"Anwärter",      cls:"role-an" },
     ];
 
-    // Toast
+    // ===== Utils =====
     const showToast = (msg) => {
       toastEl.textContent = msg; toastEl.style.display = "block";
       clearTimeout(showToast._t); showToast._t = setTimeout(()=> toastEl.style.display = "none", 2600);
     };
 
-    // Regex-sicheres Highlighting
     const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     function highlight(text, query) {
       if (!query) return text;
@@ -294,7 +311,6 @@
       return text.replace(regex, '<mark>$1</mark>');
     }
 
-    // Modal Confirm
     function confirmDialog({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}) {
       modalTitle.textContent = title;
       modalMsg.textContent = message;
@@ -313,7 +329,6 @@
       });
     }
 
-    // Rollen extrahieren
     function extractRoles(u){
       return Array.isArray(u.roles) ? u.roles : [];
     }
@@ -347,7 +362,37 @@
       }
     });
 
-    // Editor
+    // ===== Auth-gesicherte Fetch-Helper =====
+    async function authHeader() {
+      const u = auth.currentUser;
+      if (!u) throw new Error("Nicht eingeloggt");
+      const token = await u.getIdToken(/* forceRefresh */ true);
+      return { Authorization: `Bearer ${token}` };
+    }
+
+    async function apiGet(path) {
+      const headers = await authHeader();
+      const res = await fetch(API_BASE + path, { method: "GET", headers });
+      if (!res.ok) {
+        let msg = `${res.status} ${res.statusText}`;
+        try { const j = await res.json(); if (j?.error) msg += ` – ${j.error}`; } catch {}
+        throw new Error(msg);
+      }
+      return res.json();
+    }
+
+    async function apiPost(path, body) {
+      const headers = { "Content-Type": "application/json", ...(await authHeader()) };
+      const res = await fetch(API_BASE + path, { method: "POST", headers, body: JSON.stringify(body||{}) });
+      if (!res.ok) {
+        let msg = `${res.status} ${res.statusText}`;
+        try { const j = await res.json(); if (j?.error) msg += ` – ${j.error}`; } catch {}
+        throw new Error(msg);
+      }
+      return res.json();
+    }
+
+    // ===== Editor =====
     function openEditor(user){
       if(editorDirty && !confirm("Ungespeicherte Änderungen verwerfen?")) return;
       const initial = { name: user.displayName || "", roles: extractRoles(user) };
@@ -404,15 +449,7 @@
         const selected = Array.from(editPanel.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
 
         try{
-          const res = await fetch(API_BASE + "/updateUser", {
-            method:"POST", headers:{ "Content-Type":"application/json" },
-            body: JSON.stringify({ uid: user.uid, displayName: newName, roles: selected })
-          });
-          if (!res.ok) {
-            let msg = `${res.status} ${res.statusText}`;
-            try { const j = await res.json(); if (j?.error) msg += ` – ${j.error}`; } catch {}
-            throw new Error(msg);
-          }
+          await apiPost("/updateUser", { uid: user.uid, displayName: newName, roles: selected });
           showToast("Gespeichert");
           await loadUsers();
 
@@ -427,7 +464,7 @@
       };
     }
 
-    // Löschen
+    // ===== Löschen =====
     async function deleteUserFlow(user){
       const title = "Nutzer löschen?";
       const who = user.displayName || user.email || user.uid;
@@ -436,15 +473,7 @@
       if (!ok) return;
 
       try{
-        const res = await fetch(API_BASE + "/deleteUser", {
-          method:"POST", headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ uid: user.uid })
-        });
-        if (!res.ok) {
-          let msg = `${res.status} ${res.statusText}`;
-          try { const j = await res.json(); if (j?.error) msg += ` – ${j.error}`; } catch {}
-          throw new Error(msg);
-        }
+        await apiPost("/deleteUser", { uid: user.uid });
         showToast("Nutzer gelöscht");
         await loadUsers();
         editPanelOuter.style.display = "none"; editPanel.innerHTML = "";
@@ -453,7 +482,7 @@
       }
     }
 
-    // Nutzerliste rendern
+    // ===== Rendern =====
     function renderUsers(users){
       const q = searchInput.value.toLowerCase();
       const safeQ = escapeRegExp(q);
@@ -466,8 +495,8 @@
           return def ? def.label.toLowerCase() : r.toLowerCase();
         });
         return (
-          u.displayName?.toLowerCase().includes(q) ||
-          u.email?.toLowerCase().includes(q) ||
+          (u.displayName||"").toLowerCase().includes(q) ||
+          (u.email||"").toLowerCase().includes(q) ||
           roles.some(r => r.toLowerCase().includes(q)) ||
           roleLabels.some(lbl => lbl.includes(q))
         );
@@ -528,17 +557,11 @@
       });
     }
 
-    // Nutzer laden
+    // ===== Laden =====
     async function loadUsers(){
       userMsg.style.color = "orange"; userMsg.textContent = "⏳ Lade Nutzer...";
       try{
-        const res = await fetch(API_BASE + "/listUsers", { method:"GET" });
-        if (!res.ok) {
-          let msg = `${res.status} ${res.statusText}`;
-          try { const j = await res.json(); if (j?.error) msg += ` – ${j.error}`; } catch {}
-          throw new Error(msg);
-        }
-        const data = await res.json();
+        const data = await apiGet("/listUsers");
         allUsers=(data.users||[]).sort((a,b)=>(a.displayName||a.email||"").localeCompare(b.displayName||b.email||"","de",{sensitivity:"base"}));
         renderUsers(allUsers);
         userMsg.textContent = "";
@@ -546,9 +569,8 @@
         userMsg.style.color = "red"; userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
       }
     }
-    loadUsers();
 
-    // Neuer Nutzer
+    // ===== Neuer Nutzer =====
     const form = document.getElementById("createUserForm");
     const msg  = document.getElementById("createUserMsg");
     const createBtn = document.getElementById("createBtn");
@@ -569,16 +591,7 @@
       createBtn.textContent="⏳ Erstelle...";
 
       try{
-        const res = await fetch(API_BASE + "/createUser", {
-          method:"POST", headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ email, password: pw, displayName: name })
-        });
-        if (!res.ok) {
-          let em = `${res.status} ${res.statusText}`;
-          try { const j = await res.json(); if (j?.error) em += ` – ${j.error}`; } catch {}
-          throw new Error(em);
-        }
-
+        await apiPost("/createUser", { email, password: pw, displayName: name });
         showToast("Benutzer erstellt");
         form.reset();
         await loadUsers();
@@ -599,6 +612,30 @@
       searchInput.value = "";
       clearSearch.style.display = "none";
       renderUsers(allUsers);
+    });
+
+    // ===== Sichtbarkeit: nur Admin/GL =====
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.href = "/login.html";
+        return;
+      }
+      try {
+        const tokenResult = await user.getIdTokenResult(true);
+        const claims = tokenResult.claims || {};
+        if (claims.admin || claims.gruppenleiter) {
+          document.querySelector(".user-page").style.display = "block";
+          // Erst nach erfolgreichem Check laden
+          await loadUsers();
+        } else {
+          alert("Keine Berechtigung");
+          location.href = "/";
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Authentifizierungsfehler");
+        location.href = "/login.html";
+      }
     });
   </script>
 </body>
