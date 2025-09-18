@@ -1,652 +1,654 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Persönliche Einstellungen</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Persönliche Einstellungen</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-  <style>
-    /* ================================
-       THEME: zentrale Farb-Variablen
-       ================================ */
-    :root {
-      /* Markencolors */
-      --softrot: rgb(228,100,80);
-      --dunkelblau: rgb(0,45,85);
-      --hellblau: rgb(100,160,220);
+<style>
+/* ================================ THEME: zentrale Farb-Variablen ================================ */
+:root {
+  /* Markencolors */
+  --softrot: rgb(228,100,80);
+  --dunkelblau: rgb(0,45,85);
+  --hellblau: rgb(100,160,220);
 
-      /* Light Theme */
-      --bg: #f3f4f6;                /* Seitenhintergrund */
-      --text: #1f2937;              /* Standardtext */
-      --heading: #002d55;           /* Überschriften */
-      --link: #e06862;
+  /* Light Theme */
+  --bg: #f3f4f6;
+  --text: #1f2937;
+  --heading: #002d55;
+  --link: #e06862;
 
-      --card-bg: #ffffff;
-      --card-border: #e5e7eb;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
 
-      --input-bg: #ffffff;
-      --input-fg: #111827;
-      --input-border: #d1d5db;
-      --input-readonly-bg: #f9fafb;
-      --input-readonly-fg: #555;
+  --input-bg: #ffffff;
+  --input-fg: #111827;
+  --input-border: #d1d5db;
+  --input-readonly-bg: #f9fafb;
+  --input-readonly-fg: #555;
 
-      --button-secondary-bg: #eef2f7;
-      --button-secondary-fg: #111;
+  --button-secondary-bg: #eef2f7;
+  --button-secondary-fg: #111;
 
-      --modal-bg: #ffffff;
-      --modal-heading: #002d55;
+  --modal-bg: #ffffff;
+  --modal-heading: #002d55;
 
-      --blassblau: rgb(230,240,250);
+  --blassblau: rgb(230,240,250);
 
-      /* Toggle (Light) */
-      --toggle-track: #0f2030;
-      --toggle-border: #e5e7eb;
-      --toggle-star: #ffd84d;
-      --toggle-knob: #ffffff;
-    }
+  /* Toggle (Light) */
+  --toggle-track: #0f2030;
+  --toggle-border: #e5e7eb;
+  --toggle-star: #ffd84d;
+  --toggle-knob: #ffffff;
+}
 
-    /* Dark Theme – wirklich schwarz + klare Abgrenzung */
-    body.dark {
-      --bg: #000000;                /* kompletter Hintergrund schwarz */
-      --text: #f3f4f6;
-      --heading: #f3f4f6;
-      --link: #4da6ff;
+/* Dark Theme – wirklich schwarz + klare Abgrenzung */
+body.dark {
+  --bg: #000000;               /* kompletter Hintergrund schwarz */
+  --text: #f3f4f6;
+  --heading: #f3f4f6;
+  --link: #4da6ff;
 
-      --card-bg: #151515;           /* Karten abgehoben dunkel */
-      --card-border: #2c2c2c;
+  --card-bg: #151515;          /* Karten abgehoben dunkel */
+  --card-border: #2c2c2c;
 
-      --input-bg: #222;             /* Felder sauber dunkel */
-      --input-fg: #f3f4f6;
-      --input-border: #3a3a3a;
-      --input-readonly-bg: #2a2a2a;
-      --input-readonly-fg: #bdbdbd;
+  --input-bg: #222;
+  --input-fg: #f3f4f6;
+  --input-border: #3a3a3a;
+  --input-readonly-bg: #2a2a2a;
+  --input-readonly-fg: #bdbdbd;
 
-      --button-secondary-bg: #2b2b2b;
-      --button-secondary-fg: #e8e8e8;
+  --button-secondary-bg: #2b2b2b;
+  --button-secondary-fg: #e8e8e8;
 
-      --modal-bg: #1e1e1e;
-      --modal-heading: #f3f4f6;
+  --modal-bg: #1e1e1e;
+  --modal-heading: #f3f4f6;
 
-      /* Toggle (Dark) */
-      --toggle-track: #061018;
-      --toggle-border: #2a2f35;
-      --toggle-star: #ffd84d;
-      --toggle-knob: #e9eef7;
-    }
+  /* Toggle (Dark) */
+  --toggle-track: #061018;
+  --toggle-border: #2a2f35;
+  --toggle-star: #ffd84d;
+  --toggle-knob: #e9eef7;
+}
 
-    /* Grundlayout */
-    html, body { margin:0; padding:0; }
-    body {
-      font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 1rem;
-      transition: background .2s ease, color .2s ease;
-    }
+/* Grundlayout */
+html, body { margin:0; padding:0; }
+body {
+  font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 1rem;
+  transition: background .2s ease, color .2s ease;
+}
+.page-title { color: var(--softrot); margin: 0 0 1rem; }
+.settings-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+@media (max-width: 768px) { .settings-grid { grid-template-columns: 1fr; } }
 
-    .page-title {
-      color: var(--softrot);
-      margin: 0 0 1rem;
-    }
+.card {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  margin-bottom: 1.5rem;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+body.dark .card { box-shadow: 0 10px 24px rgba(0,0,0,0.45); }
+.card h3 { color: var(--hellblau); margin: 0 0 1rem; font-size: 1.1rem; display: flex; align-items: center; gap: .5rem; }
+/* Bessere Lesbarkeit auf Mobile: Cards nicht vollflächig */
+@media (max-width: 768px) { .card { max-width: 560px; margin: 0 auto 1.5rem; } }
 
-    .settings-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1.5rem;
-    }
-    @media (max-width: 768px) {
-      .settings-grid { grid-template-columns: 1fr; }
-    }
+/* Floating Labels */
+.form-group.floating { position: relative; margin-bottom: 1.2rem; }
+.form-group.floating input {
+  width: 100%;
+  padding: 1rem 2.6rem .3rem .75rem; /* CHANGED: rechts Platz für Auge */
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--input-bg);
+  color: var(--input-fg);
+  font-size: 1rem;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+.form-group.floating label {
+  position: absolute;
+  top: 50%; left: .75rem;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: .95rem;
+  transition: all .15s;
+  pointer-events: none;
+  background: var(--card-bg);
+  padding: 0 .25rem;
+}
+.form-group.floating input:focus + label,
+.form-group.floating input:not(:placeholder-shown) + label {
+  top: .1rem; left: .6rem;
+  font-size: .78rem;
+  color: var(--heading);
+}
+/* readonly Felder klar kennzeichnen */
+.form-group.floating input[readonly] {
+  background: var(--input-readonly-bg) !important;
+  color: var(--input-readonly-fg);
+  cursor: not-allowed;
+}
+/* Nur im LIGHT-Mode blassblau bei Inhalt */
+body:not(.dark) .form-group.floating input:not(:placeholder-shown):not([readonly]) {
+  background: var(--blassblau);
+  border-color: var(--dunkelblau);
+}
 
-    .card {
-      background: var(--card-bg);
-      color: var(--text);
-      border: 1px solid var(--card-border);
-      padding: 1.5rem;
-      border-radius: 14px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      margin-bottom: 1.5rem;
-      transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
-    }
-    body.dark .card {
-      box-shadow: 0 10px 24px rgba(0,0,0,0.45);
-    }
+/* NEW: Label-Hintergrund im Modal auf Modal-Farbe, damit keine dunklen „Pillen“ entstehen */
+.modal-content .form-group.floating label { background: var(--modal-bg); }
 
-    .card h3 {
-      color: var(--hellblau);
-      margin: 0 0 1rem;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-    }
+/* Auge-Icon im Input */
+.input-with-eye { position: relative; }
+.toggle-eye {             /* NEW */
+  position: absolute;
+  right: .5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: .25rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.toggle-eye:focus { outline: 2px solid var(--input-border); }
 
-    /* Bessere Lesbarkeit auf Mobile: Cards nicht vollflächig */
-    @media (max-width: 768px) {
-      .card {
-        max-width: 560px;
-        margin: 0 auto 1.5rem;
-      }
-    }
+/* Fortschrittsbalken Passwort */
+.pw-meter {               /* NEW */
+  height: 8px;
+  border-radius: 999px;
+  background: var(--card-border);
+  margin: 6px 2px 8px;
+  overflow: hidden;
+  display: none;          /* erst anzeigen, wenn Feld aktiv */
+}
+.pw-meter-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  transition: width .2s ease;
+}
 
-    /* Floating Labels */
-    .form-group.floating { position: relative; margin-bottom: 1.2rem; }
-    .form-group.floating input {
-      width: 100%;
-      padding: 1rem .75rem .3rem .75rem;
-      border: 1px solid var(--input-border);
-      border-radius: 10px;
-      background: var(--input-bg);
-      color: var(--input-fg);
-      font-size: 1rem;
-      transition: border-color .15s ease, background .15s ease, color .15s ease;
-      min-height: 44px;
-      box-sizing: border-box;
-    }
-    .form-group.floating label {
-      position: absolute;
-      top: 50%;
-      left: .75rem;
-      transform: translateY(-50%);
-      color: #6b7280;
-      font-size: .95rem;
-      transition: all .15s;
-      pointer-events: none;
-      background: var(--card-bg);
-      padding: 0 .25rem;
-    }
-    .form-group.floating input:focus + label,
-    .form-group.floating input:not(:placeholder-shown) + label {
-      top: .1rem;
-      left: .6rem;
-      font-size: .78rem;
-      color: var(--heading);
-    }
+/* Buttons */
+.form-actions { display:flex; gap:1rem; margin-top:1rem; }
+.btn {
+  padding:.6rem 1rem;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:.95rem;
+  min-height:44px;
+  min-width:140px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.5rem;
+  transition: filter .15s ease, background .2s ease, color .2s ease;
+}
+/* NEW: gleiche Breite für Zurück/Speichern */
+.form-actions .btn { flex: 1; min-width: auto; } /* sorgt für exakt gleiche Größe */
 
-    /* readonly Felder klar kennzeichnen */
-    .form-group.floating input[readonly] {
-      background: var(--input-readonly-bg) !important;
-      color: var(--input-readonly-fg);
-      cursor: not-allowed;
-    }
+.btn-primary { background: var(--dunkelblau); color: #fff; }
+.btn-primary:hover { filter: brightness(1.03); }
 
-    /* Nur im LIGHT-Mode blassblau bei Inhalt */
-    body:not(.dark) .form-group.floating input:not(:placeholder-shown):not([readonly]) {
-      background: var(--blassblau);
-      border-color: var(--dunkelblau);
-    }
+/* CHANGED: Zurück-Button behält Farbe, kein Verblassen */
+.btn-secondary { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
+.btn-secondary:hover { filter: none; background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
 
-    .form-row {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
-    }
-    @media (max-width:768px) {
-      .form-row { grid-template-columns: 1fr; }
-    }
+.btn-accent { background: var(--dunkelblau); color: #fff; }
 
-    /* Buttons */
-    .form-actions { display:flex; gap:1rem; margin-top:1rem; }
-    .btn {
-      padding:.6rem 1rem;
-      border:none;
-      border-radius:10px;
-      cursor:pointer;
-      font-size:.95rem;
-      min-height:44px;
-      min-width:140px;               /* gleiche Mindestbreite */
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:.5rem;
-      transition: filter .15s ease, background .2s ease, color .2s ease;
-    }
-    .btn-primary { background: var(--dunkelblau); color: #fff; }
-    .btn-primary:hover { filter: brightness(1.03); }
-    .btn-secondary { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
-    .btn-secondary:hover { filter: brightness(1.05); }
-    .btn-accent { background: var(--dunkelblau); color: #fff; }
+.form-msg { margin-top:.5rem; font-weight:600; }
 
-    .form-msg { margin-top:.5rem; font-weight:600; }
+.list { list-style:none; margin:0; padding:0; }
+.list li { padding:.6rem 0; border-bottom:1px solid var(--card-border); cursor:pointer; display:flex; align-items:center; gap:.5rem; }
 
-    .list { list-style:none; margin:0; padding:0; }
-    .list li {
-      padding:.6rem 0; border-bottom:1px solid var(--card-border); cursor:pointer;
-      display:flex; align-items:center; gap:.5rem;
-    }
+/* ================================ Modal (Passwort ändern) ================================ */
+.modal {
+  position: fixed; inset: 0;
+  display: none; justify-content: center; align-items: center;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.modal.show { display:flex; opacity:1; }
+.modal-content {
+  background: var(--modal-bg);
+  color: var(--text);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  width: 92%; max-width: 520px;
+  box-sizing: border-box;
+  transform: scale(.97);
+  transition: transform .25s ease, opacity .25s ease, background .2s ease, color .2s ease;
+  opacity: 1;
+}
+.modal.show .modal-content { transform: scale(1); }
+.modal-content h2 {
+  color: var(--modal-heading);
+  font-size: 1.4rem;
+  margin: .3rem 0 1.1rem;
+  text-align: center;
+}
+.modal-actions { display:flex; gap:1rem; margin-top:1rem; }
+.modal-actions button {
+  flex:1; padding:.7rem;
+  border:none; border-radius:6px;
+  font-size:.95rem; font-weight:bold;
+  cursor:pointer; min-height:44px;
+}
+.modal-actions .primary { background: var(--dunkelblau); color: #fff; }
+.modal-actions .close { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
 
-    /* ================================
-       Modal (Passwort ändern)
-       ================================ */
-    .modal {
-      position: fixed; inset: 0;
-      display: none;
-      justify-content: center; align-items: center;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-      opacity: 0;
-      transition: opacity .3s ease;
-    }
-    .modal.show { display:flex; opacity:1; }
-    .modal-content {
-      background: var(--modal-bg);
-      color: var(--text);
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      width: 92%;
-      max-width: 520px;
-      box-sizing: border-box;
-      transform: scale(.97);
-      transition: transform .25s ease, opacity .25s ease, background .2s ease, color .2s ease;
-      opacity: 1;
-    }
-    .modal.show .modal-content { transform: scale(1); }
+/* Regeln unter dem Feld */
+#pass-rules {
+  font-size:.85rem;
+  text-align:left;
+  margin: 6px 0 12px 2px;
+  line-height: 1.35;
+  display: none;          /* NEW: erst zeigen, wenn aktiv */
+}
 
-    .modal-content h2 {
-      color: var(--modal-heading);
-      font-size: 1.4rem;
-      margin: .3rem 0 1.1rem;
-      text-align: center;
-    }
+/* ================================ Moderner Theme-Schieberegler ================================ */
+.theme-switch {
+  --w: 80px;              /* CHANGED: kleiner */
+  --h: 40px;              /* CHANGED: kleiner */
+  position: relative;
+  width: var(--w); height: var(--h);
+  border-radius: 999px;
+  border: 2px solid var(--toggle-border);
+  background: var(--toggle-track);
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+  overflow: hidden;       /* NEW: Thumb kann überdecken */
+}
+.theme-switch .thumb {
+  position: absolute; top: 4px; left: 4px;
+  width: calc(var(--h) - 8px); height: calc(var(--h) - 8px);
+  border-radius: 50%;
+  background: var(--toggle-knob);
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  transition: transform .35s cubic-bezier(.22,.61,.36,1), background .25s ease;
+  z-index: 2;            /* NEW: über Icons */
+}
+.theme-switch .icon {
+  font-size: 18px;
+  color: #ffd84d;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  pointer-events: none;
+  opacity: .85;
+  z-index: 1;            /* NEW: unter Thumb */
+}
+.theme-switch .sun { color: #ffda65; }
+.theme-switch .moon { color: #ffd84d; margin-left: auto; }
 
-    .modal-actions { display:flex; gap:1rem; margin-top:1rem; }
-    .modal-actions button {
-      flex:1; padding:.7rem; border:none; border-radius:6px;
-      font-size:.95rem; font-weight:bold; cursor:pointer; min-height:44px;
-    }
-    .modal-actions .primary { background: var(--dunkelblau); color: #fff; }
-    .modal-actions .close   { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
+/* Wenn Darkmode aktiv: Knopf nach rechts, Sterne sichtbar */
+body.dark .theme-switch .thumb { transform: translateX(calc(var(--w) - var(--h))); }
+/* Sterne (nur Deko, erscheinen im Darkmode) */
+.theme-switch::before, .theme-switch::after {
+  content: "★"; position: absolute; color: var(--toggle-star);
+  font-size: 12px; opacity: .0; transform: translateY(-2px);
+  transition: opacity .25s ease;
+}
+.theme-switch::before { right: 26px; top: 10px; }
+.theme-switch::after { right: 14px; bottom: 10px; font-size: 10px; }
+body.dark .theme-switch::before, body.dark .theme-switch::after { opacity: 1; }
 
-    /* Regeln unter dem Feld (damit Label nicht überlappt) */
-    #pass-rules {
-      font-size:.85rem;
-      text-align:left;
-      margin: 6px 0 12px 2px;
-      line-height: 1.35;
-    }
-
-    /* Mobile: Popup angenehme Breite */
-    @media (max-width: 768px) {
-      .modal-content { width: 92%; max-width: 420px; }
-    }
-
-    /* ================================
-       Moderner Theme-Schieberegler
-       ================================ */
-    .theme-switch {
-      --w: 96px;
-      --h: 48px;
-      position: relative;
-      width: var(--w);
-      height: var(--h);
-      border-radius: 999px;
-      border: 2px solid var(--toggle-border);
-      background: var(--toggle-track);
-      display: inline-flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 10px;
-      cursor: pointer;
-      user-select: none;
-      transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
-    }
-    .theme-switch .thumb {
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      width: calc(var(--h) - 8px);
-      height: calc(var(--h) - 8px);
-      border-radius: 50%;
-      background: var(--toggle-knob);
-      box-shadow: 0 2px 6px rgba(0,0,0,.25);
-      transition: transform .35s cubic-bezier(.22,.61,.36,1), background .25s ease;
-    }
-    /* Sterne (nur Deko, erscheinen im Darkmode) */
-    .theme-switch::before,
-    .theme-switch::after {
-      content: "★";
-      position: absolute;
-      color: var(--toggle-star);
-      font-size: 12px;
-      opacity: .0;
-      transform: translateY(-2px);
-      transition: opacity .25s ease;
-    }
-    .theme-switch::before { right: 26px; top: 10px; }
-    .theme-switch::after  { right: 14px; bottom: 10px; font-size: 10px; }
-
-    /* Icons links/rechts (Sonne/Mond) */
-    .theme-switch .icon {
-      font-size: 18px;
-      color: #ffd84d;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px; height: 22px;
-      pointer-events: none;
-      opacity: .85;
-    }
-    .theme-switch .sun  { color: #ffda65; }
-    .theme-switch .moon { color: #ffd84d; margin-left: auto; }
-
-    /* Wenn Darkmode aktiv: Knopf nach rechts, Sterne sichtbar */
-    body.dark .theme-switch .thumb {
-      transform: translateX(calc(var(--w) - var(--h)));
-    }
-    body.dark .theme-switch::before,
-    body.dark .theme-switch::after {
-      opacity: 1;
-    }
-  </style>
+/* NEW: Special Effects */
+@keyframes sunPulse { 0%,100%{ transform: scale(1); filter: drop-shadow(0 0 0 rgba(255,218,101,0)); } 50%{ transform: scale(1.07); filter: drop-shadow(0 0 6px rgba(255,218,101,.7)); } }
+@keyframes moonGlow { 0%,100%{ filter: drop-shadow(0 0 0 rgba(255,216,77,0)); } 50%{ filter: drop-shadow(0 0 6px rgba(255,216,77,.7)); } }
+body:not(.dark) .theme-switch .sun { animation: sunPulse 1.6s ease-in-out infinite; }
+body.dark .theme-switch .moon { animation: moonGlow 1.6s ease-in-out infinite; }
+</style>
 </head>
+
 <body>
-  <h2 class="page-title">Einstellungen</h2>
+<h2 class="page-title">Einstellungen</h2>
 
-  <div class="settings-grid">
-    <!-- Linke Spalte -->
-    <div>
-      <!-- Persönliche Daten -->
-      <div class="card">
-        <h3><i class="bi bi-person"></i> Persönliche Daten</h3>
-        <form id="profileForm" novalidate>
-          <div class="form-group floating">
-            <input type="text" id="name" placeholder=" ">
-            <label for="name">Name</label>
-          </div>
-
-          <div class="form-group floating">
-            <input type="email" id="email" placeholder=" " readonly>
-            <label for="email">E-Mail-Adresse</label>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group floating" title="Rollen werden vom Administrator vergeben">
-              <input type="text" id="roles" placeholder=" " readonly>
-              <label for="roles">Rollen</label>
-            </div>
-            <div class="form-group floating">
-              <input type="text" id="uid" placeholder=" " readonly>
-              <label for="uid">UID</label>
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" id="backBtn" class="btn btn-secondary">
-              <i class="bi bi-arrow-left"></i> Zurück
-            </button>
-            <button type="button" id="saveBtn" class="btn btn-primary">
-              <i class="bi bi-save"></i> Speichern
-            </button>
-          </div>
-          <div id="profileMsg" class="form-msg" aria-live="polite"></div>
-        </form>
-      </div>
-
-      <!-- Weitere Einstellungen -->
-      <div class="card">
-        <h3><i class="bi bi-gear"></i> Weitere Einstellungen</h3>
-        <ul class="list">
-          <li id="changePassword"><i class="bi bi-key"></i> Passwort ändern</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Rechte Spalte -->
-    <div>
-      <!-- Erscheinungsbild -->
-      <div class="card">
-        <h3><i class="bi bi-palette"></i> Erscheinungsbild</h3>
-        <p>Aktuelles Theme: <span id="themeLabel">Hell</span></p>
-
-        <!-- Neuer Schieberegler -->
-        <div id="themeToggle"
-             class="theme-switch"
-             role="switch"
-             aria-checked="false"
-             aria-label="Darstellung: Hell/Dunkel umschalten">
-          <span class="icon sun"><i class="bi bi-brightness-high-fill"></i></span>
-          <span class="thumb" aria-hidden="true"></span>
-          <span class="icon moon"><i class="bi bi-moon-stars-fill"></i></span>
+<div class="settings-grid">
+  <!-- Linke Spalte -->
+  <div>
+    <!-- Persönliche Daten -->
+    <div class="card">
+      <h3><i class="bi bi-person"></i> Persönliche Daten</h3>
+      <form id="profileForm" novalidate>
+        <div class="form-group.floating form-group floating">
+          <input type="text" id="name" placeholder=" ">
+          <label for="name">Name</label>
         </div>
-      </div>
+
+        <div class="form-group floating">
+          <input type="email" id="email" placeholder=" " readonly>
+          <label for="email">E-Mail-Adresse</label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group floating" title="Rollen werden vom Administrator vergeben">
+            <input type="text" id="roles" placeholder=" " readonly>
+            <label for="roles">Rollen</label>
+          </div>
+          <div class="form-group floating">
+            <input type="text" id="uid" placeholder=" " readonly>
+            <label for="uid">UID</label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="backBtn" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Zurück
+          </button>
+          <button type="button" id="saveBtn" class="btn btn-primary">
+            <i class="bi bi-save"></i> Speichern
+          </button>
+        </div>
+        <div id="profileMsg" class="form-msg" aria-live="polite"></div>
+      </form>
+    </div>
+
+    <!-- Weitere Einstellungen -->
+    <div class="card">
+      <h3><i class="bi bi-gear"></i> Weitere Einstellungen</h3>
+      <ul class="list">
+        <li id="changePassword"><i class="bi bi-key"></i> Passwort ändern</li>
+      </ul>
     </div>
   </div>
 
-  <!-- Passwort ändern Modal -->
-  <div id="pwdModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pwdTitle">
-    <div class="modal-content">
-      <h2 id="pwdTitle">Passwort ändern</h2>
+  <!-- Rechte Spalte -->
+  <div>
+    <!-- Erscheinungsbild -->
+    <div class="card">
+      <h3><i class="bi bi-palette"></i> Erscheinungsbild</h3>
+      <p>Aktuelles Theme: <span id="themeLabel">Hell</span></p>
 
-      <div class="form-group floating">
-        <input type="password" id="currentPwd" placeholder=" " autocomplete="current-password">
-        <label for="currentPwd">Aktuelles Passwort</label>
+      <!-- Schieberegler -->
+      <div id="themeToggle" class="theme-switch" role="switch" aria-checked="false" aria-label="Darstellung: Hell/Dunkel umschalten" tabindex="0">
+        <span class="icon sun"><i class="bi bi-brightness-high-fill"></i></span>
+        <span class="thumb" aria-hidden="true"></span>
+        <span class="icon moon"><i class="bi bi-moon-stars-fill"></i></span>
       </div>
-
-      <div class="form-group floating">
-        <input type="password" id="newPwd" placeholder=" " autocomplete="new-password" title="Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen">
-        <label for="newPwd">Neues Passwort</label>
-      </div>
-
-      <!-- Regeln separat, damit die Labels nicht überlappen -->
-      <div id="pass-rules">
-        <div id="rule-length">❌ Mindestens 8 Zeichen</div>
-        <div id="rule-number">❌ Mindestens 1 Zahl</div>
-        <div id="rule-uppercase">❌ Mindestens 1 Großbuchstabe</div>
-        <div id="rule-special">❌ Mindestens 1 Sonderzeichen</div>
-      </div>
-
-      <div class="form-group floating">
-        <input type="password" id="repeatPwd" placeholder=" " autocomplete="new-password">
-        <label for="repeatPwd">Neues Passwort wiederholen</label>
-      </div>
-
-      <div class="modal-actions">
-        <button id="savePwd" class="primary" type="button"><i class="bi bi-save"></i> Speichern</button>
-        <button id="cancelPwd" class="close" type="button"><i class="bi bi-x-lg"></i> Zurück</button>
-      </div>
-
-      <div id="pwdMsg" class="form-msg" aria-live="polite"></div>
     </div>
   </div>
+</div>
 
-  <script type="module">
-    /*********** Firebase ***********/
-    import {
-      auth,
-      updateUserProfile,
-      observeAuthState,
-      getUserRoles,
-      translateFirebaseError
-    } from "./js/firebase.js";
+<!-- Passwort ändern Modal -->
+<div id="pwdModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pwdTitle">
+  <div class="modal-content">
+    <h2 id="pwdTitle">Passwort ändern</h2>
 
-    import {
-      EmailAuthProvider,
-      reauthenticateWithCredential,
-      updatePassword
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    <div class="form-group floating input-with-eye">
+      <input type="password" id="currentPwd" placeholder=" " autocomplete="current-password">
+      <label for="currentPwd">Aktuelles Passwort</label>
+      <!-- kein Auge beim aktuellen Passwort -->
+    </div>
 
-    /*********** DOM ***********/
-    const nameField  = document.getElementById("name");
-    const emailField = document.getElementById("email");
-    const rolesField = document.getElementById("roles");
-    const uidField   = document.getElementById("uid");
+    <div class="form-group floating input-with-eye">
+      <input type="password" id="newPwd" placeholder=" " autocomplete="new-password" title="Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen">
+      <label for="newPwd">Neues Passwort</label>
+      <button type="button" class="toggle-eye" aria-label="Passwort anzeigen" data-target="newPwd"><i class="bi bi-eye"></i></button> <!-- NEW -->
+    </div>
 
-    const saveBtn    = document.getElementById("saveBtn");
-    const backBtn    = document.getElementById("backBtn");
-    const profileMsg = document.getElementById("profileMsg");
+    <!-- NEW: Fortschrittsbalken -->
+    <div class="pw-meter" id="pwMeter" aria-hidden="true">
+      <div class="pw-meter-bar" id="pwBar"></div>
+    </div>
 
-    const themeSwitch = document.getElementById("themeToggle");
-    const themeLabel  = document.getElementById("themeLabel");
+    <!-- Regeln separat, erscheinen erst bei Aktivität -->
+    <div id="pass-rules">
+      <div id="rule-length">❌ Mindestens 8 Zeichen</div>
+      <div id="rule-number">❌ Mindestens 1 Zahl</div>
+      <div id="rule-uppercase">❌ Mindestens 1 Großbuchstabe</div>
+      <div id="rule-special">❌ Mindestens 1 Sonderzeichen</div>
+    </div>
 
-    const changePasswordLink = document.getElementById("changePassword");
-    const pwdModal   = document.getElementById("pwdModal");
-    const currentPwd = document.getElementById("currentPwd");
-    const newPwd     = document.getElementById("newPwd");
-    const repeatPwd  = document.getElementById("repeatPwd");
-    const savePwdBtn = document.getElementById("savePwd");
-    const cancelPwd  = document.getElementById("cancelPwd");
-    const pwdMsg     = document.getElementById("pwdMsg");
+    <div class="form-group floating input-with-eye">
+      <input type="password" id="repeatPwd" placeholder=" " autocomplete="new-password">
+      <label for="repeatPwd">Neues Passwort wiederholen</label>
+      <button type="button" class="toggle-eye" aria-label="Passwort anzeigen" data-target="repeatPwd"><i class="bi bi-eye"></i></button> <!-- NEW -->
+    </div>
 
-    // Sidebar (falls vorhanden)
-    const sidebarName = document.getElementById("userName");
-    const sidebarRole = document.getElementById("userRole");
+    <div class="modal-actions">
+      <button id="savePwd" class="primary" type="button"><i class="bi bi-save"></i> Speichern</button>
+      <button id="cancelPwd" class="close" type="button"><i class="bi bi-x-lg"></i> Zurück</button>
+    </div>
+    <div id="pwdMsg" class="form-msg" aria-live="polite"></div>
+  </div>
+</div>
 
-    /*********** Utils ***********/
-    const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
-    const roleRanking = ["admin","gruppenleiter","helfer","anwärter"];
-    const highestRole = (roles=[]) => {
-      const r = roles.map(x => (x||"").toLowerCase());
-      const h = roleRanking.find(k => r.includes(k));
-      return h ? cap(h) : "";
-    };
-    const strongPw = (p) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(p);
+<script type="module">
+/*********** Firebase ***********/
+import { auth, updateUserProfile, observeAuthState, getUserRoles, translateFirebaseError } from "./js/firebase.js";
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    function showProfileMsg(text, color) {
-      profileMsg.textContent = text;
-      profileMsg.style.color = color;
-    }
+/*********** DOM ***********/
+const nameField = document.getElementById("name");
+const emailField = document.getElementById("email");
+const rolesField = document.getElementById("roles");
+const uidField = document.getElementById("uid");
+const saveBtn = document.getElementById("saveBtn");
+const backBtn = document.getElementById("backBtn");
+const profileMsg = document.getElementById("profileMsg");
 
-    /*********** Daten laden ***********/
-    observeAuthState(async (user) => {
-      if (!user) return;
-      emailField.value = user.email || "";
-      nameField.value  = user.displayName || "";
-      uidField.value   = user.uid || "";
+const themeSwitch = document.getElementById("themeToggle");
+const themeLabel = document.getElementById("themeLabel");
 
-      try {
-        const roles = await getUserRoles(user.uid);
-        rolesField.value = (roles || []).map(cap).join(", ");
+const changePasswordLink = document.getElementById("changePassword");
+const pwdModal = document.getElementById("pwdModal");
+const currentPwd = document.getElementById("currentPwd");
+const newPwd = document.getElementById("newPwd");
+const repeatPwd = document.getElementById("repeatPwd");
+const savePwdBtn = document.getElementById("savePwd");
+const cancelPwd = document.getElementById("cancelPwd");
+const pwdMsg = document.getElementById("pwdMsg");
+/* NEW: Passwort-UI */
+const passRules = document.getElementById("pass-rules");
+const pwMeter = document.getElementById("pwMeter");
+const pwBar = document.getElementById("pwBar");
 
-        if (sidebarName) sidebarName.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "");
-        if (sidebarRole) sidebarRole.textContent = highestRole(roles);
-      } catch (e) {
-        rolesField.value = "—";
-        console.warn("Rollen konnten nicht geladen werden:", e);
-      }
-    });
+/* Sidebar (falls vorhanden) */
+const sidebarName = document.getElementById("userName");
+const sidebarRole = document.getElementById("userRole");
 
-    /*********** Name speichern ***********/
-    saveBtn.addEventListener("click", async () => {
-      const user = auth.currentUser;
-      const newName = nameField.value.trim();
+/*********** Utils ***********/
+const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+const roleRanking = ["admin","gruppenleiter","helfer","anwärter"];
+const highestRole = (roles=[]) => {
+  const r = roles.map(x => (x||"").toLowerCase());
+  const h = roleRanking.find(k => r.includes(k));
+  return h ? cap(h) : "";
+};
+const strongPw = (p) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(p);
+function showProfileMsg(text, color) { profileMsg.textContent = text; profileMsg.style.color = color; }
 
-      if (!user) { showProfileMsg("❌ Kein Benutzer eingeloggt.", "red"); return; }
-      if (!newName) { showProfileMsg("❌ Bitte Namen eingeben.", "red"); return; }
+/*********** Daten laden ***********/
+observeAuthState(async (user) => {
+  if (!user) return;
+  emailField.value = user.email || "";
+  nameField.value = user.displayName || "";
+  uidField.value = user.uid || "";
 
-      try {
-        saveBtn.disabled = true;
-        saveBtn.innerHTML = "⏳ Speichern...";
-        await updateUserProfile(user, { displayName: newName });
-        if (sidebarName) sidebarName.textContent = newName;
-        showProfileMsg("✅ Name geändert!", "green");
-      } catch (err) {
-        showProfileMsg("❌ " + (err?.code ? translateFirebaseError(err.code) : err.message), "red");
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
-      }
-    });
+  try {
+    const roles = await getUserRoles(user.uid);
+    rolesField.value = (roles || []).map(cap).join(", ");
+    if (sidebarName) sidebarName.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "");
+    if (sidebarRole) sidebarRole.textContent = highestRole(roles);
+  } catch (e) {
+    rolesField.value = "—";
+    console.warn("Rollen konnten nicht geladen werden:", e);
+  }
+});
 
-    /*********** Zurück ***********/
-    backBtn.addEventListener("click", () => { window.location.href = "app.html"; });
+/*********** Name speichern ***********/
+saveBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  const newName = nameField.value.trim();
+  if (!user) { showProfileMsg("❌ Kein Benutzer eingeloggt.", "red"); return; }
+  if (!newName) { showProfileMsg("❌ Bitte Namen eingeben.", "red"); return; }
 
-    /*********** Theme-Toggle ***********/
-    function setTheme(mode){
-      if(mode === "dark"){
-        document.body.classList.add("dark");
-        themeLabel.textContent="Dunkel";
-        themeSwitch.setAttribute("aria-checked","true");
-        localStorage.setItem("theme","dark");
-      } else {
-        document.body.classList.remove("dark");
-        themeLabel.textContent="Hell";
-        themeSwitch.setAttribute("aria-checked","false");
-        localStorage.setItem("theme","light");
-      }
-    }
+  try {
+    saveBtn.disabled = true; saveBtn.innerHTML = "⏳ Speichern...";
+    await updateUserProfile(user, { displayName: newName });
+    if (sidebarName) sidebarName.textContent = newName;
+    showProfileMsg("✅ Name geändert!", "green");
+  } catch (err) {
+    showProfileMsg("❌ " + (err?.code ? translateFirebaseError(err.code) : err.message), "red");
+  } finally {
+    saveBtn.disabled = false; saveBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
+  }
+});
 
-    // System-Präferenz nur verwenden, wenn noch nichts gesetzt
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      setTheme(storedTheme);
-    } else {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(prefersDark ? "dark" : "light");
-    }
+/*********** Zurück ***********/
+backBtn.addEventListener("click", () => { window.location.href = "app.html"; });
 
-    // Klick/Keyboard auf den Switch
-    themeSwitch.addEventListener("click", () => {
-      setTheme(document.body.classList.contains("dark") ? "light" : "dark");
-    });
-    themeSwitch.addEventListener("keydown", (e) => {
-      if (e.key === " " || e.key === "Enter") {
-        e.preventDefault();
-        setTheme(document.body.classList.contains("dark") ? "light" : "dark");
-      }
-    });
-    // Fokusfähigkeit für Barrierefreiheit
-    themeSwitch.setAttribute("tabindex","0");
+/*********** Theme-Toggle ***********/
+function setTheme(mode){
+  if(mode === "dark"){
+    document.body.classList.add("dark");
+    themeLabel.textContent="Dunkel";
+    themeSwitch.setAttribute("aria-checked","true");
+    localStorage.setItem("theme","dark");
+  } else {
+    document.body.classList.remove("dark");
+    themeLabel.textContent="Hell";
+    themeSwitch.setAttribute("aria-checked","false");
+    localStorage.setItem("theme","light");
+  }
+}
+const storedTheme = localStorage.getItem("theme");
+if (storedTheme) {
+  setTheme(storedTheme);
+} else {
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(prefersDark ? "dark" : "light");
+}
+themeSwitch.addEventListener("click", () => {
+  setTheme(document.body.classList.contains("dark") ? "light" : "dark");
+});
+themeSwitch.addEventListener("keydown", (e) => {
+  if (e.key === " " || e.key === "Enter") { e.preventDefault(); setTheme(document.body.classList.contains("dark") ? "light" : "dark"); }
+});
 
-    /*********** Passwort ändern ***********/
-    // Regeln live updaten
-    function updateRules(val) {
-      document.getElementById("rule-length").textContent    = val.length >= 8       ? "✅ Mindestens 8 Zeichen"      : "❌ Mindestens 8 Zeichen";
-      document.getElementById("rule-number").textContent    = /[0-9]/.test(val)     ? "✅ Mindestens 1 Zahl"          : "❌ Mindestens 1 Zahl";
-      document.getElementById("rule-uppercase").textContent = /[A-Z]/.test(val)     ? "✅ Mindestens 1 Großbuchstabe" : "❌ Mindestens 1 Großbuchstabe";
-      document.getElementById("rule-special").textContent   = /[^A-Za-z0-9]/.test(val) ? "✅ Mindestens 1 Sonderzeichen" : "❌ Mindestens 1 Sonderzeichen";
-    }
-    newPwd.addEventListener("input", () => updateRules(newPwd.value));
+/*********** Passwort ändern ***********/
+/* Regeln + Meter nur zeigen, wenn Feld aktiv / Inhalt vorhanden */
+function showPwHints(show){
+  passRules.style.display = show ? "block" : "none";
+  pwMeter.style.display = show ? "block" : "none";
+}
 
-    // Modal öffnen/schließen
-    function openPwd() {
-      pwdModal.style.display = "flex";
-      setTimeout(() => pwdModal.classList.add("show"), 10);
-      setTimeout(() => currentPwd.focus(), 60);
-    }
-    function closePwd() {
-      pwdModal.classList.remove("show");
-      setTimeout(() => { pwdModal.style.display = "none"; }, 250);
-      currentPwd.value = ""; newPwd.value = ""; repeatPwd.value = "";
-      pwdMsg.textContent = ""; pwdMsg.removeAttribute("style");
-      updateRules("");
-    }
-    changePasswordLink.addEventListener("click", openPwd);
-    cancelPwd.addEventListener("click", closePwd);
+/* Regeln live updaten + Fortschrittsbalken */
+function updateRules(val) {
+  const checks = {
+    length: val.length >= 8,
+    number: /[0-9]/.test(val),
+    uppercase: /[A-Z]/.test(val),
+    special: /[^A-Za-z0-9]/.test(val)
+  };
+  document.getElementById("rule-length").textContent   = (checks.length   ? "✅" : "❌") + " Mindestens 8 Zeichen";
+  document.getElementById("rule-number").textContent   = (checks.number   ? "✅" : "❌") + " Mindestens 1 Zahl";
+  document.getElementById("rule-uppercase").textContent= (checks.uppercase? "✅" : "❌") + " Mindestens 1 Großbuchstabe";
+  document.getElementById("rule-special").textContent  = (checks.special  ? "✅" : "❌") + " Mindestens 1 Sonderzeichen";
 
-    // Speichern (Re-Auth + Update)
-    savePwdBtn.addEventListener("click", async () => {
-      const user = auth.currentUser;
-      if (!user) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Kein Benutzer eingeloggt."; return; }
+  // Stärke 0–4
+  const score = Object.values(checks).filter(Boolean).length;
+  const pct = (score/4)*100;
+  pwBar.style.width = pct + "%";
+  // Farbe je nach Score (dezent)
+  const colors = ["#ef4444", "#f59e0b", "#facc15", "#84cc16", "#22c55e"]; // rot -> grün
+  pwBar.style.background = colors[score];
+}
 
-      const cur = currentPwd.value.trim();
-      const neu = newPwd.value.trim();
-      const rep = repeatPwd.value.trim();
+newPwd.addEventListener("focus", () => showPwHints(true));
+newPwd.addEventListener("blur",  () => { if(!newPwd.value) showPwHints(false); });
+newPwd.addEventListener("input", () => { showPwHints(true); updateRules(newPwd.value); });
 
-      if (!cur)                { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Bitte aktuelles Passwort eingeben."; return; }
-      if (!strongPw(neu))      { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Passwort erfüllt nicht die Anforderungen."; return; }
-      if (neu !== rep)         { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Die neuen Passwörter stimmen nicht überein."; return; }
-      if (cur === neu)         { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Neues Passwort darf nicht dem alten entsprechen."; return; }
+/* Modal öffnen/schließen */
+function openPwd() {
+  pwdModal.style.display = "flex";
+  setTimeout(() => pwdModal.classList.add("show"), 10);
+  setTimeout(() => currentPwd.focus(), 60);
+}
+function closePwd() {
+  pwdModal.classList.remove("show");
+  setTimeout(() => { pwdModal.style.display = "none"; }, 250);
+  currentPwd.value = ""; newPwd.value = ""; repeatPwd.value = "";
+  pwdMsg.textContent = ""; pwdMsg.removeAttribute("style");
+  showPwHints(false);
+  updateRules("");
+}
+document.getElementById("changePassword").addEventListener("click", openPwd);
+cancelPwd.addEventListener("click", closePwd);
 
-      try {
-        savePwdBtn.disabled = true;
-        savePwdBtn.innerHTML = "⏳ Speichern...";
-        // Re-Auth
-        const cred = EmailAuthProvider.credential(user.email, cur);
-        await reauthenticateWithCredential(user, cred);
-        // Update
-        await updatePassword(user, neu);
-        pwdMsg.style.color="green"; pwdMsg.textContent="✅ Passwort erfolgreich geändert.";
-        setTimeout(closePwd, 900);
-      } catch (err) {
-        console.error(err);
-        pwdMsg.style.color="red";
-        pwdMsg.textContent = "❌ " + (err?.code ? translateFirebaseError(err.code) : err?.message || "Unbekannter Fehler");
-      } finally {
-        savePwdBtn.disabled = false;
-        savePwdBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
-      }
-    });
-  </script>
+/* Speichern (Re-Auth + Update) */
+savePwdBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Kein Benutzer eingeloggt."; return; }
+
+  const cur = currentPwd.value.trim();
+  const neu = newPwd.value.trim();
+  const rep = repeatPwd.value.trim();
+
+  if (!cur) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Bitte aktuelles Passwort eingeben."; return; }
+  if (!strongPw(neu)) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Passwort erfüllt nicht die Anforderungen."; return; }
+  if (neu !== rep) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Die neuen Passwörter stimmen nicht überein."; return; }
+  if (cur === neu) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Neues Passwort darf nicht dem alten entsprechen."; return; }
+
+  try {
+    savePwdBtn.disabled = true; savePwdBtn.innerHTML = "⏳ Speichern...";
+    const cred = EmailAuthProvider.credential(user.email, cur);
+    await reauthenticateWithCredential(user, cred);
+    await updatePassword(user, neu);
+    pwdMsg.style.color="green"; pwdMsg.textContent="✅ Passwort erfolgreich geändert.";
+    setTimeout(closePwd, 900);
+  } catch (err) {
+    console.error(err);
+    pwdMsg.style.color="red";
+    pwdMsg.textContent = "❌ " + (err?.code ? translateFirebaseError(err.code) : err?.message || "Unbekannter Fehler");
+  } finally {
+    savePwdBtn.disabled = false; savePwdBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
+  }
+});
+
+/* NEW: Auge-Buttons zum Anzeigen/Verbergen des Passworts */
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".toggle-eye");
+  if(!btn) return;
+  const targetId = btn.getAttribute("data-target");
+  const input = document.getElementById(targetId);
+  if(!input) return;
+
+  const icon = btn.querySelector("i");
+  if (input.type === "password") {
+    input.type = "text";
+    icon.classList.remove("bi-eye"); icon.classList.add("bi-eye-slash");
+    btn.setAttribute("aria-label","Passwort verbergen");
+  } else {
+    input.type = "password";
+    icon.classList.remove("bi-eye-slash"); icon.classList.add("bi-eye");
+    btn.setAttribute("aria-label","Passwort anzeigen");
+  }
+});
+</script>
 </body>
 </html>
