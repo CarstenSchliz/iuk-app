@@ -232,22 +232,27 @@
     #editPanelOuter{ grid-area:editor; }                                      /* Nutzer bearbeiten spannt unten über beide Spalten */
     .user-page .settings-grid > :nth-child(3){ grid-area:create; }            /* Neuer Nutzer rechts oben */
      /* 👉 HIER unseren neuen Block einfügen */
-    @media (max-width:720px){
-      .user-page #editPanel .editor-row{
-        grid-template-columns: 1fr !important;
-        gap: 0.8rem;
-      }
+@media (max-width:720px){
+  /* Felder untereinander (wie schon zuvor) */
+  .user-page #editPanel .editor-row{
+    grid-template-columns: 1fr !important;
+    gap: 0.8rem;
+  }
 
-      .user-page .roles-grid{
-        flex-direction: column;
-        gap: 0.6rem;
-      }
+  /* Rollen: untereinander – aber NICHT gestretcht */
+  .user-page .roles-grid{
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: flex-start;     /* <- verhindert Stretch auf volle Breite */
+  }
 
-      .user-page .roles-grid .role-check{
-        width: auto;
-        justify-content: flex-start;
-      }
-    }
+  .user-page .roles-grid .role-check{
+    align-self: flex-start;      /* extra Sicherheitsgurt pro Item */
+    width: auto;                 /* Breite am Inhalt ausrichten */
+    /* optional etwas kompakter: */
+    /* padding: .35rem .55rem; */
+  }
+}
   </style>
 </head>
 <body>
