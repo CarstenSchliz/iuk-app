@@ -14,7 +14,6 @@
       --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
       --text:#1f2937;
-
       --hellblau: rgb(100,160,220);
 
       /* Rollenfarben */
@@ -25,7 +24,6 @@
     }
     *{box-sizing:border-box}
 
-    /* NICHT global body überschreiben, sonst Sidebar kaputt */
     .user-page {
       color:var(--text);
       padding:1rem;
@@ -50,21 +48,19 @@
       gap:0.5rem;
     }
 
-    .user-page .user-table{ width:100%; border-collapse:collapse; font-size:.95rem; table-layout:fixed }
+    /* Änderung: Sidebar soll nicht schmaler werden */
+    .user-page .user-table{ 
+      width:100%; 
+      border-collapse:collapse; 
+      font-size:.95rem; 
+      table-layout:auto;   /* statt fixed */
+      max-width:100%;      /* Sidebar bleibt stabil */
+    }
+
     .user-page .user-table th, .user-page .user-table td{
       border-bottom:1px solid #e5e7eb; padding:.6rem .5rem; vertical-align:middle; text-align:left;
     }
     .user-page .user-table th{ background:var(--blassblau); }
-
-    /* 👉 NEU: Spalten kompakter */
-    .user-page .user-table th:nth-child(1),
-    .user-page .user-table td:nth-child(1) { max-width:180px; width:22%; }
-    .user-page .user-table th:nth-child(2),
-    .user-page .user-table td:nth-child(2) { max-width:220px; width:28%; word-break:break-word; }
-    .user-page .user-table th:nth-child(3),
-    .user-page .user-table td:nth-child(3) { width:35%; }
-    .user-page .user-table th:nth-child(4),
-    .user-page .user-table td:nth-child(4) { width:15%; }
 
     .user-page .nowrap{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
     .user-page .td-name b{ font-weight:700 }
@@ -135,16 +131,21 @@
         padding:.6rem .6rem .2rem; margin-bottom:.8rem; box-shadow:0 1px 4px rgba(0,0,0,.06);
       }
       .user-page .user-table td{ border:none; padding:.35rem .25rem }
+
       .user-page .user-table td[data-label]:not([data-label=""])::before{
         content:attr(data-label) ": "; font-weight:600; color:#6b7280; display:inline-block; min-width:120px;
       }
       .user-page .user-table td[data-label="E-Mail-Adresse"]::before{ display:block; margin-bottom:.15rem }
-      .user-page .user-table td[data-label="E-Mail-Adresse"] .email-val{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block }
-      .user-page .nowrap{ white-space:normal; overflow:visible; text-overflow:clip }
-      .user-page .actions-cell{ position:relative; text-align:right; padding-top:.4rem }
 
-      /* 👉 NEU: Editor mobil einspaltig */
-      .user-page #editPanel .editor-row{ grid-template-columns:1fr; }
+      /* Änderung: Name & E-Mail wieder vollständig anzeigen */
+      .user-page .user-table td,
+      .user-page .user-table td .email-val {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+      }
+
+      .user-page .actions-cell{ position:relative; text-align:right; padding-top:.4rem }
     }
 
     .user-page #toast{
@@ -216,7 +217,7 @@
         <div id="userMsg" class="form-msg"></div>
       </div>
 
-      <!-- 👉 Editor jetzt VOR Neu-Nutzer -->
+      <!-- Editor jetzt über "Neuen Nutzer" -->
       <div id="editPanelOuter" class="card" style="display:none;">
         <div id="editPanel"></div>
       </div>
