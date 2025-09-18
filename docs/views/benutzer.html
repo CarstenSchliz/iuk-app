@@ -251,26 +251,12 @@
 
   <script type="module">
     /***********************
-     * Firebase Initialisierung
+     * Firebase Import aus deinem Projekt
      ***********************/
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { auth, getUserRoles } from "../js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-    // ✅ Deine Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
-      authDomain: "iuk-app.firebaseapp.com",
-      projectId: "iuk-app",
-      storageBucket: "iuk-app.firebasestorage.app",
-      messagingSenderId: "759014128178",
-      appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
-      measurementId: "G-ZPD5VPD5TS"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    // ✅ richtige Region verwenden
+    // ✅ richtige Region für deine Cloud Functions
     const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
 
     // Helper: ID-Token an jeden Request anhängen
@@ -297,16 +283,15 @@
         <div style="max-width:720px;margin:8vh auto;padding:2rem;border:1px solid #e5e7eb;border-radius:14px;background:#fff;box-shadow:0 12px 30px rgba(0,0,0,.08);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;">
           <h2 style="margin-top:0;color:#b91c1c">Keine Berechtigung</h2>
           <p>Diese Seite ist nur für <b>Admins</b> oder <b>Gruppenleiter</b> sichtbar.</p>
-          <button onclick="location.href='/'" style="padding:.6rem .9rem;border:none;border-radius:10px;background:#002d55;color:#fff;cursor:pointer">Zurück zum Dashboard</button>
+          <button onclick="location.href='app.html'" style="padding:.6rem .9rem;border:none;border-radius:10px;background:#002d55;color:#fff;cursor:pointer">Zurück zum Dashboard</button>
         </div>`;
     }
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) { location.href = "index.html"; return; }
       try {
-        const tokenResult = await user.getIdTokenResult(true);
-        const claims = tokenResult.claims || {};
-        if (claims.admin || claims.gruppenleiter) {
+        const roles = await getUserRoles(user.uid);
+        if (roles.includes("admin") || roles.includes("gruppenleiter")) {
           pageRoot.style.display = "block";
           await loadUsers();
         } else {
@@ -616,8 +601,6 @@
         userMsg.style.color = "red"; userMsg.textContent = "❌ Fehler beim Laden der Nutzer: " + err.message;
       }
     }
-    // initiales Laden (nur wenn onAuthStateChanged oben freigibt)
-    // loadUsers();  // <-- wird nach Claim-Check aufgerufen
 
     // Neuer Nutzer
     const form = document.getElementById("createUserForm");
