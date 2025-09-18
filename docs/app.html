@@ -219,7 +219,10 @@
       <button data-page="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
       <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
       <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
-      <button data-page="benutzer"><i class="bi bi-people"></i> Benutzerverwaltung</button>
+      <!-- Benutzerverwaltung nur sichtbar für Admins / Gruppenleiter -->
+      <button data-page="benutzer" id="nav-users" style="display:none;">
+        <i class="bi bi-people"></i> Benutzerverwaltung
+      </button>
     </div>
 
     <button class="logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
@@ -235,6 +238,7 @@
   <!-- Firebase / Auth -->
   <script type="module">
     import { auth, logout, observeAuthState, uploadProfileImage } from "./js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
@@ -306,16 +310,24 @@
       window.location.href = "index.html";
     });
 
-    // Login-Check + Userdaten
+    // Login-Check + Userdaten + Rollen
     const userName = document.getElementById("userName");
-    observeAuthState(user => {
+    const navUsers = document.getElementById("nav-users");
+
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
-
         if (user.photoURL) {
-          profileImg.src = user.photoURL; // Nur online verfügbar
+          profileImg.src = user.photoURL;
         } else {
           profileImg.src = "assets/avatar-default.png";
+        }
+
+        // ✅ Rollen prüfen
+        const tokenResult = await user.getIdTokenResult(true);
+        const claims = tokenResult.claims || {};
+        if (claims.admin || claims.gruppenleiter) {
+          navUsers.style.display = "block";
         }
       } else {
         window.location.href = "index.html";
