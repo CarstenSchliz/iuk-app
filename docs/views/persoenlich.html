@@ -129,8 +129,8 @@
     color: var(--input-fg);
     font-size: 1rem;
     transition: border-color .15s ease, background .15s ease, color .15s ease;
-    min-height: 44px;
     box-sizing: border-box;
+    font-family: inherit;                                   /* gleiche Schrift wie Inputs */
   }
   .form-group.floating label {
     position: absolute;
@@ -162,15 +162,23 @@
 
   /* Form-Row: Rollen + UID nebeneinander */
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  @media (max-width:768px) { .form-row { grid-template-columns: 1fr; } }
+  @media (max-width:768px) { .form-row { grid-template-columns: 1fr; gap: 1.2rem; } }
 
-  /* Textarea-Optimierung (mehrzeilig, sauberer Zeilenumbruch) */
+  /* Textarea-Optimierung (mehrzeilig mobil, wie Input auf Desktop) */
   .form-group.floating textarea {
     resize: none;
     line-height: 1.4;
     white-space: normal;
-    min-height: 60px;         /* 2 Zeilen sichtbar */
-    overflow: auto;
+    overflow: hidden;                 /* keine Scrollbars im Default */
+    min-height: 44px;                 /* Standardhöhe wie Input */
+  }
+  /* Desktop: wie 1-zeiliger Input */
+  @media (min-width: 769px) {
+    .form-group.floating textarea { height: 44px; }
+  }
+  /* Mobile: darf wachsen (Umbruch bei langen Werten) */
+  @media (max-width: 768px) {
+    .form-group.floating textarea { min-height: auto; height: auto; overflow: auto; }
   }
 
   /* Buttons */
@@ -225,46 +233,72 @@
 
   /* ================================ Moderner Theme-Schieberegler ================================ */
   .theme-switch {
-    --w: 80px; --h: 40px;
-    position: relative; width: var(--w); height: var(--h);
-    border-radius: 999px; border: 2px solid var(--toggle-border);
-    background: var(--toggle-track); cursor: pointer; user-select: none;
+    --w: 80px;          /* Switch-Breite */
+    --h: 40px;          /* Switch-Höhe */
+    position: relative;
+    width: var(--w); height: var(--h);
+    border-radius: 999px;
+    border: 2px solid var(--toggle-border);
+    background: var(--toggle-track);
+    cursor: pointer; user-select: none;
     transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04); overflow: hidden; display: block;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+    overflow: hidden;   /* <<< wichtig: Icons/Thumb ragen nicht raus (fix für Handy) */
+    display: block;
   }
+
+  /* Icons absolut positionieren, damit der Thumb sie exakt überdecken kann */
   .theme-switch .icon {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    font-size: 18px; width: 22px; height: 22px; pointer-events: none; opacity: .9; z-index: 1;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    width: 22px; height: 22px;
+    pointer-events: none;
+    opacity: .9;
+    z-index: 1;
   }
   .theme-switch .sun { left: 10px; color: #ffda65; }
   .theme-switch .moon { right: 10px; color: #ffd84d; }
 
   .theme-switch .thumb {
     position: absolute; top: 4px; left: 4px;
-    width: calc(var(--h) - 8px); height: calc(var(--h) - 8px);
-    border-radius: 50%; background: var(--toggle-knob);
+    width: calc(var(--h) - 6px);   /* <<< etwas größer, damit der Mond vollständig verdeckt */
+    height: calc(var(--h) - 6px);
+    border-radius: 50%;
+    background: var(--toggle-knob);
     box-shadow: 0 2px 6px rgba(0,0,0,.25);
     transition: transform .35s cubic-bezier(.22,.61,.36,1), background .25s ease;
     z-index: 2;
   }
+  /* Wenn Darkmode aktiv: Knopf nach rechts, Sterne sichtbar */
   body.dark .theme-switch .thumb { transform: translateX(calc(var(--w) - var(--h))); }
 
+  /* Sterne (Deko) */
   .theme-switch::before, .theme-switch::after {
-    content: "★"; position: absolute; color: var(--toggle-star); font-size: 12px; opacity: .0; transform: translateY(-2px); transition: opacity .25s ease;
+    content: "★"; position: absolute; color: var(--toggle-star);
+    font-size: 12px; opacity: .0; transform: translateY(-2px);
+    transition: opacity .25s ease;
   }
   .theme-switch::before { right: 26px; top: 8px; }
   .theme-switch::after  { right: 14px; bottom: 8px; font-size: 10px; }
   body.dark .theme-switch::before, body.dark .theme-switch::after { opacity: 1; }
 
+  /* Effekte: Sonne rotiert kurz beim Wechsel zu Hell, Mond pulsiert im Dark,
+     plus "Burst" beim Umschalten über ::after */
   @keyframes sunSpinOnce { from{transform: translateY(-50%) rotate(0);} to{transform: translateY(-50%) rotate(360deg);} }
   @keyframes moonPulse { 0%,100%{ filter:drop-shadow(0 0 0 rgba(255,216,77,0)); } 50%{ filter:drop-shadow(0 0 8px rgba(255,216,77,.9)); } }
   body:not(.dark) .theme-switch .sun.burst { animation: sunSpinOnce .6s ease; }
   body.dark .theme-switch .moon { animation: moonPulse 1.6s ease-in-out infinite; }
 
-  .theme-switch .sun::after, .theme-switch .moon::after {
-    content:""; position:absolute; inset:-6px; border-radius:50%;
+  .theme-switch .sun::after,
+  .theme-switch .moon::after {
+    content:""; position:absolute; inset:-6px;
+    border-radius:50%;
     background: radial-gradient(circle, rgba(255,220,120,.6) 0%, rgba(255,220,120,0) 60%);
-    opacity:0; transform: scale(.6); transition: opacity .25s ease, transform .25s ease; z-index: -1;
+    opacity:0; transform: scale(.6);
+    transition: opacity .25s ease, transform .25s ease;
+    z-index: -1;
   }
   body:not(.dark) .theme-switch .sun.burst::after { opacity:1; transform: scale(1.1); }
   body.dark .theme-switch .moon.burst::after { opacity:1; transform: scale(1.1); }
@@ -307,11 +341,11 @@
 
           <div class="form-row">
             <div class="form-group floating" title="Rollen werden vom Administrator vergeben">
-              <textarea id="roles" placeholder=" " readonly rows="2"></textarea>
+              <textarea id="roles" placeholder=" " readonly></textarea>
               <label for="roles">Rollen</label>
             </div>
             <div class="form-group floating">
-              <textarea id="uid" placeholder=" " readonly rows="2"></textarea>
+              <textarea id="uid" placeholder=" " readonly></textarea>
               <label for="uid">UID</label>
             </div>
           </div>
@@ -526,9 +560,11 @@
   // Klick/Keyboard auf den Switch
   themeSwitch.addEventListener("click", () => {
     setTheme(document.body.classList.contains("dark") ? "light" : "dark");
+    // Informiere app.html (falls nötig)
+    window.dispatchEvent(new Event("toggleTheme"));
   });
   themeSwitch.addEventListener("keydown", (e) => {
-    if (e.key === " " || e.key === "Enter") { e.preventDefault(); setTheme(document.body.classList.contains("dark") ? "light" : "dark"); }
+    if (e.key === " " || e.key === "Enter") { e.preventDefault(); setTheme(document.body.classList.contains("dark") ? "light" : "dark"); window.dispatchEvent(new Event("toggleTheme")); }
   });
   // Fokusfähigkeit für Barrierefreiheit
   themeSwitch.setAttribute("tabindex","0");
