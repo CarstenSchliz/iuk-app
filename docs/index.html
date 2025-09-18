@@ -144,6 +144,17 @@
       color: var(--dunkelgrau);
     }
 
+    /* rechtes Icon (z. B. Auge) */
+    .form-group .icon-right {
+      position: absolute;
+      top: 50%;
+      right: 0.6rem;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: var(--dunkelgrau);
+      cursor: pointer;
+    }
+
     button.login-btn {
       width: 100%;
       padding: 0.7rem;
@@ -157,10 +168,14 @@
       margin-top: 0.5rem;
     }
 
-    .links { margin-top: 2rem; font-size: 0.85rem; text-align: center; }
+    .links { 
+      margin-top: 2rem; 
+      font-size: 0.85rem; 
+      text-align: left; /* Links bündig */
+    }
     .links .section { margin-bottom: 1.8rem; }
     .links span { display: block; margin-bottom: 0.3rem; color: var(--dunkelgrau); }
-    .links a { display: block; text-decoration: none; margin-top: 0.3rem; }
+    .links a { display: inline-block; text-decoration: none; margin-top: 0.3rem; }
     .links a.register { color: var(--softrot); font-weight: bold; }
     .links a.forgot { color: var(--dunkelblau); }
 
@@ -311,8 +326,11 @@
       </div>
       <div class="form-group floating">
         <input type="password" id="reg-pass" placeholder=" " required autocomplete="new-password"
+               style="padding-right:2.5rem;"
                title="Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen">
         <label for="reg-pass">Passwort</label>
+        <!-- Auge-Icon -->
+        <i id="toggle-pass" class="bi bi-eye icon-right"></i>
         <!-- Live-Regeln -->
         <div id="pass-rules" style="display:none; font-size:0.8rem; margin-top:6px; text-align:left;">
           <div id="rule-length">❌ Mindestens 8 Zeichen</div>
@@ -369,7 +387,6 @@
 
     // Passwortprüfung
     function checkPasswordStrength(password) {
-      // Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen
       const regex = /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
       return regex.test(password);
     }
@@ -378,16 +395,8 @@
     const regPass = document.getElementById("reg-pass");
     const passRules = document.getElementById("pass-rules");
 
-    regPass.addEventListener("focus", () => {
-      passRules.style.display = "block";
-    });
-
-    regPass.addEventListener("blur", () => {
-      if (!regPass.value) {
-        passRules.style.display = "none";
-      }
-    });
-
+    regPass.addEventListener("focus", () => { passRules.style.display = "block"; });
+    regPass.addEventListener("blur", () => { if (!regPass.value) passRules.style.display = "none"; });
     regPass.addEventListener("input", () => {
       const val = regPass.value;
       document.getElementById("rule-length").textContent =
@@ -398,6 +407,15 @@
         /[A-Z]/.test(val) ? "✅ Mindestens 1 Großbuchstabe" : "❌ Mindestens 1 Großbuchstabe";
       document.getElementById("rule-special").textContent =
         /[^A-Za-z0-9]/.test(val) ? "✅ Mindestens 1 Sonderzeichen" : "❌ Mindestens 1 Sonderzeichen";
+    });
+
+    // Passwort sichtbar/unsichtbar schalten
+    const togglePass = document.getElementById("toggle-pass");
+    togglePass.addEventListener("click", () => {
+      const type = regPass.getAttribute("type") === "password" ? "text" : "password";
+      regPass.setAttribute("type", type);
+      togglePass.classList.toggle("bi-eye");
+      togglePass.classList.toggle("bi-eye-slash");
     });
 
     // Login
@@ -419,12 +437,6 @@
         console.error("❌ Login-Fehler:", err.code, err.message);
         showToast("❌ " + translateFirebaseError(err.code), "red");
       }
-    });
-
-    // Registrierung öffnen (Link)
-    document.querySelector(".register").addEventListener("click", (e) => {
-      e.preventDefault();
-      openModal("register-modal");
     });
 
     // Registrierung absenden
@@ -454,7 +466,7 @@
       }
     });
 
-    // Passwort-Reset öffnen (Link)
+    // Passwort-Reset öffnen
     document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
       openModal("reset-modal");
@@ -480,9 +492,7 @@
 
     // Close-Buttons
     document.querySelectorAll(".modal .close").forEach(btn => {
-      btn.addEventListener("click", () => {
-        closeModal(btn.closest(".modal"));
-      });
+      btn.addEventListener("click", () => { closeModal(btn.closest(".modal")); });
     });
   </script>
 
