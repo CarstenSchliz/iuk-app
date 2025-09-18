@@ -5,141 +5,106 @@ const cors = require("cors")({ origin: true });
 admin.initializeApp();
 const db = admin.firestore();
 
-// ==== Region für alle Funktionen festlegen (eur3 = europe-west3) ====
 const REGION = "europe-west3";
 
-// ==== Sicherheit (optional) ====
-const USE_AUTH = false;
+// ===== Rollen-Definition =====
+const ALLOWED_ROLES = new Set(["admin", "gruppenleiter", "helfer", "anwärter"]);
 
+function normalizeRoles(input) {
+  if (!input) return [];
+  if (Array.isArray(input)) {
+    return input.filter((r) => ALLOWED_ROLES.has(r));
+  }
+  if (typeof input === "string") {
+    return input.split(",").map((s) => s.trim()).filter((r) => ALLOWED_ROLES.has(r));
+  }
+  return [];
+}
+
+function buildClaims(roles) {
+  const claims = {};
+  for (const r of ALLOWED_ROLES) {
+    claims[r] = roles.includes(r);
+  }
+  claims.roles = roles;
+  claims.admin = roles.includes("admin");
+  return claims;
+}
+
+// ===== Middleware: prüfen ob Aufrufer Admin/GL =====
+async function requireAdminOrGL(req) {
+  const authHeader = req.headers.authorization || "";
+  const m = authHeader.match(/^Bearer (.+)$/i);
+  if (!m) {
+    const e = new Error("Kein Bearer-Token übermittelt");
+    e.statusCode = 401;
+    throw e;
+  }
+
+  const idToken = m[1];
+  const decoded = await admin.auth().verifyIdToken(idToken);
+
+  if (!(decoded.admin || decoded.gruppenleiter)) {
+    const e = new Error("Nicht berechtigt (Admin oder Gruppenleiter erforderlich)");
+    e.statusCode = 403;
+    throw e;
+  }
+  return decoded;
+}
+
+// ===== Helper für CORS-Handler =====
 function handleRequest(handler) {
   return (req, res) => {
     cors(req, res, async () => {
       try {
-        if (USE_AUTH) {
-          await requireAdmin(req);
-        }
-        await handler(req, res);
+        const caller = await requireAdminOrGL(req);
+        await handler(req, res, caller);
       } catch (err) {
         console.error("❌ Fehler:", err);
-        const code = err.statusCode || 500;
-        res.status(code).json({ error: err.message || String(err) });
+        res.status(err.statusCode || 500).json({ error: err.message || String(err) });
       }
     });
   };
 }
 
-async function requireAdmin(req) {
-  const authHeader = req.headers.authorization || "";
-  const m = authHeader.match(/^Bearer (.+)$/i);
-  if (!m) {
-    const e = new Error("Kein Bearer-Token übermittelt"); e.statusCode = 401; throw e;
-  }
-  const idToken = m[1];
-  const decoded = await admin.auth().verifyIdToken(idToken);
-  if (!decoded || !(decoded.admin || (Array.isArray(decoded.roles) && decoded.roles.includes("admin")))) {
-    const e = new Error("Nicht berechtigt (Admin erforderlich)"); e.statusCode = 403; throw e;
-  }
-}
+// ===== Auth Trigger =====
 
-// ==== Rollen-Setup ====
-const ALLOWED_ROLES = new Set(["admin", "gruppenleiter", "helfer", "anwärter"]);
-
-function normalizeRoles(input, existingClaims = {}) {
-  let roles = [];
-  if (input === undefined || input === null) {
-    const fromArray = Array.isArray(existingClaims.roles) ? existingClaims.roles : [];
-    const fromBooleans = Array.from(ALLOWED_ROLES).filter((r) => existingClaims[r] === true);
-    roles = [...fromArray, ...fromBooleans];
-  } else if (Array.isArray(input)) {
-    roles = input;
-  } else if (typeof input === "string") {
-    roles = input.split(",").map((s) => s.trim()).filter(Boolean);
-  } else if (typeof input === "object") {
-    roles = Object.entries(input).filter(([k, v]) => v === true && ALLOWED_ROLES.has(k)).map(([k]) => k);
-  }
-  roles = roles.filter((r) => ALLOWED_ROLES.has(r));
-  return Array.from(new Set(roles));
-}
-
-function buildClaimsWithRoles(existingClaims = {}, roles = []) {
-  const claims = { ...existingClaims };
-  for (const r of ALLOWED_ROLES) delete claims[r];
-  claims.roles = roles;
-  for (const r of ALLOWED_ROLES) claims[r] = roles.includes(r);
-  claims.admin = roles.includes("admin");
-  return claims;
-}
-
-// ==== Auth Trigger (v1) ====
-
-// User automatisch in Firestore anlegen
+// User anlegen → Firestore + Claims
 exports.onAuthCreate = functions.region(REGION).auth.user().onCreate(async (user) => {
-  console.log("👤 Neuer User erstellt:", user.uid, user.email);
-
   try {
-    const defaultRole = ["anwärter"];
+    const defaultRoles = ["anwärter"];
 
     await db.collection("users").doc(user.uid).set(
       {
         displayName: user.displayName || "",
         email: user.email || "",
-        roles: defaultRole,
+        roles: defaultRoles,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
 
-    await admin.auth().setCustomUserClaims(user.uid, {
-      roles: defaultRole,
-      anwärter: true,
-      admin: false,
-    });
+    await admin.auth().setCustomUserClaims(user.uid, buildClaims(defaultRoles));
 
-    console.log("✅ Firestore-Dokument + Claims gesetzt:", user.uid);
+    console.log("✅ Neuer User mit Standardrolle gespeichert:", user.uid);
   } catch (err) {
     console.error("❌ Fehler in onAuthCreate:", err);
   }
 });
 
-// User aus Firestore löschen
+// User löschen → Firestore löschen
 exports.onAuthDelete = functions.region(REGION).auth.user().onDelete(async (user) => {
   try {
     await db.collection("users").doc(user.uid).delete();
-    console.log("🗑️ User aus Firestore gelöscht:", user.uid);
+    console.log("🗑️ User-Dokument entfernt:", user.uid);
   } catch (err) {
     console.error("❌ Fehler in onAuthDelete:", err);
   }
 });
 
-// ==== HTTP-Endpoints ====
+// ===== HTTP-Endpoints =====
 
-// Test-Write
-exports.testWrite = functions.region(REGION).https.onRequest(async (req, res) => {
-  try {
-    const info = {
-      GOOGLE_CLOUD_PROJECT: process.env.GOOGLE_CLOUD_PROJECT,
-      GCLOUD_PROJECT: process.env.GCLOUD_PROJECT,
-      FIREBASE_CONFIG: process.env.FIREBASE_CONFIG,
-      adminAppProjectId: admin.app().options.projectId,
-    };
-    console.log("📌 ENV + Admin SDK Info:", info);
-
-    await db.collection("users").doc("test123").set(
-      {
-        hello: "world",
-        ts: new Date(),
-      },
-      { merge: true }
-    );
-
-    res.json({ success: true, info });
-  } catch (err) {
-    console.error("❌ Fehler beim Test-Write:", err);
-    res.status(500).json({ error: err.message || String(err) });
-  }
-});
-
-// Neuen Nutzer anlegen
+// Nutzer erstellen
 exports.createUser = functions.region(REGION).https.onRequest(handleRequest(async (req, res) => {
   const { email, password, displayName } = req.body || {};
   if (!email || !password) {
@@ -152,6 +117,17 @@ exports.createUser = functions.region(REGION).https.onRequest(handleRequest(asyn
     displayName: displayName || "",
   });
 
+  // Firestore-Eintrag
+  await db.collection("users").doc(userRecord.uid).set({
+    displayName: displayName || "",
+    email,
+    roles: ["anwärter"],
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  // Default Claims
+  await admin.auth().setCustomUserClaims(userRecord.uid, buildClaims(["anwärter"]));
+
   res.json({ uid: userRecord.uid });
 }));
 
@@ -161,76 +137,52 @@ exports.deleteUser = functions.region(REGION).https.onRequest(handleRequest(asyn
   if (!uid) return res.status(400).json({ error: "UID erforderlich" });
 
   await admin.auth().deleteUser(uid);
+  await db.collection("users").doc(uid).delete();
+
   res.json({ success: true });
 }));
 
-// Admin setzen/entfernen
-exports.setUserAdmin = functions.region(REGION).https.onRequest(handleRequest(async (req, res) => {
-  const { uid, makeAdmin } = req.body || {};
-  if (!uid) return res.status(400).json({ error: "UID erforderlich" });
-
-  const user = await admin.auth().getUser(uid);
-  const currentClaims = user.customClaims || {};
-  let roles = normalizeRoles(undefined, currentClaims);
-
-  if (makeAdmin) {
-    if (!roles.includes("admin")) roles.push("admin");
-  } else {
-    roles = roles.filter((r) => r !== "admin");
-  }
-
-  const newClaims = buildClaimsWithRoles(currentClaims, roles);
-  await admin.auth().setCustomUserClaims(uid, newClaims);
-  res.json({ success: true, roles });
-}));
-
-// Nutzer aktualisieren
+// Nutzer aktualisieren (Name + Rollen)
 exports.updateUser = functions.region(REGION).https.onRequest(handleRequest(async (req, res) => {
   const { uid, displayName, roles: incomingRoles } = req.body || {};
   if (!uid) return res.status(400).json({ error: "UID erforderlich" });
 
-  if (typeof displayName === "string") {
+  const roles = normalizeRoles(incomingRoles);
+
+  // Firestore aktualisieren
+  await db.collection("users").doc(uid).set(
+    {
+      displayName: displayName || "",
+      roles,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
+
+  // Auth aktualisieren
+  if (displayName) {
     await admin.auth().updateUser(uid, { displayName });
   }
+  await admin.auth().setCustomUserClaims(uid, buildClaims(roles));
 
-  if (incomingRoles !== undefined) {
-    const user = await admin.auth().getUser(uid);
-    const currentClaims = user.customClaims || {};
-    const roles = normalizeRoles(incomingRoles, currentClaims);
-    const newClaims = buildClaimsWithRoles(currentClaims, roles);
-    await admin.auth().setCustomUserClaims(uid, newClaims);
-    return res.json({ success: true, roles });
-  }
-
-  res.json({ success: true });
-}));
-
-// Nur Rollen setzen
-exports.setUserRoles = functions.region(REGION).https.onRequest(handleRequest(async (req, res) => {
-  const { uid, roles: incomingRoles } = req.body || {};
-  if (!uid) return res.status(400).json({ error: "UID erforderlich" });
-
-  const user = await admin.auth().getUser(uid);
-  const currentClaims = user.customClaims || {};
-  const roles = normalizeRoles(incomingRoles, currentClaims);
-  const newClaims = buildClaimsWithRoles(currentClaims, roles);
-  await admin.auth().setCustomUserClaims(uid, newClaims);
   res.json({ success: true, roles });
 }));
 
-// Alle Nutzer auflisten
+// Nutzer auflisten
 exports.listUsers = functions.region(REGION).https.onRequest(handleRequest(async (req, res) => {
   const listUsersResult = await admin.auth().listUsers(1000);
-  const users = listUsersResult.users.map((ur) => {
-    const cc = ur.customClaims || {};
-    const roles = normalizeRoles(undefined, cc);
-    return {
+  const users = [];
+
+  for (const ur of listUsersResult.users) {
+    const doc = await db.collection("users").doc(ur.uid).get();
+    const data = doc.exists ? doc.data() : {};
+    users.push({
       uid: ur.uid,
       email: ur.email,
-      displayName: ur.displayName || "",
-      admin: roles.includes("admin"),
-      roles,
-    };
-  });
+      displayName: ur.displayName || data.displayName || "",
+      roles: data.roles || [],
+    });
+  }
+
   res.json({ users });
 }));
