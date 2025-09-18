@@ -69,9 +69,9 @@ export function translateFirebaseError(errorCode) {
     case "auth/user-disabled":
       return "Dieses Konto wurde deaktiviert. Bitte wenden Sie sich an den Administrator.";
     case "auth/user-not-found":
-    case "auth/invalid-credential": // kommt oft bei unbekannten Mails
       return "Es existiert kein Benutzer mit dieser E-Mail.";
     case "auth/wrong-password":
+    case "auth/invalid-credential": // oft bei falschem Passwort
       return "Das eingegebene Passwort ist falsch.";
 
     // Registrierungsfehler
