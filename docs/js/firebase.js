@@ -12,7 +12,10 @@ import {
   sendEmailVerification,
   signOut,
   onAuthStateChanged,
-  updateProfile
+  updateProfile,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  updatePassword as fbUpdatePassword
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
@@ -71,7 +74,7 @@ export function translateFirebaseError(errorCode) {
     case "auth/user-not-found":
       return "Es existiert kein Benutzer mit dieser E-Mail.";
     case "auth/wrong-password":
-    case "auth/invalid-credential": // oft bei falschem Passwort
+    case "auth/invalid-credential":
       return "Das eingegebene Passwort ist falsch.";
 
     // Registrierungsfehler
@@ -151,4 +154,16 @@ export async function getUserRoles(uid) {
 // === State Observer ===
 export function observeAuthState(callback) {
   onAuthStateChanged(auth, callback);
+}
+
+// === Passwort ändern mit Re-Auth ===
+export async function changePassword(user, currentPwd, newPwd) {
+  if (!user || !user.email) throw new Error("Kein gültiger Benutzer.");
+
+  // Mit aktuellem Passwort re-authentifizieren
+  const cred = EmailAuthProvider.credential(user.email, currentPwd);
+  await reauthenticateWithCredential(user, cred);
+
+  // Neues Passwort setzen
+  await fbUpdatePassword(user, newPwd);
 }
