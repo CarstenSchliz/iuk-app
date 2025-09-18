@@ -256,10 +256,11 @@
     #reset-submit.primary { background: var(--drk-rot); color: white; }
     .modal-content button.close { background: var(--mittelgrau); color: white; }
 
+    /* === Toast === */
     #toast {
       visibility: hidden;
       min-width: 250px;
-      margin-left: -125px;
+      max-width: 90%;              /* passt sich an kleine Bildschirme an */
       background-color: #333;
       color: #fff;
       text-align: center;
@@ -271,12 +272,13 @@
       bottom: 30px;
       font-size: 1rem;
       opacity: 0;
+      transform: translateX(-50%); /* zentriert horizontal */
       transition: opacity 0.5s, bottom 0.5s;
     }
     #toast.show {
       visibility: visible;
       opacity: 1;
-      bottom: 50px;
+      bottom: 50px; /* Animation nach oben beim Einblenden */
     }
 
     @media (max-width: 768px) {
@@ -300,12 +302,12 @@
         <form id="login-form">
           <div class="form-group">
             <i class="bi bi-envelope"></i>
-            <input type="email" id="email" placeholder=" " required>
+            <input type="email" id="email" placeholder=" " required autocomplete="username">
             <label for="email">E-Mail-Adresse</label>
           </div>
           <div class="form-group">
             <i class="bi bi-lock"></i>
-            <input type="password" id="password" placeholder=" " required>
+            <input type="password" id="password" placeholder=" " required autocomplete="current-password">
             <label for="password">Passwort</label>
           </div>
           <button type="submit" class="login-btn">
@@ -340,16 +342,16 @@
         <label for="reg-name">Name</label>
       </div>
       <div class="form-group floating">
-        <input type="email" id="reg-email" placeholder=" " required>
+        <input type="email" id="reg-email" placeholder=" " required autocomplete="email">
         <label for="reg-email">E-Mail-Adresse</label>
       </div>
       <div class="form-group floating">
-        <input type="password" id="reg-pass" placeholder=" " required>
+        <input type="password" id="reg-pass" placeholder=" " required autocomplete="new-password">
         <label for="reg-pass">Passwort</label>
       </div>
       <div class="modal-actions">
-        <button id="reg-submit" class="primary">Registrieren</button>
-        <button class="close">Abbrechen</button>
+        <button id="reg-submit" class="primary" type="button">Registrieren</button>
+        <button class="close" type="button">Abbrechen</button>
       </div>
     </div>
   </div>
@@ -359,18 +361,18 @@
     <div class="modal-content">
       <h2>Passwort zurücksetzen</h2>
       <div class="form-group floating">
-        <input type="email" id="reset-email" placeholder=" " required>
+        <input type="email" id="reset-email" placeholder=" " required autocomplete="email">
         <label for="reset-email">E-Mail-Adresse</label>
       </div>
       <div class="modal-actions">
-        <button id="reset-submit" class="primary">Zurücksetzen</button>
-        <button class="close">Abbrechen</button>
+        <button id="reset-submit" class="primary" type="button">Zurücksetzen</button>
+        <button class="close" type="button">Abbrechen</button>
       </div>
     </div>
   </div>
 
   <!-- Toast -->
-  <div id="toast"></div>
+  <div id="toast" role="alert"></div>
 
   <script type="module">
     import { login, register, resetPassword, translateFirebaseError, updateUserProfile } from "./js/firebase.js";
