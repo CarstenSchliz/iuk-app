@@ -82,12 +82,12 @@
 
     h1 {
       color: var(--dunkelblau);
-      font-size: 1.8rem; /* größer am PC */
+      font-size: 1.8rem;
       font-weight: bold;
       margin: 0.3rem 0 0.6rem 0;
     }
     @media(max-width: 768px){
-      h1 { font-size: 1.25rem; } /* Handy kleiner */
+      h1 { font-size: 1.25rem; }
     }
 
     .subtitle {
@@ -96,7 +96,6 @@
       margin-bottom: 1.5rem;
     }
 
-    /* === Formulare === */
     .form-group {
       position: relative;
       margin-bottom: 1.2rem;
@@ -165,7 +164,6 @@
     .links a.register { color: var(--softrot); font-weight: bold; }
     .links a.forgot { color: var(--dunkelblau); }
 
-    /* === Modal & Toast Zusatzstyles === */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -204,40 +202,6 @@
       font-size: 1.4rem;
       margin: 0.5rem 0 1.2rem 0;
     }
-    .modal-content .form-group { margin-bottom: 1.2rem; }
-    .modal-content input {
-      width: 100%;
-      border: 1px solid var(--mittelgrau);
-      border-radius: 6px;
-      padding: 0.9rem 0.8rem 0.5rem 0.8rem;
-      font-size: 1rem;
-      outline: none;
-      background: #fff;
-      box-sizing: border-box;
-      transition: background 0.2s, border-color 0.2s;
-    }
-    .modal-content input:not(:placeholder-shown) {
-      background: var(--blassblau);
-      border-color: var(--dunkelblau);
-    }
-    .modal-content label {
-      position: absolute;
-      top: 50%;
-      left: 0.8rem;
-      transform: translateY(-50%);
-      font-size: 1rem;
-      color: var(--dunkelgrau);
-      pointer-events: none;
-      transition: 0.2s ease all;
-      background: #fff;
-      padding: 0 0.2rem;
-    }
-    .modal-content input:not(:placeholder-shown) + label,
-    .modal-content input:focus + label {
-      top: 0.15rem;
-      font-size: 0.75rem;
-      color: var(--dunkelblau);
-    }
     .modal-actions {
       display:flex;
       gap:1rem;
@@ -260,7 +224,7 @@
     #toast {
       visibility: hidden;
       min-width: 250px;
-      max-width: 90%;              /* passt sich an kleine Bildschirme an */
+      max-width: 90%;
       background-color: #333;
       color: #fff;
       text-align: center;
@@ -272,13 +236,13 @@
       bottom: 30px;
       font-size: 1rem;
       opacity: 0;
-      transform: translateX(-50%); /* zentriert horizontal */
+      transform: translateX(-50%);
       transition: opacity 0.5s, bottom 0.5s;
     }
     #toast.show {
       visibility: visible;
       opacity: 1;
-      bottom: 50px; /* Animation nach oben beim Einblenden */
+      bottom: 50px;
     }
 
     @media (max-width: 768px) {
@@ -346,8 +310,16 @@
         <label for="reg-email">E-Mail-Adresse</label>
       </div>
       <div class="form-group floating">
-        <input type="password" id="reg-pass" placeholder=" " required autocomplete="new-password">
+        <input type="password" id="reg-pass" placeholder=" " required autocomplete="new-password"
+               title="Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen">
         <label for="reg-pass">Passwort</label>
+        <!-- Live-Regeln -->
+        <div id="pass-rules" style="display:none; font-size:0.8rem; margin-top:6px; text-align:left;">
+          <div id="rule-length">❌ Mindestens 8 Zeichen</div>
+          <div id="rule-number">❌ Mindestens 1 Zahl</div>
+          <div id="rule-uppercase">❌ Mindestens 1 Großbuchstabe</div>
+          <div id="rule-special">❌ Mindestens 1 Sonderzeichen</div>
+        </div>
       </div>
       <div class="modal-actions">
         <button id="reg-submit" class="primary" type="button">Registrieren</button>
@@ -395,6 +367,39 @@
       setTimeout(()=> modal.style.display="none",300);
     }
 
+    // Passwortprüfung
+    function checkPasswordStrength(password) {
+      // Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen
+      const regex = /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+      return regex.test(password);
+    }
+
+    // Live-Passwortprüfung
+    const regPass = document.getElementById("reg-pass");
+    const passRules = document.getElementById("pass-rules");
+
+    regPass.addEventListener("focus", () => {
+      passRules.style.display = "block";
+    });
+
+    regPass.addEventListener("blur", () => {
+      if (!regPass.value) {
+        passRules.style.display = "none";
+      }
+    });
+
+    regPass.addEventListener("input", () => {
+      const val = regPass.value;
+      document.getElementById("rule-length").textContent =
+        val.length >= 8 ? "✅ Mindestens 8 Zeichen" : "❌ Mindestens 8 Zeichen";
+      document.getElementById("rule-number").textContent =
+        /[0-9]/.test(val) ? "✅ Mindestens 1 Zahl" : "❌ Mindestens 1 Zahl";
+      document.getElementById("rule-uppercase").textContent =
+        /[A-Z]/.test(val) ? "✅ Mindestens 1 Großbuchstabe" : "❌ Mindestens 1 Großbuchstabe";
+      document.getElementById("rule-special").textContent =
+        /[^A-Za-z0-9]/.test(val) ? "✅ Mindestens 1 Sonderzeichen" : "❌ Mindestens 1 Sonderzeichen";
+    });
+
     // Login
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -416,7 +421,7 @@
       }
     });
 
-    // Registrierung öffnen
+    // Registrierung öffnen (Link)
     document.querySelector(".register").addEventListener("click", (e) => {
       e.preventDefault();
       openModal("register-modal");
@@ -433,6 +438,11 @@
         return;
       }
 
+      if (!checkPasswordStrength(password)) {
+        showToast("❌ Passwort erfüllt nicht die Anforderungen.", "red");
+        return;
+      }
+
       try {
         const userCred = await register(email, password);
         await updateUserProfile(userCred.user, { displayName: name });
@@ -444,7 +454,7 @@
       }
     });
 
-    // Passwort-Reset öffnen
+    // Passwort-Reset öffnen (Link)
     document.querySelector(".forgot").addEventListener("click", (e) => {
       e.preventDefault();
       openModal("reset-modal");
@@ -468,7 +478,7 @@
       }
     });
 
-    // Close-Buttons für Modals
+    // Close-Buttons
     document.querySelectorAll(".modal .close").forEach(btn => {
       btn.addEventListener("click", () => {
         closeModal(btn.closest(".modal"));
