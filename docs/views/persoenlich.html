@@ -21,24 +21,18 @@
           <label for="email">E-Mail Adresse</label>
         </div>
 
-        <!-- Telefonnummern (nur Anzeige, keine Funktion) -->
+        <!-- Rollen & UID (readonly, aus Firebase) -->
         <div class="form-row">
           <div class="form-group floating">
-            <input type="tel" id="mobile" placeholder=" " readonly>
-            <label for="mobile">Mobiltelefon</label>
+            <!-- Tooltip via title-Attribut nur bei Hover sichtbar -->
+            <input type="text" id="role" placeholder=" " readonly title="Die Rolle wird vom Administrator vergeben">
+            <label for="role">Rollen</label>
           </div>
           <div class="form-group floating">
-            <input type="tel" id="phone" placeholder=" " readonly>
-            <label for="phone">Telefonnummer</label>
+            <input type="text" id="uid" placeholder=" " readonly>
+            <label for="uid">UID</label>
           </div>
         </div>
-
-        <!-- Rolle (nur Anzeige) -->
-        <div class="form-group floating">
-          <input type="text" id="role" value="Teilnehmer" placeholder=" " readonly>
-          <label for="role">Rolle</label>
-        </div>
-        <small>Die Rolle wird vom Administrator vergeben</small>
 
         <!-- Buttons -->
         <div class="form-actions">
@@ -49,7 +43,7 @@
             <i class="bi bi-save"></i> Speichern
           </button>
         </div>
-        <div id="profileMsg" class="form-msg"></div>
+        <div id="profileMsg" class="form-msg" aria-live="polite"></div>
       </form>
     </div>
 
@@ -57,8 +51,10 @@
     <div class="card">
       <h3><i class="bi bi-gear"></i> Weitere Einstellungen</h3>
       <ul class="list">
-        <li><i class="bi bi-bell"></i> Benachrichtigungseinstellungen</li>
-        <li><i class="bi bi-key"></i> Passwort ändern</li>
+        <li class="muted"><i class="bi bi-bell"></i> Benachrichtigungseinstellungen</li>
+        <li id="changePwdItem" class="clickable" role="button" tabindex="0">
+          <i class="bi bi-key"></i> Passwort ändern
+        </li>
       </ul>
     </div>
   </div>
@@ -74,15 +70,34 @@
       </button>
     </div>
 
-    <!-- Sicherheit -->
-    <div class="card">
-      <h3><i class="bi bi-shield-lock"></i> Sicherheit</h3>
-      <p>Zwei-Faktor-Authentifizierung (2FA)</p>
-      <p class="hint">Schützen Sie Ihr Konto mit einer zusätzlichen Sicherheitsebene.</p>
-      <button class="btn-primary">
-        <i class="bi bi-lock"></i> 2FA aktivieren
-      </button>
-    </div>
+    <!-- Sicherheit: 2FA – ENTFERNT gemäß Anforderung -->
+  </div>
+</div>
+
+<!-- Passwort-Modal -->
+<div id="pwdModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card" role="document">
+    <h3><i class="bi bi-key"></i> Passwort ändern</h3>
+    <form id="pwdForm">
+      <div class="form-group floating">
+        <input type="password" id="currentPwd" placeholder=" " autocomplete="current-password" required>
+        <label for="currentPwd">Aktuelles Passwort</label>
+      </div>
+      <div class="form-group floating">
+        <input type="password" id="newPwd" placeholder=" " autocomplete="new-password" minlength="8" required>
+        <label for="newPwd">Neues Passwort</label>
+      </div>
+      <div class="form-group floating">
+        <input type="password" id="confirmPwd" placeholder=" " autocomplete="new-password" minlength="8" required>
+        <label for="confirmPwd">Neues Passwort (Wiederholen)</label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" id="pwdCancel">Abbrechen</button>
+        <button type="submit" class="btn-primary"><i class="bi bi-save"></i> Speichern</button>
+      </div>
+      <div id="pwdMsg" class="form-msg" aria-live="polite"></div>
+    </form>
   </div>
 </div>
 
@@ -106,9 +121,7 @@
     gap: 1.5rem;
   }
   @media(max-width: 768px){
-    .settings-grid {
-      grid-template-columns: 1fr;
-    }
+    .settings-grid { grid-template-columns: 1fr; }
   }
 
   .card {
@@ -126,10 +139,7 @@
   }
 
   /* Floating Label */
-  .form-group.floating {
-    position: relative;
-    margin-bottom: 1.5rem;
-  }
+  .form-group.floating { position: relative; margin-bottom: 1.5rem; }
   .form-group.floating input {
     width: 100%;
     padding: 1rem 0.75rem 0.25rem 0.75rem;
@@ -166,27 +176,10 @@
     border-color: var(--dunkelblau);
   }
 
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  @media(max-width:768px){
-    .form-row { grid-template-columns: 1fr; }
-  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:768px){ .form-row { grid-template-columns: 1fr; } }
 
-  .form-actions {
-    display:flex;
-    gap:1rem;
-    margin-top:1rem;
-  }
-
-  small {
-    display:block;
-    font-size:0.8rem;
-    color:#777;
-    margin:-0.5rem 0 1rem 0;
-  }
+  .form-actions { display:flex; gap:1rem; margin-top:1rem; }
 
   .btn-primary, .btn-secondary, .btn-accent {
     padding:0.6rem 1rem;
@@ -198,25 +191,14 @@
   .btn-secondary { background:#eee; }
   .btn-accent  { background: var(--dunkelblau); color: #fff; }
 
-  .form-msg {
-    margin-top:0.5rem;
-    font-weight:bold;
-  }
+  .form-msg { margin-top:0.5rem; font-weight:bold; }
 
-  .list {
-    list-style:none;
-    padding:0;
-    margin:0;
-  }
-  .list li {
-    padding:0.6rem 0;
-    border-bottom:1px solid #eee;
-    cursor:pointer;
-  }
-  .hint {
-    font-size:0.9rem;
-    color:#555;
-  }
+  .list { list-style:none; padding:0; margin:0; }
+  .list li { padding:0.6rem 0; border-bottom:1px solid #eee; }
+  .list li.clickable { cursor:pointer; }
+  .list li.muted { opacity:.7; }
+
+  .hint { font-size:0.9rem; color:#555; }
 
   /* Darkmode Variablen */
   body.dark {
@@ -224,39 +206,95 @@
     color:#f0f0f0;
     background:#121212;
   }
-  body.dark input {
-    background:#2a2a2a;
-    color:#f0f0f0;
-    border:1px solid #555;
-  }
-  body.dark small { color:#aaa; }
-  body.dark .form-group.floating label {
-    background: #1e1e1e;
-  }
+  body.dark input { background:#2a2a2a; color:#f0f0f0; border:1px solid #555; }
+  body.dark .form-group.floating label { background: #1e1e1e; }
+  body.dark .btn-secondary { background:#2a2a2a; color:#f0f0f0; }
+
+  /* Modal */
+  .modal.hidden { display:none; }
+  .modal { position: fixed; inset: 0; z-index: 50; display:flex; align-items:center; justify-content:center; }
+  .modal-backdrop { position:absolute; inset:0; background: rgba(0,0,0,0.5); }
+  .modal-card { position:relative; background: var(--card-bg, #fff); color: inherit; width:min(560px, 92vw); padding:1.5rem; border-radius:12px; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  body.modal-open { overflow:hidden; }
 </style>
 
 <script type="module">
-  console.log("✅ persoenlich.html geladen");
+  console.log("✅ persoenlich.html geladen (überarbeitet)");
 
-  import { auth, updateUserProfile, observeAuthState } from "../js/firebase.js";
+  // WICHTIG: firebase.js sollte die verwendeten Funktionen exportieren.
+  // Mindestens: auth, updateUserProfile, observeAuthState
+  // Optional (für Passwort-Änderung): reauthenticateWithPassword, updatePassword, sendPasswordResetEmail
+  import {
+    auth,
+    updateUserProfile,
+    observeAuthState,
+    reauthenticateWithPassword,
+    updatePassword,
+    sendPasswordResetEmail
+  } from "../js/firebase.js";
 
   const emailField = document.getElementById("email");
   const nameField = document.getElementById("name");
+  const roleField = document.getElementById("role");
+  const uidField = document.getElementById("uid");
   const profileMsg = document.getElementById("profileMsg");
   const backBtn = document.getElementById("backBtn");
   const saveBtn = document.getElementById("saveBtn");
 
   const sidebarName = document.getElementById("userName");
+  const sidebarRole = document.getElementById("userRole"); // <span id="userRole">…</span> im Sidebar-Layout vorsehen
+
+  // ===== Rollen-Helfer =====
+  const ROLE_ORDER = ["owner","admin","manager","trainer","coach","editor","member","user","gast","guest","viewer"];
+  const capitalize = (s)=> s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+  async function getUserRolesFromClaims(user){
+    try {
+      const token = await user.getIdTokenResult(true);
+      const claims = token?.claims || {};
+      let roles = [];
+      if (Array.isArray(claims.roles)) roles = claims.roles;
+      else if (typeof claims.role === "string") roles = [claims.role];
+      else {
+        // Manche Projekte nutzen booleans wie { admin: true }
+        roles = Object.keys(claims).filter(k => typeof claims[k] === "boolean" && claims[k] === true);
+      }
+      return roles.map(r => String(r).toLowerCase());
+    } catch (e) {
+      console.warn("Rollen konnten nicht aus Claims gelesen werden:", e);
+      return [];
+    }
+  }
+
+  function pickHighestRole(roles){
+    if (!roles || roles.length === 0) return null;
+    for (const r of ROLE_ORDER){
+      if (roles.includes(r)) return capitalize(r);
+    }
+    // Falls keine bekannte Rolle dabei ist → erste anzeigen
+    return capitalize(roles[0]);
+  }
+
+  async function renderUser(user){
+    emailField.value = user.email || "";
+    nameField.value = user.displayName || "";
+    uidField.value = user.uid || "";
+
+    // Sidebar Name aktualisieren
+    if (sidebarName) {
+      sidebarName.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "");
+    }
+
+    // Rollen laden (höchste Rolle anzeigen)
+    const roles = await getUserRolesFromClaims(user);
+    const highest = pickHighestRole(roles) || "—";
+    roleField.value = highest;
+    if (sidebarRole) sidebarRole.textContent = highest;
+  }
 
   // Userdaten laden
   observeAuthState((user) => {
-    if (user) {
-      emailField.value = user.email || "";
-      nameField.value = user.displayName || "";
-      if (sidebarName) {
-        sidebarName.textContent = user.displayName || user.email.split("@")[0];
-      }
-    }
+    if (user) renderUser(user);
   });
 
   // Name speichern
@@ -295,12 +333,12 @@
     window.location.hash = "#dashboard";
   });
 
-  // Theme Toggle
+  // ===== Theme Toggle (Dark Mode) =====
   const themeBtn = document.getElementById("themeToggle");
   const themeLabel = document.getElementById("themeLabel");
 
   function setTheme(mode){
-    if(mode==="dark"){
+    if(mode === "dark"){
       document.body.classList.add("dark");
       themeLabel.textContent = "Dunkel";
       themeBtn.textContent = "☀️ Zu Hellmodus wechseln";
@@ -313,17 +351,104 @@
     }
   }
 
-  // Initial setzen
-  setTheme(localStorage.getItem("theme") || "light");
+  // Initial: User-Pref, sonst System-Pref
+  const storedTheme = localStorage.getItem("theme");
+  if (storedTheme) setTheme(storedTheme);
+  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme('dark');
+  else setTheme('light');
 
-  // Toggle
   if(themeBtn){
     themeBtn.addEventListener("click", () => {
-      if(document.body.classList.contains("dark")){
-        setTheme("light");
-      } else {
-        setTheme("dark");
-      }
+      setTheme(document.body.classList.contains("dark") ? "light" : "dark");
     });
   }
+
+  // ===== Passwort ändern (Modal) =====
+  const changePwdItem = document.getElementById("changePwdItem");
+  const pwdModal = document.getElementById("pwdModal");
+  const pwdForm = document.getElementById("pwdForm");
+  const pwdCancel = document.getElementById("pwdCancel");
+  const pwdMsg = document.getElementById("pwdMsg");
+
+  function openPwdModal(){
+    pwdModal.classList.remove("hidden");
+    document.body.classList.add("modal-open");
+    setTimeout(()=> document.getElementById("currentPwd")?.focus(), 0);
+  }
+  function closePwdModal(){
+    pwdModal.classList.add("hidden");
+    document.body.classList.remove("modal-open");
+    pwdForm.reset();
+    pwdMsg.textContent = "";
+  }
+
+  changePwdItem?.addEventListener("click", openPwdModal);
+  changePwdItem?.addEventListener("keydown", (e)=>{ if(e.key === "Enter" || e.key === " ") openPwdModal(); });
+  pwdCancel?.addEventListener("click", closePwdModal);
+  pwdModal?.addEventListener("click", (e)=>{ if(e.target === pwdModal || e.target.classList.contains("modal-backdrop")) closePwdModal(); });
+
+  pwdForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    pwdMsg.style.color = "";
+    pwdMsg.textContent = "";
+
+    const user = auth?.currentUser;
+    if (!user) {
+      pwdMsg.style.color = "red";
+      pwdMsg.textContent = "❌ Kein Benutzer eingeloggt.";
+      return;
+    }
+
+    const currentPwd = (document.getElementById("currentPwd").value || "").trim();
+    const newPwd = (document.getElementById("newPwd").value || "").trim();
+    const confirmPwd = (document.getElementById("confirmPwd").value || "").trim();
+
+    if (newPwd !== confirmPwd){
+      pwdMsg.style.color = "red";
+      pwdMsg.textContent = "❌ Die neuen Passwörter stimmen nicht überein.";
+      return;
+    }
+
+    if (newPwd.length < 8){
+      pwdMsg.style.color = "red";
+      pwdMsg.textContent = "❌ Das neue Passwort muss mindestens 8 Zeichen lang sein.";
+      return;
+    }
+
+    try {
+      // Re-Auth + Update
+      if (typeof reauthenticateWithPassword === 'function') {
+        await reauthenticateWithPassword(user, currentPwd);
+      }
+      if (typeof updatePassword === 'function') {
+        await updatePassword(user, newPwd);
+      } else if (user.updatePassword) {
+        // Fallback für compat-API
+        await user.updatePassword(newPwd);
+      } else {
+        throw new Error('Passwort-Update wird in dieser Build-Konfiguration nicht unterstützt.');
+      }
+
+      pwdMsg.style.color = "green";
+      pwdMsg.textContent = "✅ Passwort erfolgreich geändert.";
+      setTimeout(closePwdModal, 800);
+    } catch (err) {
+      console.error("Passwort ändern fehlgeschlagen:", err);
+      const msg = String(err?.message || err);
+      if (msg.includes("auth/wrong-password")) {
+        pwdMsg.style.color = "red";
+        pwdMsg.textContent = "❌ Das aktuelle Passwort ist nicht korrekt.";
+      } else if (msg.includes("recent login") || msg.includes("auth/requires-recent-login")) {
+        pwdMsg.style.color = "red";
+        pwdMsg.innerHTML = "❌ Aus Sicherheitsgründen ist eine erneute Anmeldung nötig. Bitte melden Sie sich ab und erneut an.";
+      } else if (msg.includes("weak-password") || newPwd.length < 8) {
+        pwdMsg.style.color = "red";
+        pwdMsg.textContent = "❌ Das neue Passwort ist zu schwach.";
+      } else {
+        pwdMsg.style.color = "red";
+        pwdMsg.textContent = "❌ Fehler: " + (err?.message || err);
+      }
+    }
+  });
 </script>
