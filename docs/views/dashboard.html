@@ -1,1 +1,241 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IuK Lernwelt – Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --drk-rot: rgb(230,0,5);
+      --softrot: rgb(228,100,80);
+      --dunkelblau: rgb(0,45,85);
+      --mittelgrau: rgb(180,180,180);
+      --hellgrau: rgb(239,238,234);
+      --dunkelgrau: rgb(85,79,74);
+      --blassblau: rgb(230,240,250);
+
+      --bg-dark: #1e2532;
+      --bg-card: #2a3244;
+      --text-light: #f5f5f5;
+      --text-muted: #b0b0b0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: var(--dunkelblau);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar h2 {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: white;
+    }
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      color: var(--text-light);
+      text-decoration: none;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s;
+    }
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: var(--drk-rot);
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--bg-card);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    header h1 { font-size: 1.4rem; }
+
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--drk-rot);
+    }
+    .avatar img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    main {
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    /* Cards Grid */
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+    .card {
+      background: var(--bg-card);
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .card h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+    .card p {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--text-light);
+    }
+
+    canvas { width: 100% !important; height: 260px !important; }
+
+    /* Listen */
+    ul.todo, ul.activity {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.9rem;
+    }
+    ul.todo li, ul.activity li {
+      padding: 0.6rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    ul.todo li:last-child, ul.activity li:last-child {
+      border-bottom: none;
+    }
+    .status-done { color: var(--drk-rot); font-weight: bold; }
+    .timestamp { color: var(--text-muted); font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>IuK Lernwelt</h2>
+    <nav>
+      <a href="dashboard.html" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="benutzer.html"><i class="bi bi-people"></i> Benutzer</a>
+      <a href="materialien.html"><i class="bi bi-folder2"></i> Materialien</a>
+      <a href="module.html"><i class="bi bi-layers"></i> Module</a>
+      <a href="personlich.html"><i class="bi bi-person"></i> Persönlich</a>
+      <a href="zugang.html"><i class="bi bi-lock"></i> Zugang</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header>
+      <h1>Dashboard</h1>
+      <div class="avatar"><img src="../assets/avatar-default.png" alt="Avatar"></div>
+    </header>
+
+    <main>
+      <!-- KPI-Karten -->
+      <section class="grid grid-3">
+        <div class="card"><h3>Benutzer</h3><p>120</p></div>
+        <div class="card"><h3>Module</h3><p>8</p></div>
+        <div class="card"><h3>Fortschritt</h3><p>75%</p></div>
+      </section>
+
+      <!-- Charts -->
+      <section class="grid grid-2" style="margin-top:2rem;">
+        <div class="card">
+          <h3>Aktivität (letzte 7 Tage)</h3>
+          <canvas id="activityChart"></canvas>
+        </div>
+        <div class="card">
+          <h3>Ressourcennutzung</h3>
+          <canvas id="usageChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Listen -->
+      <section class="grid grid-2" style="margin-top:2rem;">
+        <div class="card">
+          <h3>To-Do Liste</h3>
+          <ul class="todo">
+            <li>Modul A abschließen <span class="status">⏳</span></li>
+            <li>Material hochladen <span class="status">⏳</span></li>
+            <li>Feedback geben <span class="status-done">✔</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Letzte Aktivitäten</h3>
+          <ul class="activity">
+            <li><span>👤 Neuer Benutzer registriert</span> <span class="timestamp">18.09. 10:30</span></li>
+            <li><span>📦 Modul B abgeschlossen</span> <span class="timestamp">17.09. 14:12</span></li>
+            <li><span>📄 Dokument hochgeladen</span> <span class="timestamp">16.09. 09:45</span></li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Line Chart
+    new Chart(document.getElementById("activityChart"), {
+      type: "line",
+      data: {
+        labels: ["Mo","Di","Mi","Do","Fr","Sa","So"],
+        datasets: [{
+          label: "Aktivität",
+          data: [3,5,2,8,6,7,4],
+          borderColor: "rgb(230,0,5)",
+          backgroundColor: "rgba(230,0,5,0.3)",
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: { plugins:{legend:{labels:{color:"#f5f5f5"}}}, scales:{x:{ticks:{color:"#b0b0b0"}}, y:{ticks:{color:"#b0b0b0"}}}}
+    });
+
+    // Doughnut Chart
+    new Chart(document.getElementById("usageChart"), {
+      type: "doughnut",
+      data: {
+        labels: ["Disk", "CDN", "Besuche"],
+        datasets: [{
+          data: [70, 20, 10],
+          backgroundColor: ["rgb(0,45,85)","rgb(230,0,5)","rgb(228,100,80)"]
+        }]
+      },
+      options: { plugins:{legend:{labels:{color:"#f5f5f5"}}}}
+    });
+  </script>
+</body>
+</html>
 
