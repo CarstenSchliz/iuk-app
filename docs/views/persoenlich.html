@@ -7,19 +7,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
-    /* ================================
-       THEME: zentrale Farb-Variablen
-       ================================ */
     :root {
-      /* Markencolors */
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
 
       /* Light Theme */
-      --bg: #f3f4f6;                /* Seitenhintergrund */
-      --text: #1f2937;              /* Standardtext */
-      --heading: #002d55;           /* Überschriften */
+      --bg: #f3f4f6;
+      --text: #1f2937;
+      --heading: #002d55;
       --link: #e06862;
 
       --card-bg: #ffffff;
@@ -39,24 +35,22 @@
 
       --blassblau: rgb(230,240,250);
 
-      /* Toggle (Light) */
       --toggle-track: #0f2030;
       --toggle-border: #e5e7eb;
       --toggle-star: #ffd84d;
-      --toggle-knob: #ffffff;
+      --toggle-knob: var(--dunkelblau);
     }
 
-    /* Dark Theme – wirklich schwarz + klare Abgrenzung */
     body.dark {
-      --bg: #000000;                /* kompletter Hintergrund schwarz */
+      --bg: #000000;
       --text: #f3f4f6;
       --heading: #f3f4f6;
       --link: #4da6ff;
 
-      --card-bg: #151515;           /* Karten abgehoben dunkel */
+      --card-bg: #151515;
       --card-border: #2c2c2c;
 
-      --input-bg: #222;             /* Felder sauber dunkel */
+      --input-bg: #222;
       --input-fg: #f3f4f6;
       --input-border: #3a3a3a;
       --input-readonly-bg: #2a2a2a;
@@ -68,15 +62,12 @@
       --modal-bg: #1e1e1e;
       --modal-heading: #f3f4f6;
 
-      /* Toggle (Dark) */
       --toggle-track: #061018;
       --toggle-border: #2a2f35;
       --toggle-star: #ffd84d;
-      --toggle-knob: #e9eef7;
+      --toggle-knob: var(--dunkelblau);
     }
 
-    /* Grundlayout */
-    html, body { margin:0; padding:0; }
     body {
       font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
       background: var(--bg);
@@ -107,7 +98,7 @@
       border-radius: 14px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08);
       margin-bottom: 1.5rem;
-      transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+      transition: background .2s ease, color .2s ease, border-color .2s ease;
     }
     body.dark .card {
       box-shadow: 0 10px 24px rgba(0,0,0,0.45);
@@ -122,15 +113,6 @@
       gap: .5rem;
     }
 
-    /* Bessere Lesbarkeit auf Mobile: Cards nicht vollflächig */
-    @media (max-width: 768px) {
-      .card {
-        max-width: 560px;
-        margin: 0 auto 1.5rem;
-      }
-    }
-
-    /* Floating Labels */
     .form-group.floating { position: relative; margin-bottom: 1.2rem; }
     .form-group.floating input {
       width: 100%;
@@ -140,7 +122,6 @@
       background: var(--input-bg);
       color: var(--input-fg);
       font-size: 1rem;
-      transition: border-color .15s ease, background .15s ease, color .15s ease;
       min-height: 44px;
       box-sizing: border-box;
     }
@@ -153,7 +134,7 @@
       font-size: .95rem;
       transition: all .15s;
       pointer-events: none;
-      background: var(--card-bg);
+      background: transparent; /* fix: kein schwarzer Balken */
       padding: 0 .25rem;
     }
     .form-group.floating input:focus + label,
@@ -164,27 +145,22 @@
       color: var(--heading);
     }
 
-    /* readonly Felder klar kennzeichnen */
     .form-group.floating input[readonly] {
       background: var(--input-readonly-bg) !important;
       color: var(--input-readonly-fg);
       cursor: not-allowed;
     }
 
-    /* Nur im LIGHT-Mode blassblau bei Inhalt */
     body:not(.dark) .form-group.floating input:not(:placeholder-shown):not([readonly]) {
       background: var(--blassblau);
       border-color: var(--dunkelblau);
     }
 
-    .form-row {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
-    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     @media (max-width:768px) {
       .form-row { grid-template-columns: 1fr; }
     }
 
-    /* Buttons */
     .form-actions { display:flex; gap:1rem; margin-top:1rem; }
     .btn {
       padding:.6rem 1rem;
@@ -193,17 +169,14 @@
       cursor:pointer;
       font-size:.95rem;
       min-height:44px;
-      min-width:140px;               /* gleiche Mindestbreite */
+      min-width:140px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:.5rem;
-      transition: filter .15s ease, background .2s ease, color .2s ease;
     }
     .btn-primary { background: var(--dunkelblau); color: #fff; }
-    .btn-primary:hover { filter: brightness(1.03); }
     .btn-secondary { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
-    .btn-secondary:hover { filter: brightness(1.05); }
     .btn-accent { background: var(--dunkelblau); color: #fff; }
 
     .form-msg { margin-top:.5rem; font-weight:600; }
@@ -214,9 +187,6 @@
       display:flex; align-items:center; gap:.5rem;
     }
 
-    /* ================================
-       Modal (Passwort ändern)
-       ================================ */
     .modal {
       position: fixed; inset: 0;
       display: none;
@@ -236,46 +206,12 @@
       width: 92%;
       max-width: 520px;
       box-sizing: border-box;
-      transform: scale(.97);
-      transition: transform .25s ease, opacity .25s ease, background .2s ease, color .2s ease;
-      opacity: 1;
-    }
-    .modal.show .modal-content { transform: scale(1); }
-
-    .modal-content h2 {
-      color: var(--modal-heading);
-      font-size: 1.4rem;
-      margin: .3rem 0 1.1rem;
-      text-align: center;
     }
 
-    .modal-actions { display:flex; gap:1rem; margin-top:1rem; }
-    .modal-actions button {
-      flex:1; padding:.7rem; border:none; border-radius:6px;
-      font-size:.95rem; font-weight:bold; cursor:pointer; min-height:44px;
-    }
-    .modal-actions .primary { background: var(--dunkelblau); color: #fff; }
-    .modal-actions .close   { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
-
-    /* Regeln unter dem Feld (damit Label nicht überlappt) */
-    #pass-rules {
-      font-size:.85rem;
-      text-align:left;
-      margin: 6px 0 12px 2px;
-      line-height: 1.35;
-    }
-
-    /* Mobile: Popup angenehme Breite */
-    @media (max-width: 768px) {
-      .modal-content { width: 92%; max-width: 420px; }
-    }
-
-    /* ================================
-       Moderner Theme-Schieberegler
-       ================================ */
+    /* Schieberegler kompakter */
     .theme-switch {
-      --w: 96px;
-      --h: 48px;
+      --w: 72px;
+      --h: 36px;
       position: relative;
       width: var(--w);
       height: var(--h);
@@ -285,58 +221,32 @@
       display: inline-flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 8px;
       cursor: pointer;
-      user-select: none;
-      transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
     }
     .theme-switch .thumb {
       position: absolute;
-      top: 4px;
-      left: 4px;
-      width: calc(var(--h) - 8px);
-      height: calc(var(--h) - 8px);
+      top: 3px;
+      left: 3px;
+      width: calc(var(--h) - 6px);
+      height: calc(var(--h) - 6px);
       border-radius: 50%;
       background: var(--toggle-knob);
-      box-shadow: 0 2px 6px rgba(0,0,0,.25);
-      transition: transform .35s cubic-bezier(.22,.61,.36,1), background .25s ease;
+      transition: transform .35s cubic-bezier(.22,.61,.36,1);
     }
-    /* Sterne (nur Deko, erscheinen im Darkmode) */
-    .theme-switch::before,
-    .theme-switch::after {
-      content: "★";
-      position: absolute;
-      color: var(--toggle-star);
-      font-size: 12px;
-      opacity: .0;
-      transform: translateY(-2px);
-      transition: opacity .25s ease;
-    }
-    .theme-switch::before { right: 26px; top: 10px; }
-    .theme-switch::after  { right: 14px; bottom: 10px; font-size: 10px; }
+    .theme-switch .icon { font-size: 16px; z-index:1; }
+    .theme-switch .sun { color: #ffda65; margin-right:auto; animation: glowSun 2s infinite alternate; }
+    .theme-switch .moon { color: #ffd84d; margin-left:auto; }
+    body.dark .theme-switch .moon { animation: glowMoon 2s infinite alternate; }
+    body.dark .theme-switch .thumb { transform: translateX(calc(var(--w) - var(--h))); }
 
-    /* Icons links/rechts (Sonne/Mond) */
-    .theme-switch .icon {
-      font-size: 18px;
-      color: #ffd84d;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px; height: 22px;
-      pointer-events: none;
-      opacity: .85;
+    @keyframes glowSun {
+      from { text-shadow: 0 0 2px #ffd84d, 0 0 5px #ffcc33; }
+      to   { text-shadow: 0 0 6px #ffd84d, 0 0 12px #ffcc33; }
     }
-    .theme-switch .sun  { color: #ffda65; }
-    .theme-switch .moon { color: #ffd84d; margin-left: auto; }
-
-    /* Wenn Darkmode aktiv: Knopf nach rechts, Sterne sichtbar */
-    body.dark .theme-switch .thumb {
-      transform: translateX(calc(var(--w) - var(--h)));
-    }
-    body.dark .theme-switch::before,
-    body.dark .theme-switch::after {
-      opacity: 1;
+    @keyframes glowMoon {
+      from { text-shadow: 0 0 2px #8899ff, 0 0 5px #6677ff; }
+      to   { text-shadow: 0 0 6px #8899ff, 0 0 12px #6677ff; }
     }
   </style>
 </head>
@@ -344,9 +254,7 @@
   <h2 class="page-title">Einstellungen</h2>
 
   <div class="settings-grid">
-    <!-- Linke Spalte -->
     <div>
-      <!-- Persönliche Daten -->
       <div class="card">
         <h3><i class="bi bi-person"></i> Persönliche Daten</h3>
         <form id="profileForm" novalidate>
@@ -354,14 +262,12 @@
             <input type="text" id="name" placeholder=" ">
             <label for="name">Name</label>
           </div>
-
           <div class="form-group floating">
             <input type="email" id="email" placeholder=" " readonly>
             <label for="email">E-Mail-Adresse</label>
           </div>
-
           <div class="form-row">
-            <div class="form-group floating" title="Rollen werden vom Administrator vergeben">
+            <div class="form-group floating">
               <input type="text" id="roles" placeholder=" " readonly>
               <label for="roles">Rollen</label>
             </div>
@@ -370,7 +276,6 @@
               <label for="uid">UID</label>
             </div>
           </div>
-
           <div class="form-actions">
             <button type="button" id="backBtn" class="btn btn-secondary">
               <i class="bi bi-arrow-left"></i> Zurück
@@ -379,11 +284,9 @@
               <i class="bi bi-save"></i> Speichern
             </button>
           </div>
-          <div id="profileMsg" class="form-msg" aria-live="polite"></div>
+          <div id="profileMsg" class="form-msg"></div>
         </form>
       </div>
-
-      <!-- Weitere Einstellungen -->
       <div class="card">
         <h3><i class="bi bi-gear"></i> Weitere Einstellungen</h3>
         <ul class="list">
@@ -391,65 +294,47 @@
         </ul>
       </div>
     </div>
-
-    <!-- Rechte Spalte -->
     <div>
-      <!-- Erscheinungsbild -->
       <div class="card">
         <h3><i class="bi bi-palette"></i> Erscheinungsbild</h3>
         <p>Aktuelles Theme: <span id="themeLabel">Hell</span></p>
-
-        <!-- Neuer Schieberegler -->
-        <div id="themeToggle"
-             class="theme-switch"
-             role="switch"
-             aria-checked="false"
-             aria-label="Darstellung: Hell/Dunkel umschalten">
+        <div id="themeToggle" class="theme-switch" role="switch" aria-checked="false">
           <span class="icon sun"><i class="bi bi-brightness-high-fill"></i></span>
-          <span class="thumb" aria-hidden="true"></span>
+          <span class="thumb"></span>
           <span class="icon moon"><i class="bi bi-moon-stars-fill"></i></span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Passwort ändern Modal -->
-  <div id="pwdModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pwdTitle">
+  <div id="pwdModal" class="modal">
     <div class="modal-content">
       <h2 id="pwdTitle">Passwort ändern</h2>
-
       <div class="form-group floating">
         <input type="password" id="currentPwd" placeholder=" " autocomplete="current-password">
         <label for="currentPwd">Aktuelles Passwort</label>
       </div>
-
       <div class="form-group floating">
-        <input type="password" id="newPwd" placeholder=" " autocomplete="new-password" title="Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen">
+        <input type="password" id="newPwd" placeholder=" " autocomplete="new-password">
         <label for="newPwd">Neues Passwort</label>
       </div>
-
-      <!-- Regeln separat, damit die Labels nicht überlappen -->
       <div id="pass-rules">
         <div id="rule-length">❌ Mindestens 8 Zeichen</div>
         <div id="rule-number">❌ Mindestens 1 Zahl</div>
         <div id="rule-uppercase">❌ Mindestens 1 Großbuchstabe</div>
         <div id="rule-special">❌ Mindestens 1 Sonderzeichen</div>
       </div>
-
       <div class="form-group floating">
         <input type="password" id="repeatPwd" placeholder=" " autocomplete="new-password">
         <label for="repeatPwd">Neues Passwort wiederholen</label>
       </div>
-
       <div class="modal-actions">
         <button id="savePwd" class="primary" type="button"><i class="bi bi-save"></i> Speichern</button>
         <button id="cancelPwd" class="close" type="button"><i class="bi bi-x-lg"></i> Zurück</button>
       </div>
-
-      <div id="pwdMsg" class="form-msg" aria-live="polite"></div>
+      <div id="pwdMsg" class="form-msg"></div>
     </div>
   </div>
-
   <script type="module">
     /*********** Firebase ***********/
     import {
@@ -566,7 +451,6 @@
       }
     }
 
-    // System-Präferenz nur verwenden, wenn noch nichts gesetzt
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme) {
       setTheme(storedTheme);
@@ -575,7 +459,6 @@
       setTheme(prefersDark ? "dark" : "light");
     }
 
-    // Klick/Keyboard auf den Switch
     themeSwitch.addEventListener("click", () => {
       setTheme(document.body.classList.contains("dark") ? "light" : "dark");
     });
@@ -585,11 +468,9 @@
         setTheme(document.body.classList.contains("dark") ? "light" : "dark");
       }
     });
-    // Fokusfähigkeit für Barrierefreiheit
     themeSwitch.setAttribute("tabindex","0");
 
     /*********** Passwort ändern ***********/
-    // Regeln live updaten
     function updateRules(val) {
       document.getElementById("rule-length").textContent    = val.length >= 8       ? "✅ Mindestens 8 Zeichen"      : "❌ Mindestens 8 Zeichen";
       document.getElementById("rule-number").textContent    = /[0-9]/.test(val)     ? "✅ Mindestens 1 Zahl"          : "❌ Mindestens 1 Zahl";
@@ -598,7 +479,6 @@
     }
     newPwd.addEventListener("input", () => updateRules(newPwd.value));
 
-    // Modal öffnen/schließen
     function openPwd() {
       pwdModal.style.display = "flex";
       setTimeout(() => pwdModal.classList.add("show"), 10);
@@ -614,7 +494,6 @@
     changePasswordLink.addEventListener("click", openPwd);
     cancelPwd.addEventListener("click", closePwd);
 
-    // Speichern (Re-Auth + Update)
     savePwdBtn.addEventListener("click", async () => {
       const user = auth.currentUser;
       if (!user) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Kein Benutzer eingeloggt."; return; }
@@ -631,10 +510,8 @@
       try {
         savePwdBtn.disabled = true;
         savePwdBtn.innerHTML = "⏳ Speichern...";
-        // Re-Auth
         const cred = EmailAuthProvider.credential(user.email, cur);
         await reauthenticateWithCredential(user, cred);
-        // Update
         await updatePassword(user, neu);
         pwdMsg.style.color="green"; pwdMsg.textContent="✅ Passwort erfolgreich geändert.";
         setTimeout(closePwd, 900);
