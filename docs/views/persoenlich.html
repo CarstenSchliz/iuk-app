@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
@@ -74,35 +74,25 @@
   }
 
   /* Grundlayout */
-  html, body { margin:0; padding:0; height:100%; }
-  html { background: var(--bg) !important; }
+  html, body {
+    margin:0; padding:0; height:100%;
+    background: var(--bg) !important;               /* html + body -> Theme-Hintergrund */
+  }
   body {
     font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
-    background: var(--bg) !important;
     color: var(--text);
-    padding: 1rem;
     transition: background .2s ease, color .2s ease;
   }
 
-  .page-title { color: var(--softrot); margin: 0 0 1rem; }
+  .page-title { color: var(--softrot); margin: 0 0 1rem; padding: 1rem; }
 
   .settings-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 1.5rem;
+    padding: 1rem;
   }
-  @media (max-width: 768px) {
-    .settings-grid {
-      grid-template-columns: 1fr;
-      padding: 1rem;
-    }
-    /* MOBILE FIX: Karten wirklich mittig */
-    .settings-grid > div {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-  }
+  @media (max-width: 768px) { .settings-grid { grid-template-columns: 1fr; } }
 
   .card {
     background: var(--card-bg);
@@ -110,7 +100,7 @@
     border: 1px solid var(--card-border);
     padding: 1.5rem;
     border-radius: 14px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.28);               /* dezenter Shadow */
     margin-bottom: 1.5rem;
     transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
   }
@@ -119,14 +109,12 @@
     color: var(--hellblau);
     margin: 0 0 1rem;
     font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
+    display: flex; align-items: center; gap: .5rem;
   }
 
-  /* Mobile: Karten mittig halten & begrenzen */
+  /* Mobile: Karten mittig */
   @media (max-width: 768px) {
-    .card { max-width: 560px; width: 100%; margin: 0 auto 1.5rem; }
+    .card { max-width: 560px; margin: 0 auto 1.5rem; }
   }
 
   /* Floating Labels */
@@ -134,7 +122,7 @@
   .form-group.floating input,
   .form-group.floating textarea {
     width: 100%;
-    padding: 1rem 2.6rem .3rem .75rem;
+    padding: 1rem 2.6rem .3rem .75rem;                     /* rechts Platz für evtl. Icon */
     border: 1px solid var(--input-border);
     border-radius: 10px;
     background: var(--input-bg);
@@ -143,19 +131,12 @@
     transition: border-color .15s ease, background .15s ease, color .15s ease;
     min-height: 44px;
     box-sizing: border-box;
-    font-family: inherit;
   }
   .form-group.floating label {
     position: absolute;
-    top: 50%;
-    left: .75rem;
-    transform: translateY(-50%);
-    color: #b0b6bf;
-    font-size: .95rem;
-    transition: all .15s;
-    pointer-events: none;
-    background: var(--card-bg);
-    padding: 0 .25rem;
+    top: 50%; left: .75rem; transform: translateY(-50%);
+    color: #b0b6bf; font-size: .95rem; transition: all .15s;
+    pointer-events: none; background: var(--card-bg); padding: 0 .25rem;
   }
   .form-group.floating input:focus + label,
   .form-group.floating input:not(:placeholder-shown) + label,
@@ -164,6 +145,7 @@
     top: .1rem; left: .6rem; font-size: .78rem; color: var(--heading);
   }
 
+  /* readonly Felder klar kennzeichnen */
   .form-group.floating input[readonly],
   .form-group.floating textarea[readonly] {
     background: var(--input-readonly-bg) !important;
@@ -171,57 +153,38 @@
     cursor: not-allowed;
   }
 
+  /* Nur im LIGHT-Mode blassblau bei Inhalt */
   body:not(.dark) .form-group.floating input:not(:placeholder-shown):not([readonly]),
   body:not(.dark) .form-group.floating textarea:not(:placeholder-shown):not([readonly]) {
     background: var(--blassblau);
     border-color: var(--dunkelblau);
   }
 
-  /* Form-Row: Rollen + UID nebeneinander (Desktop) */
+  /* Form-Row: Rollen + UID nebeneinander */
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  @media (max-width:768px) {
-    /* MOBILE FIX: einspaltig & Abstand exakt 1.2rem wie Email↔Rollen */
-    .form-row { grid-template-columns: 1fr; gap: 1.2rem; }
-  }
+  @media (max-width:768px) { .form-row { grid-template-columns: 1fr; } }
 
-  /* Textarea-Optimierung (mehrzeilig mobil, wie Input auf Desktop) */
+  /* Textarea-Optimierung (mehrzeilig, sauberer Zeilenumbruch) */
   .form-group.floating textarea {
     resize: none;
     line-height: 1.4;
     white-space: normal;
-    overflow: hidden;
-    min-height: 44px;  /* Standardhöhe wie Input */
-  }
-  @media (min-width: 769px) {
-    .form-group.floating textarea { height: 44px; } /* Desktop: wirkt 1-zeilig wie Input */
-  }
-  @media (max-width: 768px) {
-    .form-group.floating textarea { min-height: auto; height: auto; overflow: auto; }
+    min-height: 60px;         /* 2 Zeilen sichtbar */
+    overflow: auto;
   }
 
   /* Buttons */
   .form-actions { display:flex; gap:1rem; margin-top:1rem; }
   .btn {
-    padding:.6rem 1rem;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    font-size:.95rem;
-    min-height:44px;
-    min-width:140px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:.5rem;
+    padding:.6rem 1rem; border:none; border-radius:10px; cursor:pointer;
+    font-size:.95rem; min-height:44px; min-width:140px;
+    display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
     transition: filter .15s ease, background .2s ease, color .2s ease;
   }
   .btn-primary { background: var(--dunkelblau); color: #fff; }
   .btn-primary:hover { filter: brightness(1.03); }
-
-  /* Zurück-Button: keine Hover-Aufhellung */
   .btn-secondary { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
   .btn-secondary:hover { filter: none; background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
-
   .btn-accent { background: var(--dunkelblau); color: #fff; }
   .form-msg { margin-top:.5rem; font-weight:600; }
 
@@ -230,39 +193,24 @@
 
   /* ================================ Modal (Passwort ändern) ================================ */
   .modal {
-    position: fixed; inset: 0;
-    display: none; justify-content: center; align-items: center;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity .3s ease;
+    position: fixed; inset: 0; display: none; justify-content: center; align-items: center;
+    background: rgba(0,0,0,0.5); z-index: 1000; opacity: 0; transition: opacity .3s ease;
   }
   .modal.show { display:flex; opacity:1; }
   .modal-content {
-    background: var(--modal-bg);
-    color: var(--text);
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-    width: 92%; max-width: 520px;
-    box-sizing: border-box;
-    transform: scale(.97);
+    background: var(--modal-bg); color: var(--text);
+    padding: 2rem; border-radius: 16px; box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    width: 92%; max-width: 520px; box-sizing: border-box; transform: scale(.97);
     transition: transform .25s ease, opacity .25s ease, background .2s ease, color .2s ease;
     opacity: 1;
   }
   .modal.show .modal-content { transform: scale(1); }
   .modal-content h2 {
-    color: var(--modal-heading);
-    font-size: 1.4rem;
-    margin: .3rem 0 1.1rem;
-    text-align: center;
+    color: var(--modal-heading); font-size: 1.4rem; margin: .3rem 0 1.1rem; text-align: center;
   }
   .modal-actions { display:flex; gap:1rem; margin-top:1rem; }
   .modal-actions button {
-    flex:1; padding:.7rem;
-    border:none; border-radius:6px;
-    font-size:.95rem; font-weight:bold;
-    cursor:pointer; min-height:44px;
+    flex:1; padding:.7rem; border:none; border-radius:6px; font-size:.95rem; font-weight:bold; cursor:pointer; min-height:44px;
   }
   .modal-actions .primary { background: var(--dunkelblau); color: #fff; }
   .modal-actions .close { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
@@ -273,77 +221,50 @@
   /* Fortschrittsbalken Passwort */
   .pw-meter { height: 8px; border-radius: 999px; background: var(--card-border); margin: 6px 2px 6px; overflow: hidden; display: none; }
   .pw-meter-bar { height: 100%; width: 0%; border-radius: 999px; transition: width .2s ease, background .2s ease; }
-  .pw-strength { display:none; margin: 0 2px 10px; font-size: .86rem; font-weight: 700; }   /* NEU: Textanzeige */
+  .pw-strength { display:none; margin: 0 2px 10px; font-size: .86rem; font-weight: 700; }
 
   /* ================================ Moderner Theme-Schieberegler ================================ */
   .theme-switch {
-    --w: 80px;          /* kleiner Switch */
-    --h: 40px;
-    position: relative;
-    width: var(--w); height: var(--h);
-    border-radius: 999px;
-    border: 2px solid var(--toggle-border);
-    background: var(--toggle-track);
-    cursor: pointer; user-select: none;
+    --w: 80px; --h: 40px;
+    position: relative; width: var(--w); height: var(--h);
+    border-radius: 999px; border: 2px solid var(--toggle-border);
+    background: var(--toggle-track); cursor: pointer; user-select: none;
     transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
-    overflow: hidden;   /* <<< Fix: Icons/Thumb ragen auf Mobil nicht raus */
-    display: block;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04); overflow: hidden; display: block;
   }
-
-  /* Icons absolut positionieren, damit der Thumb sie exakt überdecken kann */
   .theme-switch .icon {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 18px;
-    color: #ffd84d;
-    width: 22px; height: 22px;
-    pointer-events: none;
-    opacity: .9;
-    z-index: 1;
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 18px; width: 22px; height: 22px; pointer-events: none; opacity: .9; z-index: 1;
   }
   .theme-switch .sun { left: 10px; color: #ffda65; }
   .theme-switch .moon { right: 10px; color: #ffd84d; }
 
   .theme-switch .thumb {
     position: absolute; top: 4px; left: 4px;
-    width: calc(var(--h) - 6px);  /* <<< etwas größer, damit der Mond vollständig verdeckt wird */
-    height: calc(var(--h) - 6px);
-    border-radius: 50%;
-    background: var(--toggle-knob);
+    width: calc(var(--h) - 8px); height: calc(var(--h) - 8px);
+    border-radius: 50%; background: var(--toggle-knob);
     box-shadow: 0 2px 6px rgba(0,0,0,.25);
     transition: transform .35s cubic-bezier(.22,.61,.36,1), background .25s ease;
-    z-index: 2;  /* über den Icons */
+    z-index: 2;
   }
-  /* Wenn Darkmode aktiv: Knopf nach rechts, Sterne sichtbar */
   body.dark .theme-switch .thumb { transform: translateX(calc(var(--w) - var(--h))); }
 
-  /* Sterne (Deko) */
   .theme-switch::before, .theme-switch::after {
-    content: "★"; position: absolute; color: var(--toggle-star);
-    font-size: 12px; opacity: .0; transform: translateY(-2px);
-    transition: opacity .25s ease;
+    content: "★"; position: absolute; color: var(--toggle-star); font-size: 12px; opacity: .0; transform: translateY(-2px); transition: opacity .25s ease;
   }
   .theme-switch::before { right: 26px; top: 8px; }
   .theme-switch::after  { right: 14px; bottom: 8px; font-size: 10px; }
   body.dark .theme-switch::before, body.dark .theme-switch::after { opacity: 1; }
 
-  /* Effekte: Sonne rotiert kurz beim Wechsel zu Hell, Mond pulsiert im Dark,
-     plus "Burst" beim Umschalten über ::after */
   @keyframes sunSpinOnce { from{transform: translateY(-50%) rotate(0);} to{transform: translateY(-50%) rotate(360deg);} }
   @keyframes moonPulse { 0%,100%{ filter:drop-shadow(0 0 0 rgba(255,216,77,0)); } 50%{ filter:drop-shadow(0 0 8px rgba(255,216,77,.9)); } }
   body:not(.dark) .theme-switch .sun.burst { animation: sunSpinOnce .6s ease; }
   body.dark .theme-switch .moon { animation: moonPulse 1.6s ease-in-out infinite; }
 
-  .theme-switch .sun::after,
-  .theme-switch .moon::after {
-    content:""; position:absolute; inset:-6px;
-    border-radius:50%;
+  .theme-switch .sun::after, .theme-switch .moon::after {
+    content:""; position:absolute; inset:-6px; border-radius:50%;
     background: radial-gradient(circle, rgba(255,220,120,.6) 0%, rgba(255,220,120,0) 60%);
-    opacity:0; transform: scale(.6);
-    transition: opacity .25s ease, transform .25s ease;
-    z-index: -1;
+    opacity:0; transform: scale(.6); transition: opacity .25s ease, transform .25s ease; z-index: -1;
   }
   body:not(.dark) .theme-switch .sun.burst::after { opacity:1; transform: scale(1.1); }
   body.dark .theme-switch .moon.burst::after { opacity:1; transform: scale(1.1); }
@@ -351,32 +272,16 @@
   /* Auge-Icon im Input */
   .input-with-eye { position: relative; }
   .toggle-eye {
-    position: absolute;
-    right: .5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    padding: .25rem;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    color: var(--input-fg);
+    position: absolute; right: .5rem; top: 50%; transform: translateY(-50%);
+    border: 0; background: transparent; cursor: pointer; padding: .25rem;
+    line-height: 1; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 8px; color: var(--input-fg);
   }
   .toggle-eye:focus { outline: 2px solid var(--input-border); }
 
-  /* ================================ Sidebar Active Darkmode ================================ */
-  body.dark .menu button.active {
-    background: #fff;
-    color: #000;
-    font-weight: bold;
-  }
-  body.dark .menu button.active::before {
-    background: #fff;
-  }
+  /* ================================ Sidebar-Active im Darkmode (weiß/schwarz) ================================ */
+  body.dark .menu button.active { background: #fff; color: #000; font-weight: bold; }
+  body.dark .menu button.active::before { background: #fff; }
   </style>
 </head>
 
@@ -402,11 +307,11 @@
 
           <div class="form-row">
             <div class="form-group floating" title="Rollen werden vom Administrator vergeben">
-              <textarea id="roles" placeholder=" " readonly></textarea>
+              <textarea id="roles" placeholder=" " readonly rows="2"></textarea>
               <label for="roles">Rollen</label>
             </div>
             <div class="form-group floating">
-              <textarea id="uid" placeholder=" " readonly></textarea>
+              <textarea id="uid" placeholder=" " readonly rows="2"></textarea>
               <label for="uid">UID</label>
             </div>
           </div>
@@ -588,7 +493,7 @@
   /*********** Zurück ***********/
   backBtn.addEventListener("click", () => { window.location.href = "app.html"; });
 
-  /*********** Theme-Toggle (OHNE globalen Dispatch) ***********/
+  /*********** Theme-Toggle ***********/
   function setTheme(mode){
     if(mode === "dark"){
       document.body.classList.add("dark");
@@ -618,7 +523,7 @@
     setTheme(prefersDark ? "dark" : "light");
   }
 
-  // Klick/Keyboard auf den Switch (kein window.dispatchEvent)
+  // Klick/Keyboard auf den Switch
   themeSwitch.addEventListener("click", () => {
     setTheme(document.body.classList.contains("dark") ? "light" : "dark");
   });
@@ -660,34 +565,28 @@
     pwStrengthText.style.color = colors[score];
   }
 
-  const newPwd = document.getElementById("newPwd");
-  const currentPwd = document.getElementById("currentPwd");
-  const repeatPwd = document.getElementById("repeatPwd");
-
   newPwd.addEventListener("focus", () => showPwHints(true));
   newPwd.addEventListener("blur",  () => { if(!newPwd.value) showPwHints(false); });
   newPwd.addEventListener("input", () => { showPwHints(true); updateRules(newPwd.value); });
 
   // Modal öffnen/schließen
-  const openPwd = () => {
+  function openPwd() {
     pwdModal.style.display = "flex";
     setTimeout(() => pwdModal.classList.add("show"), 10);
     setTimeout(() => currentPwd.focus(), 60);
-  };
-  const closePwd = () => {
+  }
+  function closePwd() {
     pwdModal.classList.remove("show");
     setTimeout(() => { pwdModal.style.display = "none"; }, 250);
     currentPwd.value = ""; newPwd.value = ""; repeatPwd.value = "";
     pwdMsg.textContent = ""; pwdMsg.removeAttribute("style");
     showPwHints(false);
     updateRules("");
-  };
+  }
   changePasswordLink.addEventListener("click", openPwd);
-  const cancelPwd = document.getElementById("cancelPwd");
   cancelPwd.addEventListener("click", closePwd);
 
   // Speichern (Re-Auth + Update)
-  const savePwdBtn = document.getElementById("savePwd");
   savePwdBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
     if (!user) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Kein Benutzer eingeloggt."; return; }
@@ -697,7 +596,7 @@
     const rep = repeatPwd.value.trim();
 
     if (!cur) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Bitte aktuelles Passwort eingeben."; return; }
-    if (!/^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(neu)) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Passwort erfüllt nicht die Anforderungen."; return; }
+    if (!strongPw(neu)) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Passwort erfüllt nicht die Anforderungen."; return; }
     if (neu !== rep) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Die neuen Passwörter stimmen nicht überein."; return; }
     if (cur === neu) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Neues Passwort darf nicht dem alten entsprechen."; return; }
 
@@ -738,28 +637,6 @@
       input.type = "password";
       icon.classList.remove("bi-eye-slash"); icon.classList.add("bi-eye");
       btn.setAttribute("aria-label","Passwort anzeigen");
-    }
-  });
-
-  /*********** Name speichern / Sidebar-Aktualisierung ***********/
-  function showProfileMsg(text, color) { profileMsg.textContent = text; profileMsg.style.color = color; }
-  const saveBtn2 = document.getElementById("saveBtn");
-  saveBtn2.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    const newName = nameField.value.trim();
-    if (!user) { showProfileMsg("❌ Kein Benutzer eingeloggt.", "red"); return; }
-    if (!newName) { showProfileMsg("❌ Bitte Namen eingeben.", "red"); return; }
-    try {
-      saveBtn2.disabled = true;
-      saveBtn2.innerHTML = "⏳ Speichern...";
-      await updateUserProfile(user, { displayName: newName });
-      if (sidebarName) sidebarName.textContent = newName;
-      showProfileMsg("✅ Name geändert!", "green");
-    } catch (err) {
-      showProfileMsg("❌ " + (err?.code ? translateFirebaseError(err.code) : err.message), "red");
-    } finally {
-      saveBtn2.disabled = false;
-      saveBtn2.innerHTML = '<i class="bi bi-save"></i> Speichern';
     }
   });
   </script>
