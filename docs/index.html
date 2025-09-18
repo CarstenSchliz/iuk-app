@@ -96,6 +96,7 @@
       margin-bottom: 1.5rem;
     }
 
+    /* === Felder & Icons === */
     .form-group {
       position: relative;
       margin-bottom: 1.2rem;
@@ -106,7 +107,7 @@
       width: 100%;
       border: 1px solid var(--mittelgrau);
       border-radius: 6px;
-      padding: 0.9rem 0.8rem 0.5rem 2.5rem;
+      padding: 0.9rem 0.8rem 0.5rem 2.5rem; /* Platz für linkes Icon */
       font-size: 1rem;
       outline: none;
       background: #fff;
@@ -135,6 +136,8 @@
       font-size: 0.75rem;
       color: var(--dunkelblau);
     }
+
+    /* linkes Icon */
     .form-group i {
       position: absolute;
       top: 50%;
@@ -144,11 +147,12 @@
       color: var(--dunkelgrau);
     }
 
-    /* rechtes Icon (z. B. Auge) */
+    /* rechtes Icon (Auge) */
     .form-group .icon-right {
       position: absolute;
       top: 50%;
-      right: 0.6rem;
+      left: auto;
+      right: 0.6rem;              /* gleicher Abstand wie links */
       transform: translateY(-50%);
       font-size: 1.2rem;
       color: var(--dunkelgrau);
@@ -168,17 +172,19 @@
       margin-top: 0.5rem;
     }
 
+    /* === Links unter dem Button (wieder mittig) === */
     .links { 
       margin-top: 2rem; 
       font-size: 0.85rem; 
-      text-align: left; /* Links bündig */
+      text-align: center;
     }
     .links .section { margin-bottom: 1.8rem; }
     .links span { display: block; margin-bottom: 0.3rem; color: var(--dunkelgrau); }
-    .links a { display: inline-block; text-decoration: none; margin-top: 0.3rem; }
+    .links a { display: block; text-decoration: none; margin-top: 0.3rem; }
     .links a.register { color: var(--softrot); font-weight: bold; }
     .links a.forgot { color: var(--dunkelblau); }
 
+    /* === Modal & Inhalte === */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -191,10 +197,8 @@
       opacity: 0;
       transition: opacity 0.3s ease;
     }
-    .modal.show {
-      display: flex;
-      opacity: 1;
-    }
+    .modal.show { display: flex; opacity: 1; }
+
     .modal-content {
       background: #fff;
       padding: 2rem;
@@ -208,15 +212,23 @@
       opacity: 0;
       transition: all 0.3s ease;
     }
-    .modal.show .modal-content {
-      transform: scale(1);
-      opacity: 1;
-    }
+    .modal.show .modal-content { transform: scale(1); opacity: 1; }
+
     .modal-content h2 {
       color: var(--dunkelblau); 
       font-size: 1.4rem;
       margin: 0.5rem 0 1.2rem 0;
     }
+
+    /* Form-Felder im Modal (floating Labels behalten) */
+    .modal-content .form-group { margin-bottom: 1.2rem; }
+    .modal-content .form-group input {
+      padding: 0.9rem 0.8rem 0.5rem 0.8rem; /* im Modal keine linken Icons */
+    }
+    .modal-content .form-group label {
+      left: 0.8rem;
+    }
+
     .modal-actions {
       display:flex;
       gap:1rem;
@@ -235,7 +247,7 @@
     #reset-submit.primary { background: var(--drk-rot); color: white; }
     .modal-content button.close { background: var(--mittelgrau); color: white; }
 
-    /* === Toast === */
+    /* === Toast (zentriert, mobil-freundlich) === */
     #toast {
       visibility: hidden;
       min-width: 250px;
@@ -254,11 +266,7 @@
       transform: translateX(-50%);
       transition: opacity 0.5s, bottom 0.5s;
     }
-    #toast.show {
-      visibility: visible;
-      opacity: 1;
-      bottom: 50px;
-    }
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
     @media (max-width: 768px) {
       .container { flex-direction: column; }
@@ -286,11 +294,10 @@
           </div>
           <div class="form-group">
             <i class="bi bi-lock"></i>
-            <input type="password" id="password" placeholder=" " required autocomplete="current-password"
-                   style="padding-right:2.5rem;">
+            <input type="password" id="password" placeholder=" " required autocomplete="current-password" style="padding-right:2.5rem;">
             <label for="password">Passwort</label>
-            <!-- Auge-Icon -->
-            <i id="toggle-login-pass" class="bi bi-eye icon-right"></i>
+            <!-- Auge rechts -->
+            <i id="toggle-login-pass" class="bi bi-eye icon-right" aria-hidden="true"></i>
           </div>
           <button type="submit" class="login-btn">
             <i class="bi bi-box-arrow-in-right"></i> Anmelden
@@ -316,24 +323,28 @@
   </div>
 
   <!-- Registrierung -->
-  <div id="register-modal" class="modal">
+  <div id="register-modal" class="modal" aria-hidden="true">
     <div class="modal-content">
       <h2>Registrieren</h2>
+
       <div class="form-group floating">
         <input type="text" id="reg-name" placeholder=" " required>
         <label for="reg-name">Name</label>
       </div>
+
       <div class="form-group floating">
         <input type="email" id="reg-email" placeholder=" " required autocomplete="email">
         <label for="reg-email">E-Mail-Adresse</label>
       </div>
+
       <div class="form-group floating">
         <input type="password" id="reg-pass" placeholder=" " required autocomplete="new-password"
                style="padding-right:2.5rem;"
                title="Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen">
         <label for="reg-pass">Passwort</label>
-        <!-- Auge-Icon -->
-        <i id="toggle-pass" class="bi bi-eye icon-right"></i>
+        <!-- Auge rechts -->
+        <i id="toggle-pass" class="bi bi-eye icon-right" aria-hidden="true"></i>
+
         <!-- Live-Regeln -->
         <div id="pass-rules" style="display:none; font-size:0.8rem; margin-top:6px; text-align:left;">
           <div id="rule-length">❌ Mindestens 8 Zeichen</div>
@@ -342,6 +353,7 @@
           <div id="rule-special">❌ Mindestens 1 Sonderzeichen</div>
         </div>
       </div>
+
       <div class="modal-actions">
         <button id="reg-submit" class="primary" type="button">Registrieren</button>
         <button class="close" type="button">Abbrechen</button>
@@ -350,7 +362,7 @@
   </div>
 
   <!-- Passwort zurücksetzen -->
-  <div id="reset-modal" class="modal">
+  <div id="reset-modal" class="modal" aria-hidden="true">
     <div class="modal-content">
       <h2>Passwort zurücksetzen</h2>
       <div class="form-group floating">
@@ -365,11 +377,12 @@
   </div>
 
   <!-- Toast -->
-  <div id="toast" role="alert"></div>
+  <div id="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
   <script type="module">
     import { login, register, resetPassword, translateFirebaseError, updateUserProfile } from "./js/firebase.js";
 
+    /* Toast */
     function showToast(message, color = "#333") {
       const toast = document.getElementById("toast");
       toast.innerText = message;
@@ -378,60 +391,84 @@
       setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
+    /* Modals öffnen/schließen */
     function openModal(id){
       const modal = document.getElementById(id);
       modal.style.display = "flex";
-      setTimeout(()=> modal.classList.add("show"),10);
+      setTimeout(()=> modal.classList.add("show"), 10);
     }
     function closeModal(modal){
       modal.classList.remove("show");
-      setTimeout(()=> modal.style.display="none",300);
+      setTimeout(()=> modal.style.display="none", 300);
     }
 
-    // Passwortprüfung
+    /* Links: Registrierung/Passwort-Reset öffnen */
+    const regLink = document.querySelector(".register");
+    if (regLink) {
+      regLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        openModal("register-modal");
+      });
+    }
+    const forgotLink = document.querySelector(".forgot");
+    if (forgotLink) {
+      forgotLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        openModal("reset-modal");
+      });
+    }
+
+    /* Modal schließen-Buttons */
+    document.querySelectorAll(".modal .close").forEach(btn => {
+      btn.addEventListener("click", () => { closeModal(btn.closest(".modal")); });
+    });
+
+    /* Passwort ein-/ausblenden (Login) */
+    const loginPass = document.getElementById("password");
+    const toggleLoginPass = document.getElementById("toggle-login-pass");
+    if (toggleLoginPass) {
+      toggleLoginPass.addEventListener("click", () => {
+        const type = loginPass.getAttribute("type") === "password" ? "text" : "password";
+        loginPass.setAttribute("type", type);
+        toggleLoginPass.classList.toggle("bi-eye");
+        toggleLoginPass.classList.toggle("bi-eye-slash");
+      });
+    }
+
+    /* Passwort ein-/ausblenden (Registrierung) */
+    const regPass = document.getElementById("reg-pass");
+    const togglePass = document.getElementById("toggle-pass");
+    if (togglePass) {
+      togglePass.addEventListener("click", () => {
+        const type = regPass.getAttribute("type") === "password" ? "text" : "password";
+        regPass.setAttribute("type", type);
+        togglePass.classList.toggle("bi-eye");
+        togglePass.classList.toggle("bi-eye-slash");
+      });
+    }
+
+    /* Passwortregeln prüfen */
     function checkPasswordStrength(password) {
+      // Mindestens 8 Zeichen, 1 Zahl, 1 Großbuchstabe, 1 Sonderzeichen
       const regex = /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
       return regex.test(password);
     }
 
-    // Live-Passwortprüfung
-    const regPass = document.getElementById("reg-pass");
+    /* Live-Regeln ein-/ausblenden & updaten */
     const passRules = document.getElementById("pass-rules");
+    if (regPass && passRules) {
+      regPass.addEventListener("focus", () => { passRules.style.display = "block"; });
+      regPass.addEventListener("blur", () => { if (!regPass.value) passRules.style.display = "none"; });
+      regPass.addEventListener("input", () => {
+        const val = regPass.value;
+        document.getElementById("rule-length").textContent = val.length >= 8 ? "✅ Mindestens 8 Zeichen" : "❌ Mindestens 8 Zeichen";
+        document.getElementById("rule-number").textContent = /[0-9]/.test(val) ? "✅ Mindestens 1 Zahl" : "❌ Mindestens 1 Zahl";
+        document.getElementById("rule-uppercase").textContent = /[A-Z]/.test(val) ? "✅ Mindestens 1 Großbuchstabe" : "❌ Mindestens 1 Großbuchstabe";
+        document.getElementById("rule-special").textContent = /[^A-Za-z0-9]/.test(val) ? "✅ Mindestens 1 Sonderzeichen" : "❌ Mindestens 1 Sonderzeichen";
+      });
+    }
 
-    regPass.addEventListener("focus", () => { passRules.style.display = "block"; });
-    regPass.addEventListener("blur", () => { if (!regPass.value) passRules.style.display = "none"; });
-    regPass.addEventListener("input", () => {
-      const val = regPass.value;
-      document.getElementById("rule-length").textContent =
-        val.length >= 8 ? "✅ Mindestens 8 Zeichen" : "❌ Mindestens 8 Zeichen";
-      document.getElementById("rule-number").textContent =
-        /[0-9]/.test(val) ? "✅ Mindestens 1 Zahl" : "❌ Mindestens 1 Zahl";
-      document.getElementById("rule-uppercase").textContent =
-        /[A-Z]/.test(val) ? "✅ Mindestens 1 Großbuchstabe" : "❌ Mindestens 1 Großbuchstabe";
-      document.getElementById("rule-special").textContent =
-        /[^A-Za-z0-9]/.test(val) ? "✅ Mindestens 1 Sonderzeichen" : "❌ Mindestens 1 Sonderzeichen";
-    });
-
-    // Login-Passwort sichtbar/unsichtbar
-    const loginPass = document.getElementById("password");
-    const toggleLoginPass = document.getElementById("toggle-login-pass");
-    toggleLoginPass.addEventListener("click", () => {
-      const type = loginPass.getAttribute("type") === "password" ? "text" : "password";
-      loginPass.setAttribute("type", type);
-      toggleLoginPass.classList.toggle("bi-eye");
-      toggleLoginPass.classList.toggle("bi-eye-slash");
-    });
-
-    // Registrierungs-Passwort sichtbar/unsichtbar
-    const togglePass = document.getElementById("toggle-pass");
-    togglePass.addEventListener("click", () => {
-      const type = regPass.getAttribute("type") === "password" ? "text" : "password";
-      regPass.setAttribute("type", type);
-      togglePass.classList.toggle("bi-eye");
-      togglePass.classList.toggle("bi-eye-slash");
-    });
-
-    // Login
+    /* Login */
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value.trim();
@@ -452,7 +489,7 @@
       }
     });
 
-    // Registrierung absenden
+    /* Registrierung */
     document.getElementById("reg-submit").addEventListener("click", async () => {
       const name = document.getElementById("reg-name").value.trim();
       const email = document.getElementById("reg-email").value.trim();
@@ -462,7 +499,6 @@
         showToast("❌ Bitte alle Felder ausfüllen.", "red");
         return;
       }
-
       if (!checkPasswordStrength(password)) {
         showToast("❌ Passwort erfüllt nicht die Anforderungen.", "red");
         return;
@@ -479,20 +515,13 @@
       }
     });
 
-    // Passwort-Reset öffnen
-    document.querySelector(".forgot").addEventListener("click", (e) => {
-      e.preventDefault();
-      openModal("reset-modal");
-    });
-
-    // Passwort-Reset absenden
+    /* Passwort-Reset */
     document.getElementById("reset-submit").addEventListener("click", async () => {
       const email = document.getElementById("reset-email").value.trim();
       if (!email) {
         showToast("❌ Bitte E-Mail eingeben.", "red");
         return;
       }
-
       try {
         await resetPassword(email);
         showToast("✅ E-Mail zum Zurücksetzen wurde verschickt!", "green");
@@ -502,14 +531,9 @@
         showToast("❌ " + translateFirebaseError(err.code), "red");
       }
     });
-
-    // Close-Buttons
-    document.querySelectorAll(".modal .close").forEach(btn => {
-      btn.addEventListener("click", () => { closeModal(btn.closest(".modal")); });
-    });
   </script>
 
-  <!-- Service Worker -->
+  <!-- Service Worker (wie gehabt) -->
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
