@@ -185,8 +185,7 @@
           <input type="text" id="searchInput" placeholder="Suchen..."
             style="padding:8px 32px 8px 32px; width:100%; border-radius:8px; border:1px solid #ccc;">
           <button id="clearSearch" type="button"
-            style="position:absolute; right:8px; top:50%; transform:translateY(-50%);
-                   background:none; border:none; font-size:1.2rem; color:#6b7280; cursor:pointer; display:none;">
+            style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:1.2rem; color:#6b7280; cursor:pointer; display:none;">
             <i class="bi bi-x-lg"></i>
           </button>
         </div>
@@ -251,7 +250,8 @@
   </div>
 
   <script type="module">
-    const API_BASE = "https://us-central1-iuk-app.cloudfunctions.net";
+    // ✅ richtige Region verwenden
+    const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
     let allUsers = [];
     let editorDirty = false;
 
@@ -285,10 +285,12 @@
       clearTimeout(showToast._t); showToast._t = setTimeout(()=> toastEl.style.display = "none", 2600);
     };
 
-    // Highlight
+    // Regex-sicheres Highlighting
+    const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     function highlight(text, query) {
       if (!query) return text;
-      const regex = new RegExp(`(${query})`, "gi");
+      const safe = escapeRegExp(query);
+      const regex = new RegExp(`(${safe})`, "gi");
       return text.replace(regex, '<mark>$1</mark>');
     }
 
@@ -310,6 +312,7 @@
         backdrop.onclick = () => close(false);
       });
     }
+
     // Rollen extrahieren
     function extractRoles(u){
       return Array.isArray(u.roles) ? u.roles : [];
@@ -405,9 +408,11 @@
             method:"POST", headers:{ "Content-Type":"application/json" },
             body: JSON.stringify({ uid: user.uid, displayName: newName, roles: selected })
           });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
-
+          if (!res.ok) {
+            let msg = `${res.status} ${res.statusText}`;
+            try { const j = await res.json(); if (j?.error) msg += ` – ${j.error}`; } catch {}
+            throw new Error(msg);
+          }
           showToast("Gespeichert");
           await loadUsers();
 
@@ -435,8 +440,11 @@
           method:"POST", headers:{ "Content-Type":"application/json" },
           body: JSON.stringify({ uid: user.uid })
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
+        if (!res.ok) {
+          let msg = `${res.status} ${res.statusText}`;
+          try { const j = await res.json(); if (j?.error) msg += ` – ${j.error}`; } catch {}
+          throw new Error(msg);
+        }
         showToast("Nutzer gelöscht");
         await loadUsers();
         editPanelOuter.style.display = "none"; editPanel.innerHTML = "";
@@ -448,6 +456,7 @@
     // Nutzerliste rendern
     function renderUsers(users){
       const q = searchInput.value.toLowerCase();
+      const safeQ = escapeRegExp(q);
       userList.innerHTML = "";
 
       const filtered = users.filter(u => {
@@ -502,7 +511,7 @@
         tdRoles.innerHTML = rolesToBadges(roles);
         if (q) {
           tdRoles.innerHTML = tdRoles.innerHTML.replace(
-            new RegExp(q,"gi"),
+            new RegExp(safeQ,"gi"),
             match => `<mark>${match}</mark>`
           );
         }
@@ -524,6 +533,11 @@
       userMsg.style.color = "orange"; userMsg.textContent = "⏳ Lade Nutzer...";
       try{
         const res = await fetch(API_BASE + "/listUsers", { method:"GET" });
+        if (!res.ok) {
+          let msg = `${res.status} ${res.statusText}`;
+          try { const j = await res.json(); if (j?.error) msg += ` – ${j.error}`; } catch {}
+          throw new Error(msg);
+        }
         const data = await res.json();
         allUsers=(data.users||[]).sort((a,b)=>(a.displayName||a.email||"").localeCompare(b.displayName||b.email||"","de",{sensitivity:"base"}));
         renderUsers(allUsers);
@@ -540,7 +554,6 @@
     const createBtn = document.getElementById("createBtn");
 
     form.addEventListener("submit", async (e)=>{
-
       e.preventDefault();
       const email = document.getElementById("newEmail").value.trim();
       const pw    = document.getElementById("newPassword").value;
@@ -560,8 +573,11 @@
           method:"POST", headers:{ "Content-Type":"application/json" },
           body: JSON.stringify({ email, password: pw, displayName: name })
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
+        if (!res.ok) {
+          let em = `${res.status} ${res.statusText}`;
+          try { const j = await res.json(); if (j?.error) em += ` – ${j.error}`; } catch {}
+          throw new Error(em);
+        }
 
         showToast("Benutzer erstellt");
         form.reset();
@@ -574,7 +590,7 @@
       }
     });
 
-    // 🔎 Suchfeld-Events hinzufügen
+    // 🔎 Suchfeld-Events
     searchInput.addEventListener("input", () => {
       renderUsers(allUsers);
       clearSearch.style.display = searchInput.value ? "block" : "none";
