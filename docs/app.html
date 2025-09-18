@@ -30,7 +30,7 @@
     /* Sidebar */
     .sidebar {
       background: #fff;
-      width: 340px;
+      width: 340px; /* breiter für PC */
       display: flex;
       flex-direction: column;
       padding: 1.5rem 1rem;
@@ -85,12 +85,12 @@
       margin-bottom: 0.5rem;
       box-sizing: border-box;
       transition: background-color 0.25s ease, color 0.25s ease;
-      white-space: normal;
-      overflow: visible;
+      white-space: normal;   /* kein Abschneiden */
+      overflow: visible;     /* alles sichtbar */
     }
 
     .menu button i {
-      color: inherit;
+      color: inherit; /* Icon übernimmt Textfarbe */
     }
 
     .menu button:hover,
@@ -98,6 +98,7 @@
       background: var(--hoverblau);
     }
 
+    /* Animiertes Bändchen */
     .menu button::before {
       content: "";
       position: absolute;
@@ -153,10 +154,10 @@
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
-        left: -300px;
+        left: -300px; /* angepasst */
         top: 0;
         height: 100%;
-        width: 300px;
+        width: 300px; /* breiter für Handy */
         transition: left 0.3s;
         z-index: 1000;
       }
@@ -209,7 +210,7 @@
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg">
       <input type="file" id="profileUpload" accept="image/*" style="display:none;">
       <h2 id="userName">Lädt...</h2>
-      <p>Teilnehmer</p>
+      <p id="userRoleLabel">Teilnehmer</p>
     </div>
 
     <div class="menu">
@@ -258,6 +259,7 @@
         const html = await res.text();
         content.innerHTML = html;
 
+        // eingebettete Scripts neu laden
         content.querySelectorAll("script").forEach(oldScript => {
           const newScript = document.createElement("script");
           if (oldScript.type) newScript.type = oldScript.type;
@@ -292,7 +294,7 @@
       if (file && user) {
         try {
           const url = await uploadProfileImage(user, file);
-          profileImg.src = url;
+          profileImg.src = url; // direkt von Firebase
           alert("✅ Profilbild aktualisiert!");
         } catch (err) {
           alert("❌ Fehler beim Hochladen: " + err.message);
@@ -309,19 +311,29 @@
 
     // Login-Check + Userdaten + Rollen
     const userName = document.getElementById("userName");
+    const userRoleLabel = document.getElementById("userRoleLabel");
     const navUsers = document.getElementById("nav-users");
 
     observeAuthState(async (user) => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
-        profileImg.src = user.photoURL || "assets/avatar-default.png";
 
-        // 🔥 Rollen aus Firestore holen
-        const roles = await getUserRoles(user.uid);
-        if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-          navUsers.style.display = "block";
+        if (user.photoURL) {
+          profileImg.src = user.photoURL;
         } else {
-          navUsers.style.display = "none";
+          profileImg.src = "assets/avatar-default.png";
+        }
+
+        // Rollen abfragen
+        try {
+          const roles = await getUserRoles(user.uid);
+          if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+            navUsers.style.display = "block";
+          }
+          userRoleLabel.textContent = roles.join(", ") || "Teilnehmer";
+        } catch (err) {
+          console.error("Fehler beim Laden der Rollen:", err);
+          userRoleLabel.textContent = "Teilnehmer";
         }
       } else {
         window.location.href = "index.html";
