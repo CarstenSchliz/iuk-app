@@ -69,8 +69,11 @@
   }
 
   html, body {
-    margin:0; padding:0; height:100%;
+    margin:0;
+    padding:0;
+    height:100%;
     background: var(--bg) !important;
+    overflow-x: hidden; /* ✅ verhindert horizontales Verschieben */
   }
   body {
     font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
@@ -108,6 +111,8 @@
     box-shadow: 0 4px 18px rgba(0,0,0,0.28);
     margin-bottom: 1.5rem;
     transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+    box-sizing: border-box; /* ✅ verhindert Überbreite durch Border/Padding */
+    width: 100%;            /* ✅ volle Breite */
   }
   body.dark .card { box-shadow: 0 10px 24px rgba(0,0,0,0.45); }
   .card h3 {
