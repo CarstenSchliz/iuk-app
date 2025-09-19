@@ -6,16 +6,18 @@
   <title>Persönliche Einstellungen</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-<style>
+  <style>
   /* ================================ THEME: zentrale Farb-Variablen ================================ */
   :root {
+    /* Markencolors */
     --softrot: rgb(228,100,80);
     --dunkelblau: rgb(0,45,85);
     --hellblau: rgb(100,160,220);
 
-    --bg: #f3f4f6;
-    --text: #1f2937;
-    --heading: #002d55;
+    /* Light Theme */
+    --bg: #f3f4f6;           /* Seitenhintergrund */
+    --text: #1f2937;         /* Standardtext */
+    --heading: #002d55;      /* Überschriften */
     --link: #e06862;
 
     --card-bg: #ffffff;
@@ -35,22 +37,24 @@
 
     --blassblau: rgb(230,240,250);
 
+    /* Toggle (Light) */
     --toggle-track: #0f2030;
     --toggle-border: #e5e7eb;
     --toggle-star: #ffd84d;
     --toggle-knob: #ffffff;
   }
 
+  /* Dark Theme – wirklich schwarz + klare Abgrenzung */
   body.dark {
-    --bg: #000000;
+    --bg: #000000;              /* kompletter Hintergrund schwarz */
     --text: #f3f4f6;
     --heading: #f3f4f6;
     --link: #4da6ff;
 
-    --card-bg: #151515;
+    --card-bg: #151515;         /* Karten abgehoben dunkel */
     --card-border: #2c2c2c;
 
-    --input-bg: #222;
+    --input-bg: #222;           /* Felder sauber dunkel */
     --input-fg: #f3f4f6;
     --input-border: #3a3a3a;
     --input-readonly-bg: #2a2a2a;
@@ -62,18 +66,18 @@
     --modal-bg: #1e1e1e;
     --modal-heading: #f3f4f6;
 
+    /* Toggle (Dark) */
     --toggle-track: #061018;
     --toggle-border: #2a2f35;
     --toggle-star: #ffd84d;
     --toggle-knob: #e9eef7;
   }
 
+  /* Grundlayout */
   html, body {
-    margin:0;
-    padding:0;
-    height:100%;
-    background: var(--bg) !important;
-    overflow-x: hidden; /* ✅ verhindert horizontales Verschieben */
+    margin:0; padding:0; height:100%;
+    background: var(--bg) !important;               /* html + body -> Theme-Hintergrund */
+    overflow-x: hidden;                             /* verhindert horizontales Verschieben */
   }
   body {
     font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
@@ -89,15 +93,14 @@
     gap: 1.5rem;
     padding: 1rem;
   }
-
-  /* ===== Mobile-Ansicht: Karten füllen volle Breite ===== */
   @media (max-width: 768px) {
     .settings-grid {
       grid-template-columns: 1fr;
+      justify-items: center;   /* Karten mittig */
     }
     .card {
       width: 100%;
-      max-width: none;
+      max-width: 560px;        /* gleiche Breite für alle */
       margin: 0 0 1.5rem;
     }
   }
@@ -108,11 +111,11 @@
     border: 1px solid var(--card-border);
     padding: 1.5rem;
     border-radius: 14px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.28);               /* dezenter Shadow */
     margin-bottom: 1.5rem;
     transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
-    box-sizing: border-box; /* ✅ verhindert Überbreite durch Border/Padding */
-    width: 100%;            /* ✅ volle Breite */
+    box-sizing: border-box; /* verhindert Überbreite */
+    width: 100%;
   }
   body.dark .card { box-shadow: 0 10px 24px rgba(0,0,0,0.45); }
   .card h3 {
@@ -122,11 +125,12 @@
     display: flex; align-items: center; gap: .5rem;
   }
 
+  /* Floating Labels */
   .form-group.floating { position: relative; margin-bottom: 1.2rem; }
   .form-group.floating input,
   .form-group.floating textarea {
     width: 100%;
-    padding: 1rem 2.6rem .3rem .75rem;
+    padding: 1rem 2.6rem .3rem .75rem;                     /* rechts Platz für evtl. Icon */
     border: 1px solid var(--input-border);
     border-radius: 10px;
     background: var(--input-bg);
@@ -135,6 +139,7 @@
     transition: border-color .15s ease, background .15s ease, color .15s ease;
     min-height: 44px;
     box-sizing: border-box;
+    font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
   }
   .form-group.floating label {
     position: absolute;
@@ -149,6 +154,7 @@
     top: .1rem; left: .6rem; font-size: .78rem; color: var(--heading);
   }
 
+  /* readonly Felder klar kennzeichnen */
   .form-group.floating input[readonly],
   .form-group.floating textarea[readonly] {
     background: var(--input-readonly-bg) !important;
@@ -156,31 +162,22 @@
     cursor: not-allowed;
   }
 
+  /* Nur im LIGHT-Mode blassblau bei Inhalt */
   body:not(.dark) .form-group.floating input:not(:placeholder-shown):not([readonly]),
   body:not(.dark) .form-group.floating textarea:not(:placeholder-shown):not([readonly]) {
     background: var(--blassblau);
     border-color: var(--dunkelblau);
   }
 
+  /* Form-Row: Rollen + UID nebeneinander */
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   @media (max-width:768px) { .form-row { grid-template-columns: 1fr; } }
 
-  /* Standard-Textarea */
-  .form-group.floating textarea {
-    resize: none;
-    line-height: 1.4;
-    white-space: normal;
-    min-height: 60px;
-    overflow: auto;
-  }
-
-  /* ===== Rollen & UID: gleiche Höhe + gleiche Schrift ===== */
+  /* Rollen + UID Höhe/Schrift wie Inputs */
   .form-group.floating textarea#roles,
   .form-group.floating textarea#uid {
-    min-height: 44px;
+    resize: none;
     height: 44px;
-    max-height: 44px;
-    overflow: hidden;
     line-height: normal;
     padding-top: 1rem;
     padding-bottom: .3rem;
@@ -188,6 +185,15 @@
     font-size: 1rem;
   }
 
+  /* Textarea-Optimierung */
+  .form-group.floating textarea {
+    resize: none;
+    line-height: 1.4;
+    white-space: normal;
+    overflow: auto;
+  }
+
+  /* Buttons */
   .form-actions { display:flex; gap:1rem; margin-top:1rem; }
   .btn {
     padding:.6rem 1rem; border:none; border-radius:10px; cursor:pointer;
@@ -229,13 +235,15 @@
   .modal-actions .primary { background: var(--dunkelblau); color: #fff; }
   .modal-actions .close { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
 
+  /* Regeln unter dem Feld (erst zeigen, wenn aktiv) */
   #pass-rules { font-size:.85rem; text-align:left; margin: 6px 0 12px 2px; line-height: 1.35; display: none; }
 
+  /* Fortschrittsbalken Passwort */
   .pw-meter { height: 8px; border-radius: 999px; background: var(--card-border); margin: 6px 2px 6px; overflow: hidden; display: none; }
   .pw-meter-bar { height: 100%; width: 0%; border-radius: 999px; transition: width .2s ease, background .2s ease; }
   .pw-strength { display:none; margin: 0 2px 10px; font-size: .86rem; font-weight: 700; }
 
-  /* ================================ Theme-Schieberegler ================================ */
+  /* ================================ Moderner Theme-Schieberegler ================================ */
   .theme-switch {
     --w: 80px; --h: 40px;
     position: relative; width: var(--w); height: var(--h);
@@ -281,6 +289,7 @@
   body:not(.dark) .theme-switch .sun.burst::after { opacity:1; transform: scale(1.1); }
   body.dark .theme-switch .moon.burst::after { opacity:1; transform: scale(1.1); }
 
+  /* Auge-Icon im Input */
   .input-with-eye { position: relative; }
   .toggle-eye {
     position: absolute; right: .5rem; top: 50%; transform: translateY(-50%);
@@ -290,9 +299,10 @@
   }
   .toggle-eye:focus { outline: 2px solid var(--input-border); }
 
+  /* ================================ Sidebar-Active im Darkmode (weiß/schwarz) ================================ */
   body.dark .menu button.active { background: #fff; color: #000; font-weight: bold; }
   body.dark .menu button.active::before { background: #fff; }
-</style>
+  </style>
 
 </head>
 
