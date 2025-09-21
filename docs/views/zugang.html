@@ -419,35 +419,21 @@
 function updateStatusDisplay(status) {
   const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
   document.getElementById("statusGrund").innerHTML =
-    grundErfüllt ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #00A850;">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-    </svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #E46459;">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-    </svg>`;
+    grundErfüllt ? `<i class="bi bi-check-circle status-ok"></i>` : `<i class="bi bi-x-circle status-bad"></i>`;
 
   const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
   document.getElementById("statusOptional").innerHTML =
-    optionalErfüllt ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #00A850;">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-    </svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #E46459;">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-    </svg>`;
+    optionalErfüllt ? `<i class="bi bi-check-circle status-ok"></i>` : `<i class="bi bi-x-circle status-bad"></i>`;
 
   if (status === "freigeben") {
     document.getElementById("statusReject").innerHTML =
-      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #00A850;">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-      </svg> freigegeben`;
+      `<i class="bi bi-check-circle status-ok"></i> freigegeben`;
   } else if (status === "ablehnen") {
     document.getElementById("statusReject").innerHTML =
-      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #E46459;">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg> abgelehnt`;
+      `<i class="bi bi-x-circle status-bad"></i> abgelehnt`;
   } else {
     document.getElementById("statusReject").innerHTML =
-      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #002D55;">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m7-7H5" />
-      </svg> noch offen`;
+      `<i class="bi bi-hourglass status-pending"></i> noch offen`;
   }
 }
 
