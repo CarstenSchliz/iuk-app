@@ -440,25 +440,25 @@ function updateStatusDisplay(status) {
   document.getElementById("statusGrund").innerHTML =
     grundErfüllt ? 
     `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
-    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`;
+    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
 
   // Optionale Voraussetzungen Status
   const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
   document.getElementById("statusOptional").innerHTML =
     optionalErfüllt ? 
     `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
-    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`;
+    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
 
-  // Freigabe/Ablehnung Status
+  // Freigabe/Ablehnung Status (dritte Zeile)
   if (status === "freigeben") {
     document.getElementById("statusReject").innerHTML =
-      `<div class="status-message"><i class="feather feather-check-circle status-ok"></i> <span>Du wurdest für den aktiven Dienst <span class="text-green">freigegeben</span>! Herzlichen Glückwunsch!</span></div>`;
+      `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>Du wurdest für den aktiven Dienst <span class="text-green">freigegeben</span>! Herzlichen Glückwunsch!</span></div>`;
   } else if (status === "ablehnen") {
     document.getElementById("statusReject").innerHTML =
-      `<div class="status-message"><i class="feather feather-x-circle status-bad"></i> <span>Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt</span>. Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</span></div>`;
+      `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt</span>. Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</span></div>`;
   } else {
     document.getElementById("statusReject").innerHTML =
-      `<div class="status-message"><i class="feather feather-hourglass status-pending"></i> <span>noch offen</span></div>`;
+      `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> <span>noch offen</span></div>`;
   }
 }
 
