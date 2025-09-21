@@ -435,16 +435,21 @@
      * Statusanzeige (für Helfer/Anwärter) — farbig
      ***********************/
 function updateStatusDisplay(status) {
+  // Grundvoraussetzungen Status
   const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
   document.getElementById("statusGrund").innerHTML =
-    grundErfüllt ? `<div class="status-message"><i class="feather feather-check-circle status-ok"></i> <span>Grundvoraussetzungen erfüllt</span></div>` : 
-    `<div class="status-message"><i class="feather feather-x-circle status-bad"></i> <span>Grundvoraussetzungen nicht erfüllt</span></div>`;
+    grundErfüllt ? 
+    `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
+    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`;
 
+  // Optionale Voraussetzungen Status
   const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
   document.getElementById("statusOptional").innerHTML =
-    optionalErfüllt ? `<div class="status-message"><i class="feather feather-check-circle status-ok"></i> <span>Optionale Voraussetzungen erfüllt</span></div>` : 
-    `<div class="status-message"><i class="feather feather-x-circle status-bad"></i> <span>Optionale Voraussetzungen nicht erfüllt</span></div>`;
+    optionalErfüllt ? 
+    `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
+    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`;
 
+  // Freigabe/Ablehnung Status
   if (status === "freigeben") {
     document.getElementById("statusReject").innerHTML =
       `<div class="status-message"><i class="feather feather-check-circle status-ok"></i> <span>Du wurdest für den aktiven Dienst <span class="text-green">freigegeben</span>! Herzlichen Glückwunsch!</span></div>`;
