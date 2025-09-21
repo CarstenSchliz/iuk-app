@@ -397,26 +397,26 @@
     /***********************
      * Statusanzeige (für Helfer/Anwärter) — farbig
      ***********************/
-    function updateStatusDisplay(freigabeStatus) {
-      // Grund erfüllt?
-      const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
-      document.getElementById("statusGrund").innerHTML =
-        grundErfüllt ? `<span class="status-ok">✔️</span>` : `<span class="status-bad">❌</span>`;
+function updateStatusDisplay(status) {
+  const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
+  document.getElementById("statusGrund").innerHTML =
+    grundErfüllt ? `<span class="status-ok">✔️</span>` : `<span class="status-bad">❌</span>`;
 
-      // Optional erfüllt?
-      const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
-      document.getElementById("statusOptional").innerHTML =
-        optionalErfüllt ? `<span class="status-ok">✔️</span>` : `<span class="status-bad">❌</span>`;
+  const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
+  document.getElementById("statusOptional").innerHTML =
+    optionalErfüllt ? `<span class="status-ok">✔️</span>` : `<span class="status-bad">❌</span>`;
 
-      // Freigabe/Ablehnung
-      if (freigabeStatus === "freigeben") {
-        document.getElementById("statusReject").innerHTML = `<span class="status-ok">✔️ freigegeben</span>`;
-      } else if (freigabeStatus === "ablehnen") {
-        document.getElementById("statusReject").innerHTML = `<span class="status-bad">❌ abgelehnt</span>`;
-      } else {
-        document.getElementById("statusReject").innerHTML = `<span class="status-pending">⏳ noch offen</span>`;
-      }
-    }
+  if (status === "freigeben") {
+    document.getElementById("statusReject").innerHTML =
+      `<span class="status-ok">✔️ freigegeben</span>`;
+  } else if (status === "ablehnen") {
+    document.getElementById("statusReject").innerHTML =
+      `<span class="status-bad">❌ abgelehnt</span>`;
+  } else {
+    document.getElementById("statusReject").innerHTML =
+      `<span class="status-pending">⏳ noch offen</span>`;
+  }
+}
 
     /***********************
      * Initiales Verhalten je nach Rolle
