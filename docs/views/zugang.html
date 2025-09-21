@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zugangsvoraussetzungen</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
@@ -12,18 +12,27 @@
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
       --mittelgrau: rgb(180,180,180);
-      --hellgruene-progress: #a1d88f;
+      --hellgruene-progress: #a1d88f; /* kräftigeres Hellgrün für 80% */
     }
 
-    .page-title { color: var(--softrot); margin-bottom: 1rem; }
-    .zugang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    @media(max-width: 768px){ .zugang-grid { grid-template-columns: 1fr; } }
+    body { background:#f7f8fb; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color: #1f2937; padding: 1.25rem; }
+
+    .page-title { color: var(--softrot); margin-bottom: 1rem; font-size: 1.4rem; }
+    .zugang-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media(max-width: 768px){
+      .zugang-grid { grid-template-columns: 1fr; }
+    }
 
     .card {
       background: #fff;
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border: 1px solid #eef2f7;
     }
     .card h3 {
       color: var(--hellblau);
@@ -32,6 +41,7 @@
       display:flex;
       align-items:center;
       gap:0.5rem;
+      font-size: 1.05rem;
     }
 
     .checklist { list-style: none; padding: 0; margin: 0; }
@@ -100,11 +110,18 @@
     #toast { visibility: hidden; min-width: 250px; background-color: var(--dunkelblau); color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
-    /* Modal */
-    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1999; }
-    .modal{ position:fixed; inset:0; display:none; z-index:2000; align-items:center; justify-content:center; padding:1rem; }
-    .modal .modal-card{ background:#fff; color:#111; border-radius:14px; width:min(520px, 96vw);
-      box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem 1rem 1rem; border:1px solid #e5e7eb; }
+    /* Modal (Design wie Benutzerverwaltung) */
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1999;
+    }
+    .modal{
+      position:fixed; inset:0; display:none; z-index:2000; align-items:center; justify-content:center; padding:1rem;
+    }
+    .modal .modal-card{
+      background:#fff; color:#111; border-radius:14px; width:min(520px, 96vw);
+      box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem 1rem 1rem;
+      border:1px solid #e5e7eb;
+    }
     .modal h4{ font-size:1.2rem; font-weight:600; margin-top:0; margin-bottom:.6rem; color:var(--dunkelblau); }
     .modal p{ margin:.2rem 0 1rem; color:#374151; line-height:1.4; }
     .modal .modal-actions{ display:flex; gap:.8rem; justify-content:flex-end; margin-top:1rem; }
@@ -112,12 +129,20 @@
     .modal .btn-secondary{ background:#eef2f7 }
     .modal .btn-primary{ background:var(--dunkelblau); color:#fff }
     .modal .btn-danger{ background:var(--softrot); color:#fff }
+
+    /* Statusfarben */
+    .status-ok { color: var(--drk-gruen); font-weight: bold; }
+    .status-bad { color: var(--softrot); font-weight: bold; }
+    .status-pending { color: var(--dunkelblau); font-weight: bold; }
+
+    /* small helper */
+    .muted { color: #6b7280; font-size: .95rem; }
   </style>
 </head>
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
-  <!-- Nutzer-Auswahl (Admin/GL) -->
+  <!-- Nutzer-Auswahl (nur für Admin/GL sichtbar) -->
   <div class="card select-user" id="selectUserCard" style="margin-bottom:1.5rem; display:none;">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
     <div>
@@ -129,10 +154,12 @@
   </div>
 
   <div class="zugang-grid">
-    <!-- Grund -->
+    <!-- Grundvoraussetzungen -->
     <div class="card">
       <h3><i class="bi bi-gear-fill"></i> Grundvoraussetzungen</h3>
-      <div class="progress"><div id="grund-progress" class="progress-bar" style="width:0%">0</div></div>
+      <div class="progress">
+        <div id="grund-progress" class="progress-bar" style="width:0%">0</div>
+      </div>
       <ul class="checklist" id="grund-list">
         <li><input type="checkbox" disabled> Fachdienstausbildung Sanitätsdienst</li>
         <li><input type="checkbox" disabled> Erstgespräch mit Vorstellung des Ausbildungsverlaufs und der IuK Lernwelt</li>
@@ -142,10 +169,12 @@
       </ul>
     </div>
 
-    <!-- Optional -->
+    <!-- Optionale Voraussetzungen -->
     <div class="card">
       <h3><i class="bi bi-graph-up"></i> Optionale Voraussetzungen</h3>
-      <div class="progress"><div id="verlauf-progress" class="progress-bar" style="width:0%">0</div></div>
+      <div class="progress">
+        <div id="verlauf-progress" class="progress-bar" style="width:0%">0</div>
+      </div>
       <ul class="checklist" id="verlauf-list">
         <li><input type="checkbox" disabled> C1 (Helfer-)Führerschein</li>
         <li><input type="checkbox" disabled> Gruppenführer Sanitätsdienst</li>
@@ -199,12 +228,13 @@
         <li><span id="statusOptional"></span> Optionale Voraussetzungen</li>
         <li><span id="statusReject"></span> Freigabe/Ablehnung</li>
       </ul>
+      <p class="muted">Hinweis: Die Bestätigung kann nur von Gruppenleiter:innen oder Administrator:innen vorgenommen werden.</p>
     </div>
   </div>
 
   <div id="toast"></div>
 
-  <!-- Modal -->
+  <!-- Modal (wie in Benutzerverwaltung) -->
   <div id="modalBackdrop" class="modal-backdrop"></div>
   <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
@@ -218,9 +248,15 @@
   </div>
 
   <script type="module">
+    /***********************
+     * Firebase & Firestore
+     ***********************/
     import { auth, db, observeAuthState, getUserRoles } from "./js/firebase.js";
     import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+    /***********************
+     * API (Cloud Functions) – wie Benutzerverwaltung
+     ***********************/
     const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
     async function apiFetch(endpoint, options = {}) {
       const user = auth.currentUser;
@@ -230,20 +266,34 @@
       return fetch(API_BASE + endpoint, { ...options, headers });
     }
 
+    /***********************
+     * DOM-Referenzen
+     ***********************/
     const userSelect = document.getElementById("userSelect");
     const selectUserCard = document.getElementById("selectUserCard");
     const selectedUser = document.getElementById("selectedUser");
+    const confirmUserSection = document.getElementById("confirmUser"); // für nicht-Admin
+    const confirmAdminSection = document.getElementById("confirmAdmin"); // für Admin/GL
+    const confirmText = document.getElementById("confirmText");
+
     const grundBoxes = document.querySelectorAll("#grund-list input");
     const verlaufBoxes = document.querySelectorAll("#verlauf-list input");
     const grundProgress = document.getElementById("grund-progress");
     const verlaufProgress = document.getElementById("verlauf-progress");
+
     const chkGrund = document.getElementById("chkGrund");
     const chkOptional = document.getElementById("chkOptional");
     const chkReject = document.getElementById("chkReject");
 
+    // Toast
     const toast = document.getElementById("toast");
-    function showToast(msg){ toast.textContent = msg; toast.classList.add("show"); setTimeout(()=>toast.classList.remove("show"), 2600); }
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(()=>toast.classList.remove("show"), 2600);
+    }
 
+    // Modal wie in Benutzerverwaltung
     const modal = document.getElementById("modal");
     const backdrop = document.getElementById("modalBackdrop");
     const modalTitle = document.getElementById("modalTitle");
@@ -268,14 +318,17 @@
       });
     }
 
+    // Prozentfarben & Anzeige
     function setProgressColor(bar, percent) {
-      if (percent === 0) { bar.style.backgroundColor = "#e9ecef"; bar.textContent = "0"; }
-      else {
+      if (percent === 0) {
+        bar.style.backgroundColor = "#e9ecef";
+        bar.textContent = "0";
+      } else {
         if (percent <= 20) bar.style.backgroundColor = "red";
         else if (percent <= 40) bar.style.backgroundColor = "orange";
         else if (percent <= 60) bar.style.backgroundColor = "gold";
-        else if (percent <= 80) bar.style.backgroundColor = "var(--hellgruene-progress)";
-        else bar.style.backgroundColor = "var(--drk-gruen)";
+        else if (percent <= 80) bar.style.backgroundColor = "var(--hellgruene-progress)"; /* Kräftigeres Hellgrün */
+        else bar.style.backgroundColor = "var(--drk-gruen)"; // 100% dunkelgrün aus deinem Theme
         bar.textContent = percent + "%";
       }
     }
@@ -289,21 +342,33 @@
       if (gate) { gate.disabled = percent !== 100; if (percent !== 100) gate.checked = false; }
     }
 
+    /***********************
+     * Firestore: Fortschritt laden/speichern + freigabeStatus
+     ***********************/
     async function loadProgress(userId) {
       const ref = doc(db, "users", userId);
       const snap = await getDoc(ref);
       if(snap.exists()) {
         const data = snap.data();
-        if (Array.isArray(data.grund)) grundBoxes.forEach((box,i)=> box.checked = !!data.grund[i]);
-        else grundBoxes.forEach(box => box.checked = false);
+        // Grund
+        if (Array.isArray(data.grund)) {
+          grundBoxes.forEach((box,i)=>{ box.checked = !!data.grund[i]; });
+        } else {
+          grundBoxes.forEach(box => box.checked = false);
+        }
         updateProgress(grundBoxes, grundProgress, chkGrund);
-
-        if (Array.isArray(data.optional)) verlaufBoxes.forEach((box,i)=> box.checked = !!data.optional[i]);
-        else verlaufBoxes.forEach(box => box.checked = false);
+        // Optional
+        if (Array.isArray(data.optional)) {
+          verlaufBoxes.forEach((box,i)=>{ box.checked = !!data.optional[i]; });
+        } else {
+          verlaufBoxes.forEach(box => box.checked = false);
+        }
         updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
 
+        // Freigabe/Ablehnung Status anzeigen (wenn vorhanden)
         updateStatusDisplay(data.freigabeStatus);
       } else {
+        // Reset wenn Dokument fehlt
         grundBoxes.forEach(box => box.checked = false);
         verlaufBoxes.forEach(box => box.checked = false);
         updateProgress(grundBoxes, grundProgress, chkGrund);
@@ -317,125 +382,11 @@
       await updateDoc(ref, { [type]: values });
     }
 
-    function updateStatusDisplay(status) {
-      const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
-      document.getElementById("statusGrund").textContent = grundErfüllt ? "✔️" : "❌";
-
-      const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
-      document.getElementById("statusOptional").textContent = optionalErfüllt ? "✔️" : "❌";
-
-      if (status === "freigeben") {
-        document.getElementById("statusReject").textContent = "✔️ freigegeben";
-      } else if (status === "ablehnen") {
-        document.getElementById("statusReject").textContent = "❌ abgelehnt";
-      } else {
-        document.getElementById("statusReject").textContent = "⏳ noch offen";
-      }
-    }
-
-    async function loadUsersViaFunction() {
-      const res = await apiFetch("/listUsers", { method: "GET" });
-      if (!res.ok) throw new Error(res.status + " " + res.statusText);
-      const data = await res.json();
-      userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
-      (data.users || []).forEach(u => {
-        const label = u.displayName || u.email || u.uid;
-        userSelect.innerHTML += `<option value="${u.uid}">${label}</option>`;
-      });
-    }
-
-    observeAuthState(async (user) => {
-      if (!user) return;
-      const roles = await getUserRoles(user.uid);
-
-      if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-        document.getElementById("confirmAdmin").style.display = "block";
-        document.getElementById("confirmUser").style.display = "none";
-        selectUserCard.style.display = "block";
-        grundBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
-        verlaufBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
-        chkGrund.disabled = true; chkOptional.disabled = true; chkReject.checked = false;
-        document.getElementById("grundActions").style.display = "none";
-        document.getElementById("optionalActions").style.display = "none";
-        document.getElementById("rejectActions").style.display = "none";
-        try{ await loadUsersViaFunction(); } catch(e){ showToast("Fehler beim Laden der Nutzer"); console.error(e); }
-      } else {
-        document.getElementById("confirmAdmin").style.display = "none";
-        document.getElementById("confirmUser").style.display = "block";
-        selectUserCard.style.display = "none";
-        grundBoxes.forEach(cb => cb.disabled = true);
-        verlaufBoxes.forEach(cb => cb.disabled = true);
-        chkGrund.disabled = true; chkOptional.disabled = true; chkReject.disabled = true;
-        await loadProgress(user.uid);
-      }
-    });
-
-    document.getElementById("grund-list").addEventListener("change", () => {
-      updateProgress(grundBoxes, grundProgress, chkGrund);
-      if (userSelect.value) saveProgress(userSelect.value, "grund", Array.from(grundBoxes).map(b => b.checked)).catch(console.error);
-    });
-    document.getElementById("verlauf-list").addEventListener("change", () => {
-      updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
-      if (userSelect.value) saveProgress(userSelect.value, "optional", Array.from(verlaufBoxes).map(b => b.checked)).catch(console.error);
-    });
-
-    chkGrund.addEventListener("change", () => { document.getElementById("grundActions").style.display = chkGrund.checked ? "block" : "none"; });
-    chkOptional.addEventListener("change", () => { document.getElementById("optionalActions").style.display = chkOptional.checked ? "block" : "none"; });
-    chkReject.addEventListener("change", (e) => { document.getElementById("rejectActions").style.display = e.target.checked ? "block" : "none"; });
-
-    document.body.addEventListener("click", async (e)=>{
-      const btn = e.target.closest("[data-action]");
-      if(!btn) return;
-      const action = btn.dataset.action;
-      let title, message, okText = "Bestätigen";
-      if(action==="freigeben"){ title="Mitglied freigeben"; message="Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?"; }
-      else if(action==="mail"){ title="Bestätigung per Mail senden"; message="Soll eine Bestätigung per Mail gesendet werden?"; }
-      else if(action==="ablehnen"){ title="Mitglied ablehnen"; message="Soll das Mitglied wirklich für den aktiven Dienst abgelehnt werden?"; okText="Ablehnen"; }
-      const ok = await openModal({ title, message, okText });
-      if(ok){
-        if(action==="freigeben") showToast("Mitglied freigegeben");
-        if(action==="mail") showToast("Mail gesendet");
-        if(action==="ablehnen") showToast("Mitglied abgelehnt");
-        if((action==="freigeben" || action==="ablehnen") && userSelect.value){
-          await updateDoc(doc(db,"users",userSelect.value), { freigabeStatus: action });
-        }
-      }
-    });
-
-    userSelect.addEventListener("change", async () => {
-      if (userSelect.value) {
-        const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: " + name;
-        document.getElementById("confirmText").textContent = "Bestätigung für: " + name;
-        grundBoxes.forEach(cb => cb.disabled = false);
-        verlaufBoxes.forEach(cb => cb.disabled = false);
-        chkGrund.disabled = true; chkGrund.checked = false;
-        chkOptional.disabled = true; chkOptional.checked = false;
-        chkReject.checked = false;
-        document.getElementById("grundActions").style.display = "none";
-        document.getElementById("optionalActions").style.display = "none";
-        document.getElementById("rejectActions").style.display = "none";
-        await loadProgress(userSelect.value);
-      } else {
-        selectedUser.textContent = "";
-        grundBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
-        verlaufBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
-        updateProgress(grundBoxes, grundProgress, chkGrund);
-        updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
-      }
-    });
-  </script>
-</body>
-  
-    async function saveProgress(userId, type, values) {
-      const ref = doc(db, "users", userId);
-      await updateDoc(ref, { [type]: values });
-    }
-
     /***********************
      * Nutzerliste (über Cloud Function)
      ***********************/
     async function loadUsersViaFunction() {
+      // Ruft Cloud Function /listUsers auf — gleiche API wie Benutzerverwaltung
       const res = await apiFetch("/listUsers", { method: "GET" });
       if (!res.ok) {
         const msg = `${res.status} ${res.statusText}`;
@@ -450,6 +401,30 @@
     }
 
     /***********************
+     * Statusanzeige (für Helfer/Anwärter) — farbig
+     ***********************/
+    function updateStatusDisplay(freigabeStatus) {
+      // Grund erfüllt?
+      const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
+      document.getElementById("statusGrund").innerHTML =
+        grundErfüllt ? `<span class="status-ok">✔️</span>` : `<span class="status-bad">❌</span>`;
+
+      // Optional erfüllt?
+      const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
+      document.getElementById("statusOptional").innerHTML =
+        optionalErfüllt ? `<span class="status-ok">✔️</span>` : `<span class="status-bad">❌</span>`;
+
+      // Freigabe/Ablehnung
+      if (freigabeStatus === "freigeben") {
+        document.getElementById("statusReject").innerHTML = `<span class="status-ok">✔️ freigegeben</span>`;
+      } else if (freigabeStatus === "ablehnen") {
+        document.getElementById("statusReject").innerHTML = `<span class="status-bad">❌ abgelehnt</span>`;
+      } else {
+        document.getElementById("statusReject").innerHTML = `<span class="status-pending">⏳ noch offen</span>`;
+      }
+    }
+
+    /***********************
      * Initiales Verhalten je nach Rolle
      ***********************/
     observeAuthState(async (user) => {
@@ -460,6 +435,9 @@
       if (roles.includes("admin") || roles.includes("gruppenleiter")) {
         // Admin/GL: Dropdown anzeigen und befüllen
         selectUserCard.style.display = "block";
+        confirmAdminSection.style.display = "block";
+        confirmUserSection.style.display = "none";
+
         // Admin/GL dürfen Checkboxen erst nach Auswahl bedienen
         grundBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
         verlaufBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
@@ -484,6 +462,7 @@
         // Normale Nutzer: Dropdown ausblenden, nur Eigendaten read-only
         selectUserCard.style.display = "none";
         confirmUserSection.style.display = "block";
+        confirmAdminSection.style.display = "none";
         confirmText.textContent = "Dein eigener Status";
 
         // Eigene Daten laden, aber nicht änderbar
@@ -529,7 +508,7 @@
     });
 
     /***********************
-     * Aktionen mit Modal (unverändert)
+     * Aktionen mit Modal (inkl. speichern von freigabeStatus)
      ***********************/
     document.body.addEventListener("click", async (e)=>{
       const btn = e.target.closest("[data-action]");
@@ -554,8 +533,19 @@
         if(action==="freigeben") showToast("Mitglied freigegeben");
         if(action==="mail")      showToast("Mail gesendet");
         if(action==="ablehnen")  showToast("Mitglied abgelehnt");
-        // Optional: hier könntest du einen Status in Firestore speichern
-        // if(userSelect.value) await updateDoc(doc(db,"users",userSelect.value), { freigabeStatus: action });
+
+        // Speichern in Firestore: freigabeStatus
+        if((action==="freigeben" || action==="ablehnen") && userSelect.value){
+          try {
+            await updateDoc(doc(db,"users",userSelect.value), { freigabeStatus: action });
+            // Nach speichern sofort Status-UI und ggf. für Admin sichtbar aktualisieren
+            await loadProgress(userSelect.value);
+          } catch(err){
+            console.error("Fehler beim Speichern von freigabeStatus:", err);
+            showToast("Speichern fehlgeschlagen");
+          }
+        }
+        // Optional: bei "mail" könntest du auch Cloud Function aufrufen, das ist aber außerhalb dieses Snippets
       }
     });
 
@@ -567,7 +557,8 @@
         const name = userSelect.options[userSelect.selectedIndex].text;
         selectedUser.textContent = "Ausgewählt: " + name;
         confirmText.textContent = "Bestätigung für: " + name;
-        confirmUserSection.style.display = "block";
+        confirmAdminSection.style.display = "block";
+        confirmUserSection.style.display = "none";
 
         // Für Admin/GL: Checkboxen aktivieren
         grundBoxes.forEach(cb => cb.disabled = false);
@@ -584,6 +575,7 @@
         await loadProgress(userSelect.value);
       } else {
         selectedUser.textContent = "";
+        confirmAdminSection.style.display = "block";
         confirmUserSection.style.display = "none";
         grundBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
         verlaufBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
