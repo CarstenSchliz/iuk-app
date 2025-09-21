@@ -419,21 +419,35 @@
 function updateStatusDisplay(status) {
   const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
   document.getElementById("statusGrund").innerHTML =
-    grundErfüllt ? `<span class="status-ok">✔️</span>` : `<span class="status-bad">❌</span>`;
+    grundErfüllt ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #00A850;">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+    </svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #E46459;">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>`;
 
   const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
   document.getElementById("statusOptional").innerHTML =
-    optionalErfüllt ? `<span class="status-ok">✔️</span>` : `<span class="status-bad">❌</span>`;
+    optionalErfüllt ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #00A850;">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+    </svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #E46459;">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>`;
 
   if (status === "freigeben") {
     document.getElementById("statusReject").innerHTML =
-      `<span class="status-ok">✔️ freigegeben</span>`;
+      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #00A850;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg> freigegeben`;
   } else if (status === "ablehnen") {
     document.getElementById("statusReject").innerHTML =
-      `<span class="status-bad">❌ abgelehnt</span>`;
+      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #E46459;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg> abgelehnt`;
   } else {
     document.getElementById("statusReject").innerHTML =
-      `<span class="status-pending">⏳ noch offen</span>`;
+      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #002D55;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m7-7H5" />
+      </svg> noch offen`;
   }
 }
 
