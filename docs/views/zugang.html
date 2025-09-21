@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zugangsvoraussetzungen</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
- <style>
+<style>
   :root {
     --softrot: rgb(228,100,80);
     --drk-gruen: rgb(0,150,80);
@@ -126,23 +126,23 @@
   .modal .btn-danger{ background:var(--softrot); color:#fff }
 
   /* Statusfarben */
-  .status-ok { color: var(--drk-gruen); font-weight: bold; }
-  .status-bad { color: var(--softrot); font-weight: bold; }
-  .status-pending { color: var(--dunkelblau); font-weight: bold; }
+  .status-ok { font-weight: bold; color: var(--drk-gruen); }
+  .status-bad { font-weight: bold; color: var(--softrot); }
+  .status-pending { font-weight: bold; color: var(--dunkelblau); }
 
   .muted { color: #6b7280; font-size: .95rem; }
 
-  /* Setze die Füllfarbe der Bootstrap-Icons */
+  /* Setze explizit die Farbe der Bootstrap-Icons */
   .bi-check-circle {
-    fill: var(--drk-gruen) !important; /* Grüner Haken */
+    color: #00A850 !important;  /* Grüner Haken */
   }
 
   .bi-x-circle {
-    fill: var(--softrot) !important;  /* Rotes X */
+    color: #E46459 !important;  /* Rotes X */
   }
 
   .bi-hourglass {
-    fill: var(--dunkelblau) !important; /* Blaue Sanduhr für offenen Status */
+    color: #002D55 !important; /* Blaue Sanduhr für offenen Status */
   }
 </style>
 
