@@ -351,6 +351,7 @@
         <li><span id="statusGrund"></span> Grundvoraussetzungen</li>
         <li><span id="statusOptional"></span> Optionale Voraussetzungen</li>
         <li><span id="statusReject"></span> Freigabe/Ablehnung</li>
+
       </ul>
       <p class="muted">Hinweis: Die Bestätigung kann nur von Gruppenleiter:innen oder Administrator:innen vorgenommen werden.</p>
     </div>
@@ -554,28 +555,28 @@
     /***********************
      * Statusanzeige (für Helfer/Anwärter) — farbig
      ***********************/
-    function updateStatusDisplay(status) {
-      // Grundvoraussetzungen Status
-      const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
-      document.getElementById("statusGrund").innerHTML = grundErfüllt
-        ? `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>`
-        : `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
+function updateStatusDisplay(status) {
+  // Grundvoraussetzungen Status
+  const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
+  document.getElementById("statusGrund").innerHTML = grundErfüllt
+    ? `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>`
+    : `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
 
-      // Optionale Voraussetzungen Status
-      const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
-      document.getElementById("statusOptional").innerHTML = optionalErfüllt
-        ? `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>`
-        : `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
+  // Optionale Voraussetzungen Status
+  const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
+  document.getElementById("statusOptional").innerHTML = optionalErfüllt
+    ? `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>`
+    : `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
 
-      // Freigabe/Ablehnung Status (dritte Zeile)
-      if (status === "freigeben") {
-        document.getElementById("statusReject").innerHTML = `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>Du wurdest für den aktiven Dienst <span class="text-green">freigegeben</span>! Herzlichen Glückwunsch!</span></div>`;
-      } else if (status === "ablehnen") {
-        document.getElementById("statusReject").innerHTML = `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt</span>. Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</span></div>`;
-      } else {
-        document.getElementById("statusReject").innerHTML = `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> <span> Freigabestatus: noch offen</span></div>`;
-      }
-    }
+  // Freigabe/Ablehnung Status (dritte Zeile)
+  const statusText = status === "freigeben"
+    ? `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> Du wurdest für den aktiven Dienst <span class="text-green">freigegeben</span>! Herzlichen Glückwunsch!</div>`
+    : (status === "ablehnen"
+      ? `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt</span>. Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</div>`
+      : `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> Freigabestatus: noch offen</div>`);
+
+  document.getElementById("statusReject").innerHTML = statusText;
+}
 
     /***********************
      * Initiales Verhalten je nach Rolle
