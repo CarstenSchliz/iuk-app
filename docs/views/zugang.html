@@ -137,11 +137,7 @@
     <div class="select-user">
       <select id="userSelect">
         <option value="">-- bitte wählen --</option>
-        <option value="u1">Max Mustermann</option>
-        <option value="u2">Erika Musterfrau</option>
-        <option value="u3">Hans Helfer</option>
-        <option value="u4">Sabine Sanitäterin</option>
-        <option value="u5">Peter Praktikant</option>
+        <!-- dynamisch befüllt -->
       </select>
       <div id="selectedUser" class="selected-user"></div>
     </div>
@@ -228,7 +224,16 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    /* ==========================
+       Firebase + Firestore Imports
+       ========================== */
+    import { auth, db, observeAuthState, getUserRoles } from "./docs/js/firebase.js";
+    import { doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    /* ==========================
+       DOM-Refs
+       ========================== */
     const userSelect = document.getElementById("userSelect");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
@@ -259,15 +264,15 @@
     const modalOk = document.getElementById("modalOk");
     const modalCancel = document.getElementById("modalCancel");
 
-    function openModal({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}){
+    function openModal({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}) {
       modalTitle.textContent = title;
       modalMessage.textContent = message;
       modalOk.innerHTML = `<i class="bi bi-check2"></i> ${okText}`;
       modalCancel.innerHTML = `<i class="bi bi-x-lg"></i> ${cancelText}`;
       modal.style.display = "flex";
       backdrop.style.display = "block";
-      return new Promise(resolve=>{
-        const close = (val) => { modal.style.display="none"; backdrop.style.display="none"; resolve(val); };
+      return new Promise(resolve => {
+        const close = (val) => { modal.style.display = "none"; backdrop.style.display = "none"; resolve(val); };
         const onEsc = (e)=>{ if(e.key==="Escape"){ document.removeEventListener("keydown", onEsc); close(false); } };
         document.addEventListener("keydown", onEsc);
         modalOk.onclick = ()=>{ document.removeEventListener("keydown", onEsc); close(true); };
@@ -301,42 +306,74 @@
       if (percent !== 100) gate.checked = false;
     }
 
-    // Nutzer auswählen (unverändert, plus Reset der Buttons)
-    userSelect.addEventListener("change", () => {
-      if (userSelect.value) {
-        const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: " + name;
-        confirmText.textContent = "Bestätigung für: " + name;
-        confirmUserSection.style.display = "block";
+    /* ==========================
+       Firestore: Nutzer laden
+       ========================== */
+    async function loadUsers() {
+      const snap = await getDocs(collection(db, "users"));
+      userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+      snap.forEach(docSnap => {
+        const u = docSnap.data();
+        userSelect.innerHTML += `<option value="${docSnap.id}">${u.name}</option>`;
+      });
+    }
 
-        grundBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
-        verlaufBoxes.forEach(cb => { cb.disabled = false; cb.checked = false; });
-        chkGrund.disabled = true; chkGrund.checked = false;
-        chkOptional.disabled = true; chkOptional.checked = false;
-        chkReject.checked = false;
+    // Fortschritt speichern
+    async function saveProgress(userId, type, values) {
+      const ref = doc(db, "users", userId);
+      await updateDoc(ref, { [type]: values });
+    }
 
-        // Buttons einklappen
-        document.getElementById("grundActions").style.display = "none";
-        document.getElementById("optionalActions").style.display = "none";
-        document.getElementById("rejectActions").style.display = "none";
+    // Fortschritt laden
+    async function loadProgress(userId) {
+      const ref = doc(db, "users", userId);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
 
+        // Grundvoraussetzungen
+        if (data.grund) {
+          grundBoxes.forEach((box, i) => { box.checked = data.grund[i] || false; });
+          updateProgress(grundBoxes, grundProgress, chkGrund);
+        } else {
+          // Reset falls nicht vorhanden
+          grundBoxes.forEach(box => box.checked = false);
+          updateProgress(grundBoxes, grundProgress, chkGrund);
+        }
+
+        // Optionale Voraussetzungen
+        if (data.optional) {
+          verlaufBoxes.forEach((box, i) => { box.checked = data.optional[i] || false; });
+          updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
+        } else {
+          verlaufBoxes.forEach(box => box.checked = false);
+          updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
+        }
+      } else {
+        // Kein Dokument vorhanden -> reset
+        grundBoxes.forEach(box => box.checked = false);
+        verlaufBoxes.forEach(box => box.checked = false);
         updateProgress(grundBoxes, grundProgress, chkGrund);
         updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
-      } else {
-        selectedUser.textContent = "";
-        confirmUserSection.style.display = "none";
       }
-    });
+    }
 
-    // Fortschritt live updaten
+    /* ==========================
+       Events: speichern bei Änderung
+       ========================== */
     document.getElementById("grund-list").addEventListener("change", () => {
+      const values = Array.from(grundBoxes).map(b => b.checked);
+      if (userSelect.value) saveProgress(userSelect.value, "grund", values);
       updateProgress(grundBoxes, grundProgress, chkGrund);
     });
+
     document.getElementById("verlauf-list").addEventListener("change", () => {
+      const values = Array.from(verlaufBoxes).map(b => b.checked);
+      if (userSelect.value) saveProgress(userSelect.value, "optional", values);
       updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
     });
 
-    // Buttons zeigen, wenn Checkboxen aktiv sind
+    // Buttons zeigen, wenn Checkboxen aktiv sind (Bestätigung durch Gruppenleiter)
     chkGrund.addEventListener("change", () => {
       document.getElementById("grundActions").style.display = chkGrund.checked ? "block" : "none";
     });
@@ -347,8 +384,10 @@
       document.getElementById("rejectActions").style.display = e.target.checked ? "block" : "none";
     });
 
-    // Aktionen mit Modal
-    document.body.addEventListener("click", async (e)=>{
+    /* ==========================
+       Aktionen mit Modal (freigeben / mail / ablehnen)
+       ========================== */
+    document.body.addEventListener("click", async (e)=> {
       const btn = e.target.closest("[data-action]");
       if(!btn) return;
       const action = btn.dataset.action;
@@ -356,7 +395,7 @@
 
       if(action==="freigeben"){
         title="Mitglied freigeben";
-        message="Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?";
+        message="Soll das Mitglied wirklich für den aktiven Dienst freigeben werden?";
       } else if(action==="mail"){
         title="Bestätigung per Mail senden";
         message="Soll eine Bestätigung per Mail gesendet werden?";
@@ -371,8 +410,103 @@
         if(action==="freigeben") showToast("Mitglied freigegeben");
         if(action==="mail")      showToast("Mail gesendet");
         if(action==="ablehnen")  showToast("Mitglied abgelehnt");
+
+        // Optional: hier könntest du Status in Firestore speichern z.B. freigabe: true/false oder emailsent:true
+        // Beispiel (unaufgefordert auskommentiert):
+        // if(userSelect.value) {
+        //   await updateDoc(doc(db, "users", userSelect.value), { freigabe: action === "freigeben" ? "freigegeben" : "abgelehnt" });
+        // }
       }
     });
+
+    /* ==========================
+       Rollen & Auth-State beobachten
+       ========================== */
+    observeAuthState(async (user) => {
+      if (user) {
+        const roles = await getUserRoles(user.uid);
+
+        if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+          // Admin / Gruppenleiter: können Nutzer auswählen und bearbeiten
+          await loadUsers();
+          userSelect.disabled = false;
+          // Reset Anzeige
+          selectedUser.textContent = "";
+          confirmUserSection.style.display = "none";
+
+          // Beim ersten Laden: ensure checkboxes disabled until a user is selected
+          grundBoxes.forEach(cb => cb.disabled = true);
+          verlaufBoxes.forEach(cb => cb.disabled = true);
+          chkGrund.disabled = true; chkOptional.disabled = true; chkReject.checked = false;
+        } else {
+          // normales Mitglied: nur das eigene Profil sehen (readonly)
+          const ref = doc(db, "users", user.uid);
+          const snap = await getDoc(ref);
+          const u = snap.exists() ? snap.data() : { name: "Unbekannter Nutzer" };
+
+          userSelect.innerHTML = `<option value="${user.uid}">${u.name}</option>`;
+          userSelect.disabled = true;
+          userSelect.value = user.uid;
+          selectedUser.textContent = "Ausgewählt: " + u.name;
+          confirmText.textContent = "Bestätigung für: " + u.name;
+          confirmUserSection.style.display = "block";
+
+          // Lade Fortschritte und setze alle Häkchen readonly
+          await loadProgress(user.uid);
+          grundBoxes.forEach(cb => cb.disabled = true);
+          verlaufBoxes.forEach(cb => cb.disabled = true);
+
+          // Bestätigungs-Checkboxen sollen nicht interaktiv sein für normale Mitglieder
+          chkGrund.disabled = true;
+          chkOptional.disabled = true;
+          chkReject.disabled = true;
+        }
+      } else {
+        // kein eingeloggter User: nichts anzeigen
+        userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+        userSelect.disabled = true;
+        selectedUser.textContent = "";
+        confirmUserSection.style.display = "none";
+      }
+    });
+
+    /* ==========================
+       Nutzerwechsel (Admin wählt jemand anderen)
+       ========================== */
+    userSelect.addEventListener("change", async () => {
+      if (userSelect.value) {
+        const name = userSelect.options[userSelect.selectedIndex].text;
+        selectedUser.textContent = "Ausgewählt: " + name;
+        confirmText.textContent = "Bestätigung für: " + name;
+        confirmUserSection.style.display = "block";
+
+        // enable checkboxes for admin/gruppenleiter when a user is selected
+        grundBoxes.forEach(cb => cb.disabled = false);
+        verlaufBoxes.forEach(cb => cb.disabled = false);
+        chkGrund.disabled = true; chkGrund.checked = false;
+        chkOptional.disabled = true; chkOptional.checked = false;
+        chkReject.checked = false;
+
+        // Buttons einklappen
+        document.getElementById("grundActions").style.display = "none";
+        document.getElementById("optionalActions").style.display = "none";
+        document.getElementById("rejectActions").style.display = "none";
+
+        await loadProgress(userSelect.value);
+      } else {
+        selectedUser.textContent = "";
+        confirmUserSection.style.display = "none";
+        grundBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
+        verlaufBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
+        updateProgress(grundBoxes, grundProgress, chkGrund);
+        updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
+      }
+    });
+
+    /* ==========================
+       Extra: falls du initial andere Logik brauchst, kannst du sie hier ergänzen
+       ========================== */
+
   </script>
 </body>
 </html>
