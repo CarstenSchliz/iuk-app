@@ -432,20 +432,21 @@
      * Statusanzeige (für Helfer/Anwärter) — farbig
      ***********************/
 function updateStatusDisplay(status) {
-  // Grundvoraussetzungen Status
   const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
+  const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
+
+  // Grundvoraussetzungen: Ein "X" für nicht erfüllt
   document.getElementById("statusGrund").innerHTML =
     grundErfüllt ? 
     `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
-    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
+    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`;
 
-  // Optionale Voraussetzungen Status
-  const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
+  // Optionale Voraussetzungen: Ein "X" für nicht erfüllt
   document.getElementById("statusOptional").innerHTML =
     optionalErfüllt ? 
     `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
-    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
-
+    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`;
+}
   // Freigabe/Ablehnung Status (dritte Zeile)
   if (status === "freigeben") {
     document.getElementById("statusReject").innerHTML =
@@ -455,7 +456,7 @@ function updateStatusDisplay(status) {
       `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt</span>. Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</span></div>`;
   } else {
     document.getElementById("statusReject").innerHTML =
-      `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> <span>noch offen</span></div>`;
+      `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> <span>Die Freigabe für den aktiven Dienst steht noch aus. Status: offen</span></div>`;
   }
 }
 
