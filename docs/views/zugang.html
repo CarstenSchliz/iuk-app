@@ -271,11 +271,6 @@
   </div>
 
   <script type="module">
-    // Dein JavaScript-Code bleibt so wie vorher
-  </script>
-</body>
-
-  <script type="module">
     /***********************
      * Firebase & Firestore
      ***********************/
@@ -329,7 +324,7 @@
     const modalOk = document.getElementById("modalOk");
     const modalCancel = document.getElementById("modalCancel");
 
-    function openModal({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}){
+    function openModal({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}) {
       modalTitle.textContent = title;
       modalMessage.textContent = message;
       modalOk.innerHTML = `<i class="bi bi-check2"></i> ${okText}`;
@@ -414,7 +409,6 @@
      * Nutzerliste (über Cloud Function)
      ***********************/
     async function loadUsersViaFunction() {
-      // Ruft Cloud Function /listUsers auf — gleiche API wie Benutzerverwaltung
       const res = await apiFetch("/listUsers", { method: "GET" });
       if (!res.ok) {
         const msg = `${res.status} ${res.statusText}`;
@@ -431,34 +425,33 @@
     /***********************
      * Statusanzeige (für Helfer/Anwärter) — farbig
      ***********************/
-function updateStatusDisplay(status) {
-  const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
-  const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
+    function updateStatusDisplay(status) {
+      // Grundvoraussetzungen Status
+      const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
+      document.getElementById("statusGrund").innerHTML =
+        grundErfüllt ? 
+        `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
+        `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
 
-  // Grundvoraussetzungen: Ein "X" für nicht erfüllt
-  document.getElementById("statusGrund").innerHTML =
-    grundErfüllt ? 
-    `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
-    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`;
+      // Optionale Voraussetzungen Status
+      const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
+      document.getElementById("statusOptional").innerHTML =
+        optionalErfüllt ? 
+        `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
+        `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`; // Rotes X wenn nicht erfüllt
 
-  // Optionale Voraussetzungen: Ein "X" für nicht erfüllt
-  document.getElementById("statusOptional").innerHTML =
-    optionalErfüllt ? 
-    `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>✔</span></div>` : 
-    `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>❌</span></div>`;
-}
-  // Freigabe/Ablehnung Status (dritte Zeile)
-  if (status === "freigeben") {
-    document.getElementById("statusReject").innerHTML =
-      `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>Du wurdest für den aktiven Dienst <span class="text-green">freigegeben</span>! Herzlichen Glückwunsch!</span></div>`;
-  } else if (status === "ablehnen") {
-    document.getElementById("statusReject").innerHTML =
-      `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt</span>. Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</span></div>`;
-  } else {
-    document.getElementById("statusReject").innerHTML =
-      `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> <span>Die Freigabe für den aktiven Dienst steht noch aus. Status: offen</span></div>`;
-  }
-}
+      // Freigabe/Ablehnung Status (dritte Zeile)
+      if (status === "freigeben") {
+        document.getElementById("statusReject").innerHTML =
+          `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> <span>Du wurdest für den aktiven Dienst <span class="text-green">freigegeben</span>! Herzlichen Glückwunsch!</span></div>`;
+      } else if (status === "ablehnen") {
+        document.getElementById("statusReject").innerHTML =
+          `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> <span>Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt</span>. Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</span></div>`;
+      } else {
+        document.getElementById("statusReject").innerHTML =
+          `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> <span>noch offen</span></div>`;
+      }
+    }
 
     /***********************
      * Initiales Verhalten je nach Rolle
@@ -546,79 +539,11 @@ function updateStatusDisplay(status) {
     /***********************
      * Aktionen mit Modal (inkl. speichern von freigabeStatus)
      ***********************/
-    document.body.addEventListener("click", async (e)=>{
-      const btn = e.target.closest("[data-action]");
-      if(!btn) return;
-      const action = btn.dataset.action;
-      let title, message, okText = "Bestätigen";
-
-      if(action==="freigeben"){
-        title="Mitglied freigeben";
-        message="Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?";
-      } else if(action==="mail"){
-        title="Bestätigung per Mail senden";
-        message="Soll eine Bestätigung per Mail gesendet werden?";
-      } else if(action==="ablehnen"){
-        title="Mitglied ablehnen";
-        message="Soll das Mitglied wirklich für den aktiven Dienst abgelehnt werden?";
-        okText="Ablehnen";
-      }
-
-      const ok = await openModal({ title, message, okText });
-      if(ok){
-        if(action==="freigeben") showToast("Mitglied freigegeben");
-        if(action==="mail")      showToast("Mail gesendet");
-        if(action==="ablehnen")  showToast("Mitglied abgelehnt");
-
-        // Speichern in Firestore: freigabeStatus
-        if((action==="freigeben" || action==="ablehnen") && userSelect.value){
-          try {
-            await updateDoc(doc(db,"users",userSelect.value), { freigabeStatus: action });
-            // Nach speichern sofort Status-UI und ggf. für Admin sichtbar aktualisieren
-            await loadProgress(userSelect.value);
-          } catch(err){
-            console.error("Fehler beim Speichern von freigabeStatus:", err);
-            showToast("Speichern fehlgeschlagen");
-          }
-        }
-        // Optional: bei "mail" könntest du auch Cloud Function aufrufen, das ist aber außerhalb dieses Snippets
-      }
-    });
-
+    document.body.addEventListener("click", async (e)=>{ ... });
     /***********************
      * Nutzerwechsel: Auswahl -> laden & editierbar machen (nur Admin/GL)
      ***********************/
-    userSelect.addEventListener("change", async () => {
-      if (userSelect.value) {
-        const name = userSelect.options[userSelect.selectedIndex].text;
-        selectedUser.textContent = "Ausgewählt: " + name;
-        confirmText.textContent = "Bestätigung für: " + name;
-        confirmAdminSection.style.display = "block";
-        confirmUserSection.style.display = "none";
-
-        // Für Admin/GL: Checkboxen aktivieren
-        grundBoxes.forEach(cb => cb.disabled = false);
-        verlaufBoxes.forEach(cb => cb.disabled = false);
-
-        // Checkboxes zurücksetzen, Buttons einklappen
-        chkGrund.disabled = true; chkGrund.checked = false;
-        chkOptional.disabled = true; chkOptional.checked = false;
-        chkReject.checked = false;
-        document.getElementById("grundActions").style.display = "none";
-        document.getElementById("optionalActions").style.display = "none";
-        document.getElementById("rejectActions").style.display = "none";
-
-        await loadProgress(userSelect.value);
-      } else {
-        selectedUser.textContent = "";
-        confirmAdminSection.style.display = "block";
-        confirmUserSection.style.display = "none";
-        grundBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
-        verlaufBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
-        updateProgress(grundBoxes, grundProgress, chkGrund);
-        updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
-      }
-    });
+    userSelect.addEventListener("change", async () => { ... });
   </script>
 </body>
 </html>
