@@ -12,7 +12,7 @@
       --dunkelblau: rgb(0,45,85);
       --hellblau: rgb(100,160,220);
       --mittelgrau: rgb(180,180,180);
-      --hellgruene-progress: #a1d88f; /* kräftigeres Hellgrün für 80% */
+      --hellgruene-progress: #a1d88f; /* Kräftigeres Hellgrün für 80% */
     }
 
     .page-title { color: var(--softrot); margin-bottom: 1rem; font-size: 1.4rem; }
@@ -51,7 +51,7 @@
       font-size:1rem;
     }
 
-    /* ✅ Standard-Checkboxen, keine eigenen grünen Haken */
+    /* ✅ Standard-Checkboxen */
     .checklist input[type="checkbox"] {
       appearance: auto;
       -webkit-appearance: auto;
@@ -136,7 +136,7 @@
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
-  <!-- Nutzer-Auswahl (nur für Admin/GL sichtbar) -->
+  <!-- Nutzer-Auswahl (Admin/GL) -->
   <div class="card select-user" id="selectUserCard" style="margin-bottom:1.5rem; display:none;">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
     <div>
@@ -228,7 +228,7 @@
 
   <div id="toast"></div>
 
-  <!-- Modal (wie in Benutzerverwaltung) -->
+  <!-- Modal -->
   <div id="modalBackdrop" class="modal-backdrop"></div>
   <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
