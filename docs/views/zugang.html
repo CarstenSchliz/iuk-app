@@ -426,8 +426,7 @@
     });
   </script>
 </body>
-</html>
-
+  
     async function saveProgress(userId, type, values) {
       const ref = doc(db, "users", userId);
       await updateDoc(ref, { [type]: values });
