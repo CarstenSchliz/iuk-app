@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
 <style>
-  /* ================================ THEME: zentrale Farb-Variablen ================================ */
+    /* ================================ THEME: zentrale Farb-Variablen ================================ */
   :root {
     --softrot: rgb(228,100,80);
     --dunkelblau: rgb(0,45,85);
@@ -285,6 +285,11 @@
 
   body.dark .menu button.active { background: #fff; color: #000; font-weight: bold; }
   body.dark .menu button.active::before { background: #fff; }
+
+  /* >>> NEU: Abstand zwischen Karten innerhalb einer Spalte <<< */
+  .settings-grid > div > .card:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
 </style>
 
 </head>
