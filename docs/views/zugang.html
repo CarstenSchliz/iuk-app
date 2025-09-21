@@ -131,13 +131,12 @@
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
 
-  <!-- Nutzer-Auswahl -->
-  <div class="card" style="margin-bottom:1.5rem;">
+  <!-- Nutzer-Auswahl (nur für Admin/GL sichtbar) -->
+  <div class="card select-user" id="selectUserCard" style="margin-bottom:1.5rem; display:none;">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
-    <div class="select-user">
+    <div>
       <select id="userSelect">
         <option value="">-- bitte wählen --</option>
-        <!-- dynamisch befüllt -->
       </select>
       <div id="selectedUser" class="selected-user"></div>
     </div>
@@ -225,16 +224,29 @@
   </div>
 
   <script type="module">
-    /* ==========================
-       Firebase + Firestore Imports
-       ========================== */
-    import { auth, db, observeAuthState, getUserRoles } from "./docs/js/firebase.js";
-    import { doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    /***********************
+     * Firebase & Firestore
+     ***********************/
+    import { auth, db, observeAuthState, getUserRoles } from "./js/firebase.js";
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    /* ==========================
-       DOM-Refs
-       ========================== */
+    /***********************
+     * API (Cloud Functions) – wie Benutzerverwaltung
+     ***********************/
+    const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
+    async function apiFetch(endpoint, options = {}) {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Nicht eingeloggt");
+      const token = await user.getIdToken();
+      const headers = { ...(options.headers||{}), "Authorization": `Bearer ${token}`, "Content-Type": "application/json" };
+      return fetch(API_BASE + endpoint, { ...options, headers });
+    }
+
+    /***********************
+     * DOM-Referenzen
+     ***********************/
     const userSelect = document.getElementById("userSelect");
+    const selectUserCard = document.getElementById("selectUserCard");
     const selectedUser = document.getElementById("selectedUser");
     const confirmUserSection = document.getElementById("confirmUserSection");
     const confirmText = document.getElementById("confirmText");
@@ -248,7 +260,7 @@
     const chkOptional = document.getElementById("chkOptional");
     const chkReject = document.getElementById("chkReject");
 
-    // Toast (unverändert)
+    // Toast
     const toast = document.getElementById("toast");
     function showToast(msg){
       toast.textContent = msg;
@@ -264,15 +276,15 @@
     const modalOk = document.getElementById("modalOk");
     const modalCancel = document.getElementById("modalCancel");
 
-    function openModal({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}) {
+    function openModal({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}){
       modalTitle.textContent = title;
       modalMessage.textContent = message;
       modalOk.innerHTML = `<i class="bi bi-check2"></i> ${okText}`;
       modalCancel.innerHTML = `<i class="bi bi-x-lg"></i> ${cancelText}`;
       modal.style.display = "flex";
       backdrop.style.display = "block";
-      return new Promise(resolve => {
-        const close = (val) => { modal.style.display = "none"; backdrop.style.display = "none"; resolve(val); };
+      return new Promise(resolve=>{
+        const close = (val) => { modal.style.display="none"; backdrop.style.display="none"; resolve(val); };
         const onEsc = (e)=>{ if(e.key==="Escape"){ document.removeEventListener("keydown", onEsc); close(false); } };
         document.addEventListener("keydown", onEsc);
         modalOk.onclick = ()=>{ document.removeEventListener("keydown", onEsc); close(true); };
@@ -306,51 +318,30 @@
       if (percent !== 100) gate.checked = false;
     }
 
-    /* ==========================
-       Firestore: Nutzer laden
-       ========================== */
-    async function loadUsers() {
-      const snap = await getDocs(collection(db, "users"));
-      userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
-      snap.forEach(docSnap => {
-        const u = docSnap.data();
-        userSelect.innerHTML += `<option value="${docSnap.id}">${u.name}</option>`;
-      });
-    }
-
-    // Fortschritt speichern
-    async function saveProgress(userId, type, values) {
-      const ref = doc(db, "users", userId);
-      await updateDoc(ref, { [type]: values });
-    }
-
-    // Fortschritt laden
+    /***********************
+     * Firestore: Fortschritt laden/speichern
+     ***********************/
     async function loadProgress(userId) {
       const ref = doc(db, "users", userId);
       const snap = await getDoc(ref);
-      if (snap.exists()) {
+      if(snap.exists()) {
         const data = snap.data();
-
-        // Grundvoraussetzungen
-        if (data.grund) {
-          grundBoxes.forEach((box, i) => { box.checked = data.grund[i] || false; });
-          updateProgress(grundBoxes, grundProgress, chkGrund);
+        // Grund
+        if (Array.isArray(data.grund)) {
+          grundBoxes.forEach((box,i)=>{ box.checked = !!data.grund[i]; });
         } else {
-          // Reset falls nicht vorhanden
           grundBoxes.forEach(box => box.checked = false);
-          updateProgress(grundBoxes, grundProgress, chkGrund);
         }
-
-        // Optionale Voraussetzungen
-        if (data.optional) {
-          verlaufBoxes.forEach((box, i) => { box.checked = data.optional[i] || false; });
-          updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
+        updateProgress(grundBoxes, grundProgress, chkGrund);
+        // Optional
+        if (Array.isArray(data.optional)) {
+          verlaufBoxes.forEach((box,i)=>{ box.checked = !!data.optional[i]; });
         } else {
           verlaufBoxes.forEach(box => box.checked = false);
-          updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
         }
+        updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
       } else {
-        // Kein Dokument vorhanden -> reset
+        // Reset wenn Dokument fehlt
         grundBoxes.forEach(box => box.checked = false);
         verlaufBoxes.forEach(box => box.checked = false);
         updateProgress(grundBoxes, grundProgress, chkGrund);
@@ -358,22 +349,97 @@
       }
     }
 
-    /* ==========================
-       Events: speichern bei Änderung
-       ========================== */
+    async function saveProgress(userId, type, values) {
+      const ref = doc(db, "users", userId);
+      await updateDoc(ref, { [type]: values });
+    }
+
+    /***********************
+     * Nutzerliste (über Cloud Function)
+     ***********************/
+    async function loadUsersViaFunction() {
+      const res = await apiFetch("/listUsers", { method: "GET" });
+      if (!res.ok) {
+        const msg = `${res.status} ${res.statusText}`;
+        throw new Error(msg);
+      }
+      const data = await res.json();
+      userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+      (data.users || []).forEach(u => {
+        const label = u.displayName || u.email || u.uid;
+        userSelect.innerHTML += `<option value="${u.uid}">${label}</option>`;
+      });
+    }
+
+    /***********************
+     * Initiales Verhalten je nach Rolle
+     ***********************/
+    observeAuthState(async (user) => {
+      if (!user) return;
+
+      const roles = await getUserRoles(user.uid);
+
+      if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+        // Admin/GL: Dropdown anzeigen und befüllen
+        selectUserCard.style.display = "block";
+        // Admin/GL dürfen Checkboxen erst nach Auswahl bedienen
+        grundBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
+        verlaufBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
+        chkGrund.disabled = true; chkGrund.checked = false;
+        chkOptional.disabled = true; chkOptional.checked = false;
+        chkReject.checked = false;
+
+        // Buttons einklappen
+        document.getElementById("grundActions").style.display = "none";
+        document.getElementById("optionalActions").style.display = "none";
+        document.getElementById("rejectActions").style.display = "none";
+
+        // Nutzer vom Backend (Function) laden
+        try{
+          await loadUsersViaFunction();
+        } catch(e){
+          showToast("Fehler beim Laden der Nutzer");
+          console.error(e);
+        }
+
+      } else {
+        // Normale Nutzer: Dropdown ausblenden, nur Eigendaten read-only
+        selectUserCard.style.display = "none";
+        confirmUserSection.style.display = "block";
+        confirmText.textContent = "Dein eigener Status";
+
+        // Eigene Daten laden, aber nicht änderbar
+        grundBoxes.forEach(cb => cb.disabled = true);
+        verlaufBoxes.forEach(cb => cb.disabled = true);
+        chkGrund.disabled = true;
+        chkOptional.disabled = true;
+        chkReject.disabled = true;
+
+        await loadProgress(user.uid);
+      }
+    });
+
+    /***********************
+     * Live-Fortschritt + Speichern
+     ***********************/
     document.getElementById("grund-list").addEventListener("change", () => {
-      const values = Array.from(grundBoxes).map(b => b.checked);
-      if (userSelect.value) saveProgress(userSelect.value, "grund", values);
       updateProgress(grundBoxes, grundProgress, chkGrund);
+      if (userSelect.value) {
+        const values = Array.from(grundBoxes).map(b => b.checked);
+        saveProgress(userSelect.value, "grund", values).catch(err => console.error(err));
+      }
     });
-
     document.getElementById("verlauf-list").addEventListener("change", () => {
-      const values = Array.from(verlaufBoxes).map(b => b.checked);
-      if (userSelect.value) saveProgress(userSelect.value, "optional", values);
       updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
+      if (userSelect.value) {
+        const values = Array.from(verlaufBoxes).map(b => b.checked);
+        saveProgress(userSelect.value, "optional", values).catch(err => console.error(err));
+      }
     });
 
-    // Buttons zeigen, wenn Checkboxen aktiv sind (Bestätigung durch Gruppenleiter)
+    /***********************
+     * Buttons sichtbar machen je nach Checkbox (wie vorher)
+     ***********************/
     chkGrund.addEventListener("change", () => {
       document.getElementById("grundActions").style.display = chkGrund.checked ? "block" : "none";
     });
@@ -384,10 +450,10 @@
       document.getElementById("rejectActions").style.display = e.target.checked ? "block" : "none";
     });
 
-    /* ==========================
-       Aktionen mit Modal (freigeben / mail / ablehnen)
-       ========================== */
-    document.body.addEventListener("click", async (e)=> {
+    /***********************
+     * Aktionen mit Modal (unverändert)
+     ***********************/
+    document.body.addEventListener("click", async (e)=>{
       const btn = e.target.closest("[data-action]");
       if(!btn) return;
       const action = btn.dataset.action;
@@ -395,7 +461,7 @@
 
       if(action==="freigeben"){
         title="Mitglied freigeben";
-        message="Soll das Mitglied wirklich für den aktiven Dienst freigeben werden?";
+        message="Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?";
       } else if(action==="mail"){
         title="Bestätigung per Mail senden";
         message="Soll eine Bestätigung per Mail gesendet werden?";
@@ -410,69 +476,14 @@
         if(action==="freigeben") showToast("Mitglied freigegeben");
         if(action==="mail")      showToast("Mail gesendet");
         if(action==="ablehnen")  showToast("Mitglied abgelehnt");
-
-        // Optional: hier könntest du Status in Firestore speichern z.B. freigabe: true/false oder emailsent:true
-        // Beispiel (unaufgefordert auskommentiert):
-        // if(userSelect.value) {
-        //   await updateDoc(doc(db, "users", userSelect.value), { freigabe: action === "freigeben" ? "freigegeben" : "abgelehnt" });
-        // }
+        // Optional: hier könntest du einen Status in Firestore speichern
+        // if(userSelect.value) await updateDoc(doc(db,"users",userSelect.value), { freigabeStatus: action });
       }
     });
 
-    /* ==========================
-       Rollen & Auth-State beobachten
-       ========================== */
-    observeAuthState(async (user) => {
-      if (user) {
-        const roles = await getUserRoles(user.uid);
-
-        if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-          // Admin / Gruppenleiter: können Nutzer auswählen und bearbeiten
-          await loadUsers();
-          userSelect.disabled = false;
-          // Reset Anzeige
-          selectedUser.textContent = "";
-          confirmUserSection.style.display = "none";
-
-          // Beim ersten Laden: ensure checkboxes disabled until a user is selected
-          grundBoxes.forEach(cb => cb.disabled = true);
-          verlaufBoxes.forEach(cb => cb.disabled = true);
-          chkGrund.disabled = true; chkOptional.disabled = true; chkReject.checked = false;
-        } else {
-          // normales Mitglied: nur das eigene Profil sehen (readonly)
-          const ref = doc(db, "users", user.uid);
-          const snap = await getDoc(ref);
-          const u = snap.exists() ? snap.data() : { name: "Unbekannter Nutzer" };
-
-          userSelect.innerHTML = `<option value="${user.uid}">${u.name}</option>`;
-          userSelect.disabled = true;
-          userSelect.value = user.uid;
-          selectedUser.textContent = "Ausgewählt: " + u.name;
-          confirmText.textContent = "Bestätigung für: " + u.name;
-          confirmUserSection.style.display = "block";
-
-          // Lade Fortschritte und setze alle Häkchen readonly
-          await loadProgress(user.uid);
-          grundBoxes.forEach(cb => cb.disabled = true);
-          verlaufBoxes.forEach(cb => cb.disabled = true);
-
-          // Bestätigungs-Checkboxen sollen nicht interaktiv sein für normale Mitglieder
-          chkGrund.disabled = true;
-          chkOptional.disabled = true;
-          chkReject.disabled = true;
-        }
-      } else {
-        // kein eingeloggter User: nichts anzeigen
-        userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
-        userSelect.disabled = true;
-        selectedUser.textContent = "";
-        confirmUserSection.style.display = "none";
-      }
-    });
-
-    /* ==========================
-       Nutzerwechsel (Admin wählt jemand anderen)
-       ========================== */
+    /***********************
+     * Nutzerwechsel: Auswahl -> laden & editierbar machen (nur Admin/GL)
+     ***********************/
     userSelect.addEventListener("change", async () => {
       if (userSelect.value) {
         const name = userSelect.options[userSelect.selectedIndex].text;
@@ -480,14 +491,14 @@
         confirmText.textContent = "Bestätigung für: " + name;
         confirmUserSection.style.display = "block";
 
-        // enable checkboxes for admin/gruppenleiter when a user is selected
+        // Für Admin/GL: Checkboxen aktivieren
         grundBoxes.forEach(cb => cb.disabled = false);
         verlaufBoxes.forEach(cb => cb.disabled = false);
+
+        // Checkboxes zurücksetzen, Buttons einklappen
         chkGrund.disabled = true; chkGrund.checked = false;
         chkOptional.disabled = true; chkOptional.checked = false;
         chkReject.checked = false;
-
-        // Buttons einklappen
         document.getElementById("grundActions").style.display = "none";
         document.getElementById("optionalActions").style.display = "none";
         document.getElementById("rejectActions").style.display = "none";
@@ -502,11 +513,6 @@
         updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
       }
     });
-
-    /* ==========================
-       Extra: falls du initial andere Logik brauchst, kannst du sie hier ergänzen
-       ========================== */
-
   </script>
 </body>
 </html>
