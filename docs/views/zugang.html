@@ -5,165 +5,162 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zugangsvoraussetzungen</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<style>
-  :root {
-    --softrot: rgb(228,100,80);
-    --drk-gruen: rgb(0,150,80);
-    --dunkelblau: rgb(0,45,85);
-    --hellblau: rgb(100,160,220);
-    --mittelgrau: rgb(180,180,180);
-    --hellgruene-progress: #a1d88f; /* Kräftigeres Hellgrün für 80% */
-  }
+  <style>
+    :root {
+      --softrot: rgb(228,100,80);
+      --drk-gruen: rgb(0,150,80);
+      --dunkelblau: rgb(0,45,85);
+      --hellblau: rgb(100,160,220);
+      --mittelgrau: rgb(180,180,180);
+      --hellgruene-progress: #a1d88f; /* Kräftigeres Hellgrün für 80% */
+    }
 
-  .page-title { color: var(--softrot); margin-bottom: 1rem; font-size: 1.4rem; }
-  .zugang-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-  }
-  @media(max-width: 768px){
-    .zugang-grid { grid-template-columns: 1fr; }
-  }
+    .page-title { color: var(--softrot); margin-bottom: 1rem; font-size: 1.4rem; }
+    .zugang-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media(max-width: 768px){
+      .zugang-grid { grid-template-columns: 1fr; }
+    }
 
-  .card {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    border: 1px solid #eef2f7;
-  }
-  .card h3 {
-    color: var(--hellblau);
-    margin-top: 0;
-    margin-bottom: 1rem;
-    display:flex;
-    align-items:center;
-    gap:0.5rem;
-    font-size: 1.05rem;
-  }
+    .card {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border: 1px solid #eef2f7;
+    }
+    .card h3 {
+      color: var(--hellblau);
+      margin-top: 0;
+      margin-bottom: 1rem;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      font-size: 1.05rem;
+    }
 
-  .checklist { list-style: none; padding: 0; margin: 0; }
-  .checklist li {
-    margin: 0.6rem 0;
-    display:flex;
-    align-items:center;
-    gap:0.5rem;
-    font-size:1rem;
-  }
+    .checklist { list-style: none; padding: 0; margin: 0; }
+    .checklist li {
+      margin: 0.6rem 0;
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+      font-size:1rem;
+    }
 
-  /* ✅ Standard-Checkboxen */
-  .checklist input[type="checkbox"] {
-    appearance: auto;
-    -webkit-appearance: auto;
-    width: 1.2rem;
-    height: 1.2rem;
-    cursor: pointer;
-  }
+    .checklist input[type="checkbox"] {
+      appearance: auto;
+      -webkit-appearance: auto;
+      width: 1.2rem;
+      height: 1.2rem;
+      cursor: pointer;
+    }
 
-  .progress {
-    height: 22px;
-    background-color: #e9ecef;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 1rem;
-  }
-  .progress-bar {
-    height: 100%;
-    text-align: center;
-    font-size: 0.85rem;
-    font-weight: bold;
-    transition: width 0.3s ease, background-color 0.3s ease;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color: white;
-  }
+    .progress {
+      height: 22px;
+      background-color: #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .progress-bar {
+      height: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: width 0.3s ease, background-color 0.3s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: white;
+    }
 
-  .select-user { margin-bottom: 1rem; }
-  .selected-user, #confirmText {
-    font-weight: bold;
-    color: var(--dunkelblau);
-    font-size: 1.05rem;
-    margin-top: 1rem;
-  }
+    .select-user { margin-bottom: 1rem; }
+    .selected-user, #confirmText {
+      font-weight: bold;
+      color: var(--dunkelblau);
+      font-size: 1.05rem;
+      margin-top: 1rem;
+    }
 
-  .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
-  .btn-green { background: var(--drk-gruen); }
-  .btn-red { background: var(--softrot); }
-  .btn-blue { background: var(--dunkelblau); }
+    .btn-confirm { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; margin:0.5rem 0.5rem 0 0; padding:0.6rem 1rem; border:none; border-radius:8px; cursor:pointer; color:#fff; font-weight:bold; width:260px; }
+    .btn-green { background: var(--drk-gruen); }
+    .btn-red { background: var(--softrot); }
+    .btn-blue { background: var(--dunkelblau); }
 
-  select {
-    width: 100%;
-    padding: 0.6rem;
-    border-radius: 8px;
-    border: 1px solid var(--dunkelblau);
-    background: #fff;
-    font-size: 1rem;
-    color: var(--dunkelblau);
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-  }
-  select:focus { outline: none; border-color: var(--dunkelblau); box-shadow: none; }
-  @media(min-width: 769px){ .select-user select { max-width: 300px; } }
+    select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--dunkelblau);
+      background: #fff;
+      font-size: 1rem;
+      color: var(--dunkelblau);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    select:focus { outline: none; border-color: var(--dunkelblau); box-shadow: none; }
+    @media(min-width: 769px){ .select-user select { max-width: 300px; } }
 
-  #toast { visibility: hidden; min-width: 250px; background-color: var(--dunkelblau); color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
-  #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+    #toast { visibility: hidden; min-width: 250px; background-color: var(--dunkelblau); color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
-  /* Modal */
-  .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1999; }
-  .modal{ position:fixed; inset:0; display:none; z-index:2000; align-items:center; justify-content:center; padding:1rem; }
-  .modal .modal-card{ background:#fff; color:#111; border-radius:14px; width:min(520px, 96vw);
-    box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem 1rem 1rem; border:1px solid #e5e7eb; }
-  .modal h4{ font-size:1.2rem; font-weight:600; margin-top:0; margin-bottom:.6rem; color:var(--dunkelblau); }
-  .modal p{ margin:.2rem 0 1rem; color:#374151; line-height:1.4; }
-  .modal .modal-actions{ display:flex; gap:.8rem; justify-content:flex-end; margin-top:1rem; }
-  .modal .btn{ padding:.6rem 1rem; border:none; border-radius:10px; font-size:.95rem; cursor:pointer; }
-  .modal .btn-secondary{ background:#eef2f7 }
-  .modal .btn-primary{ background:var(--dunkelblau); color:#fff }
-  .modal .btn-danger{ background:var(--softrot); color:#fff }
+    /* Modal */
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1999; }
+    .modal{ position:fixed; inset:0; display:none; z-index:2000; align-items:center; justify-content:center; padding:1rem; }
+    .modal .modal-card{ background:#fff; color:#111; border-radius:14px; width:min(520px, 96vw); box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem 1rem 1rem; border:1px solid #e5e7eb; }
+    .modal h4{ font-size:1.2rem; font-weight:600; margin-top:0; margin-bottom:.6rem; color:var(--dunkelblau); }
+    .modal p{ margin:.2rem 0 1rem; color:#374151; line-height:1.4; }
+    .modal .modal-actions{ display:flex; gap:.8rem; justify-content:flex-end; margin-top:1rem; }
+    .modal .btn{ padding:.6rem 1rem; border:none; border-radius:10px; font-size:.95rem; cursor:pointer; }
+    .modal .btn-secondary{ background:#eef2f7 }
+    .modal .btn-primary{ background:var(--dunkelblau); color:#fff }
+    .modal .btn-danger{ background:var(--softrot); color:#fff }
 
-  /* Statusfarben */
-  .status-ok { font-weight: bold; color: var(--drk-gruen); }
-  .status-bad { font-weight: bold; color: var(--softrot); }
-  .status-pending { font-weight: bold; color: var(--dunkelblau); }
+    /* Statusfarben */
+    .status-ok { font-weight: bold; color: var(--drk-gruen); }
+    .status-bad { font-weight: bold; color: var(--softrot); }
+    .status-pending { font-weight: bold; color: var(--dunkelblau); }
 
-  .muted { color: #6b7280; font-size: .95rem; }
+    .muted { color: #6b7280; font-size: .95rem; }
 
-  /* Grüne und rote, fette Schrift */
-  .text-green {
-    color: var(--drk-gruen);
-    font-weight: bold;
-  }
+    /* Grüne und rote, fette Schrift */
+    .text-green {
+      color: var(--drk-gruen);
+      font-weight: bold;
+    }
 
-  .text-red {
-    color: var(--softrot);
-    font-weight: bold;
-  }
+    .text-red {
+      color: var(--softrot);
+      font-weight: bold;
+    }
 
-  /* Flexbox Layout für Icons und Texte nebeneinander */
-  .status-message {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;  /* Abstand zwischen Icon und Text */
-  }
+    /* Flexbox Layout für Icons und Texte nebeneinander */
+    .status-message {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;  /* Abstand zwischen Icon und Text */
+    }
 
-  /* Feather Icons */
-  .feather-check-circle {
-    color: var(--drk-gruen);
-  }
+    /* Feather Icons */
+    .feather-check-circle {
+      color: var(--drk-gruen);
+    }
 
-  .feather-x-circle {
-    color: var(--softrot);
-  }
+    .feather-x-circle {
+      color: var(--softrot);
+    }
 
-  .feather-hourglass {
-    color: var(--dunkelblau);
-  }
-</style>
-
+    .feather-hourglass {
+      color: var(--dunkelblau);
+    }
+  </style>
 </head>
 <body>
   <h2 class="page-title">Zugangsvoraussetzungen</h2>
@@ -252,7 +249,7 @@
       <ul class="checklist" id="statusList">
         <li><span id="statusGrund"></span> Grundvoraussetzungen</li>
         <li><span id="statusOptional"></span> Optionale Voraussetzungen</li>
-        <li><span id="statusReject"></span> Freigabe/Ablehnung</li>
+        <li><span id="statusReject"></span></li> <!-- Freigabe/Ablehnung entfernt -->
       </ul>
       <p class="muted">Hinweis: Die Bestätigung kann nur von Gruppenleiter:innen oder Administrator:innen vorgenommen werden.</p>
     </div>
