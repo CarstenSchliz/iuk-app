@@ -15,8 +15,6 @@
       --hellgruene-progress: #a1d88f; /* kräftigeres Hellgrün für 80% */
     }
 
-    body { background:#f7f8fb; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color: #1f2937; padding: 1.25rem; }
-
     .page-title { color: var(--softrot); margin-bottom: 1rem; font-size: 1.4rem; }
     .zugang-grid {
       display: grid;
@@ -56,6 +54,7 @@
       width: 1.2rem;
       height: 1.2rem;
       cursor: pointer;
+      accent-color: var(--drk-gruen); /* ✅ Haken grün */
     }
 
     .progress {
@@ -110,18 +109,11 @@
     #toast { visibility: hidden; min-width: 250px; background-color: var(--dunkelblau); color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; font-size: 1rem; opacity: 0; transform: translateX(-50%); transition: opacity 0.5s, bottom 0.5s; }
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
-    /* Modal (Design wie Benutzerverwaltung) */
-    .modal-backdrop{
-      position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1999;
-    }
-    .modal{
-      position:fixed; inset:0; display:none; z-index:2000; align-items:center; justify-content:center; padding:1rem;
-    }
-    .modal .modal-card{
-      background:#fff; color:#111; border-radius:14px; width:min(520px, 96vw);
-      box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem 1rem 1rem;
-      border:1px solid #e5e7eb;
-    }
+    /* Modal */
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; z-index:1999; }
+    .modal{ position:fixed; inset:0; display:none; z-index:2000; align-items:center; justify-content:center; padding:1rem; }
+    .modal .modal-card{ background:#fff; color:#111; border-radius:14px; width:min(520px, 96vw);
+      box-shadow:0 20px 60px rgba(0,0,0,.25); padding:1rem 1rem 1rem; border:1px solid #e5e7eb; }
     .modal h4{ font-size:1.2rem; font-weight:600; margin-top:0; margin-bottom:.6rem; color:var(--dunkelblau); }
     .modal p{ margin:.2rem 0 1rem; color:#374151; line-height:1.4; }
     .modal .modal-actions{ display:flex; gap:.8rem; justify-content:flex-end; margin-top:1rem; }
@@ -135,7 +127,6 @@
     .status-bad { color: var(--softrot); font-weight: bold; }
     .status-pending { color: var(--dunkelblau); font-weight: bold; }
 
-    /* small helper */
     .muted { color: #6b7280; font-size: .95rem; }
   </style>
 </head>
