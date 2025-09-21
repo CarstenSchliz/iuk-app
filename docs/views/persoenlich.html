@@ -6,7 +6,7 @@
   <title>Persönliche Einstellungen</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-  <style>
+ </style>
   /* ================================ THEME: zentrale Farb-Variablen ================================ */
   :root {
     --softrot: rgb(228,100,80);
@@ -71,7 +71,7 @@
   html, body {
     margin:0; padding:0; height:100%;
     background: var(--bg) !important;
-    overflow-x: hidden;
+    overflow-x: hidden; /* verhindert Verschieben */
   }
   body {
     font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
@@ -79,11 +79,11 @@
     transition: background .2s ease, color .2s ease;
   }
 
-  /* Wrapper für zentriertes Layout */
+  /* Wrapper zentriert wie bei Benutzerverwaltung */
   .settings-page {
-    max-width: 900px;   /* gleiche Breite wie Benutzerverwaltung */
-    margin: 0 auto;     /* zentriert horizontal */
-    padding: 0 1rem;    /* Abstand links/rechts */
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
   }
 
   .page-title { color: var(--softrot); margin: 0 0 1rem; padding: 1rem 0; }
@@ -92,16 +92,23 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 1.5rem;
+    align-items: stretch;   /* Karten gleich hoch/breit in der Spalte */
   }
+
+  .settings-grid > .card {
+    width: 100%;            /* immer volle Spaltenbreite */
+    margin: 0;              /* Abstand nur über gap */
+  }
+
   @media (max-width: 768px) {
     .settings-grid {
       grid-template-columns: 1fr;
-      justify-items: center;   /* Karten mittig */
     }
-    .settings-grid .card {
+    .settings-grid > .card {
       width: 100%;
       max-width: 560px;
       margin: 0 0 1.5rem;
+      justify-self: center; /* Karten mittig */
     }
   }
 
@@ -112,10 +119,8 @@
     padding: 1.5rem;
     border-radius: 14px;
     box-shadow: 0 4px 18px rgba(0,0,0,0.28);
-    margin-bottom: 1.5rem;
     transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
     box-sizing: border-box;
-    width: 100%;
   }
   body.dark .card { box-shadow: 0 10px 24px rgba(0,0,0,0.45); }
   .card h3 {
@@ -291,7 +296,6 @@
   body.dark .menu button.active { background: #fff; color: #000; font-weight: bold; }
   body.dark .menu button.active::before { background: #fff; }
 </style>
-
 
 </head>
 
