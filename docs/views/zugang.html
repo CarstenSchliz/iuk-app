@@ -571,9 +571,9 @@ function updateStatusDisplay(status) {
   // Freigabe/Ablehnung Status (dritte Zeile)
   let statusText = '';
   if (status === "freigeben") {
-    statusText = `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> Du wurdest für den aktiven Dienst <span class="text-green">freigegeben</span>! Herzlichen Glückwunsch!</div>`;
+    statusText = `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> Du wurdest für den aktiven Dienst <span class="text-green">freigegeben.</span> Herzlichen Glückwunsch!</div>`;
   } else if (status === "ablehnen") {
-    statusText = `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt</span>. Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</div>`;
+    statusText = `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt.</span> Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</div>`;
   } else {
     statusText = `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> Freigabestatus: noch offen</div>`; // Wenn noch offen
   }
