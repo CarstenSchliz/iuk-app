@@ -132,17 +132,35 @@
 
   .muted { color: #6b7280; font-size: .95rem; }
 
-  /* Setze explizit die Farbe der Bootstrap-Icons */
-  .bi-check-circle {
-    color: #00A850 !important;  /* Grüner Haken */
+  /* Grüne und rote, fette Schrift */
+  .text-green {
+    color: var(--drk-gruen);
+    font-weight: bold;
   }
 
-  .bi-x-circle {
-    color: #E46459 !important;  /* Rotes X */
+  .text-red {
+    color: var(--softrot);
+    font-weight: bold;
   }
 
-  .bi-hourglass {
-    color: #002D55 !important; /* Blaue Sanduhr für offenen Status */
+  /* Flexbox Layout für Icons und Texte nebeneinander */
+  .status-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;  /* Abstand zwischen Icon und Text */
+  }
+
+  /* Feather Icons */
+  .feather-check-circle {
+    color: var(--drk-gruen);
+  }
+
+  .feather-x-circle {
+    color: var(--softrot);
+  }
+
+  .feather-hourglass {
+    color: var(--dunkelblau);
   }
 </style>
 
@@ -419,21 +437,23 @@
 function updateStatusDisplay(status) {
   const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
   document.getElementById("statusGrund").innerHTML =
-    grundErfüllt ? `<i class="bi bi-check-circle status-ok"></i>` : `<i class="bi bi-x-circle status-bad"></i>`;
+    grundErfüllt ? `<div class="status-message"><i class="feather feather-check-circle status-ok"></i> <span>Grundvoraussetzungen erfüllt</span></div>` : 
+    `<div class="status-message"><i class="feather feather-x-circle status-bad"></i> <span>Grundvoraussetzungen nicht erfüllt</span></div>`;
 
   const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
   document.getElementById("statusOptional").innerHTML =
-    optionalErfüllt ? `<i class="bi bi-check-circle status-ok"></i>` : `<i class="bi bi-x-circle status-bad"></i>`;
+    optionalErfüllt ? `<div class="status-message"><i class="feather feather-check-circle status-ok"></i> <span>Optionale Voraussetzungen erfüllt</span></div>` : 
+    `<div class="status-message"><i class="feather feather-x-circle status-bad"></i> <span>Optionale Voraussetzungen nicht erfüllt</span></div>`;
 
   if (status === "freigeben") {
     document.getElementById("statusReject").innerHTML =
-      `<i class="bi bi-check-circle status-ok"></i> freigegeben`;
+      `<div class="status-message"><i class="feather feather-check-circle status-ok"></i> <span>Du wurdest für den aktiven Dienst <span class="text-green">freigegeben</span>! Herzlichen Glückwunsch!</span></div>`;
   } else if (status === "ablehnen") {
     document.getElementById("statusReject").innerHTML =
-      `<i class="bi bi-x-circle status-bad"></i> abgelehnt`;
+      `<div class="status-message"><i class="feather feather-x-circle status-bad"></i> <span>Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt</span>. Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</span></div>`;
   } else {
     document.getElementById("statusReject").innerHTML =
-      `<i class="bi bi-hourglass status-pending"></i> noch offen`;
+      `<div class="status-message"><i class="feather feather-hourglass status-pending"></i> <span>noch offen</span></div>`;
   }
 }
 
