@@ -1,141 +1,205 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Materialien</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <style>
-    :root {
-      --softrot: rgb(228,100,80);
-      --dunkelblau: rgb(0,45,85);
-      --hellgrau: rgb(239,238,234);
-      --blassblau: rgb(230,240,250);
-      --text: #1f2937;
-      --hellblau: rgb(100,160,220);
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Materialien</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --softrot: rgb(228,100,80);
+            --dunkelblau: rgb(0,45,85);
+            --hellgrau: rgb(239,238,234);
+            --blassblau: rgb(230,240,250);
+            --text: #1f2937;
+            --hellblau: rgb(100,160,220);
+            /* Rollenfarben */
+            --role-admin-bg: #ffe8e6;
+            --role-admin-bd: #ffcdc6;
+            --role-admin-fg: #9e1b1b;
+            --role-gl-bg: #fff6db;
+            --role-gl-bd: #fde8a6;
+            --role-gl-fg: #8a6b00;
+            --role-hf-bg: #e8f6ec;
+            --role-hf-bd: #c7efd5;
+            --role-hf-fg: #0f6b2b;
+            --role-an-bg: #e6f0ff;
+            --role-an-bd: #cfe1ff;
+            --role-an-fg: #0d3b8a;
+        }
 
-    * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
-    .material-page { color: var(--text); padding: 1rem; }
+        .material-page {
+            color: var(--text);
+            padding: 1rem;
+        }
 
-    .material-page .page-title { color: var(--softrot); margin: 0 0 1rem; }
+        .material-page .page-title {
+            color: var(--softrot);
+            margin: 0 0 1rem;
+        }
 
-    .material-page .material-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-    }
+        .material-page .material-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
 
-    @media (max-width: 980px) {
-      .material-page .material-grid { grid-template-columns: 1fr; }
-    }
+        @media (max-width: 980px) {
+            .material-page .material-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
-    .material-page .card { background: #fff; padding: 1.25rem; border-radius: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); margin-bottom: 1.5rem; border: 1px solid var(--material-bd); }
+        .material-page .card {
+            background: #fff !important;
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--material-bd);
+        }
 
-    .material-page .card h3 { color: var(--hellblau); margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+        .material-page .card h3 {
+            color: var(--hellblau);
+            margin: 0 0 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
 
-    .material-page .material-list { list-style: none; padding-left: 0; display: none; margin-top: 1rem; }
-    .material-page .material-list.open { display: block; }
+        .material-page .material-list {
+            list-style: none;
+            padding-left: 0;
+            display: none;
+            margin-top: 1rem;
+        }
 
-    .material-page .material-list li { padding: 0.8rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem; }
-    .material-page .material-list li:hover { background: var(--blassblau); }
+        .material-page .material-list.open {
+            display: block;
+        }
 
-    .material-page .btn { padding: 0.6rem 1.2rem; border-radius: 10px; background: var(--dunkelblau); color: white; font-size: 1rem; cursor: pointer; }
+        .material-page .material-list li {
+            padding: 0.8rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
 
-    .material-page .btn-primary { background: var(--dunkelblau); }
+        .material-page .material-list li:hover {
+            background: var(--blassblau);
+        }
 
-    .material-page .search-box { margin-bottom: 1.5rem; position: relative; }
+        .material-page .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            background: var(--dunkelblau);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
 
-    .material-page input[type="text"] {
-      padding: 8px 32px 8px 32px; /* Platz für die Lupe und Clear-Button */
-      width: 100%;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-      transition: border-color 0.15s ease;
-    }
+        .material-page .btn-primary {
+            background: var(--dunkelblau);
+        }
 
-    .material-page i.bi-search {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #6b7280;
-      font-size: 1rem;
-    }
+        .material-page .search-box {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
 
-    #clearSearch {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      color: #6b7280;
-      cursor: pointer;
-      display: none;
-    }
+        .material-page input[type="text"] {
+            padding: 8px 32px 8px 32px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            transition: border-color 0.15s ease;
+        }
 
-    .material-page input[type="text"]:focus {
-      outline: none;
-      border-color: var(--dunkelblau); /* Fokusfarbe */
-    }
+        .material-page i.bi-search {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 1rem;
+        }
 
-    .material-page input[type="text"]:not(:placeholder-shown) + #clearSearch {
-      display: block;
-    }
-  </style>
+        #clearSearch {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #6b7280;
+            cursor: pointer;
+            display: none;
+        }
+
+        .material-page input[type="text"]:focus {
+            outline: none;
+            border-color: var(--dunkelblau);
+        }
+
+        .material-page input[type="text"]:not(:placeholder-shown) + #clearSearch {
+            display: block;
+        }
+    </style>
 </head>
-
 <body>
-  <div class="material-page">
+<div class="material-page">
     <h2 class="page-title">Materialien</h2>
     <div class="search-box">
-      <div style="position:relative; margin:12px 0 14px;">
-        <i class="bi bi-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#6b7280; font-size:1rem;"></i>
-        <input type="text" id="searchInput" placeholder="Suchen..." style="padding:8px 32px 8px 32px; width:100%; border-radius:8px; border:1px solid #ccc;">
-        <button id="clearSearch" type="button" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:1.2rem; color:#6b7280; cursor:pointer; display:none;">
-          <i class="bi bi-x-lg"></i>
-        </button>
-      </div>
+        <div style="position:relative; margin:12px 0 14px;">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" placeholder="Suchen...">
+            <button id="clearSearch" type="button">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
     </div>
 
     <div class="material-grid">
-      <!-- Globale Materialien -->
-      <div class="card material-global">
-        <h3 onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
-        <ul class="material-list" id="globalMaterialsList"></ul>
-        <button class="btn btn-primary" id="addGlobalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
-        <button class="btn btn-primary" id="addGlobalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
-      </div>
+        <!-- Globale Materialien -->
+        <div class="card material-global">
+            <h3 onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
+            <ul class="material-list" id="globalMaterialsList"></ul>
+            <button class="btn btn-primary" id="addGlobalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
+            <button class="btn btn-primary" id="addGlobalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
+        </div>
 
-      <!-- Persönliche Materialien -->
-      <div class="card material-personal">
-        <h3 onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
-        <ul class="material-list" id="personalMaterialsList"></ul>
-        <button class="btn btn-primary" id="addPersonalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
-        <button class="btn btn-primary" id="addPersonalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
-      </div>
+        <!-- Persönliche Materialien -->
+        <div class="card material-personal">
+            <h3 onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
+            <ul class="material-list" id="personalMaterialsList"></ul>
+            <button class="btn btn-primary" id="addPersonalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
+            <button class="btn btn-primary" id="addPersonalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
+        </div>
     </div>
-  </div>
+</div>
 
-  <script type="module">
-    // Firebase Initialisierung
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-    import { getStorage } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+<script type="module">
+    import { initializeApp } from "firebase/app";
+    import { getFirestore } from "firebase/firestore";
+    import { getStorage } from "firebase/storage";
+    import { getAuth, onAuthStateChanged } from "firebase/auth";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
-      authDomain: "iuk-app.firebaseapp.com",
-      projectId: "iuk-app",
-      storageBucket: "iuk-app.firebasestorage.app",
-      messagingSenderId: "759014128178",
-      appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
-      measurementId: "G-ZPD5VPD5TS"
+        apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
+        authDomain: "iuk-app.firebaseapp.com",
+        projectId: "iuk-app",
+        storageBucket: "iuk-app.firebasestorage.app",
+        messagingSenderId: "759014128178",
+        appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
+        measurementId: "G-ZPD5VPD5TS"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -148,122 +212,122 @@
     let currentUser = null;
     let isAdminOrGL = false;
 
-    // Benutzerstatus ändern und Materialien laden
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-        checkUserRole(user);
-        loadMaterials();
-      }
-    });
-
-    // Benutzerrolle überprüfen
-    async function checkUserRole(user) {
-      const userClaims = await user.getIdTokenResult();
-      isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
-    }
-
-    // Materialien aus Firebase laden
-    async function loadMaterials() {
-      if (currentUser) {
-        const globalSnapshot = await db.collection("globalMaterials").get();
-        globalMaterials = globalSnapshot.docs.map(doc => doc.data());
-        renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
-
-        const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
-        personalMaterials = personalSnapshot.docs.map(doc => doc.data());
-        renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
-      }
-    }
-
-    // Materialien rendern
-    function renderMaterials(materials, listElement) {
-      listElement.innerHTML = "";
-      materials.forEach(material => {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${material.name}</strong><br>${material.description}`;
-        listElement.appendChild(li);
-      });
-    }
-
-    // Listen ein- und ausklappen
-    function toggleList(type) {
-      const list = document.getElementById(`${type}MaterialsList`);
-      list.classList.toggle('open');
-    }
-
-    // Material hinzufügen (nur für Admins oder Gruppenleiter)
-    document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
-      if (!isAdminOrGL) {
-        alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
-        return;
-      }
-
-      const fileInput = document.createElement("input");
-      fileInput.type = "file";
-      fileInput.accept = ".pdf,.jpg,.jpeg,.png";  // Akzeptierte Dateiformate
-      fileInput.onchange = async (e) => {
-        const file = e.target.files[0];
-
-        const storageRef = storage.ref().child(`materials/${file.name}`);
-
-        try {
-          await storageRef.put(file);
-
-          const fileUrl = await storageRef.getDownloadURL();
-
-          await db.collection("globalMaterials").add({
-            name: file.name,
-            description: "Beschreibung für " + file.name,
-            fileUrl: fileUrl,
-          });
-
-          alert("Material erfolgreich hochgeladen!");
-          loadMaterials();  // Materialien neu laden
-        } catch (error) {
-          console.error("Fehler beim Hochladen:", error);
-          alert("Es gab einen Fehler beim Hochladen des Materials.");
+        if (user) {
+            currentUser = user;
+            checkUserRole(user);
+            loadMaterials();
         }
-      };
-
-      fileInput.click(); // Datei-Auswahlfenster öffnen
     });
 
-    // Ordner hinzufügen (Firebase Storage)
+    async function checkUserRole(user) {
+        const userClaims = await user.getIdTokenResult();
+        isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
+    }
+
+    async function loadMaterials() {
+        if (currentUser) {
+            const globalSnapshot = await db.collection("globalMaterials").get();
+            globalMaterials = globalSnapshot.docs.map(doc => doc.data());
+            renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
+
+            const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
+            personalMaterials = personalSnapshot.docs.map(doc => doc.data());
+            renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
+        }
+    }
+
+    function renderMaterials(materials, listElement) {
+        listElement.innerHTML = "";
+        materials.forEach(material => {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>${material.name}</strong><br>${material.description}`;
+            listElement.appendChild(li);
+        });
+    }
+
+    document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
+        if (!isAdminOrGL) {
+            alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
+            return;
+        }
+
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = ".pdf,.jpg,.jpeg,.png";
+
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            const storageRef = storage.ref().child(`materials/${file.name}`);
+
+            try {
+                await storageRef.put(file);
+                const fileUrl = await storageRef.getDownloadURL();
+
+                await db.collection("globalMaterials").add({
+                    name: file.name,
+                    description: "Beschreibung für " + file.name,
+                    fileUrl: fileUrl
+                });
+
+                alert("Material erfolgreich hochgeladen!");
+                loadMaterials();
+            } catch (error) {
+                console.error("Fehler beim Hochladen:", error);
+                alert("Es gab einen Fehler beim Hochladen des Materials.");
+            }
+        };
+
+        fileInput.click();
+    });
+
     document.getElementById("addGlobalFolderBtn").addEventListener("click", async () => {
-      if (!isAdminOrGL) {
-        alert("Nur Admins und Gruppenleiter dürfen Ordner hinzufügen!");
-        return;
-      }
+        if (!isAdminOrGL) {
+            alert("Nur Admins und Gruppenleiter dürfen Ordner hinzufügen!");
+            return;
+        }
 
-      const folderName = prompt("Bitte geben Sie den Ordnernamen ein:");
-      if (folderName) {
-        const folderRef = storage.ref().child(`materials/${folderName}/`);
-        alert(`Ordner '${folderName}' erfolgreich erstellt!`);
-      }
+        const folderName = prompt("Bitte geben Sie den Ordnernamen ein:");
+        if (folderName) {
+            const folderRef = storage.ref().child(`materials/${folderName}/`);
+
+            try {
+                const dummyFile = new Blob([], { type: 'application/octet-stream' });
+                const dummyFileRef = folderRef.child("dummy.txt");
+                await dummyFileRef.put(dummyFile);
+
+                alert(`Ordner '${folderName}' erfolgreich erstellt!`);
+            } catch (error) {
+                console.error("Fehler beim Erstellen des Ordners:", error);
+                alert("Es gab einen Fehler beim Erstellen des Ordners.");
+            }
+        }
     });
 
-    // Suchfeld für Materialien
     const searchInput = document.getElementById("searchInput");
     const clearSearch = document.getElementById("clearSearch");
 
     searchInput.addEventListener("input", () => {
-      const query = searchInput.value.toLowerCase();
-      const filteredGlobal = globalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
-      const filteredPersonal = personalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
+        const query = searchInput.value.toLowerCase();
+        const filteredGlobal = globalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
+        const filteredPersonal = personalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
+        renderMaterials(filteredGlobal, document.getElementById("globalMaterialsList"));
+        renderMaterials(filteredPersonal, document.getElementById("personalMaterialsList"));
 
-      renderMaterials(filteredGlobal, document.getElementById("globalMaterialsList"));
-      renderMaterials(filteredPersonal, document.getElementById("personalMaterialsList"));
-
-      clearSearch.style.display = searchInput.value ? "block" : "none";
+        clearSearch.style.display = searchInput.value ? "block" : "none";
     });
 
     clearSearch.addEventListener("click", () => {
-      searchInput.value = "";
-      clearSearch.style.display = "none";
-      renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
-      renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
+        searchInput.value = "";
+        clearSearch.style.display = "none";
+        renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
+        renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
     });
-  </script>
+
+    function toggleList(type) {
+        const list = document.getElementById(`${type}MaterialsList`);
+        list.classList.toggle('open');
+    }
+</script>
 </body>
 </html>
