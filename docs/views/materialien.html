@@ -151,118 +151,145 @@
   </div>
 
   <script type="module">
-    // Firebase Initialisierung
-    import { initializeApp } from "firebase/app";
-    import { getFirestore } from "firebase/firestore";
-    import { getStorage } from "firebase/storage";
-    import { getAuth, onAuthStateChanged } from "firebase/auth";
+   // Firebase Initialisierung
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
-      authDomain: "iuk-app.firebaseapp.com",
-      projectId: "iuk-app",
-      storageBucket: "iuk-app.firebasestorage.app",
-      messagingSenderId: "759014128178",
-      appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
-      measurementId: "G-ZPD5VPD5TS"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
+  authDomain: "iuk-app.firebaseapp.com",
+  projectId: "iuk-app",
+  storageBucket: "iuk-app.firebasestorage.app",
+  messagingSenderId: "759014128178",
+  appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
+  measurementId: "G-ZPD5VPD5TS"
+};
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const auth = getAuth(app);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const auth = getAuth(app);
 
-    // Global and Personal Materials Placeholder
-    let globalMaterials = [];
-    let personalMaterials = [];
-    let currentUser = null;
-    let isAdminOrGL = false;
+// Global and Personal Materials Placeholder
+let globalMaterials = [];
+let personalMaterials = [];
+let currentUser = null;
+let isAdminOrGL = false;
 
-    // Listen for auth changes
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-        checkUserRole(user);
-        loadMaterials();
-      }
-    });
+// Listen for auth changes
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUser = user;
+    checkUserRole(user);
+    loadMaterials();
+  }
+});
 
-    // Funktion zum Rendern der Materialien
-    function renderMaterials(materials, listElement) {
-      listElement.innerHTML = "";
-      materials.forEach(material => {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${material.name}</strong><br>${material.description}`;
-        listElement.appendChild(li);
+// Funktion zum Rendern der Materialien
+function renderMaterials(materials, listElement) {
+  listElement.innerHTML = "";
+  materials.forEach(material => {
+    const li = document.createElement("li");
+    li.innerHTML = `<strong>${material.name}</strong><br>${material.description}`;
+    listElement.appendChild(li);
+  });
+}
+
+// Materialien laden
+async function loadMaterials() {
+  if (currentUser) {
+    // Globale Materialien für alle Benutzer anzeigen
+    const globalSnapshot = await db.collection("globalMaterials").get();
+    globalMaterials = globalSnapshot.docs.map(doc => doc.data());
+    renderMaterials(globalMaterials, globalMaterialsList);
+
+    // Persönliche Materialien nur für den aktuellen Benutzer
+    const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
+    personalMaterials = personalSnapshot.docs.map(doc => doc.data());
+    renderMaterials(personalMaterials, personalMaterialsList);
+  }
+}
+
+// Überprüfen, ob der Benutzer Admin oder Gruppenleiter ist
+async function checkUserRole(user) {
+  const userClaims = await user.getIdTokenResult();
+  isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
+}
+
+// Liste toggeln (ein- und ausklappen)
+function toggleList(type) {
+  const list = document.getElementById(`${type}MaterialsList`);
+  list.classList.toggle('open');
+}
+
+// Datei hochladen und speichern (Firebase Storage) - nur für Admins oder Gruppenleiter
+document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
+  if (!isAdminOrGL) {
+    alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
+    return;
+  }
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = ".pdf,.jpg,.jpeg,.png";  // Akzeptierte Dateiformate
+  fileInput.onchange = async (e) => {
+    const file = e.target.files[0]; // Die hochgeladene Datei
+
+    // Erstelle einen Speicherort im Firebase Storage
+    const storageRef = storage.ref().child(`materials/${file.name}`);
+
+    try {
+      // Lade die Datei hoch
+      await storageRef.put(file);
+
+      // Hole die URL der hochgeladenen Datei
+      const fileUrl = await storageRef.getDownloadURL();
+
+      // Speichere die Metadaten (Name, Beschreibung, URL) in Firestore
+      await db.collection("globalMaterials").add({
+        name: file.name,
+        description: "Beschreibung für " + file.name,
+        fileUrl: fileUrl,
       });
+
+      alert("Material erfolgreich hochgeladen!");
+      loadMaterials();  // Materialien neu laden
+    } catch (error) {
+      console.error("Fehler beim Hochladen:", error);
+      alert("Es gab einen Fehler beim Hochladen des Materials.");
     }
+  };
 
-    // Materialien laden
-    async function loadMaterials() {
-      if (currentUser) {
-        // Globale Materialien für alle Benutzer anzeigen
-        const globalSnapshot = await db.collection("globalMaterials").get();
-        globalMaterials = globalSnapshot.docs.map(doc => doc.data());
-        renderMaterials(globalMaterials, globalMaterialsList);
+  fileInput.click(); // Öffne das Datei-Auswahlfenster
+});
 
-        // Persönliche Materialien nur für den aktuellen Benutzer
-        const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
-        personalMaterials = personalSnapshot.docs.map(doc => doc.data());
-        renderMaterials(personalMaterials, personalMaterialsList);
-      }
-    }
+// Ordner hinzufügen (in Firebase Storage)
+document.getElementById("addGlobalFolderBtn").addEventListener("click", async () => {
+  if (!isAdminOrGL) {
+    alert("Nur Admins und Gruppenleiter dürfen Ordner hinzufügen!");
+    return;
+  }
 
-    // Überprüfen, ob der Benutzer Admin oder Gruppenleiter ist
-    async function checkUserRole(user) {
-      const userClaims = await user.getIdTokenResult();
-      isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
-    }
+  const folderName = prompt("Bitte geben Sie den Ordnernamen ein:");
+  if (folderName) {
+    // Erstelle einen 'leeren' Ordnerpfad im Firebase Storage
+    const folderRef = storage.ref().child(`materials/${folderName}/`); // Hier ist der Ordnerpfad
+    alert(`Ordner '${folderName}' erfolgreich erstellt!`);
+  }
+});
 
-    // Liste toggeln (ein- und ausklappen)
-    function toggleList(type) {
-      const list = document.getElementById(`${type}MaterialsList`);
-      list.classList.toggle('open');
-    }
-
-    // Datei hochladen und speichern (Firebase Storage) - nur für Admins oder Gruppenleiter
-    document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
-      if (!isAdminOrGL) {
-        alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
-        return;
-      }
-
-      const fileInput = document.createElement("input");
-      fileInput.type = "file";
-      fileInput.accept = ".pdf,.jpg,.jpeg,.png";
-      fileInput.onchange = async (e) => {
-        const file = e.target.files[0];
-        const storageRef = storage.ref().child(`materials/${file.name}`);
-        await storageRef.put(file);
-
-        // Datei-URL erhalten
-        const fileUrl = await storageRef.getDownloadURL();
-
-        // Metadaten in Firestore speichern
-        await db.collection("globalMaterials").add({
-          name: file.name,
-          description: "Beschreibung für " + file.name,
-          fileUrl: fileUrl,
-        });
-        loadMaterials();
-      };
-      fileInput.click();
-    });
-
-    // Suchfeld für Materialien
-    const searchInput = document.getElementById("searchInput");
-    searchInput.addEventListener("input", () => {
-      const query = searchInput.value.toLowerCase();
-      const filteredGlobal = globalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
-      const filteredPersonal = personalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
-      renderMaterials(filteredGlobal, globalMaterialsList);
-      renderMaterials(filteredPersonal, personalMaterialsList);
-    });
+// Suchfeld für Materialien
+const searchInput = document.getElementById("searchInput");
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase();
+  const filteredGlobal = globalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
+  const filteredPersonal = personalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
+  renderMaterials(filteredGlobal, globalMaterialsList);
+  renderMaterials(filteredPersonal, personalMaterialsList);
+});
   </script>
 </body>
 </html>
