@@ -153,7 +153,7 @@
             display: block;
         }
     </style>
-  </head>
+</head>
 <body>
     <div class="material-page">
         <h2 class="page-title">Materialien</h2>
@@ -186,10 +186,9 @@
 
     <!-- Firebase und deine eigene firebase.js einbinden -->
     <script type="module">
-        import { auth, db, functions } from "./js/firebase.js";
+        import { auth, db, functions, storage } from "./js/firebase.js";  // `storage` wurde ebenfalls importiert
 
         // Hier kannst du nun auf Firebase-Dienste zugreifen
-        const storage = firebase.storage();
         const loadMaterials = async () => {
             const globalSnapshot = await db.collection("globalMaterials").get();
             globalSnapshot.forEach(doc => {
@@ -255,3 +254,4 @@
     </script>
 </body>
 </html>
+
