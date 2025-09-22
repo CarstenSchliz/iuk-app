@@ -352,7 +352,7 @@
     });
 
     // Login-Check + Userdaten + Rollen
-   onAuthStateChanged(auth, async (user) => {
+  onAuthStateChanged(auth, async (user) => {
   if (user) {
     userName.textContent = user.displayName || user.email.split("@")[0];
     if (user.photoURL) {
@@ -376,15 +376,16 @@
     
     // Die höchste Rolle auswählen (nur die höchste wird im `userRole` angezeigt)
     const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen"; 
-    highestRoleElement.textConten = capitalizeFirstLetter(highestRole);  // Zeige nur die höchste Rolle an
+
+    // Variable für das Element, das die höchste Rolle anzeigen soll
+    const highestRoleElement = document.getElementById("userHighestRole");
+    
+    // Setze den Textinhalt des Elements für die höchste Rolle
+    highestRoleElement.textContent = `Höchste Rolle: ${capitalizeFirstLetter(highestRole)}`;
 
     // Rollen im Profil anzeigen (diese erscheinen im `userRoles` Bereich)
     const formattedRoles = sortedRoles.map(role => capitalizeFirstLetter(role)).join(", ");
     userRoles.textContent = formattedRoles;  // Alle Rollen anzeigen
-
-    // Die höchste Rolle unter dem Benutzernamen anzeigen
-    const highestRoleElement = document.getElementById("userHighestRole");
-    highestRoleElement.textContent = `Höchste Rolle: ${capitalizeFirstLetter(highestRole)}`;
 
     // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
     if (roles.includes("admin") || roles.includes("gruppenleiter")) {
@@ -394,7 +395,6 @@
     window.location.href = "index.html";
   }
 });
-
 
     // Funktion, um den ersten Buchstaben der Rolle groß zu machen und den Rest klein
     function capitalizeFirstLetter(str) {
