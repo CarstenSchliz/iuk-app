@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Materialien</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
@@ -12,32 +12,32 @@
       --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
       --text:#1f2937;
-      --hellblau: rgb(100,160,220);
-      --material-bg: #fff;
+      --hellblau: rgb(100,160,220); 
+      --material-bg: #fff; 
       --material-bd: #e5e7eb;
       --material-fg: #374151;
     }
 
-    * { box-sizing: border-box; }
+    *{box-sizing:border-box}
 
     .material-page {
       color: var(--text);
       padding: 1rem;
     }
 
-    .material-page .page-title {
+    .material-page .page-title{
       color: var(--softrot);
       margin: 0 0 1rem;
     }
 
-    .material-page .material-grid {
+    .material-page .material-grid{
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2rem;
     }
 
     @media (max-width: 980px) {
-      .material-page .material-grid {
+      .material-page .material-grid{
         grid-template-columns: 1fr;
       }
     }
@@ -52,7 +52,7 @@
     }
 
     .material-page .card h3 {
-      color: var(--hellblau);
+      color: var(--hellblau); 
       margin: 0 0 1rem;
       font-size: 1.2rem;
       display: flex;
@@ -64,12 +64,12 @@
     .material-page .material-list {
       list-style: none;
       padding-left: 0;
-      display: none;
+      display: none; 
       margin-top: 1rem;
     }
 
     .material-page .material-list.open {
-      display: block;
+      display: block; 
     }
 
     .material-page .material-list li {
@@ -110,9 +110,8 @@
     }
 
     #auth-container {
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
-
   </style>
 </head>
 <body>
@@ -125,33 +124,36 @@
       <button id="logoutBtn" class="btn btn-danger" style="display: none;">Logout</button>
     </div>
 
-    <!-- Globale Materialien -->
-    <div class="material-grid" id="globalMaterialsContainer">
+    <!-- Suchfeld -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Suche Materialien...">
+    </div>
+
+    <div class="material-grid">
+      <!-- Globale Materialien -->
       <div class="card material-global">
         <h3 onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
-        <ul class="material-list" id="globalMaterialsList"></ul>
+        <ul class="material-list" id="globalMaterialsList">
+        </ul>
         <button class="btn btn-primary" id="addGlobalMaterialBtn" style="display: none;">Material hinzufügen</button>
         <button class="btn btn-primary" id="addGlobalFolderBtn" style="display: none;">Ordner hinzufügen</button>
       </div>
-    </div>
 
-    <!-- Persönliche Materialien -->
-    <div class="material-grid" id="personalMaterialsContainer">
+      <!-- Persönliche Materialien -->
       <div class="card material-personal">
         <h3 onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
-        <ul class="material-list" id="personalMaterialsList"></ul>
+        <ul class="material-list" id="personalMaterialsList">
+        </ul>
         <button class="btn btn-primary" id="addPersonalMaterialBtn">Material hinzufügen</button>
         <button class="btn btn-primary" id="addPersonalFolderBtn">Ordner hinzufügen</button>
       </div>
     </div>
-
   </div>
 
   <script type="module">
     // Firebase-Initialisierung
     import { initializeApp } from "firebase/app";
     import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
     import { getFirestore, collection, addDoc, getDocs, query, where } from "firebase/firestore";
 
     const firebaseConfig = {
@@ -166,7 +168,6 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const storage = getStorage(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
@@ -179,6 +180,7 @@
     const addPersonalFolderBtn = document.getElementById("addPersonalFolderBtn");
     const globalMaterialsList = document.getElementById("globalMaterialsList");
     const personalMaterialsList = document.getElementById("personalMaterialsList");
+    const searchInput = document.getElementById("searchInput");
 
     let user = null;
 
@@ -229,6 +231,7 @@
         globalMaterialsList.appendChild(li);
       });
 
+      // Berechtigungen für Admins und Gruppenleiter
       if (user && (user.email === "admin@example.com" || user.email === "groupleader@example.com")) {
         addGlobalMaterialBtn.style.display = "block";
         addGlobalFolderBtn.style.display = "block";
@@ -276,6 +279,15 @@
       addDoc(collection(db, "personalMaterials"), material).then(() => {
         loadPersonalMaterials();
       });
+    });
+
+    // Suchfeld für Materialien
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase();
+      const filteredGlobal = globalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
+      const filteredPersonal = personalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
+
+      loadMaterials(filteredGlobal, filteredPersonal);
     });
   </script>
 </body>
