@@ -376,7 +376,7 @@
     
     // Die höchste Rolle auswählen (nur die höchste wird im `userRole` angezeigt)
     const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen"; 
-    userRole.textContent = capitalizeFirstLetter(highestRole);  // Zeige nur die höchste Rolle an
+    highestRoleElement.textConten = capitalizeFirstLetter(highestRole);  // Zeige nur die höchste Rolle an
 
     // Rollen im Profil anzeigen (diese erscheinen im `userRoles` Bereich)
     const formattedRoles = sortedRoles.map(role => capitalizeFirstLetter(role)).join(", ");
