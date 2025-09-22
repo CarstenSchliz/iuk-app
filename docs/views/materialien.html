@@ -153,12 +153,7 @@
             display: block;
         }
     </style>
-     <!-- Firebase-Skripte (klassische Version) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-</head>
+  </head>
 <body>
     <div class="material-page">
         <h2 class="page-title">Materialien</h2>
@@ -189,70 +184,21 @@
         </div>
     </div>
 
-    <script>
-        // Firebase-Initialisierung (klassisch)
-        const firebaseConfig = {
-            apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
-            authDomain: "iuk-app.firebaseapp.com",
-            projectId: "iuk-app",
-            storageBucket: "iuk-app.firebasestorage.app",
-            messagingSenderId: "759014128178",
-            appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
-            measurementId: "G-ZPD5VPD5TS"
-        };
+    <!-- Firebase und deine eigene firebase.js einbinden -->
+    <script type="module">
+        import { auth, db, functions } from "./docs/js/firebase.js";
 
-        // Initialisierung von Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        // Hier kannst du nun auf Firebase-Dienste zugreifen
         const storage = firebase.storage();
-        const auth = firebase.auth();
-
-        let globalMaterials = [];
-        let personalMaterials = [];
-        let currentUser = null;
-        let isAdminOrGL = false;
-
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUser = user;
-                checkUserRole(user);
-                loadMaterials();
-            }
-        });
-
-        async function checkUserRole(user) {
-            const userClaims = await user.getIdTokenResult();
-            isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
-        }
-
-        async function loadMaterials() {
-            if (currentUser) {
-                const globalSnapshot = await db.collection("globalMaterials").get();
-                globalMaterials = globalSnapshot.docs.map(doc => doc.data());
-                renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
-
-                const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
-                personalMaterials = personalSnapshot.docs.map(doc => doc.data());
-                renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
-            }
-        }
-
-        function renderMaterials(materials, listElement) {
-            listElement.innerHTML = "";
-            materials.forEach(material => {
-                const li = document.createElement("li");
-                li.innerHTML = `<strong>${material.name}</strong><br>${material.description}`;
-                listElement.appendChild(li);
+        const loadMaterials = async () => {
+            const globalSnapshot = await db.collection("globalMaterials").get();
+            globalSnapshot.forEach(doc => {
+                console.log(doc.data());
             });
         }
 
-        // Event Listener für Material hinzufügen
+        // Event-Listener für das Hinzufügen von Material
         document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
-            if (!isAdminOrGL) {
-                alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
-                return;
-            }
-
             const fileInput = document.createElement("input");
             fileInput.type = "file";
             fileInput.accept = ".pdf,.jpg,.jpeg,.png";
@@ -282,13 +228,8 @@
             fileInput.click();
         });
 
-        // Event Listener für Ordner hinzufügen
+        // Event-Listener für das Hinzufügen von Ordnern
         document.getElementById("addGlobalFolderBtn").addEventListener("click", async () => {
-            if (!isAdminOrGL) {
-                alert("Nur Admins und Gruppenleiter dürfen Ordner hinzufügen!");
-                return;
-            }
-
             const folderName = prompt("Bitte geben Sie den Ordnernamen ein:");
             if (folderName) {
                 const folderRef = storage.ref().child(`materials/${folderName}/`);
