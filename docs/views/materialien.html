@@ -76,14 +76,19 @@
 <script type="module">
   console.log("✅ materialien.html geladen");
 
-  import { auth, db } from "./js/firebase.js"; // Firebase Import
+  import { auth, db } from "../js/firebase.js"; // Firebase Import
 
   const treeContainer = document.getElementById("materialsTree");
 
   // Funktion, um die Materialien von Firestore zu laden
   async function loadMaterials() {
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user) {
+      console.log("Kein Benutzer eingeloggt");
+      return;
+    }
+
+    console.log("Benutzer ist eingeloggt:", user.email); // Überprüfe, ob der Benutzer eingeloggt ist
 
     const materials = {
       global: { type: "folder", name: "Global", children: {} },
@@ -142,6 +147,7 @@
       ul.appendChild(li);
     }
     container.appendChild(ul);
+    console.log("Baumstruktur gerendert");  // Überprüfe, ob der Baum gerendert wird
   }
 
   // Materialien laden, wenn die Seite geladen wird
