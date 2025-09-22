@@ -148,7 +148,7 @@
     let currentUser = null;
     let isAdminOrGL = false;
 
-    // User-Status ändern und Materialien laden
+    // Benutzerstatus ändern und Materialien laden
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
@@ -157,7 +157,7 @@
       }
     });
 
-    // Überprüfen, ob der Benutzer Admin oder Gruppenleiter ist
+    // Benutzerrolle überprüfen
     async function checkUserRole(user) {
       const userClaims = await user.getIdTokenResult();
       isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
@@ -166,12 +166,10 @@
     // Materialien aus Firebase laden
     async function loadMaterials() {
       if (currentUser) {
-        // Globale Materialien für alle Benutzer anzeigen
         const globalSnapshot = await db.collection("globalMaterials").get();
         globalMaterials = globalSnapshot.docs.map(doc => doc.data());
         renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
 
-        // Persönliche Materialien nur für den aktuellen Benutzer
         const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
         personalMaterials = personalSnapshot.docs.map(doc => doc.data());
         renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
@@ -188,13 +186,13 @@
       });
     }
 
-    // Funktion zum ein- und ausklappen der Listen
+    // Listen ein- und ausklappen
     function toggleList(type) {
       const list = document.getElementById(`${type}MaterialsList`);
       list.classList.toggle('open');
     }
 
-    // Material hinzufügen - nur für Admins oder Gruppenleiter
+    // Material hinzufügen (nur für Admins oder Gruppenleiter)
     document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
       if (!isAdminOrGL) {
         alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
