@@ -3,403 +3,178 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lernmaterialien</title>
+  <title>Materialien</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    /* ================================ Farb-Variablen ================================ */
-    :root {
+    :root{
       --softrot: rgb(228,100,80);
       --dunkelblau: rgb(0,45,85);
-      --hellblau: rgb(100,160,220);
       --hellgrau: rgb(239,238,234);
-      --text: #1f2937;
-      --button-bg: #007bff;
-      --button-border: #0069d9;
-      --button-hover-bg: #0056b3;
-      --card-bg: #fff;
-      --card-border: #e5e7eb;
-      --input-bg: #ffffff;
-      --input-fg: #111827;
-      --input-border: #d1d5db;
+      --blassblau: rgb(230,240,250);
+      --text:#1f2937;
+      --hellblau: rgb(100,160,220);
+      /* Materialfarben */
+      --material-global-bg:#f0f8ff;
+      --material-global-bd:#cce7ff;
+      --material-global-fg:#005f7f;
+      --material-personal-bg:#e6f7e6;
+      --material-personal-bd:#b3e0b3;
+      --material-personal-fg:#006633;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    *{box-sizing:border-box}
 
-    body {
-      font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
-      background-color: var(--hellgrau);
-      color: var(--text);
-    }
-
-    /* Benutzerverwaltung Container */
     .material-page {
-      display: flex;
-      flex-direction: column;
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
+      color: var(--text);
+      padding: 1rem;
     }
 
-    /* Seite-Titel */
-    .material-page .page-title {
-      font-size: 2rem;
+    .material-page .page-title{
       color: var(--softrot);
-      margin-bottom: 1.5rem;
+      margin: 0 0 1rem;
     }
 
-    /* Layout der Materialien-Seite */
-    .settings-grid {
+    .material-page .material-grid{
       display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1.5rem;
-      grid-template-areas: "list create" "editor editor";
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
     }
 
-    /* Kacheln (Cards) */
-    .card {
-      background: var(--card-bg);
+    @media (max-width: 980px) {
+      .material-page .material-grid{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .material-page .card {
+      background: #fff;
       padding: 1.25rem;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
       margin-bottom: 1.5rem;
     }
 
-    /* Card Überschrift */
     .material-page .card h3 {
       color: var(--hellblau);
       margin: 0 0 1rem;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
-    /* Tabelle */
-    .material-page .material-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 1rem;
-      max-width: 100%;
+    .material-page .material-list {
+      list-style: none;
+      padding-left: 0;
     }
 
-    .material-page .material-table th, .material-page .material-table td {
+    .material-page .material-list li {
       padding: 0.8rem;
-      vertical-align: middle;
-      text-align: left;
-      border-bottom: 1px solid #e5e7eb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 1rem;
     }
 
-    .material-page .material-table th {
-      background-color: var(--blassblau);
+    .material-page .material-list li:hover {
+      background: var(--blassblau);
     }
 
-    .material-page .material-table td {
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-
-    /* Rolle Badges */
-    .role-badges {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .role-badge {
-      display: inline-block;
-      padding: 0.2rem 0.6rem;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      border: 1px solid transparent;
-    }
-
-    .role-admin {
-      background-color: #ffe8e6;
-      border-color: #ffcdc6;
-      color: #9e1b1b;
-    }
-
-    .role-gl {
-      background-color: #fff6db;
-      border-color: #fde8a6;
-      color: #8a6b00;
-    }
-
-    .role-hf {
-      background-color: #e8f6ec;
-      border-color: #c7efd5;
-      color: #0f6b2b;
-    }
-
-    .role-an {
-      background-color: #e6f0ff;
-      border-color: #cfe1ff;
-      color: #0d3b8a;
-    }
-
-    /* Buttons */
     .material-page .btn {
       padding: 0.6rem 1.2rem;
       border-radius: 10px;
-      cursor: pointer;
+      background: var(--dunkelblau);
+      color: white;
       font-size: 1rem;
-      min-height: 44px;
-      border: none;
+      cursor: pointer;
     }
 
     .material-page .btn-primary {
-      background-color: var(--button-bg);
-      color: #fff;
+      background: var(--dunkelblau);
     }
 
-    .material-page .btn-primary:hover {
-      background-color: var(--button-hover-bg);
+    .material-page .material-global {
+      background: var(--material-global-bg);
+      border-color: var(--material-global-bd);
+      color: var(--material-global-fg);
     }
 
-    /* Formular */
-    .material-page .form-group.floating {
-      position: relative;
-      margin-bottom: 1.25rem;
+    .material-page .material-personal {
+      background: var(--material-personal-bg);
+      border-color: var(--material-personal-bd);
+      color: var(--material-personal-fg);
     }
 
-    .material-page .form-group.floating input {
-      width: 100%;
-      padding: 1rem 0.75rem 0.3rem;
-      border: 1px solid var(--input-border);
-      border-radius: 10px;
-      background-color: var(--input-bg);
-      font-size: 1rem;
-      transition: border-color 0.15s ease;
-      min-height: 44px;
-    }
-
-    .material-page .form-group.floating label {
-      position: absolute;
-      top: 50%;
-      left: 0.75rem;
-      transform: translateY(-50%);
-      color: #6b7280;
-      font-size: 0.95rem;
-      transition: all 0.15s;
-      pointer-events: none;
-      background-color: var(--input-bg);
-      padding: 0 0.25rem;
-    }
-
-    .material-page .form-group.floating input:focus + label {
-      top: 0;
-      left: 0.6rem;
-      font-size: 0.78rem;
-      color: var(--dunkelblau);
-    }
-
-    .material-page .form-group.floating input[readonly] {
-      background-color: #f9fafb;
-      color: #6b7280;
-    }
-
-    /* Mobile Layout */
-    @media (max-width: 768px) {
-      .settings-grid {
-        grid-template-columns: 1fr;
-        grid-template-areas: "list" "create" "editor";
-      }
-
-      .material-page .card {
-        padding: 1rem;
-      }
-
-      .material-page .material-table td {
-        white-space: normal;
-        overflow: visible;
-        text-overflow: unset;
-      }
-
-      .material-page .role-badges {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .material-page .role-badge {
-        width: auto;
-      }
-    }
   </style>
 </head>
-
 <body>
   <div class="material-page">
-    <h2 class="page-title">Lernmaterialien</h2>
-    <div class="settings-grid">
-      <!-- Globale Materialien (links) -->
-      <div class="card">
-        <h3><i class="bi bi-cloud-arrow-up"></i> Globale Materialien</h3>
-        <ul id="global-material-list"></ul>
-        <button class="btn btn-primary" onclick="showAddGlobalMaterialForm()">Material Hinzufügen (Admin/Gruppe)</button>
+    <h2 class="page-title">Materialien</h2>
+
+    <div class="material-grid">
+      <!-- Globale Materialien -->
+      <div class="card material-global">
+        <h3><i class="bi bi-box"></i> Globale Materialien</h3>
+        <ul class="material-list" id="globalMaterialsList">
+          <!-- Liste der globalen Materialien wird hier dynamisch geladen -->
+        </ul>
+        <button class="btn btn-primary" id="addGlobalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
       </div>
 
-      <!-- Persönliche Materialien (rechts) -->
-      <div class="card">
-        <h3><i class="bi bi-person-lines-fill"></i> Persönliche Materialien</h3>
-        <ul id="personal-material-list"></ul>
-        <button class="btn btn-primary" onclick="showAddPersonalMaterialForm()">Persönliches Material Hinzufügen</button>
-      </div>
-
-    </div>
-
-    <!-- Formular zum Hinzufügen globaler Materialien -->
-    <div id="add-global-material-form" class="form-section" style="display:none;">
-      <h4>Neues Globales Material Hinzufügen</h4>
-      <input type="file" id="global-material-file" />
-      <div class="form-actions">
-        <button class="btn btn-primary" onclick="addGlobalMaterial()">Hinzufügen</button>
-        <button class="btn btn-secondary" onclick="hideGlobalMaterialForm()">Abbrechen</button>
-      </div>
-    </div>
-
-    <!-- Formular zum Hinzufügen persönlicher Materialien -->
-    <div id="add-personal-material-form" class="form-section" style="display:none;">
-      <h4>Neues Persönliches Material Hinzufügen</h4>
-      <input type="file" id="personal-material-file" />
-      <div class="form-actions">
-        <button class="btn btn-primary" onclick="addPersonalMaterial()">Hinzufügen</button>
-        <button class="btn btn-secondary" onclick="hidePersonalMaterialForm()">Abbrechen</button>
+      <!-- Persönliche Materialien -->
+      <div class="card material-personal">
+        <h3><i class="bi bi-person"></i> Persönliche Materialien</h3>
+        <ul class="material-list" id="personalMaterialsList">
+          <!-- Liste der persönlichen Materialien wird hier dynamisch geladen -->
+        </ul>
+        <button class="btn btn-primary" id="addPersonalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
       </div>
     </div>
   </div>
 
-  <script>
-    // Firebase-Konfiguration und Funktionen (aus deinem Projekt)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
-      authDomain: "iuk-app.firebaseapp.com",
-      projectId: "iuk-app",
-      storageBucket: "iuk-app.firebasestorage.app",
-      messagingSenderId: "759014128178",
-      appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
-      measurementId: "G-ZPD5VPD5TS"
-    };
-    
-    // Firebase Initialisierung
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
+  <script type="module">
+    // JavaScript für Materialverwaltung
 
-    // Abrufen der globalen Materialien
-    async function loadGlobalMaterials() {
-      const globalCollection = db.collection('materials').doc('global').collection('materials');
-      const snapshot = await globalCollection.get();
-      const globalMaterialList = document.getElementById('global-material-list');
-      globalMaterialList.innerHTML = ''; // Liste leeren
+    // Beispiel-Daten (diese werden später mit Firebase ersetzt)
+    const globalMaterials = [
+      { name: "Material A", description: "Beschreibung für Material A" },
+      { name: "Material B", description: "Beschreibung für Material B" }
+    ];
 
-      snapshot.forEach((doc) => {
-        const material = doc.data();
-        const li = document.createElement('li');
-        li.textContent = material.name;
-        globalMaterialList.appendChild(li);
+    const personalMaterials = [
+      { name: "Mein Material 1", description: "Beschreibung für mein Material 1" },
+      { name: "Mein Material 2", description: "Beschreibung für mein Material 2" }
+    ];
+
+    // DOM-Elemente
+    const globalMaterialsList = document.getElementById("globalMaterialsList");
+    const personalMaterialsList = document.getElementById("personalMaterialsList");
+
+    // Funktion um Material in Liste zu rendern
+    function renderMaterials(materials, listElement) {
+      listElement.innerHTML = "";
+      materials.forEach(material => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${material.name}</strong><br>${material.description}`;
+        listElement.appendChild(li);
       });
     }
 
-    // Abrufen der persönlichen Materialien
-    async function loadPersonalMaterials(userId) {
-      const personalCollection = db.collection('materials').doc('users').collection(userId).collection('materials');
-      const snapshot = await personalCollection.get();
-      const personalMaterialList = document.getElementById('personal-material-list');
-      personalMaterialList.innerHTML = ''; // Liste leeren
+    // Rendern der Beispielmaterialien
+    renderMaterials(globalMaterials, globalMaterialsList);
+    renderMaterials(personalMaterials, personalMaterialsList);
 
-      snapshot.forEach((doc) => {
-        const material = doc.data();
-        const li = document.createElement('li');
-        li.textContent = material.name;
-        personalMaterialList.appendChild(li);
-      });
-    }
-
-    // Materialien hinzufügen (Global)
-    async function addGlobalMaterial() {
-      const user = auth.currentUser;
-      const file = document.getElementById('global-material-file').files[0];
-
-      if (!user) {
-        alert("Du musst eingeloggt sein, um ein Material hinzuzufügen.");
-        return;
-      }
-
-      // Hier prüft man, ob der Nutzer Admin oder Gruppenleiter ist
-      const userRole = await getUserRole(user.uid);
-      if (userRole !== 'admin' && userRole !== 'gruppenleiter') {
-        alert("Du hast keine Berechtigung, ein globales Material hinzuzufügen.");
-        return;
-      }
-
-      // Material hinzufügen
-      const materialRef = db.collection('materials').doc('global').collection('materials').doc();
-      await materialRef.set({
-        name: file.name,
-        url: "https://example.com", // Hier kannst du den URL des Materials setzen
-        type: file.type
-      });
-
-      alert("Material wurde erfolgreich hinzugefügt.");
-      loadGlobalMaterials();
-    }
-
-    // Materialien hinzufügen (Persönlich)
-    async function addPersonalMaterial() {
-      const user = auth.currentUser;
-      const file = document.getElementById('personal-material-file').files[0];
-
-      if (!user) {
-        alert("Du musst eingeloggt sein, um ein persönliches Material hinzuzufügen.");
-        return;
-      }
-
-      // Persönliches Material hinzufügen
-      const materialRef = db.collection('materials').doc('users').collection(user.uid).collection('materials').doc();
-      await materialRef.set({
-        name: file.name,
-        url: "https://example.com", // Hier kannst du den URL des Materials setzen
-        type: file.type
-      });
-
-      alert("Persönliches Material wurde erfolgreich hinzugefügt.");
-      loadPersonalMaterials(user.uid);
-    }
-
-    // Benutzerrolle ermitteln (Admin/Gruppe)
-    async function getUserRole(uid) {
-      const userDoc = await db.collection('users').doc(uid).get();
-      const roles = userDoc.data().roles || [];
-      return roles.length > 0 ? roles[0] : 'user';
-    }
-
-    // UI-Steuerung (Formulare anzeigen/verstecken)
-    function showAddGlobalMaterialForm() {
-      document.getElementById('add-global-material-form').style.display = 'block';
-    }
-
-    function hideGlobalMaterialForm() {
-      document.getElementById('add-global-material-form').style.display = 'none';
-    }
-
-    function showAddPersonalMaterialForm() {
-      document.getElementById('add-personal-material-form').style.display = 'block';
-    }
-
-    function hidePersonalMaterialForm() {
-      document.getElementById('add-personal-material-form').style.display = 'none';
-    }
-
-    // Initialisierung und Laden der Daten
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        loadGlobalMaterials();
-        loadPersonalMaterials(user.uid);
-      }
+    // Button-Event für Material hinzufügen (globale Materialien)
+    document.getElementById("addGlobalMaterialBtn").addEventListener("click", () => {
+      // Logik für das Hinzufügen von globalen Materialien (Modal o.ä.)
+      alert("Neues globales Material hinzufügen!");
     });
+
+    // Button-Event für Material hinzufügen (persönliche Materialien)
+    document.getElementById("addPersonalMaterialBtn").addEventListener("click", () => {
+      // Logik für das Hinzufügen von persönlichen Materialien (Modal o.ä.)
+      alert("Neues persönliches Material hinzufügen!");
+    });
+
   </script>
 </body>
 </html>
