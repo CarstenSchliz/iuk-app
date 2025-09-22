@@ -5,160 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Materialien</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
- <style>
-  :root {
-    --softrot: rgb(228,100,80);
-    --dunkelblau: rgb(0,45,85);
-    --hellgrau: rgb(239,238,234);
-    --blassblau: rgb(230,240,250);
-    --text: #1f2937;
-    --hellblau: rgb(100,160,220);
-    /* Rollenfarben */
-    --role-admin-bg: #ffe8e6;
-    --role-admin-bd: #ffcdc6;
-    --role-admin-fg: #9e1b1b;
-    --role-gl-bg: #fff6db;
-    --role-gl-bd: #fde8a6;
-    --role-gl-fg: #8a6b00;
-    --role-hf-bg: #e8f6ec;
-    --role-hf-bd: #c7efd5;
-    --role-hf-fg: #0f6b2b;
-    --role-an-bg: #e6f0ff;
-    --role-an-bd: #cfe1ff;
-    --role-an-fg: #0d3b8a;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  .material-page {
-    color: var(--text);
-    padding: 1rem;
-  }
-
-  .material-page .page-title {
-    color: var(--softrot);
-    margin: 0 0 1rem;
-  }
-
-  .material-page .material-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-  }
-
-  @media (max-width: 980px) {
-    .material-page .material-grid {
-      grid-template-columns: 1fr;
+  <style>
+    :root {
+      --softrot: rgb(228,100,80);
+      --dunkelblau: rgb(0,45,85);
+      --hellgrau: rgb(239,238,234);
+      --blassblau: rgb(230,240,250);
+      --text: #1f2937;
+      --hellblau: rgb(100,160,220);
+      /* Rollenfarben */
+      --role-admin-bg: #ffe8e6;
+      --role-admin-bd: #ffcdc6;
+      --role-admin-fg: #9e1b1b;
+      --role-gl-bg: #fff6db;
+      --role-gl-bd: #fde8a6;
+      --role-gl-fg: #8a6b00;
+      --role-hf-bg: #e8f6ec;
+      --role-hf-bd: #c7efd5;
+      --role-hf-fg: #0f6b2b;
+      --role-an-bg: #e6f0ff;
+      --role-an-bd: #cfe1ff;
+      --role-an-fg: #0d3b8a;
     }
-  }
 
-  /* Hintergrundfarbe für die Karten auf Weiß setzen */
-  .material-page .card {
-    background: #fff !important; /* Setzt den Hintergrund auf Weiß */
-    padding: 1.25rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    margin-bottom: 1.5rem;
-    border: 1px solid var(--material-bd); /* Der Rand bleibt korrekt */
-  }
+    * { box-sizing: border-box; }
 
-  .material-page .card h3 {
-    color: var(--hellblau);
-    margin: 0 0 1rem;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-  }
+    .material-page { color: var(--text); padding: 1rem; }
 
-  .material-page .material-list {
-    list-style: none;
-    padding-left: 0;
-    display: none;
-    margin-top: 1rem;
-  }
+    .material-page .page-title { color: var(--softrot); margin: 0 0 1rem; }
 
-  .material-page .material-list.open {
-    display: block;
-  }
+    .material-page .material-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
 
-  .material-page .material-list li {
-    padding: 0.8rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-  }
+    @media (max-width: 980px) {
+      .material-page .material-grid { grid-template-columns: 1fr; }
+    }
 
-  .material-page .material-list li:hover {
-    background: var(--blassblau);
-  }
+    .material-page .card { background: #fff; padding: 1.25rem; border-radius: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); margin-bottom: 1.5rem; border: 1px solid var(--material-bd); }
 
-  .material-page .btn {
-    padding: 0.6rem 1.2rem;
-    border-radius: 10px;
-    background: var(--dunkelblau);
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-  }
+    .material-page .card h3 { color: var(--hellblau); margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
 
-  .material-page .btn-primary {
-    background: var(--dunkelblau);
-  }
+    .material-page .material-list { list-style: none; padding-left: 0; display: none; margin-top: 1rem; }
+    .material-page .material-list.open { display: block; }
 
-  .material-page .search-box {
-    margin-bottom: 1.5rem;
-    position: relative;
-  }
+    .material-page .material-list li { padding: 0.8rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem; }
+    .material-page .material-list li:hover { background: var(--blassblau); }
 
-  /* Anpassungen für das Suchfeld */
-  .material-page input[type="text"] {
-    padding: 8px 32px 8px 32px; /* Platz für die Lupe und Clear-Button */
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    transition: border-color 0.15s ease;
-  }
+    .material-page .btn { padding: 0.6rem 1.2rem; border-radius: 10px; background: var(--dunkelblau); color: white; font-size: 1rem; cursor: pointer; }
 
-  /* Such-Icon im Suchfeld */
-  .material-page i.bi-search {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6b7280;
-    font-size: 1rem;
-  }
+    .material-page .btn-primary { background: var(--dunkelblau); }
 
-  /* Clear-Button (wird angezeigt, wenn Text im Suchfeld ist) */
-  #clearSearch {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    color: #6b7280;
-    cursor: pointer;
-    display: none;
-  }
+    .material-page .search-box { margin-bottom: 1.5rem; position: relative; }
 
-  /* Fokus auf das Suchfeld */
-  .material-page input[type="text"]:focus {
-    outline: none;
-    border-color: var(--dunkelblau); /* Fokusfarbe */
-  }
+    .material-page input[type="text"] {
+      padding: 8px 32px 8px 32px; /* Platz für die Lupe und Clear-Button */
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.15s ease;
+    }
 
-  /* Clear-Button wird sichtbar, wenn das Eingabefeld Text enthält */
-  .material-page input[type="text"]:not(:placeholder-shown) + #clearSearch {
-    display: block;
-  }
-</style>
+    .material-page i.bi-search {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6b7280;
+      font-size: 1rem;
+    }
+
+    #clearSearch {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #6b7280;
+      cursor: pointer;
+      display: none;
+    }
+
+    .material-page input[type="text"]:focus {
+      outline: none;
+      border-color: var(--dunkelblau); /* Fokusfarbe */
+    }
+
+    .material-page input[type="text"]:not(:placeholder-shown) + #clearSearch {
+      display: block;
+    }
+  </style>
 </head>
 
 <body>
