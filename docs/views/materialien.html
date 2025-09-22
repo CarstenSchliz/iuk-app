@@ -14,12 +14,9 @@
       --text:#1f2937;
       --hellblau: rgb(100,160,220);
       /* Materialfarben */
-      --material-global-bg:#f0f8ff;
-      --material-global-bd:#cce7ff;
-      --material-global-fg:#005f7f;
-      --material-personal-bg:#e6f7e6;
-      --material-personal-bd:#b3e0b3;
-      --material-personal-fg:#006633;
+      --material-bg: #fff; /* Weißer Hintergrund für beide Kacheln */
+      --material-bd: #e5e7eb;
+      --material-fg: #374151;
     }
 
     *{box-sizing:border-box}
@@ -47,25 +44,33 @@
     }
 
     .material-page .card {
-      background: #fff;
+      background: var(--material-bg);
       padding: 1.25rem;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
       margin-bottom: 1.5rem;
+      border: 1px solid var(--material-bd);
     }
 
     .material-page .card h3 {
-      color: var(--hellblau);
+      color: var(--material-fg);
       margin: 0 0 1rem;
       font-size: 1.2rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      cursor: pointer;
     }
 
     .material-page .material-list {
       list-style: none;
       padding-left: 0;
+      display: none; /* Zuerst ist die Liste verborgen */
+      margin-top: 1rem;
+    }
+
+    .material-page .material-list.open {
+      display: block; /* Sichtbar machen, wenn aktiv */
     }
 
     .material-page .material-list li {
@@ -92,16 +97,31 @@
       background: var(--dunkelblau);
     }
 
-    .material-page .material-global {
-      background: var(--material-global-bg);
-      border-color: var(--material-global-bd);
-      color: var(--material-global-fg);
+    .material-page .search-box {
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .material-page input[type="text"] {
+      padding: 8px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
     }
 
     .material-page .material-personal {
-      background: var(--material-personal-bg);
-      border-color: var(--material-personal-bd);
-      color: var(--material-personal-fg);
+      background: var(--material-bg);
+      border-color: var(--material-bd);
+      color: var(--material-fg);
+    }
+
+    .material-page .material-global {
+      background: var(--material-bg);
+      border-color: var(--material-bd);
+      color: var(--material-fg);
     }
 
   </style>
@@ -109,32 +129,37 @@
 <body>
   <div class="material-page">
     <h2 class="page-title">Materialien</h2>
+    
+    <!-- Suchfeld -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Suche Materialien...">
+    </div>
 
     <div class="material-grid">
       <!-- Globale Materialien -->
       <div class="card material-global">
-        <h3><i class="bi bi-box"></i> Globale Materialien</h3>
+        <h3 onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
         <ul class="material-list" id="globalMaterialsList">
-          <!-- Liste der globalen Materialien wird hier dynamisch geladen -->
+          <!-- Hier werden die globalen Materialien aufgelistet -->
         </ul>
         <button class="btn btn-primary" id="addGlobalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
+        <button class="btn btn-primary" id="addGlobalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
       </div>
 
       <!-- Persönliche Materialien -->
       <div class="card material-personal">
-        <h3><i class="bi bi-person"></i> Persönliche Materialien</h3>
+        <h3 onclick="toggleList('personal')"><i class="bi bi-person"></i> Persönliche Materialien</h3>
         <ul class="material-list" id="personalMaterialsList">
-          <!-- Liste der persönlichen Materialien wird hier dynamisch geladen -->
+          <!-- Hier werden die persönlichen Materialien aufgelistet -->
         </ul>
         <button class="btn btn-primary" id="addPersonalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
+        <button class="btn btn-primary" id="addPersonalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
       </div>
     </div>
   </div>
 
   <script type="module">
-    // JavaScript für Materialverwaltung
-
-    // Beispiel-Daten (diese werden später mit Firebase ersetzt)
+    // Beispiel-Daten (diese werden später durch Firebase ersetzt)
     const globalMaterials = [
       { name: "Material A", description: "Beschreibung für Material A" },
       { name: "Material B", description: "Beschreibung für Material B" }
@@ -149,7 +174,7 @@
     const globalMaterialsList = document.getElementById("globalMaterialsList");
     const personalMaterialsList = document.getElementById("personalMaterialsList");
 
-    // Funktion um Material in Liste zu rendern
+    // Funktion zum Rendern der Materialien
     function renderMaterials(materials, listElement) {
       listElement.innerHTML = "";
       materials.forEach(material => {
@@ -159,22 +184,43 @@
       });
     }
 
-    // Rendern der Beispielmaterialien
+    // Materialien rendern
     renderMaterials(globalMaterials, globalMaterialsList);
     renderMaterials(personalMaterials, personalMaterialsList);
 
-    // Button-Event für Material hinzufügen (globale Materialien)
+    // Funktion, um die Listen zu toggeln (ein- und ausklappen)
+    function toggleList(type) {
+      const list = document.getElementById(`${type}MaterialsList`);
+      list.classList.toggle('open');
+    }
+
+    // Button-Events
     document.getElementById("addGlobalMaterialBtn").addEventListener("click", () => {
-      // Logik für das Hinzufügen von globalen Materialien (Modal o.ä.)
       alert("Neues globales Material hinzufügen!");
     });
 
-    // Button-Event für Material hinzufügen (persönliche Materialien)
     document.getElementById("addPersonalMaterialBtn").addEventListener("click", () => {
-      // Logik für das Hinzufügen von persönlichen Materialien (Modal o.ä.)
       alert("Neues persönliches Material hinzufügen!");
     });
 
+    document.getElementById("addGlobalFolderBtn").addEventListener("click", () => {
+      alert("Neuen Ordner für globale Materialien hinzufügen!");
+    });
+
+    document.getElementById("addPersonalFolderBtn").addEventListener("click", () => {
+      alert("Neuen Ordner für persönliche Materialien hinzufügen!");
+    });
+
+    // Suchfeld für Materialien
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase();
+      const filteredGlobal = globalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
+      const filteredPersonal = personalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
+
+      renderMaterials(filteredGlobal, globalMaterialsList);
+      renderMaterials(filteredPersonal, personalMaterialsList);
+    });
   </script>
 </body>
 </html>
