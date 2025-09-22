@@ -66,6 +66,11 @@
   body.dark .tree li:hover {
     background: #333;
   }
+
+  .tree ul ul {
+    display: none; /* Unterordner sind anfangs verborgen */
+  }
+
 </style>
 
 <script type="module">
@@ -117,8 +122,10 @@
       if (item.type === "folder") {
         li.innerHTML = `<i class="bi bi-folder"></i><span>${item.name}</span>`;
         renderTree(item.children, li);
+        
+        // Event-Listener für das Klicken und Umschalten der Unterordner
         li.addEventListener("click", (e) => {
-          e.stopPropagation();
+          e.stopPropagation();  // Verhindert das event bubbling
           const child = li.querySelector("ul");
           if (child) {
             child.style.display = child.style.display === "none" ? "block" : "none";
