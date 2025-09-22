@@ -13,19 +13,6 @@
       --blassblau: rgb(230,240,250);
       --text: #1f2937;
       --hellblau: rgb(100,160,220);
-      /* Rollenfarben */
-      --role-admin-bg: #ffe8e6;
-      --role-admin-bd: #ffcdc6;
-      --role-admin-fg: #9e1b1b;
-      --role-gl-bg: #fff6db;
-      --role-gl-bd: #fde8a6;
-      --role-gl-fg: #8a6b00;
-      --role-hf-bg: #e8f6ec;
-      --role-hf-bd: #c7efd5;
-      --role-hf-fg: #0f6b2b;
-      --role-an-bg: #e6f0ff;
-      --role-an-bd: #cfe1ff;
-      --role-an-fg: #0d3b8a;
     }
 
     * { box-sizing: border-box; }
@@ -106,7 +93,6 @@
   <div class="material-page">
     <h2 class="page-title">Materialien</h2>
     <div class="search-box">
-      <!-- Suchfeld mit Lupe und Clear-Button -->
       <div style="position:relative; margin:12px 0 14px;">
         <i class="bi bi-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#6b7280; font-size:1rem;"></i>
         <input type="text" id="searchInput" placeholder="Suchen..." style="padding:8px 32px 8px 32px; width:100%; border-radius:8px; border:1px solid #ccc;">
@@ -152,19 +138,17 @@
       measurementId: "G-ZPD5VPD5TS"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
     const auth = getAuth(app);
 
-    // Global and Personal Materials Placeholder
     let globalMaterials = [];
     let personalMaterials = [];
     let currentUser = null;
     let isAdminOrGL = false;
 
-    // Listen for auth changes
+    // User-Status ändern und Materialien laden
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
@@ -173,7 +157,28 @@
       }
     });
 
-    // Funktion zum Rendern der Materialien
+    // Überprüfen, ob der Benutzer Admin oder Gruppenleiter ist
+    async function checkUserRole(user) {
+      const userClaims = await user.getIdTokenResult();
+      isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
+    }
+
+    // Materialien aus Firebase laden
+    async function loadMaterials() {
+      if (currentUser) {
+        // Globale Materialien für alle Benutzer anzeigen
+        const globalSnapshot = await db.collection("globalMaterials").get();
+        globalMaterials = globalSnapshot.docs.map(doc => doc.data());
+        renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
+
+        // Persönliche Materialien nur für den aktuellen Benutzer
+        const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
+        personalMaterials = personalSnapshot.docs.map(doc => doc.data());
+        renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
+      }
+    }
+
+    // Materialien rendern
     function renderMaterials(materials, listElement) {
       listElement.innerHTML = "";
       materials.forEach(material => {
@@ -183,34 +188,13 @@
       });
     }
 
-    // Materialien laden
-    async function loadMaterials() {
-      if (currentUser) {
-        // Globale Materialien für alle Benutzer anzeigen
-        const globalSnapshot = await db.collection("globalMaterials").get();
-        globalMaterials = globalSnapshot.docs.map(doc => doc.data());
-        renderMaterials(globalMaterials, globalMaterialsList);
-
-        // Persönliche Materialien nur für den aktuellen Benutzer
-        const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
-        personalMaterials = personalSnapshot.docs.map(doc => doc.data());
-        renderMaterials(personalMaterials, personalMaterialsList);
-      }
-    }
-
-    // Überprüfen, ob der Benutzer Admin oder Gruppenleiter ist
-    async function checkUserRole(user) {
-      const userClaims = await user.getIdTokenResult();
-      isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
-    }
-
-    // Liste toggeln (ein- und ausklappen)
+    // Funktion zum ein- und ausklappen der Listen
     function toggleList(type) {
       const list = document.getElementById(`${type}MaterialsList`);
       list.classList.toggle('open');
     }
 
-    // Datei hochladen und speichern (Firebase Storage) - nur für Admins oder Gruppenleiter
+    // Material hinzufügen - nur für Admins oder Gruppenleiter
     document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
       if (!isAdminOrGL) {
         alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
@@ -221,19 +205,15 @@
       fileInput.type = "file";
       fileInput.accept = ".pdf,.jpg,.jpeg,.png";  // Akzeptierte Dateiformate
       fileInput.onchange = async (e) => {
-        const file = e.target.files[0]; // Die hochgeladene Datei
+        const file = e.target.files[0];
 
-        // Erstelle einen Speicherort im Firebase Storage
         const storageRef = storage.ref().child(`materials/${file.name}`);
 
         try {
-          // Lade die Datei hoch
           await storageRef.put(file);
 
-          // Hole die URL der hochgeladenen Datei
           const fileUrl = await storageRef.getDownloadURL();
 
-          // Speichere die Metadaten (Name, Beschreibung, URL) in Firestore
           await db.collection("globalMaterials").add({
             name: file.name,
             description: "Beschreibung für " + file.name,
@@ -248,10 +228,10 @@
         }
       };
 
-      fileInput.click(); // Öffne das Datei-Auswahlfenster
+      fileInput.click(); // Datei-Auswahlfenster öffnen
     });
 
-    // Ordner hinzufügen (in Firebase Storage)
+    // Ordner hinzufügen (Firebase Storage)
     document.getElementById("addGlobalFolderBtn").addEventListener("click", async () => {
       if (!isAdminOrGL) {
         alert("Nur Admins und Gruppenleiter dürfen Ordner hinzufügen!");
@@ -260,8 +240,7 @@
 
       const folderName = prompt("Bitte geben Sie den Ordnernamen ein:");
       if (folderName) {
-        // Erstelle einen 'leeren' Ordnerpfad im Firebase Storage
-        const folderRef = storage.ref().child(`materials/${folderName}/`); // Hier ist der Ordnerpfad
+        const folderRef = storage.ref().child(`materials/${folderName}/`);
         alert(`Ordner '${folderName}' erfolgreich erstellt!`);
       }
     });
@@ -275,8 +254,8 @@
       const filteredGlobal = globalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
       const filteredPersonal = personalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
 
-      renderMaterials(filteredGlobal, globalMaterialsList);
-      renderMaterials(filteredPersonal, personalMaterialsList);
+      renderMaterials(filteredGlobal, document.getElementById("globalMaterialsList"));
+      renderMaterials(filteredPersonal, document.getElementById("personalMaterialsList"));
 
       clearSearch.style.display = searchInput.value ? "block" : "none";
     });
@@ -284,8 +263,8 @@
     clearSearch.addEventListener("click", () => {
       searchInput.value = "";
       clearSearch.style.display = "none";
-      renderMaterials(globalMaterials, globalMaterialsList);
-      renderMaterials(personalMaterials, personalMaterialsList);
+      renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
+      renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
     });
   </script>
 </body>
