@@ -153,7 +153,7 @@
             display: block;
         }
     </style>
-    <!-- Firebase-Skripte (klassische Version) -->
+     <!-- Firebase-Skripte (klassische Version) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
@@ -174,14 +174,14 @@
 
         <div class="material-grid">
             <div class="card material-global">
-                <h3 onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
+                <h3 id="toggleGlobal" onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
                 <ul class="material-list" id="globalMaterialsList"></ul>
                 <button class="btn btn-primary" id="addGlobalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
                 <button class="btn btn-primary" id="addGlobalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
             </div>
 
             <div class="card material-personal">
-                <h3 onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
+                <h3 id="togglePersonal" onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
                 <ul class="material-list" id="personalMaterialsList"></ul>
                 <button class="btn btn-primary" id="addPersonalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
                 <button class="btn btn-primary" id="addPersonalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
@@ -200,6 +200,7 @@
             appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
             measurementId: "G-ZPD5VPD5TS"
         };
+
         // Initialisierung von Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -245,6 +246,7 @@
             });
         }
 
+        // Event Listener für Material hinzufügen
         document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
             if (!isAdminOrGL) {
                 alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
@@ -280,6 +282,7 @@
             fileInput.click();
         });
 
+        // Event Listener für Ordner hinzufügen
         document.getElementById("addGlobalFolderBtn").addEventListener("click", async () => {
             if (!isAdminOrGL) {
                 alert("Nur Admins und Gruppenleiter dürfen Ordner hinzufügen!");
@@ -303,6 +306,7 @@
             }
         });
 
+        // Funktion zum Umschalten der Listenansicht
         function toggleList(type) {
             const list = document.getElementById(`${type}MaterialsList`);
             list.classList.toggle('open');
