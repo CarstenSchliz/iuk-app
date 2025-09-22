@@ -67,10 +67,10 @@
     background: #333;
   }
 
+  /* Unterordner standardmäßig verstecken */
   .tree ul ul {
-    display: none; /* Unterordner sind anfangs verborgen */
+    display: none;
   }
-
 </style>
 
 <script type="module">
@@ -105,6 +105,7 @@
         materials.user.children = userData.children || {};
       }
 
+      console.log("Materials geladen:", materials); // Ausgabe in die Konsole
       // Baum rendern
       renderTree(materials, treeContainer);
     } catch (error) {
@@ -122,12 +123,14 @@
       if (item.type === "folder") {
         li.innerHTML = `<i class="bi bi-folder"></i><span>${item.name}</span>`;
         renderTree(item.children, li);
-        
+
         // Event-Listener für das Klicken und Umschalten der Unterordner
         li.addEventListener("click", (e) => {
           e.stopPropagation();  // Verhindert das event bubbling
+          console.log(`Klick auf Ordner: ${item.name}`); // Überprüfung in der Konsole
           const child = li.querySelector("ul");
           if (child) {
+            // Toggle der Anzeige
             child.style.display = child.style.display === "none" ? "block" : "none";
           }
         });
