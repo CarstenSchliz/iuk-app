@@ -153,7 +153,7 @@
             display: block;
         }
     </style>
-  <!-- Firebase SDKs laden -->
+    <!-- Firebase-Skripte (klassische Version) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
@@ -190,7 +190,7 @@
     </div>
 
     <script>
-        // Firebase-Initialisierung
+        // Firebase-Initialisierung (klassisch)
         const firebaseConfig = {
             apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
             authDomain: "iuk-app.firebaseapp.com",
@@ -200,7 +200,8 @@
             appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
             measurementId: "G-ZPD5VPD5TS"
         };
-        const app = firebase.initializeApp(firebaseConfig);
+        // Initialisierung von Firebase
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const storage = firebase.storage();
         const auth = firebase.auth();
