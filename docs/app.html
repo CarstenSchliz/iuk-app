@@ -370,16 +370,15 @@ onAuthStateChanged(auth, async (user) => {
     // Definiere die Reihenfolge der Rollen: admin muss die höchste Rolle sein
     const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
 
-    // Sortiere die Rollen nach der definierten Reihenfolge und wähle die höchste Rolle aus
-    const sortedRoles = roles.sort((a, b) => {
-      // Vergleiche die Indexpositionen der Rollen in der roleOrder-Liste
-      return roleOrder.indexOf(a.toLowerCase()) - roleOrder.indexOf(b.toLowerCase());
-    });
+    // Manuelle Bestimmung der höchsten Rolle
+    let highestRole = "Keine Rolle zugewiesen"; // Standardwert
+    for (let role of roleOrder) {
+      if (roles.includes(role)) {
+        highestRole = role; // Wähle die erste Rolle, die im roleOrder-Array erscheint
+        break;
+      }
+    }
 
-    console.log("Sortierte Rollen:", sortedRoles);  // Zeigt die sortierten Rollen an
-
-    // Die höchste Rolle auswählen (nur die höchste wird im `userRole` angezeigt)
-    const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen";
     console.log("Höchste Rolle:", highestRole);  // Debugging: Zeigt die höchste Rolle im Log an
 
     // Setze die höchste Rolle unter dem Benutzernamen
