@@ -352,46 +352,51 @@
     });
 
     // Login-Check + Userdaten + Rollen
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        userName.textContent = user.displayName || user.email.split("@")[0];
-        if (user.photoURL) {
-          profileImg.src = user.photoURL;
-        } else {
-          profileImg.src = "assets/avatar-default.png";
-        }
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    userName.textContent = user.displayName || user.email.split("@")[0];
+    if (user.photoURL) {
+      profileImg.src = user.photoURL;
+    } else {
+      profileImg.src = "assets/avatar-default.png";
+    }
 
-        // 🔑 Rollen aus Firestore prüfen
-        const roles = await getUserRoles(user.uid);
+    // 🔑 Rollen aus Firestore prüfen
+    const roles = await getUserRoles(user.uid);
 
-        // Definiere die Reihenfolge der Rollen
-        const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
+    // Debugging: Rollen im Konsolen-Log anzeigen
+    console.log("Benutzerrollen:", roles);
 
-        // Sortiere die Rollen nach der definierten Reihenfolge und wähle die höchste Rolle aus
-        const sortedRoles = roles.sort((a, b) => roleOrder.indexOf(a.toLowerCase()) - roleOrder.indexOf(b.toLowerCase()));
-        
-        // Die höchste Rolle auswählen
-        const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen";
+    // Definiere die Reihenfolge der Rollen: admin muss die höchste Rolle sein
+    const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
 
-        // Setze die höchste Rolle unter dem Benutzernamen
-        const highestRoleElement = document.getElementById("userHighestRole");
-        highestRoleElement.textContent = `${capitalizeFirstLetter(highestRole)}`;
+    // Sortiere die Rollen nach der definierten Reihenfolge und wähle die höchste Rolle aus
+    const sortedRoles = roles.sort((a, b) => roleOrder.indexOf(a.toLowerCase()) - roleOrder.indexOf(b.toLowerCase()));
+    console.log("Sortierte Rollen:", sortedRoles);
 
-        // Keine weiteren Rollen im Profil anzeigen
-        const userRolesElement = document.getElementById("userRoles");
-        userRolesElement.textContent = "";
+    // Überprüfe, ob das erste Element in sortedRoles die höchste Rolle ist
+    const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen";
+    console.log("Höchste Rolle:", highestRole);  // Debugging: Zeigt die höchste Rolle im Log an
 
-        // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
-        const navUsers = document.getElementById("nav-users");
-        if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-          if (navUsers) {
-            navUsers.style.display = "block";
-          }
-        }
-      } else {
-        window.location.href = "index.html";
+    // Setze die höchste Rolle unter dem Benutzernamen
+    const highestRoleElement = document.getElementById("userHighestRole");
+    highestRoleElement.textContent = `${capitalizeFirstLetter(highestRole)}`;
+
+    // Keine weiteren Rollen im Profil anzeigen
+    const userRolesElement = document.getElementById("userRoles");
+    userRolesElement.textContent = "";
+
+    // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
+    const navUsers = document.getElementById("nav-users");
+    if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+      if (navUsers) {
+        navUsers.style.display = "block";
       }
-    });
+    }
+  } else {
+    window.location.href = "index.html";
+  }
+});
 
     // Funktion, um den ersten Buchstaben der Rolle groß zu machen und den Rest klein
     function capitalizeFirstLetter(str) {
