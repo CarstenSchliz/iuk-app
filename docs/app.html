@@ -243,7 +243,7 @@
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg" />
       <input type="file" id="profileUpload" accept="image/*" style="display: none" />
       <h2 id="userName">Lädt...</h2>
-      <p id="userRole">Teilnehmer</p> <!-- Rolle wird hier angezeigt -->
+      <p id="userRole">Teilnehmer</p> <!-- Hier wird die Rolle angezeigt -->
     </div>
 
     <div class="menu">
@@ -366,9 +366,18 @@
 
         // 🔑 Rollen aus Firestore prüfen
         const roles = await getUserRoles(user.uid);
-        const roleText = roles.length > 0 ? roles.join(", ") : "Keine Rolle zugewiesen"; // Mehrere Rollen anzeigen
-        userRole.textContent = roleText; // Die Rolle im Profil anzeigen
 
+        // Definiere die Reihenfolge der Rollen
+        const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
+
+        // Sortiere die Rollen nach der definierten Reihenfolge und wähle die höchste Rolle aus
+        const sortedRoles = roles.sort((a, b) => roleOrder.indexOf(a) - roleOrder.indexOf(b));
+        const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen"; // Höchste Rolle auswählen
+
+        // Die Rolle im Profil anzeigen, dabei den ersten Buchstaben groß machen
+        userRole.textContent = capitalizeFirstLetter(highestRole);
+
+        // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
         if (roles.includes("admin") || roles.includes("gruppenleiter")) {
           navUsers.style.display = "block";
         }
@@ -376,6 +385,14 @@
         window.location.href = "index.html";
       }
     });
+
+    // Funktion, um den ersten Buchstaben der Rolle groß zu machen und den Rest klein
+    function capitalizeFirstLetter(str) {
+      if (str) {
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+      }
+      return str;
+    }
 
     // Darkmode
     if (localStorage.getItem("theme") === "dark") {
