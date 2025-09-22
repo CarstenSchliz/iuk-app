@@ -352,7 +352,7 @@
     });
 
     // Login-Check + Userdaten + Rollen
-  onAuthStateChanged(auth, async (user) => {
+ onAuthStateChanged(auth, async (user) => {
   if (user) {
     userName.textContent = user.displayName || user.email.split("@")[0];
     if (user.photoURL) {
@@ -377,15 +377,13 @@
     // Die höchste Rolle auswählen (nur die höchste wird im `userRole` angezeigt)
     const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen"; 
 
-    // Variable für das Element, das die höchste Rolle anzeigen soll
+    // Setze die höchste Rolle unter dem Benutzernamen
     const highestRoleElement = document.getElementById("userHighestRole");
-    
-    // Setze den Textinhalt des Elements für die höchste Rolle
-    highestRoleElement.textContent = `Höchste Rolle: ${capitalizeFirstLetter(highestRole)}`;
+    highestRoleElement.textContent = `${capitalizeFirstLetter(highestRole)}`;  // Zeige nur die höchste Rolle an
 
-    // Rollen im Profil anzeigen (diese erscheinen im `userRoles` Bereich)
-    const formattedRoles = sortedRoles.map(role => capitalizeFirstLetter(role)).join(", ");
-    userRoles.textContent = formattedRoles;  // Alle Rollen anzeigen
+    // Keine weiteren Rollen im Profil anzeigen
+    const userRolesElement = document.getElementById("userRoles");
+    userRolesElement.textContent = ""; // Entferne alle anderen Rollen
 
     // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
     if (roles.includes("admin") || roles.includes("gruppenleiter")) {
