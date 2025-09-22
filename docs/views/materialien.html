@@ -47,6 +47,7 @@
 
     h2, h3 {
       color: var(--softrot);
+      font-weight: 700;
     }
 
     /* Zentrierter Seiten-Wrapper */
@@ -56,6 +57,7 @@
       padding: 0 1rem;
     }
 
+    /* Globale Materialien und Persönliche Materialien Kacheln */
     .card {
       background: var(--card-bg);
       color: var(--text);
@@ -63,53 +65,16 @@
       padding: 1.5rem;
       border-radius: 14px;
       box-shadow: 0 4px 18px rgba(0,0,0,0.28);
-      margin: 0;
+      margin: 0 0 2rem 0;  /* Abstand zwischen den Kacheln */
       width: 100%;
     }
 
-    .form-actions { 
-      display: flex; 
-      gap: 1rem; 
-      margin-top: 1rem; 
-    }
-
-    .btn {
-      padding: .6rem 1rem; 
-      border: none; 
-      border-radius: 10px; 
-      cursor: pointer;
-      font-size: .95rem;
-      min-height: 44px; 
-      min-width: 140px;
-      display: inline-flex; 
-      align-items: center; 
-      justify-content: center; 
-      gap: .5rem;
-    }
-
-    .btn-primary { 
-      background: var(--dunkelblau); 
-      color: #fff; 
-    }
-
-    .btn-secondary { 
-      background: var(--button-secondary-bg); 
-      color: var(--button-secondary-fg); 
-    }
-
-    /* Listenelemente für Materialien */
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    li {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    /* Überschrift mit passendem Icon */
+    h3 {
+      color: var(--hellblau);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     /* Formular-Style */
@@ -118,12 +83,6 @@
       margin-top: 1rem;
       border-radius: 10px;
       border: 1px solid var(--input-border);
-    }
-
-    button {
-      padding: .6rem 1rem;
-      border-radius: 10px;
-      cursor: pointer;
     }
 
     /* Formular zum Hinzufügen von Materialien */
@@ -135,6 +94,34 @@
       padding: 1rem;
     }
 
+    /* Kacheln Abstand */
+    .card:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Responsives Design */
+    @media (max-width: 768px) {
+      .settings-page {
+        padding: 0;
+        max-width: 100%;
+      }
+
+      .card {
+        padding: 1rem;
+      }
+
+      /* Formular-Input */
+      input[type="file"] {
+        width: 100%;
+      }
+
+      .form-actions {
+        display: block;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+    }
+
   </style>
 </head>
 
@@ -144,14 +131,14 @@
 
     <!-- Globale Materialien Bereich -->
     <div class="card">
-      <h3>Globale Materialien</h3>
+      <h3><i class="bi bi-cloud-arrow-up"></i> Globale Materialien</h3>
       <ul id="global-material-list"></ul>
       <button class="btn btn-primary" onclick="showAddGlobalMaterialForm()">Material Hinzufügen (Admin/Gruppe)</button>
     </div>
 
     <!-- Persönliche Materialien Bereich -->
     <div class="card">
-      <h3>Persönliche Materialien</h3>
+      <h3><i class="bi bi-person-lines-fill"></i> Persönliche Materialien</h3>
       <ul id="personal-material-list"></ul>
       <button class="btn btn-primary" onclick="showAddPersonalMaterialForm()">Persönliches Material Hinzufügen</button>
     </div>
