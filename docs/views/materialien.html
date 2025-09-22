@@ -3,6 +3,10 @@
 <div class="card">
   <h3><i class="bi bi-folder"></i> Materialien</h3>
   <div id="materialsTree" class="tree"></div>
+
+  <!-- Buttons zum Erstellen von Ordnern und Dateien -->
+  <button id="createFolderBtn">Neuen Ordner erstellen</button>
+  <button id="createFileBtn">Neue Datei hinzufügen</button>
 </div>
 
 <style>
@@ -55,40 +59,38 @@
     padding: 0.2rem 0.5rem;
   }
 
-  /* Darkmode */
-  body.dark .card {
-    background: #1e1e1e;
-    color: #f0f0f0;
-  }
-  body.dark .tree ul {
-    border-left-color: #444;
-  }
-  body.dark .tree li:hover {
-    background: #333;
-  }
-
   /* Unterordner standardmäßig verstecken */
   .tree ul ul {
     display: none;
   }
+
+  /* Button Styling */
+  button {
+    padding: 0.5rem;
+    margin: 1rem 0;
+    background-color: var(--softrot);
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: var(--dunkelblau);
+  }
 </style>
 
 <script type="module">
-  console.log("✅ materialien.html geladen");
-
-  import { auth, db } from "./js/firebase.js"; // Firebase Import
+  import { auth, db } from "../js/firebase.js"; // Firebase Import
 
   const treeContainer = document.getElementById("materialsTree");
 
-  // Funktion, um die Materialien von Firestore zu laden
+  // Funktion zum Laden der Materialien aus Firestore
   async function loadMaterials() {
     const user = auth.currentUser;
     if (!user) {
       console.log("Kein Benutzer eingeloggt");
       return;
     }
-
-    console.log("Benutzer ist eingeloggt:", user.email); // Überprüfe, ob der Benutzer eingeloggt ist
 
     const materials = {
       global: { type: "folder", name: "Global", children: {} },
@@ -110,15 +112,13 @@
         materials.user.children = userData.children || {};
       }
 
-      console.log("Materials geladen:", materials); // Ausgabe in die Konsole
-      // Baum rendern
       renderTree(materials, treeContainer);
     } catch (error) {
       console.error("Fehler beim Laden der Materialien:", error);
     }
   }
 
-  // Funktion zum Erstellen der Baumstruktur
+  // Funktion zur Darstellung der Baumstruktur
   function renderTree(node, container) {
     const ul = document.createElement("ul");
     for (const key in node) {
@@ -132,10 +132,8 @@
         // Event-Listener für das Klicken und Umschalten der Unterordner
         li.addEventListener("click", (e) => {
           e.stopPropagation();  // Verhindert das event bubbling
-          console.log(`Klick auf Ordner: ${item.name}`); // Überprüfung in der Konsole
           const child = li.querySelector("ul");
           if (child) {
-            // Toggle der Anzeige
             child.style.display = child.style.display === "none" ? "block" : "none";
           }
         });
@@ -147,9 +145,46 @@
       ul.appendChild(li);
     }
     container.appendChild(ul);
-    console.log("Baumstruktur gerendert");  // Überprüfe, ob der Baum gerendert wird
   }
 
-  // Materialien laden, wenn die Seite geladen wird
+  // Funktion zum Erstellen eines Ordners
+  async function createFolder() {
+    const user = auth.currentUser;
+    const folderName = prompt("Gib den Namen des neuen Ordners ein:");
+
+    if (folderName) {
+      const userRef = db.collection("materials").doc(user.uid);
+      const userDoc = await userRef.get();
+
+      let userData = userDoc.data() || { children: {} };
+      userData.children[folderName] = { type: "folder", name: folderName, children: {} };
+
+      await userRef.set(userData); // Speichern des neuen Ordners in Firestore
+      loadMaterials(); // Neu laden der Materialien
+    }
+  }
+
+  // Funktion zum Erstellen einer Datei
+  async function createFile() {
+    const user = auth.currentUser;
+    const fileName = prompt("Gib den Namen der neuen Datei ein:");
+
+    if (fileName) {
+      const userRef = db.collection("materials").doc(user.uid);
+      const userDoc = await userRef.get();
+
+      let userData = userDoc.data() || { children: {} };
+      userData.children[fileName] = { type: "file", name: fileName, url: "#" };
+
+      await userRef.set(userData); // Speichern der neuen Datei in Firestore
+      loadMaterials(); // Neu laden der Materialien
+    }
+  }
+
+  // Event Listener für Buttons
+  document.getElementById("createFolderBtn").addEventListener("click", createFolder);
+  document.getElementById("createFileBtn").addEventListener("click", createFile);
+
+  // Materialien beim Laden der Seite laden
   window.addEventListener('DOMContentLoaded', loadMaterials);
 </script>
