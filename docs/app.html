@@ -243,8 +243,8 @@
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg" />
       <input type="file" id="profileUpload" accept="image/*" style="display: none" />
       <h2 id="userName">Lädt...</h2>
-      <p id="userRoles"></p> <!-- Hier werden die Rollen angezeigt -->
-      <p id="userHighestRole" style="font-weight: bold; color: var(--dunkelblau);"></p> <!-- Neue Zeile für die höchste Rolle -->
+      <p id="userRoles"></p> <!-- Hier werden jetzt keine Rollen angezeigt -->
+      <p id="userHighestRole" style="color: var(--dunkelblau);"></p> <!-- Nur die höchste Rolle anzeigen -->
     </div>
 
     <div class="menu">
@@ -352,47 +352,43 @@
     });
 
     // Login-Check + Userdaten + Rollen
- onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    userName.textContent = user.displayName || user.email.split("@")[0];
-    if (user.photoURL) {
-      profileImg.src = user.photoURL;
-    } else {
-      profileImg.src = "assets/avatar-default.png";
-    }
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        userName.textContent = user.displayName || user.email.split("@")[0];
+        if (user.photoURL) {
+          profileImg.src = user.photoURL;
+        } else {
+          profileImg.src = "assets/avatar-default.png";
+        }
 
-    // 🔑 Rollen aus Firestore prüfen
-    const roles = await getUserRoles(user.uid);
+        // 🔑 Rollen aus Firestore prüfen
+        const roles = await getUserRoles(user.uid);
 
-    // Debugging: Rollen im Konsolen-Log anzeigen
-    console.log("Benutzerrollen:", roles);
+        // Definiere die Reihenfolge der Rollen
+        const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
 
-    // Definiere die Reihenfolge der Rollen
-    const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
+        // Sortiere die Rollen nach der definierten Reihenfolge und wähle die höchste Rolle aus
+        const sortedRoles = roles.sort((a, b) => roleOrder.indexOf(a) - roleOrder.indexOf(b));
+        
+        // Die höchste Rolle auswählen
+        const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen"; 
 
-    // Sortiere die Rollen nach der definierten Reihenfolge und wähle die höchste Rolle aus
-    const sortedRoles = roles.sort((a, b) => roleOrder.indexOf(a) - roleOrder.indexOf(b));
-    console.log("Sortierte Rollen:", sortedRoles);
-    
-    // Die höchste Rolle auswählen (nur die höchste wird im `userRole` angezeigt)
-    const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen"; 
+        // Setze die höchste Rolle unter dem Benutzernamen
+        const highestRoleElement = document.getElementById("userHighestRole");
+        highestRoleElement.textContent = `${capitalizeFirstLetter(highestRole)}`;
 
-    // Setze die höchste Rolle unter dem Benutzernamen
-    const highestRoleElement = document.getElementById("userHighestRole");
-    highestRoleElement.textContent = `${capitalizeFirstLetter(highestRole)}`;  // Zeige nur die höchste Rolle an
+        // Keine weiteren Rollen im Profil anzeigen
+        const userRolesElement = document.getElementById("userRoles");
+        userRolesElement.textContent = ""; 
 
-    // Keine weiteren Rollen im Profil anzeigen
-    const userRolesElement = document.getElementById("userRoles");
-    userRolesElement.textContent = ""; // Entferne alle anderen Rollen
-
-    // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
-    if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-      navUsers.style.display = "block";
-    }
-  } else {
-    window.location.href = "index.html";
-  }
-});
+        // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
+        if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+          navUsers.style.display = "block";
+        }
+      } else {
+        window.location.href = "index.html";
+      }
+    });
 
     // Funktion, um den ersten Buchstaben der Rolle groß zu machen und den Rest klein
     function capitalizeFirstLetter(str) {
@@ -401,20 +397,6 @@
       }
       return str;
     }
-
-    // Darkmode
-    if (localStorage.getItem("theme") === "dark") {
-      document.body.classList.add("dark");
-    }
-    window.addEventListener("toggleTheme", () => {
-      if (document.body.classList.contains("dark")) {
-        document.body.classList.remove("dark");
-        localStorage.setItem("theme", "light");
-      } else {
-        document.body.classList.add("dark");
-        localStorage.setItem("theme", "dark");
-      }
-    });
   </script>
 </body>
 </html>
