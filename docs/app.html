@@ -186,49 +186,49 @@
     }
 
     /* Darkmode */
-body.dark {
-  --bg: #000;          /* Hintergrund komplett schwarz */
-  --text: #f5f5f5;     /* Standardtext hell */
+    body.dark {
+      --bg: #000;          /* Hintergrund komplett schwarz */
+      --text: #f5f5f5;     /* Standardtext hell */
 
-  background: var(--bg);
-  color: var(--text);
-}
+      background: var(--bg);
+      color: var(--text);
+    }
 
-body.dark .sidebar {
-  background: #1a1a1a; /* Sidebar leicht abgesetzt */
-  color: var(--text);
-}
+    body.dark .sidebar {
+      background: #1a1a1a; /* Sidebar leicht abgesetzt */
+      color: var(--text);
+    }
 
-body.dark .content {
-  background: var(--bg);  /* wichtig: Content jetzt auch schwarz */
-  color: var(--text);
-}
+    body.dark .content {
+      background: var(--bg);  /* wichtig: Content jetzt auch schwarz */
+      color: var(--text);
+    }
 
-body.dark .menu button,
-body.dark .logout {
-  color: var(--text);
-}
+    body.dark .menu button,
+    body.dark .logout {
+      color: var(--text);
+    }
 
-body.dark .menu button:hover,
-body.dark .logout:hover {
-  background: var(--hoverblau);
-  color: #000;
-}
+    body.dark .menu button:hover,
+    body.dark .logout:hover {
+      background: var(--hoverblau);
+      color: #000;
+    }
 
-body.dark .menu button.active {
-  background: var(--blassblau);
-  font-weight: bold;
-  color: var(--dunkelblau);
-}
+    body.dark .menu button.active {
+      background: var(--blassblau);
+      font-weight: bold;
+      color: var(--dunkelblau);
+    }
 
-body.dark .menu button.active::before {
-  background: var(--dunkelblau);
-}
+    body.dark .menu button.active::before {
+      background: var(--dunkelblau);
+    }
 
-body.dark .profile h2,
-body.dark .profile p {
-  color: var(--text);
-}
+    body.dark .profile h2,
+    body.dark .profile p {
+      color: var(--text);
+    }
   </style>
 </head>
 <body>
@@ -243,7 +243,7 @@ body.dark .profile p {
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg" />
       <input type="file" id="profileUpload" accept="image/*" style="display: none" />
       <h2 id="userName">Lädt...</h2>
-      <p>Teilnehmer</p>
+      <p id="userRole">Teilnehmer</p> <!-- Rolle wird hier angezeigt -->
     </div>
 
     <div class="menu">
@@ -352,6 +352,7 @@ body.dark .profile p {
 
     // Login-Check + Userdaten + Rollen
     const userName = document.getElementById("userName");
+    const userRole = document.getElementById("userRole");
     const navUsers = document.getElementById("nav-users");
 
     onAuthStateChanged(auth, async (user) => {
@@ -365,6 +366,9 @@ body.dark .profile p {
 
         // 🔑 Rollen aus Firestore prüfen
         const roles = await getUserRoles(user.uid);
+        const roleText = roles.length > 0 ? roles.join(", ") : "Keine Rolle zugewiesen"; // Mehrere Rollen anzeigen
+        userRole.textContent = roleText; // Die Rolle im Profil anzeigen
+
         if (roles.includes("admin") || roles.includes("gruppenleiter")) {
           navUsers.style.display = "block";
         }
