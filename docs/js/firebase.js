@@ -48,7 +48,7 @@ const firebaseConfig = {
 // === Initialisieren ===
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-const storage = getStorage(app);
+export const storage = getStorage(app);  // storage wird nun exportiert
 export const db = getFirestore(app);
 
 // ❗ Functions mit Region us-central1 initialisieren
@@ -58,6 +58,7 @@ export const functions = getFunctions(app, "us-central1");
 window.auth = auth;
 window.functions = functions;
 window.db = db;
+window.storage = storage;  // storage für Debugging verfügbar machen
 
 // Nutzer bleibt eingeloggt
 setPersistence(auth, browserLocalPersistence);
