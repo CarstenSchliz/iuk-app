@@ -1,4 +1,3 @@
-// docs/js/firebase.js
 // Firebase Setup & Auth-Funktionen
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -76,7 +75,7 @@ export function translateFirebaseError(errorCode) {
     case "auth/wrong-password":
     case "auth/invalid-credential":
       return "Das eingegebene Passwort ist falsch.";
-
+      
     // Registrierungsfehler
     case "auth/email-already-in-use":
       return "Diese E-Mail-Adresse wird bereits verwendet.";
