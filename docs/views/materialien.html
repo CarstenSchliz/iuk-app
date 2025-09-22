@@ -124,14 +124,24 @@
       color: var(--material-fg);
     }
 
+    .material-page .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: #aaa;
+    }
+
   </style>
 </head>
 <body>
   <div class="material-page">
     <h2 class="page-title">Materialien</h2>
     
-    <!-- Suchfeld -->
+    <!-- Suchfeld mit Lupe -->
     <div class="search-box">
+      <i class="bi bi-search search-icon"></i>
       <input type="text" id="searchInput" placeholder="Suche Materialien...">
     </div>
 
@@ -148,7 +158,7 @@
 
       <!-- Persönliche Materialien -->
       <div class="card material-personal">
-        <h3 onclick="toggleList('personal')"><i class="bi bi-person"></i> Persönliche Materialien</h3>
+        <h3 onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
         <ul class="material-list" id="personalMaterialsList">
           <!-- Hier werden die persönlichen Materialien aufgelistet -->
         </ul>
