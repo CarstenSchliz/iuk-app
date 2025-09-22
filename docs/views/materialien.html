@@ -6,115 +6,122 @@
   <title>Materialien</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    :root {
-      --softrot: rgb(228,100,80);
-      --dunkelblau: rgb(0,45,85);
-      --hellgrau: rgb(239,238,234);
-      --blassblau: rgb(230,240,250);
-      --text: #1f2937;
-      --hellblau: rgb(100,160,220);
-      --material-bg: #fff;
-      --material-bd: #e5e7eb;
-      --material-fg: #374151;
-    }
+  :root {
+    --softrot: rgb(228,100,80);
+    --dunkelblau: rgb(0,45,85);
+    --hellgrau: rgb(239,238,234);
+    --blassblau: rgb(230,240,250);
+    --text: #1f2937;
+    --hellblau: rgb(100,160,220);
+    --material-bg: #fff;
+    --material-bd: #e5e7eb;
+    --material-fg: #374151;
+  }
 
-    * {
-      box-sizing: border-box;
-    }
+  * {
+    box-sizing: border-box;
+  }
 
-    .material-page {
-      color: var(--text);
-      padding: 1rem;
-    }
+  .material-page {
+    color: var(--text);
+    padding: 1rem;
+  }
 
-    .material-page .page-title {
-      color: var(--softrot);
-      margin: 0 0 1rem;
-    }
+  .material-page .page-title {
+    color: var(--softrot);
+    margin: 0 0 1rem;
+  }
 
+  .material-page .material-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  @media (max-width: 980px) {
     .material-page .material-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
+      grid-template-columns: 1fr;
     }
+  }
 
-    @media (max-width: 980px) {
-      .material-page .material-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+  .material-page .card {
+    background: var(--material-bg);
+    padding: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--material-bd);
+  }
 
-    .material-page .card {
-      background: var(--material-bg);
-      padding: 1.25rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--material-bd);
-    }
+  .material-page .card h3 {
+    color: var(--hellblau);
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
 
-    .material-page .card h3 {
-      color: var(--hellblau);
-      margin: 0 0 1rem;
-      font-size: 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-    }
+  .material-page .material-list {
+    list-style: none;
+    padding-left: 0;
+    display: none;
+    margin-top: 1rem;
+  }
 
-    .material-page .material-list {
-      list-style: none;
-      padding-left: 0;
-      display: none;
-      margin-top: 1rem;
-    }
+  .material-page .material-list.open {
+    display: block;
+  }
 
-    .material-page .material-list.open {
-      display: block;
-    }
+  .material-page .material-list li {
+    padding: 0.8rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
 
-    .material-page .material-list li {
-      padding: 0.8rem;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
+  .material-page .material-list li:hover {
+    background: var(--blassblau);
+  }
 
-    .material-page .material-list li:hover {
-      background: var(--blassblau);
-    }
+  .material-page .btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    background: var(--dunkelblau);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+  }
 
-    .material-page .btn {
-      padding: 0.6rem 1.2rem;
-      border-radius: 10px;
-      background: var(--dunkelblau);
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-    }
+  .material-page .btn-primary {
+    background: var(--dunkelblau);
+  }
 
-    .material-page .btn-primary {
-      background: var(--dunkelblau);
-    }
+  .material-page .search-box {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
 
-    .material-page .search-box {
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
+  /* Anpassungen für das Suchfeld */
+  .material-page input[type="text"] {
+    padding: 8px 40px 8px 10px; /* Platz für die Lupe rechts im Input */
+    width: 100%;
+    border-radius: 30px; /* Runde Ecken */
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background: url('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/fonts/bootstrap-icons.woff2') no-repeat right 12px center; /* Position der Lupe */
+    background-size: 18px; /* Größe der Lupe */
+    transition: all 0.3s ease; /* Sanfte Übergänge bei Fokus */
+  }
 
-    .material-page input[type="text"] {
-      padding: 8px 40px 8px 10px;
-      width: 100%;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-      background: url('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/fonts/bootstrap-icons.woff2') no-repeat right 10px center;
-      background-size: 18px;
-    }
-  </style>
+  .material-page input[type="text"]:focus {
+    border-color: #5e5e5e; /* Fokus-Grenze */
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Schattierung bei Fokus */
+  }
+</style>
 </head>
-
 <body>
   <div class="material-page">
     <h2 class="page-title">Materialien</h2>
