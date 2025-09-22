@@ -12,8 +12,7 @@
       --hellgrau: rgb(239,238,234);
       --blassblau: rgb(230,240,250);
       --text:#1f2937;
-      --hellblau: rgb(100,160,220);
-      /* Materialfarben */
+      --hellblau: rgb(100,160,220); /* Helles Blau für Überschriften */
       --material-bg: #fff; /* Weißer Hintergrund für beide Kacheln */
       --material-bd: #e5e7eb;
       --material-fg: #374151;
@@ -53,7 +52,7 @@
     }
 
     .material-page .card h3 {
-      color: var(--material-fg);
+      color: var(--hellblau); /* Helles Blau für Überschriften */
       margin: 0 0 1rem;
       font-size: 1.2rem;
       display: flex;
@@ -100,16 +99,25 @@
     .material-page .search-box {
       margin-bottom: 1.5rem;
       display: flex;
-      gap: 1rem;
       align-items: center;
+      position: relative;
     }
 
     .material-page input[type="text"] {
-      padding: 8px;
+      padding: 8px 30px 8px 10px; /* Platz für die Lupe */
       width: 100%;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 1rem;
+    }
+
+    .material-page .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: #aaa;
     }
 
     .material-page .material-personal {
@@ -122,15 +130,6 @@
       background: var(--material-bg);
       border-color: var(--material-bd);
       color: var(--material-fg);
-    }
-
-    .material-page .search-icon {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.1rem;
-      color: #aaa;
     }
 
   </style>
