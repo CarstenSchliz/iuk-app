@@ -153,181 +153,159 @@
             display: block;
         }
     </style>
+  <!-- Firebase SDKs laden -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 </head>
 <body>
-<div class="material-page">
-    <h2 class="page-title">Materialien</h2>
-    <div class="search-box">
-        <div style="position:relative; margin:12px 0 14px;">
-            <i class="bi bi-search"></i>
-            <input type="text" id="searchInput" placeholder="Suchen...">
-            <button id="clearSearch" type="button">
-                <i class="bi bi-x-lg"></i>
-            </button>
+    <div class="material-page">
+        <h2 class="page-title">Materialien</h2>
+        <div class="search-box">
+            <div style="position:relative; margin:12px 0 14px;">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchInput" placeholder="Suchen...">
+                <button id="clearSearch" type="button">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="material-grid">
+            <div class="card material-global">
+                <h3 onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
+                <ul class="material-list" id="globalMaterialsList"></ul>
+                <button class="btn btn-primary" id="addGlobalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
+                <button class="btn btn-primary" id="addGlobalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
+            </div>
+
+            <div class="card material-personal">
+                <h3 onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
+                <ul class="material-list" id="personalMaterialsList"></ul>
+                <button class="btn btn-primary" id="addPersonalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
+                <button class="btn btn-primary" id="addPersonalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
+            </div>
         </div>
     </div>
 
-    <div class="material-grid">
-        <!-- Globale Materialien -->
-        <div class="card material-global">
-            <h3 onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
-            <ul class="material-list" id="globalMaterialsList"></ul>
-            <button class="btn btn-primary" id="addGlobalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
-            <button class="btn btn-primary" id="addGlobalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
-        </div>
-
-        <!-- Persönliche Materialien -->
-        <div class="card material-personal">
-            <h3 onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
-            <ul class="material-list" id="personalMaterialsList"></ul>
-            <button class="btn btn-primary" id="addPersonalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
-            <button class="btn btn-primary" id="addPersonalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
-        </div>
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getFirestore } from "firebase/firestore";
-    import { getStorage } from "firebase/storage";
-    import { getAuth, onAuthStateChanged } from "firebase/auth";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
-        authDomain: "iuk-app.firebaseapp.com",
-        projectId: "iuk-app",
-        storageBucket: "iuk-app.firebasestorage.app",
-        messagingSenderId: "759014128178",
-        appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
-        measurementId: "G-ZPD5VPD5TS"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const auth = getAuth(app);
-
-    let globalMaterials = [];
-    let personalMaterials = [];
-    let currentUser = null;
-    let isAdminOrGL = false;
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-            checkUserRole(user);
-            loadMaterials();
-        }
-    });
-
-    async function checkUserRole(user) {
-        const userClaims = await user.getIdTokenResult();
-        isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
-    }
-
-    async function loadMaterials() {
-        if (currentUser) {
-            const globalSnapshot = await db.collection("globalMaterials").get();
-            globalMaterials = globalSnapshot.docs.map(doc => doc.data());
-            renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
-
-            const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
-            personalMaterials = personalSnapshot.docs.map(doc => doc.data());
-            renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
-        }
-    }
-
-    function renderMaterials(materials, listElement) {
-        listElement.innerHTML = "";
-        materials.forEach(material => {
-            const li = document.createElement("li");
-            li.innerHTML = `<strong>${material.name}</strong><br>${material.description}`;
-            listElement.appendChild(li);
-        });
-    }
-
-    document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
-        if (!isAdminOrGL) {
-            alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
-            return;
-        }
-
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = ".pdf,.jpg,.jpeg,.png";
-
-        fileInput.onchange = async (e) => {
-            const file = e.target.files[0];
-            const storageRef = storage.ref().child(`materials/${file.name}`);
-
-            try {
-                await storageRef.put(file);
-                const fileUrl = await storageRef.getDownloadURL();
-
-                await db.collection("globalMaterials").add({
-                    name: file.name,
-                    description: "Beschreibung für " + file.name,
-                    fileUrl: fileUrl
-                });
-
-                alert("Material erfolgreich hochgeladen!");
-                loadMaterials();
-            } catch (error) {
-                console.error("Fehler beim Hochladen:", error);
-                alert("Es gab einen Fehler beim Hochladen des Materials.");
-            }
+    <script>
+        // Firebase-Initialisierung
+        const firebaseConfig = {
+            apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
+            authDomain: "iuk-app.firebaseapp.com",
+            projectId: "iuk-app",
+            storageBucket: "iuk-app.firebasestorage.app",
+            messagingSenderId: "759014128178",
+            appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
+            measurementId: "G-ZPD5VPD5TS"
         };
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        const auth = firebase.auth();
 
-        fileInput.click();
-    });
+        let globalMaterials = [];
+        let personalMaterials = [];
+        let currentUser = null;
+        let isAdminOrGL = false;
 
-    document.getElementById("addGlobalFolderBtn").addEventListener("click", async () => {
-        if (!isAdminOrGL) {
-            alert("Nur Admins und Gruppenleiter dürfen Ordner hinzufügen!");
-            return;
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                checkUserRole(user);
+                loadMaterials();
+            }
+        });
+
+        async function checkUserRole(user) {
+            const userClaims = await user.getIdTokenResult();
+            isAdminOrGL = userClaims.claims.admin || userClaims.claims.gruppenleiter;
         }
 
-        const folderName = prompt("Bitte geben Sie den Ordnernamen ein:");
-        if (folderName) {
-            const folderRef = storage.ref().child(`materials/${folderName}/`);
+        async function loadMaterials() {
+            if (currentUser) {
+                const globalSnapshot = await db.collection("globalMaterials").get();
+                globalMaterials = globalSnapshot.docs.map(doc => doc.data());
+                renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
 
-            try {
-                const dummyFile = new Blob([], { type: 'application/octet-stream' });
-                const dummyFileRef = folderRef.child("dummy.txt");
-                await dummyFileRef.put(dummyFile);
-
-                alert(`Ordner '${folderName}' erfolgreich erstellt!`);
-            } catch (error) {
-                console.error("Fehler beim Erstellen des Ordners:", error);
-                alert("Es gab einen Fehler beim Erstellen des Ordners.");
+                const personalSnapshot = await db.collection("users").doc(currentUser.uid).collection("personalMaterials").get();
+                personalMaterials = personalSnapshot.docs.map(doc => doc.data());
+                renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
             }
         }
-    });
 
-    const searchInput = document.getElementById("searchInput");
-    const clearSearch = document.getElementById("clearSearch");
+        function renderMaterials(materials, listElement) {
+            listElement.innerHTML = "";
+            materials.forEach(material => {
+                const li = document.createElement("li");
+                li.innerHTML = `<strong>${material.name}</strong><br>${material.description}`;
+                listElement.appendChild(li);
+            });
+        }
 
-    searchInput.addEventListener("input", () => {
-        const query = searchInput.value.toLowerCase();
-        const filteredGlobal = globalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
-        const filteredPersonal = personalMaterials.filter(m => m.name.toLowerCase().includes(query) || m.description.toLowerCase().includes(query));
-        renderMaterials(filteredGlobal, document.getElementById("globalMaterialsList"));
-        renderMaterials(filteredPersonal, document.getElementById("personalMaterialsList"));
+        document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
+            if (!isAdminOrGL) {
+                alert("Nur Admins und Gruppenleiter dürfen Materialien hochladen!");
+                return;
+            }
 
-        clearSearch.style.display = searchInput.value ? "block" : "none";
-    });
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = ".pdf,.jpg,.jpeg,.png";
 
-    clearSearch.addEventListener("click", () => {
-        searchInput.value = "";
-        clearSearch.style.display = "none";
-        renderMaterials(globalMaterials, document.getElementById("globalMaterialsList"));
-        renderMaterials(personalMaterials, document.getElementById("personalMaterialsList"));
-    });
+            fileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                const storageRef = storage.ref().child(`materials/${file.name}`);
 
-    function toggleList(type) {
-        const list = document.getElementById(`${type}MaterialsList`);
-        list.classList.toggle('open');
-    }
-</script>
+                try {
+                    await storageRef.put(file);
+                    const fileUrl = await storageRef.getDownloadURL();
+
+                    await db.collection("globalMaterials").add({
+                        name: file.name,
+                        description: "Beschreibung für " + file.name,
+                        fileUrl: fileUrl
+                    });
+
+                    alert("Material erfolgreich hochgeladen!");
+                    loadMaterials();
+                } catch (error) {
+                    console.error("Fehler beim Hochladen:", error);
+                    alert("Es gab einen Fehler beim Hochladen des Materials.");
+                }
+            };
+
+            fileInput.click();
+        });
+
+        document.getElementById("addGlobalFolderBtn").addEventListener("click", async () => {
+            if (!isAdminOrGL) {
+                alert("Nur Admins und Gruppenleiter dürfen Ordner hinzufügen!");
+                return;
+            }
+
+            const folderName = prompt("Bitte geben Sie den Ordnernamen ein:");
+            if (folderName) {
+                const folderRef = storage.ref().child(`materials/${folderName}/`);
+
+                try {
+                    const dummyFile = new Blob([], { type: 'application/octet-stream' });
+                    const dummyFileRef = folderRef.child("dummy.txt");
+                    await dummyFileRef.put(dummyFile);
+
+                    alert(`Ordner '${folderName}' erfolgreich erstellt!`);
+                } catch (error) {
+                    console.error("Fehler beim Erstellen des Ordners:", error);
+                    alert("Es gab einen Fehler beim Erstellen des Ordners.");
+                }
+            }
+        });
+
+        function toggleList(type) {
+            const list = document.getElementById(`${type}MaterialsList`);
+            list.classList.toggle('open');
+        }
+    </script>
 </body>
 </html>
