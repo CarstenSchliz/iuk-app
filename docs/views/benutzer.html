@@ -699,7 +699,7 @@
       const initial = { name: user.displayName || "", roles: extractRoles(user) };
       editPanelOuter.style.display = "block";
       editPanel.innerHTML = `
-        <h3 style="margin-top:0;">Nutzer bearbeiten</h3>
+      <h3 style="margin-top:0;"><i class="bi bi-person-edit"></i> Nutzer bearbeiten</h3>
         <div class="editor-row">
           <div class="form-group floating">
             <input type="text" id="edName" placeholder=" " value="${initial.name}">
