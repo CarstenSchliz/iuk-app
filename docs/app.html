@@ -244,6 +244,7 @@
       <input type="file" id="profileUpload" accept="image/*" style="display: none" />
       <h2 id="userName">Lädt...</h2>
       <p id="userRole">Teilnehmer</p> <!-- Hier wird die Rolle angezeigt -->
+      <p id="userRoles"></p> <!-- Hier werden die Rollen angezeigt -->
     </div>
 
     <div class="menu">
@@ -353,6 +354,7 @@
     // Login-Check + Userdaten + Rollen
     const userName = document.getElementById("userName");
     const userRole = document.getElementById("userRole");
+    const userRoles = document.getElementById("userRoles");
     const navUsers = document.getElementById("nav-users");
 
     onAuthStateChanged(auth, async (user) => {
@@ -372,10 +374,14 @@
 
         // Sortiere die Rollen nach der definierten Reihenfolge und wähle die höchste Rolle aus
         const sortedRoles = roles.sort((a, b) => roleOrder.indexOf(a) - roleOrder.indexOf(b));
-        const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen"; // Höchste Rolle auswählen
-
-        // Die Rolle im Profil anzeigen, dabei den ersten Buchstaben groß machen
+        
+        // Die höchste Rolle auswählen
+        const highestRole = sortedRoles[0] || "Keine Rolle zugewiesen"; 
         userRole.textContent = capitalizeFirstLetter(highestRole);
+
+        // Rollen im Profil anzeigen
+        const formattedRoles = sortedRoles.map(role => capitalizeFirstLetter(role)).join(", ");
+        userRoles.textContent = formattedRoles;
 
         // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
         if (roles.includes("admin") || roles.includes("gruppenleiter")) {
