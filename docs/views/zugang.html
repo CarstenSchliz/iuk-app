@@ -33,7 +33,7 @@
       background: #fff;
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Leichter Schatten */
       border: 1px solid #eef2f7;
     }
     .card h3 {
@@ -82,6 +82,10 @@
       align-items:center;
       justify-content:center;
       color: white;
+      visibility: hidden; /* Anfangs nicht sichtbar */
+    }
+    .progress-bar.show {
+      visibility: visible; /* Wird nur sichtbar, wenn der Fortschritt sich ändert */
     }
     .select-user {
       margin-bottom: 1rem;
@@ -265,6 +269,35 @@
     .feather-hourglass {
       color: var(--dunkelblau);
     }
+
+    /* Fortschrittsbalken Anpassung: Keine Zahl sichtbar bis der Fortschritt sich ändert */
+    .progress-bar {
+      visibility: hidden;
+    }
+    .progress-bar.show {
+      visibility: visible;
+    }
+
+    /* Mobile Ansicht: Bestätigung durch den Gruppenleiter */
+    @media(max-width: 768px) {
+      .zugang-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .checklist li {
+        display: block; /* Zeilen im Fluss anstatt nebeneinander */
+      }
+
+      .checklist {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .card .btn-confirm {
+        width: 100%; /* Buttons sollen die volle Breite nutzen */
+      }
+    }
   </style>
 </head>
 <body>
@@ -351,7 +384,6 @@
         <li><span id="statusGrund"></span> Grundvoraussetzungen</li>
         <li><span id="statusOptional"></span> Optionale Voraussetzungen</li>
         <li><span id="statusReject"></span></li>
-
       </ul>
       <p class="muted">Hinweis: Die Bestätigung kann nur von Gruppenleiter:innen oder Administrator:innen vorgenommen werden.</p>
     </div>
@@ -413,68 +445,18 @@
     const chkOptional = document.getElementById("chkOptional");
     const chkReject = document.getElementById("chkReject");
 
-    // Toast
-    const toast = document.getElementById("toast");
-    function showToast(msg){
-      toast.textContent = msg;
-      toast.classList.add("show");
-      setTimeout(()=>toast.classList.remove("show"), 2600);
-    }
-
-    // Modal wie in Benutzerverwaltung
-    const modal = document.getElementById("modal");
-    const backdrop = document.getElementById("modalBackdrop");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalMessage = document.getElementById("modalMessage");
-    const modalOk = document.getElementById("modalOk");
-    const modalCancel = document.getElementById("modalCancel");
-
-    function openModal({ title="Bestätigen", message="Bist du sicher?", okText="OK", cancelText="Abbrechen" } = {}) {
-      modalTitle.textContent = title;
-      modalMessage.textContent = message;
-      modalOk.innerHTML = `<i class="bi bi-check2"></i> ${okText}`;
-      modalCancel.innerHTML = `<i class="bi bi-x-lg"></i> ${cancelText}`;
-      modal.style.display = "flex";
-      backdrop.style.display = "block";
-      return new Promise(resolve => {
-        const close = (val) => {
-          modal.style.display = "none";
-          backdrop.style.display = "none";
-          resolve(val);
-        };
-        const onEsc = (e) => {
-          if(e.key === "Escape"){
-            document.removeEventListener("keydown", onEsc);
-            close(false);
-          }
-        };
-        document.addEventListener("keydown", onEsc);
-        modalOk.onclick = () => {
-          document.removeEventListener("keydown", onEsc);
-          close(true);
-        };
-        modalCancel.onclick = () => {
-          document.removeEventListener("keydown", onEsc);
-          close(false);
-        };
-        backdrop.onclick = () => {
-          document.removeEventListener("keydown", onEsc);
-          close(false);
-        };
-      });
-    }
-
-    // Prozentfarben & Anzeige
+    // Fortschrittsanzeige: Zahl nur anzeigen, wenn sich der Fortschritt ändert
     function setProgressColor(bar, percent) {
       if (percent === 0) {
         bar.style.backgroundColor = "#e9ecef";
-        bar.textContent = "0";
+        bar.textContent = "";
       } else {
-          if (percent <= 20) bar.style.backgroundColor = "red";
+        bar.style.visibility = "visible";  // Zahl wird sichtbar
+        if (percent <= 20) bar.style.backgroundColor = "red";
         else if (percent <= 40) bar.style.backgroundColor = "orange";
         else if (percent <= 60) bar.style.backgroundColor = "gold";
-        else if (percent <= 80) bar.style.backgroundColor = "var(--hellgruene-progress)"; /* Kräftigeres Hellgrün */
-        else bar.style.backgroundColor = "var(--drk-gruen)"; // 100% dunkelgrün aus deinem Theme
+        else if (percent <= 80) bar.style.backgroundColor = "var(--hellgruene-progress)";
+        else bar.style.backgroundColor = "var(--drk-gruen)";
         bar.textContent = percent + "%";
       }
     }
@@ -501,18 +483,14 @@
         const data = snap.data();
         // Grund
         if (Array.isArray(data.grund)) {
-          grundBoxes.forEach((box,i)=>{
-            box.checked = !!data.grund[i];
-          });
+          grundBoxes.forEach((box,i)=>{ box.checked = !!data.grund[i]; });
         } else {
           grundBoxes.forEach(box => box.checked = false);
         }
         updateProgress(grundBoxes, grundProgress, chkGrund);
         // Optional
         if (Array.isArray(data.optional)) {
-          verlaufBoxes.forEach((box,i)=>{
-            box.checked = !!data.optional[i];
-          });
+          verlaufBoxes.forEach((box,i)=>{ box.checked = !!data.optional[i]; });
         } else {
           verlaufBoxes.forEach(box => box.checked = false);
         }
@@ -555,32 +533,33 @@
     /***********************
      * Statusanzeige (für Helfer/Anwärter) — farbig
      ***********************/
-function updateStatusDisplay(status) {
-  // Grundvoraussetzungen Status
-  const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
-  document.getElementById("statusGrund").innerHTML = grundErfüllt
-    ? `<div class="status-message"><i class="bi bi-check-circle status-ok"></i></div>` // Nur Häkchen
-    : `<div class="status-message"><i class="bi bi-x-circle status-bad"></i></div>`; // Nur X
 
-  // Optionale Voraussetzungen Status
-  const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
-  document.getElementById("statusOptional").innerHTML = optionalErfüllt
-    ? `<div class="status-message"><i class="bi bi-check-circle status-ok"></i></div>` // Nur Häkchen
-    : `<div class="status-message"><i class="bi bi-x-circle status-bad"></i></div>`; // Nur X
+    function updateStatusDisplay(status) {
+      // Grundvoraussetzungen Status
+      const grundErfüllt = Array.from(grundBoxes).every(b => b.checked);
+      document.getElementById("statusGrund").innerHTML = grundErfüllt
+        ? `<div class="status-message"><i class="bi bi-check-circle status-ok"></i></div>` // Nur Häkchen
+        : `<div class="status-message"><i class="bi bi-x-circle status-bad"></i></div>`; // Nur X
 
-  // Freigabe/Ablehnung Status (dritte Zeile)
-  let statusText = '';
-  if (status === "freigeben") {
-    statusText = `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> Du wurdest für den aktiven Dienst <span class="text-green">freigegeben.</span> Herzlichen Glückwunsch!</div>`;
-  } else if (status === "ablehnen") {
-    statusText = `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt.</span> Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</div>`;
-  } else {
-    statusText = `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> Freigabestatus: noch offen</div>`; // Wenn noch offen
-  }
+      // Optionale Voraussetzungen Status
+      const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked);
+      document.getElementById("statusOptional").innerHTML = optionalErfüllt
+        ? `<div class="status-message"><i class="bi bi-check-circle status-ok"></i></div>` // Nur Häkchen
+        : `<div class="status-message"><i class="bi bi-x-circle status-bad"></i></div>`; // Nur X
 
-  // Den Status in die `statusReject`-Anzeige einfügen
-  document.getElementById("statusReject").innerHTML = statusText;
-}
+      // Freigabe/Ablehnung Status (dritte Zeile)
+      let statusText = '';
+      if (status === "freigeben") {
+        statusText = `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> Du wurdest für den aktiven Dienst <span class="text-green">freigegeben.</span> Herzlichen Glückwunsch!</div>`;
+      } else if (status === "ablehnen") {
+        statusText = `<div class="status-message"><i class="bi bi-x-circle status-bad"></i> Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt.</span> Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</div>`;
+      } else {
+        statusText = `<div class="status-message"><i class="bi bi-hourglass status-pending"></i> Freigabestatus: noch offen</div>`; // Wenn noch offen
+      }
+
+      // Den Status in die `statusReject`-Anzeige einfügen
+      document.getElementById("statusReject").innerHTML = statusText;
+    }
 
     /***********************
      * Initiales Verhalten je nach Rolle
@@ -678,7 +657,7 @@ function updateStatusDisplay(status) {
       let title, message, okText = "Bestätigen";
       if (action === "freigeben") {
         title = "Mitglied freigeben";
-        message = "Soll das Mitglied wirklich für den aktiven Dienst freigegeben werden?";
+        message = "Soll das Mitglied wirklich für den aktiven Dienst freigeben werden?";
       } else if (action === "mail") {
         title = "Bestätigung per Mail senden";
         message = "Soll eine Bestätigung per Mail gesendet werden?";
