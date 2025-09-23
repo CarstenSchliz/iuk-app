@@ -403,7 +403,7 @@
   </div>
 
   <script type="module">
-  /*********** Firebase ***********/
+/*********** Firebase ***********/
 import { auth, updateUserProfile, observeAuthState, getUserRoles, translateFirebaseError } from "./js/firebase.js";
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -481,16 +481,16 @@ observeAuthState(async (user) => {
 
 /*********** Speichern des Themas in Firestore ***********/
 async function setUserThemePreference(uid, theme) {
-  const userDocRef = doc(db, "userSettings", uid);  // Speichern des Themas im Benutzer-Dokument
-  await setDoc(userDocRef, { theme: theme });  // Speichert das Thema für den Benutzer
+  const userDocRef = doc(db, "users", uid);  // Speichern des Themas im Benutzer-Dokument
+  await setDoc(userDocRef, { themePreference: theme }, { merge: true });  // Merkt sich das Theme im Benutzer-Dokument
 }
 
 /*********** Thema aus Firestore abrufen ***********/
 async function getUserThemePreference(uid) {
-  const docRef = doc(db, "userSettings", uid);
+  const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
-    return docSnap.data().theme || "light";  // Standardwert: hell, falls nichts gespeichert ist
+    return docSnap.data().themePreference || "light";  // Standardwert auf "light" setzen
   } else {
     console.log("Kein Dokument für dieses Benutzerprofil gefunden.");
     return "light"; // Standardwert
@@ -535,25 +535,15 @@ function setTheme(mode){
     document.body.classList.add("dark");
     themeLabel.textContent = "Dunkel";
     themeSwitch.setAttribute("aria-checked", "true");
-    localStorage.setItem("theme", "dark");
     moonIcon.classList.add("burst");
     setTimeout(() => moonIcon.classList.remove("burst"), 300);
   } else {
     document.body.classList.remove("dark");
     themeLabel.textContent = "Hell";
     themeSwitch.setAttribute("aria-checked", "false");
-    localStorage.setItem("theme", "light");
     sunIcon.classList.add("burst");
     setTimeout(() => sunIcon.classList.remove("burst"), 600);
   }
-}
-
-const storedTheme = localStorage.getItem("theme");
-if (storedTheme) {
-  setTheme(storedTheme);
-} else {
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  setTheme(prefersDark ? "dark" : "light");
 }
 
 themeSwitch.addEventListener("click", () => {
@@ -663,6 +653,3 @@ document.addEventListener("click", (e) => {
     btn.setAttribute("aria-label","Passwort anzeigen");
   }
 });
-  </script>
-</body>
-</html>
