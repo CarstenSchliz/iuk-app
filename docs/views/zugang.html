@@ -278,50 +278,25 @@
       visibility: visible;
     }
 
-   /* Mobile Ansicht: Bestätigung durch den Gruppenleiter */
-@media(max-width: 768px) {
-  /* Anpassung des Layouts für die mobile Ansicht */
+ @media(max-width: 768px) {
   .zugang-grid {
-    grid-template-columns: 1fr; /* Eine Spalte für die mobile Ansicht */
+    grid-template-columns: 1fr;
   }
 
-  /* Die Checkboxen in der Bestätigungsliste sollen untereinander angeordnet werden */
   .checklist li {
     display: block; /* Zeilen im Fluss anstatt nebeneinander */
   }
 
-  /* Die Liste selbst wird auch im Fluss dargestellt */
   .checklist {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
 
-  /* Die Buttons sollen in der mobilen Ansicht die volle Breite einnehmen */
   .card .btn-confirm {
     width: 100%; /* Buttons sollen die volle Breite nutzen */
-    margin-top: 0.5rem;
   }
 
-  /* Anpassung für die Admin/GL Bestätigung */
-  #confirmAdmin {
-    display: block; /* Sicherstellen, dass dieser Bereich angezeigt wird */
-  }
-
-  /* Sicherstellen, dass die Buttons für Freigabe und Ablehnung untereinander angezeigt werden */
-  #grundActions, #optionalActions, #rejectActions {
-    display: block; /* Die Aktionen (z.B. Buttons) werden in einer Spalte angezeigt */
-    margin-top: 1rem; /* Etwas Abstand zwischen den Actions */
-  }
-
-  /* Die Statusanzeigen (Grundvoraussetzungen, optionale Voraussetzungen, Ablehnung) werden auch untereinander angezeigt */
-  #statusList {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  /* Weitere Einstellungen für die mobile Ansicht */
   .card {
     padding: 1rem; /* Etwas weniger Padding für mobile Geräte */
   }
@@ -330,29 +305,24 @@
     height: 20px; /* Etwas kleinere Fortschrittsanzeige */
   }
 
-  /* Sicherstellen, dass die Fortschrittsbalken im Fluss bleiben und nicht zu breit werden */
   .progress {
     margin-bottom: 1rem; /* Abstand zwischen Fortschrittsbalken und Liste */
   }
 
-  /* Buttons im Admin/GL-Bereich sollen sich gut in der mobilen Ansicht anpassen */
   #selectUserCard {
     display: block;
     margin-bottom: 1rem;
   }
 
-  /* Verbesserung für die Auswahl der Nutzer */
   select {
     width: 100%; /* Dropdown-Menü soll die volle Breite nutzen */
   }
 
-  /* Sicherstellen, dass das Toast gut sichtbar bleibt */
   #toast {
     bottom: 50px; /* Toast bleibt gut sichtbar */
     font-size: 1rem;
   }
 
-  /* Das Modal soll sich auch gut auf kleinen Bildschirmen darstellen */
   .modal-card {
     width: 90vw; /* Modal wird in der Breite auf 90% des Viewports gesetzt */
     padding: 1rem; /* Etwas weniger Padding */
