@@ -445,9 +445,9 @@ const moonIcon = themeSwitch.querySelector(".moon");
 
 /*********** Utils ***********/
 const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
-const roleRanking = ["admin","gruppenleiter","helfer","anwärter"];
-const highestRole = (roles=[]) => {
-  const r = roles.map(x => (x||"").toLowerCase());
+const roleRanking = ["admin", "gruppenleiter", "helfer", "anwärter"];
+const highestRole = (roles = []) => {
+  const r = roles.map(x => (x || "").toLowerCase());
   const h = roleRanking.find(k => r.includes(k));
   return h ? cap(h) : "";
 };
@@ -482,21 +482,31 @@ observeAuthState(async (user) => {
 /*********** Speichern des Themas in Firestore ***********/
 async function setUserThemePreference(uid, theme) {
   const userDocRef = doc(db, "users", uid);  // Wir speichern das Theme für die UID
-  await setDoc(userDocRef, { themePreference: theme }, { merge: true });  // Merkt sich das Theme im Benutzer-Dokument
+  try {
+    await setDoc(userDocRef, { themePreference: theme }, { merge: true });  // Merkt sich das Theme im Benutzer-Dokument
+    console.log(`Theme für UID ${uid} gespeichert: ${theme}`);
+  } catch (error) {
+    console.error("Fehler beim Speichern des Themas:", error);
+  }
 }
 
 /*********** Thema aus Firestore abrufen ***********/
 async function getUserThemePreference(uid) {
   const docRef = doc(db, "users", uid);  // Hole das Dokument für die UID des Benutzers
-  const docSnap = await getDoc(docRef);
-  
-  if (docSnap.exists()) {
-    const theme = docSnap.data().themePreference;  // Hole das Theme des Benutzers
-    console.log(`Thema für UID ${uid}: ${theme}`);  // Logge das Thema zur Überprüfung
-    return theme || "light";  // Wenn kein Thema gespeichert ist, verwende "light" als Standard
-  } else {
-    console.log(`Kein Dokument für UID ${uid} gefunden.`);
-    return "light";  // Standardwert
+  try {
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const theme = docSnap.data().themePreference;
+      console.log(`Thema für UID ${uid} abgerufen: ${theme}`);  // Logge das Thema zur Überprüfung
+      return theme || "light";  // Standardwert auf "light" setzen
+    } else {
+      console.log(`Kein Dokument für UID ${uid} gefunden.`);
+      return "light";  // Standardwert
+    }
+  } catch (error) {
+    console.error("Fehler beim Abrufen des Themas:", error);
+    return "light";  // Im Fehlerfall Standardwert zurückgeben
   }
 }
 
@@ -527,7 +537,7 @@ saveBtn.addEventListener("click", async () => {
 backBtn.addEventListener("click", () => { window.location.href = "app.html"; });
 
 /*********** Theme-Toggle ***********/
-function setTheme(mode){
+function setTheme(mode) {
   const user = auth.currentUser;
   if (user) {
     // Speichern des Themas in Firestore für die UID
@@ -553,8 +563,11 @@ function setTheme(mode){
 document.addEventListener("DOMContentLoaded", async () => {
   const user = auth.currentUser;
   if (user) {
+    console.log("Benutzer eingeloggt:", user.uid);
     const savedTheme = await getUserThemePreference(user.uid);  // Hole das gespeicherte Theme für die UID
     setTheme(savedTheme);  // Wende das gespeicherte Theme sofort an
+  } else {
+    console.log("Kein Benutzer eingeloggt.");
   }
 });
 
@@ -568,7 +581,7 @@ themeSwitch.addEventListener("keydown", (e) => {
 themeSwitch.setAttribute("tabindex", "0");
 
 /*********** Passwort ändern ***********/
-function showPwHints(show){
+function showPwHints(show) {
   passRules.style.display = show ? "block" : "none";
   pwMeter.style.display = show ? "block" : "none";
   pwStrengthText.style.display = show ? "block" : "none";
@@ -581,24 +594,24 @@ function updateRules(val) {
     uppercase: /[A-Z]/.test(val),
     special: /[^A-Za-z0-9]/.test(val)
   };
-  document.getElementById("rule-length").textContent    = (checks.length   ? "✅" : "❌") + " Mindestens 8 Zeichen";
-  document.getElementById("rule-number").textContent    = (checks.number   ? "✅" : "❌") + " Mindestens 1 Zahl";
-  document.getElementById("rule-uppercase").textContent = (checks.uppercase? "✅" : "❌") + " Mindestens 1 Großbuchstabe";
-  document.getElementById("rule-special").textContent   = (checks.special  ? "✅" : "❌") + " Mindestens 1 Sonderzeichen";
+  document.getElementById("rule-length").textContent = (checks.length ? "✅" : "❌") + " Mindestens 8 Zeichen";
+  document.getElementById("rule-number").textContent = (checks.number ? "✅" : "❌") + " Mindestens 1 Zahl";
+  document.getElementById("rule-uppercase").textContent = (checks.uppercase ? "✅" : "❌") + " Mindestens 1 Großbuchstabe";
+  document.getElementById("rule-special").textContent = (checks.special ? "✅" : "❌") + " Mindestens 1 Sonderzeichen";
 
   const score = Object.values(checks).filter(Boolean).length;
-  const pct = (score/4)*100;
+  const pct = (score / 4) * 100;
   pwBar.style.width = pct + "%";
 
   const colors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#16a34a"];
-  const texts  = ["Sehr schwach", "Schwach", "Mittel", "Stark", "Sehr stark"];
+  const texts = ["Sehr schwach", "Schwach", "Mittel", "Stark", "Sehr stark"];
   pwBar.style.background = colors[score];
   pwStrengthText.textContent = texts[score];
   pwStrengthText.style.color = colors[score];
 }
 
 newPwd.addEventListener("focus", () => showPwHints(true));
-newPwd.addEventListener("blur",  () => { if(!newPwd.value) showPwHints(false); });
+newPwd.addEventListener("blur", () => { if (!newPwd.value) showPwHints(false); });
 newPwd.addEventListener("input", () => { showPwHints(true); updateRules(newPwd.value); });
 
 function openPwd() {
@@ -619,16 +632,16 @@ cancelPwd.addEventListener("click", closePwd);
 
 savePwdBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
-  if (!user) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Kein Benutzer eingeloggt."; return; }
+  if (!user) { pwdMsg.style.color = "red"; pwdMsg.textContent = "❌ Kein Benutzer eingeloggt."; return; }
 
   const cur = currentPwd.value.trim();
   const neu = newPwd.value.trim();
   const rep = repeatPwd.value.trim();
 
-  if (!cur) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Bitte aktuelles Passwort eingeben."; return; }
-  if (!strongPw(neu)) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Passwort erfüllt nicht die Anforderungen."; return; }
-  if (neu !== rep) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Die neuen Passwörter stimmen nicht überein."; return; }
-  if (cur === neu) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Neues Passwort darf nicht dem alten entsprechen."; return; }
+  if (!cur) { pwdMsg.style.color = "red"; pwdMsg.textContent = "❌ Bitte aktuelles Passwort eingeben."; return; }
+  if (!strongPw(neu)) { pwdMsg.style.color = "red"; pwdMsg.textContent = "❌ Passwort erfüllt nicht die Anforderungen."; return; }
+  if (neu !== rep) { pwdMsg.style.color = "red"; pwdMsg.textContent = "❌ Die neuen Passwörter stimmen nicht überein."; return; }
+  if (cur === neu) { pwdMsg.style.color = "red"; pwdMsg.textContent = "❌ Neues Passwort darf nicht dem alten entsprechen."; return; }
 
   try {
     savePwdBtn.disabled = true;
@@ -636,12 +649,12 @@ savePwdBtn.addEventListener("click", async () => {
     const cred = EmailAuthProvider.credential(user.email, cur);
     await reauthenticateWithCredential(user, cred);
     await updatePassword(user, neu);
-    pwdMsg.style.color="green";
-    pwdMsg.textContent="✅ Passwort erfolgreich geändert.";
+    pwdMsg.style.color = "green";
+    pwdMsg.textContent = "✅ Passwort erfolgreich geändert.";
     setTimeout(closePwd, 900);
   } catch (err) {
     console.error(err);
-    pwdMsg.style.color="red";
+    pwdMsg.style.color = "red";
     pwdMsg.textContent = "❌ " + (err?.code ? translateFirebaseError(err.code) : err?.message || "Unbekannter Fehler");
   } finally {
     savePwdBtn.disabled = false;
@@ -651,21 +664,22 @@ savePwdBtn.addEventListener("click", async () => {
 
 document.addEventListener("click", (e) => {
   const btn = e.target.closest(".toggle-eye");
-  if(!btn) return;
+  if (!btn) return;
   const targetId = btn.getAttribute("data-target");
   const input = document.getElementById(targetId);
-  if(!input) return;
+  if (!input) return;
   const icon = btn.querySelector("i");
   if (input.type === "password") {
     input.type = "text";
     icon.classList.remove("bi-eye"); icon.classList.add("bi-eye-slash");
-    btn.setAttribute("aria-label","Passwort verbergen");
+    btn.setAttribute("aria-label", "Passwort verbergen");
   } else {
     input.type = "password";
     icon.classList.remove("bi-eye-slash"); icon.classList.add("bi-eye");
-    btn.setAttribute("aria-label","Passwort anzeigen");
+    btn.setAttribute("aria-label", "Passwort anzeigen");
   }
 });
+
   </script>
 </body>
 </html>
