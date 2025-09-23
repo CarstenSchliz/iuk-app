@@ -382,73 +382,6 @@
       padding: 0 2px;
       border-radius: 3px;
     }
-    body.dark .user-page .card, body.dark .user-page .user-table tr {
-      background:#1e1e1e;
-      color:#f5f5f5;
-      border-color:#374151;
-    }
-    body.dark .user-page .user-table th {
-      background:#0f172a;
-      color:#e5e7eb;
-    }
-    body.dark .user-page .user-table td {
-      border-color:#374151;
-    }
-    body.dark .user-page .user-table td[data-label]:not([data-label=""])::before {
-      color:#9ca3af;
-    }
-    body.dark .user-page .kebab-menu {
-      background:#2a2a2a;
-      border-color:#444;
-    }
-    body.dark .user-page .kebab-menu button:hover {
-      background:#353535;
-    }
-    body.dark .user-page .form-group.floating label {
-      background:#1e1e1e;
-    }
-    body.dark .user-page .role-check {
-      border-color:#374151;
-      background:#1e1e1e;
-    }
-    body.dark .user-page .modal .modal-card {
-      background:#1e1e1e;
-      color:#f5f5f5;
-      border-color:#374151;
-    }
-    body.dark .user-page .modal h4 {
-      color:#f3f4f6;
-    }
-    body.dark .user-page .modal p {
-      color:#d1d5db;
-    }
-
-    /* ========================= Grid-Area-Zuordnung (Desktop) ========================= */
-    .user-page .settings-grid > .card:first-child {
-      grid-area:list;
-    }
-    #editPanelOuter {
-      grid-area:editor;
-    }
-    .user-page .settings-grid > :nth-child(3) {
-      grid-area:create;
-    }
-
-    @media (max-width:720px) {
-      .user-page #editPanel .editor-row {
-        grid-template-columns: 1fr !important;
-        gap: 0.8rem;
-      }
-      .user-page .roles-grid {
-        flex-direction: column;
-        gap: 0.6rem;
-        align-items: flex-start;
-      }
-      .user-page .roles-grid .role-check {
-        align-self: flex-start;
-        width: auto;
-      }
-    }
   </style>
 </head>
 <body>
@@ -478,11 +411,13 @@
         </table>
         <div id="userMsg" class="form-msg"></div>
       </div>
-      <!-- Editor für Nutzer bearbeiten -->
+
+      <!-- Nutzer bearbeiten Bereich -->
       <div id="editPanelOuter" class="card" style="display:none;">
         <h3><i class="bi bi-person-edit"></i> Nutzer bearbeiten</h3>
         <div id="editPanel"></div>
       </div>
+
       <!-- Neuer Nutzer -->
       <div>
         <div class="card">
