@@ -454,31 +454,6 @@ const highestRole = (roles = []) => {
 const strongPw = (p) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(p);
 function showProfileMsg(text, color) { profileMsg.textContent = text; profileMsg.style.color = color; }
 
-/*********** Daten laden ***********/
-observeAuthState(async (user) => {
-  if (!user) return;
-
-  emailField.value = user.email || "";
-  nameField.value = user.displayName || "";
-  uidField.value = user.uid || "";
-
-  try {
-    const roles = await getUserRoles(user.uid);
-    rolesField.value = (roles || []).map(cap).join(", ");
-
-    if (sidebarName) sidebarName.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "");
-    // Die folgende Zeile entfernt die Anzeige der Rolle im Sidebar-Menü
-    // if (sidebarRole) sidebarRole.textContent = highestRole(roles);
-  } catch (e) {
-    rolesField.value = "—";
-    console.warn("Rollen konnten nicht geladen werden:", e);
-  }
-
-  // Beim Laden des Benutzers, das gespeicherte Theme aus Firestore abrufen und anwenden
-  const savedTheme = await getUserThemePreference(user.uid);
-  setTheme(savedTheme);
-});
-
 /*********** Speichern des Themas in Firestore ***********/
 async function setUserThemePreference(uid, theme) {
   const userDocRef = doc(db, "users", uid);  // Wir speichern das Theme für die UID
@@ -510,32 +485,6 @@ async function getUserThemePreference(uid) {
   }
 }
 
-/*********** Name speichern ***********/
-saveBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  const newName = nameField.value.trim();
-
-  if (!user) { showProfileMsg("❌ Kein Benutzer eingeloggt.", "red"); return; }
-  if (!newName) { showProfileMsg("❌ Bitte Namen eingeben.", "red"); return; }
-
-  try {
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = "⏳ Speichern...";
-    await updateUserProfile(user, { displayName: newName });
-
-    if (sidebarName) sidebarName.textContent = newName;
-    showProfileMsg("✅ Name geändert!", "green");
-  } catch (err) {
-    showProfileMsg("❌ " + (err?.code ? translateFirebaseError(err.code) : err.message), "red");
-  } finally {
-    saveBtn.disabled = false;
-    saveBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
-  }
-});
-
-/*********** Zurück ***********/
-backBtn.addEventListener("click", () => { window.location.href = "app.html"; });
-
 /*********** Theme-Toggle ***********/
 function setTheme(mode) {
   const user = auth.currentUser;
@@ -559,7 +508,7 @@ function setTheme(mode) {
   }
 }
 
-// Funktion zum Anwenden des gespeicherten Themas nach dem Laden der Seite
+/*********** Beim Laden der Seite das gespeicherte Theme sofort anwenden ***********/
 document.addEventListener("DOMContentLoaded", async () => {
   const user = auth.currentUser;
   if (user) {
@@ -579,6 +528,31 @@ themeSwitch.addEventListener("keydown", (e) => {
   if (e.key === " " || e.key === "Enter") { e.preventDefault(); setTheme(document.body.classList.contains("dark") ? "light" : "dark"); }
 });
 themeSwitch.setAttribute("tabindex", "0");
+
+/*********** Daten laden ***********/
+observeAuthState(async (user) => {
+  if (!user) return;
+
+  emailField.value = user.email || "";
+  nameField.value = user.displayName || "";
+  uidField.value = user.uid || "";
+
+  try {
+    const roles = await getUserRoles(user.uid);
+    rolesField.value = (roles || []).map(cap).join(", ");
+
+    if (sidebarName) sidebarName.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "");
+    // Die folgende Zeile entfernt die Anzeige der Rolle im Sidebar-Menü
+    // if (sidebarRole) sidebarRole.textContent = highestRole(roles);
+  } catch (e) {
+    rolesField.value = "—";
+    console.warn("Rollen konnten nicht geladen werden:", e);
+  }
+
+  // Beim Laden des Benutzers, das gespeicherte Theme aus Firestore abrufen und anwenden
+  const savedTheme = await getUserThemePreference(user.uid);
+  setTheme(savedTheme);
+});
 
 /*********** Passwort ändern ***********/
 function showPwHints(show) {
@@ -679,7 +653,6 @@ document.addEventListener("click", (e) => {
     btn.setAttribute("aria-label", "Passwort anzeigen");
   }
 });
-
   </script>
 </body>
 </html>
