@@ -135,20 +135,12 @@
     box-sizing: border-box;
     font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
   }
-  
-  /* >>> Labels ohne Hintergrund im Darkmode und Hellmodus >>> */
   .form-group.floating label {
     position: absolute;
     top: 50%; left: .75rem; transform: translateY(-50%);
     color: #b0b6bf; font-size: .95rem; transition: all .15s;
-    pointer-events: none; background: transparent; padding: 0 .25rem;
+    pointer-events: none; background: var(--card-bg); padding: 0 .25rem;
   }
-
-  body.dark .form-group.floating label {
-    background: transparent !important;  /* Hintergrund im Darkmode entfernen */
-    color: var(--text); /* Textfarbe im Darkmode */
-  }
-
   .form-group.floating input:focus + label,
   .form-group.floating input:not(:placeholder-shown) + label,
   .form-group.floating textarea:focus + label,
@@ -295,7 +287,7 @@
     margin-bottom: 1.5rem;
   }
 </style>
-
+  
 </head>
 
 <body>
