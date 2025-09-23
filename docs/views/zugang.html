@@ -278,31 +278,34 @@
       visibility: visible;
     }
 
- @media(max-width: 768px) {
-  .zugang-grid {
-    grid-template-columns: 1fr;
-  }
-
+@media(max-width: 768px) {
   .checklist li {
-    display: block; /* Zeilen im Fluss anstatt nebeneinander */
+    display: flex;
+    flex-direction: row; /* Checkbox und Text in einer horizontalen Reihe */
+    align-items: flex-start; /* Text startet direkt unter der Checkbox oder dem Icon */
+    gap: 0.5rem; /* Platz zwischen Checkbox/Icon und Text */
   }
 
-  .checklist {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  .checklist li span {
+    display: inline-block;
+    flex-grow: 1; /* Text in der zweiten Zeile wird nach rechts verschoben, bündig zur ersten Zeile */
+    margin-top: 0.2rem; /* Minimaler Abstand, damit Text unterhalb der Checkbox erscheint */
+  }
+
+  .checklist li input[type="checkbox"] {
+    margin-top: 0.2rem; /* Etwas Abstand zwischen Checkbox und Text */
   }
 
   .card .btn-confirm {
-    width: 100%; /* Buttons sollen die volle Breite nutzen */
+    width: 100%; /* Buttons nutzen die volle Breite */
   }
 
   .card {
-    padding: 1rem; /* Etwas weniger Padding für mobile Geräte */
+    padding: 1rem; /* Weniger Padding für mobile Geräte */
   }
 
   .progress-bar {
-    height: 20px; /* Etwas kleinere Fortschrittsanzeige */
+    height: 20px; /* Kleinere Fortschrittsanzeige */
   }
 
   .progress {
@@ -315,7 +318,7 @@
   }
 
   select {
-    width: 100%; /* Dropdown-Menü soll die volle Breite nutzen */
+    width: 100%; /* Dropdown-Menü nutzt die volle Breite */
   }
 
   #toast {
@@ -324,14 +327,15 @@
   }
 
   .modal-card {
-    width: 90vw; /* Modal wird in der Breite auf 90% des Viewports gesetzt */
-    padding: 1rem; /* Etwas weniger Padding */
+    width: 90vw; /* Modal nutzt 90% der Breite des Viewports */
+    padding: 1rem; /* Weniger Padding im Modal */
   }
 
   .modal h4 {
     font-size: 1rem; /* Kleinere Überschrift im Modal */
   }
 }
+
 
   </style>
 </head>
