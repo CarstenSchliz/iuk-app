@@ -481,19 +481,22 @@ observeAuthState(async (user) => {
 
 /*********** Speichern des Themas in Firestore ***********/
 async function setUserThemePreference(uid, theme) {
-  const userDocRef = doc(db, "users", uid);  // Speichern des Themas im Benutzer-Dokument
+  const userDocRef = doc(db, "users", uid);  // Wir speichern das Theme für die UID
   await setDoc(userDocRef, { themePreference: theme }, { merge: true });  // Merkt sich das Theme im Benutzer-Dokument
 }
 
 /*********** Thema aus Firestore abrufen ***********/
 async function getUserThemePreference(uid) {
-  const docRef = doc(db, "users", uid);
+  const docRef = doc(db, "users", uid);  // Hole das Dokument für die UID des Benutzers
   const docSnap = await getDoc(docRef);
+  
   if (docSnap.exists()) {
-    return docSnap.data().themePreference || "light";  // Standardwert auf "light" setzen
+    const theme = docSnap.data().themePreference;  // Hole das Theme des Benutzers
+    console.log(`Thema für UID ${uid}: ${theme}`);  // Logge das Thema zur Überprüfung
+    return theme || "light";  // Wenn kein Thema gespeichert ist, verwende "light" als Standard
   } else {
-    console.log("Kein Dokument für dieses Benutzerprofil gefunden.");
-    return "light"; // Standardwert
+    console.log(`Kein Dokument für UID ${uid} gefunden.`);
+    return "light";  // Standardwert
   }
 }
 
@@ -527,7 +530,7 @@ backBtn.addEventListener("click", () => { window.location.href = "app.html"; });
 function setTheme(mode){
   const user = auth.currentUser;
   if (user) {
-    // Speichern des Themas in Firestore
+    // Speichern des Themas in Firestore für die UID
     setUserThemePreference(user.uid, mode);
   }
 
@@ -546,15 +549,16 @@ function setTheme(mode){
   }
 }
 
-// Funktion zum Anwenden des Themas sofort beim Laden der Seite
+// Funktion zum Anwenden des gespeicherten Themas nach dem Laden der Seite
 document.addEventListener("DOMContentLoaded", async () => {
   const user = auth.currentUser;
   if (user) {
-    const savedTheme = await getUserThemePreference(user.uid);
-    setTheme(savedTheme);  // Wende das gespeicherte Thema sofort an
+    const savedTheme = await getUserThemePreference(user.uid);  // Hole das gespeicherte Theme für die UID
+    setTheme(savedTheme);  // Wende das gespeicherte Theme sofort an
   }
 });
 
+// Event-Listener für den Theme-Switch
 themeSwitch.addEventListener("click", () => {
   setTheme(document.body.classList.contains("dark") ? "light" : "dark");
 });
