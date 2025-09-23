@@ -546,6 +546,15 @@ function setTheme(mode){
   }
 }
 
+// Funktion zum Anwenden des Themas sofort beim Laden der Seite
+document.addEventListener("DOMContentLoaded", async () => {
+  const user = auth.currentUser;
+  if (user) {
+    const savedTheme = await getUserThemePreference(user.uid);
+    setTheme(savedTheme);  // Wende das gespeicherte Thema sofort an
+  }
+});
+
 themeSwitch.addEventListener("click", () => {
   setTheme(document.body.classList.contains("dark") ? "light" : "dark");
 });
@@ -653,3 +662,6 @@ document.addEventListener("click", (e) => {
     btn.setAttribute("aria-label","Passwort anzeigen");
   }
 });
+  </script>
+</body>
+</html>
