@@ -404,232 +404,265 @@
 
   <script type="module">
   /*********** Firebase ***********/
-  import { auth, updateUserProfile, observeAuthState, getUserRoles, translateFirebaseError } from "./js/firebase.js";
-  import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { auth, updateUserProfile, observeAuthState, getUserRoles, translateFirebaseError } from "./js/firebase.js";
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  /*********** DOM ***********/
-  const nameField = document.getElementById("name");
-  const emailField = document.getElementById("email");
-  const rolesField = document.getElementById("roles");
-  const uidField = document.getElementById("uid");
-  const saveBtn = document.getElementById("saveBtn");
-  const backBtn = document.getElementById("backBtn");
-  const profileMsg = document.getElementById("profileMsg");
+const db = getFirestore();
 
-  const themeSwitch = document.getElementById("themeToggle");
-  const themeLabel = document.getElementById("themeLabel");
+/*********** DOM ***********/
+const nameField = document.getElementById("name");
+const emailField = document.getElementById("email");
+const rolesField = document.getElementById("roles");
+const uidField = document.getElementById("uid");
+const saveBtn = document.getElementById("saveBtn");
+const backBtn = document.getElementById("backBtn");
+const profileMsg = document.getElementById("profileMsg");
 
-  const changePasswordLink = document.getElementById("changePassword");
-  const pwdModal = document.getElementById("pwdModal");
-  const currentPwd = document.getElementById("currentPwd");
-  const newPwd = document.getElementById("newPwd");
-  const repeatPwd = document.getElementById("repeatPwd");
-  const savePwdBtn = document.getElementById("savePwd");
-  const cancelPwd = document.getElementById("cancelPwd");
-  const pwdMsg = document.getElementById("pwdMsg");
+const themeSwitch = document.getElementById("themeToggle");
+const themeLabel = document.getElementById("themeLabel");
 
-  // Sidebar (falls vorhanden)
-  const sidebarName = document.getElementById("userName");
-  const sidebarRole = document.getElementById("userRole");
+const changePasswordLink = document.getElementById("changePassword");
+const pwdModal = document.getElementById("pwdModal");
+const currentPwd = document.getElementById("currentPwd");
+const newPwd = document.getElementById("newPwd");
+const repeatPwd = document.getElementById("repeatPwd");
+const savePwdBtn = document.getElementById("savePwd");
+const cancelPwd = document.getElementById("cancelPwd");
+const pwdMsg = document.getElementById("pwdMsg");
 
-  // Passwort-UI
-  const passRules = document.getElementById("pass-rules");
-  const pwMeter = document.getElementById("pwMeter");
-  const pwBar = document.getElementById("pwBar");
-  const pwStrengthText = document.getElementById("pwStrengthText");
-  const sunIcon = themeSwitch.querySelector(".sun");
-  const moonIcon = themeSwitch.querySelector(".moon");
+// Sidebar (falls vorhanden)
+const sidebarName = document.getElementById("userName");
+const sidebarRole = document.getElementById("userRole");
 
-  /*********** Utils ***********/
-  const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
-  const roleRanking = ["admin","gruppenleiter","helfer","anwärter"];
-  const highestRole = (roles=[]) => {
-    const r = roles.map(x => (x||"").toLowerCase());
-    const h = roleRanking.find(k => r.includes(k));
-    return h ? cap(h) : "";
-  };
-  const strongPw = (p) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(p);
-  function showProfileMsg(text, color) { profileMsg.textContent = text; profileMsg.style.color = color; }
+// Passwort-UI
+const passRules = document.getElementById("pass-rules");
+const pwMeter = document.getElementById("pwMeter");
+const pwBar = document.getElementById("pwBar");
+const pwStrengthText = document.getElementById("pwStrengthText");
+const sunIcon = themeSwitch.querySelector(".sun");
+const moonIcon = themeSwitch.querySelector(".moon");
 
-  /*********** Daten laden ***********/
-  observeAuthState(async (user) => {
-    if (!user) return;
+/*********** Utils ***********/
+const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+const roleRanking = ["admin","gruppenleiter","helfer","anwärter"];
+const highestRole = (roles=[]) => {
+  const r = roles.map(x => (x||"").toLowerCase());
+  const h = roleRanking.find(k => r.includes(k));
+  return h ? cap(h) : "";
+};
+const strongPw = (p) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(p);
+function showProfileMsg(text, color) { profileMsg.textContent = text; profileMsg.style.color = color; }
 
-    emailField.value = user.email || "";
-    nameField.value = user.displayName || "";
-    uidField.value = user.uid || "";
+/*********** Daten laden ***********/
+observeAuthState(async (user) => {
+  if (!user) return;
 
-    try {
-      const roles = await getUserRoles(user.uid);
-      rolesField.value = (roles || []).map(cap).join(", ");
+  emailField.value = user.email || "";
+  nameField.value = user.displayName || "";
+  uidField.value = user.uid || "";
 
-      if (sidebarName) sidebarName.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "");
-    } catch (e) {
-      rolesField.value = "—";
-      console.warn("Rollen konnten nicht geladen werden:", e);
-    }
-  });
+  try {
+    const roles = await getUserRoles(user.uid);
+    rolesField.value = (roles || []).map(cap).join(", ");
 
-  /*********** Name speichern ***********/
-  saveBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    const newName = nameField.value.trim();
-
-    if (!user) { showProfileMsg("❌ Kein Benutzer eingeloggt.", "red"); return; }
-    if (!newName) { showProfileMsg("❌ Bitte Namen eingeben.", "red"); return; }
-
-    try {
-      saveBtn.disabled = true;
-      saveBtn.innerHTML = "⏳ Speichern...";
-      await updateUserProfile(user, { displayName: newName });
-
-      if (sidebarName) sidebarName.textContent = newName;
-      showProfileMsg("✅ Name geändert!", "green");
-    } catch (err) {
-      showProfileMsg("❌ " + (err?.code ? translateFirebaseError(err.code) : err.message), "red");
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
-    }
-  });
-
-  /*********** Zurück ***********/
-  backBtn.addEventListener("click", () => { window.location.href = "app.html"; });
-
-  /*********** Theme-Toggle ***********/
-  function setTheme(mode){
-    if(mode === "dark"){
-      document.body.classList.add("dark");
-      themeLabel.textContent="Dunkel";
-      themeSwitch.setAttribute("aria-checked","true");
-      localStorage.setItem("theme","dark");
-      moonIcon.classList.add("burst");
-      setTimeout(()=>moonIcon.classList.remove("burst"),300);
-    } else {
-      document.body.classList.remove("dark");
-      themeLabel.textContent="Hell";
-      themeSwitch.setAttribute("aria-checked","false");
-      localStorage.setItem("theme","light");
-      sunIcon.classList.add("burst");
-      setTimeout(()=>sunIcon.classList.remove("burst"),600);
-    }
+    if (sidebarName) sidebarName.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "");
+    // Die folgende Zeile entfernt die Anzeige der Rolle im Sidebar-Menü
+    // if (sidebarRole) sidebarRole.textContent = highestRole(roles);
+  } catch (e) {
+    rolesField.value = "—";
+    console.warn("Rollen konnten nicht geladen werden:", e);
   }
 
-  const storedTheme = localStorage.getItem("theme");
-  if (storedTheme) {
-    setTheme(storedTheme);
+  // Beim Laden des Benutzers, das gespeicherte Theme aus Firestore abrufen und anwenden
+  const savedTheme = await getUserThemePreference(user.uid);
+  setTheme(savedTheme);
+});
+
+/*********** Speichern des Themas in Firestore ***********/
+async function setUserThemePreference(uid, theme) {
+  const userDocRef = doc(db, "userSettings", uid);  // Speichern des Themas im Benutzer-Dokument
+  await setDoc(userDocRef, { theme: theme });  // Speichert das Thema für den Benutzer
+}
+
+/*********** Thema aus Firestore abrufen ***********/
+async function getUserThemePreference(uid) {
+  const docRef = doc(db, "userSettings", uid);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data().theme || "light";  // Standardwert: hell, falls nichts gespeichert ist
   } else {
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(prefersDark ? "dark" : "light");
+    console.log("Kein Dokument für dieses Benutzerprofil gefunden.");
+    return "light"; // Standardwert
+  }
+}
+
+/*********** Name speichern ***********/
+saveBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  const newName = nameField.value.trim();
+
+  if (!user) { showProfileMsg("❌ Kein Benutzer eingeloggt.", "red"); return; }
+  if (!newName) { showProfileMsg("❌ Bitte Namen eingeben.", "red"); return; }
+
+  try {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = "⏳ Speichern...";
+    await updateUserProfile(user, { displayName: newName });
+
+    if (sidebarName) sidebarName.textContent = newName;
+    showProfileMsg("✅ Name geändert!", "green");
+  } catch (err) {
+    showProfileMsg("❌ " + (err?.code ? translateFirebaseError(err.code) : err.message), "red");
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
+  }
+});
+
+/*********** Zurück ***********/
+backBtn.addEventListener("click", () => { window.location.href = "app.html"; });
+
+/*********** Theme-Toggle ***********/
+function setTheme(mode){
+  const user = auth.currentUser;
+  if (user) {
+    // Speichern des Themas in Firestore
+    setUserThemePreference(user.uid, mode);
   }
 
-  themeSwitch.addEventListener("click", () => {
-    setTheme(document.body.classList.contains("dark") ? "light" : "dark");
-  });
-  themeSwitch.addEventListener("keydown", (e) => {
-    if (e.key === " " || e.key === "Enter") { e.preventDefault(); setTheme(document.body.classList.contains("dark") ? "light" : "dark"); }
-  });
-  themeSwitch.setAttribute("tabindex","0");
-
-  /*********** Passwort ändern ***********/
-  function showPwHints(show){
-    passRules.style.display = show ? "block" : "none";
-    pwMeter.style.display = show ? "block" : "none";
-    pwStrengthText.style.display = show ? "block" : "none";
+  if (mode === "dark") {
+    document.body.classList.add("dark");
+    themeLabel.textContent = "Dunkel";
+    themeSwitch.setAttribute("aria-checked", "true");
+    localStorage.setItem("theme", "dark");
+    moonIcon.classList.add("burst");
+    setTimeout(() => moonIcon.classList.remove("burst"), 300);
+  } else {
+    document.body.classList.remove("dark");
+    themeLabel.textContent = "Hell";
+    themeSwitch.setAttribute("aria-checked", "false");
+    localStorage.setItem("theme", "light");
+    sunIcon.classList.add("burst");
+    setTimeout(() => sunIcon.classList.remove("burst"), 600);
   }
+}
 
-  function updateRules(val) {
-    const checks = {
-      length: val.length >= 8,
-      number: /[0-9]/.test(val),
-      uppercase: /[A-Z]/.test(val),
-      special: /[^A-Za-z0-9]/.test(val)
-    };
-    document.getElementById("rule-length").textContent    = (checks.length   ? "✅" : "❌") + " Mindestens 8 Zeichen";
-    document.getElementById("rule-number").textContent    = (checks.number   ? "✅" : "❌") + " Mindestens 1 Zahl";
-    document.getElementById("rule-uppercase").textContent = (checks.uppercase? "✅" : "❌") + " Mindestens 1 Großbuchstabe";
-    document.getElementById("rule-special").textContent   = (checks.special  ? "✅" : "❌") + " Mindestens 1 Sonderzeichen";
+const storedTheme = localStorage.getItem("theme");
+if (storedTheme) {
+  setTheme(storedTheme);
+} else {
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(prefersDark ? "dark" : "light");
+}
 
-    const score = Object.values(checks).filter(Boolean).length;
-    const pct = (score/4)*100;
-    pwBar.style.width = pct + "%";
+themeSwitch.addEventListener("click", () => {
+  setTheme(document.body.classList.contains("dark") ? "light" : "dark");
+});
+themeSwitch.addEventListener("keydown", (e) => {
+  if (e.key === " " || e.key === "Enter") { e.preventDefault(); setTheme(document.body.classList.contains("dark") ? "light" : "dark"); }
+});
+themeSwitch.setAttribute("tabindex", "0");
 
-    const colors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#16a34a"];
-    const texts  = ["Sehr schwach", "Schwach", "Mittel", "Stark", "Sehr stark"];
-    pwBar.style.background = colors[score];
-    pwStrengthText.textContent = texts[score];
-    pwStrengthText.style.color = colors[score];
+/*********** Passwort ändern ***********/
+function showPwHints(show){
+  passRules.style.display = show ? "block" : "none";
+  pwMeter.style.display = show ? "block" : "none";
+  pwStrengthText.style.display = show ? "block" : "none";
+}
+
+function updateRules(val) {
+  const checks = {
+    length: val.length >= 8,
+    number: /[0-9]/.test(val),
+    uppercase: /[A-Z]/.test(val),
+    special: /[^A-Za-z0-9]/.test(val)
+  };
+  document.getElementById("rule-length").textContent    = (checks.length   ? "✅" : "❌") + " Mindestens 8 Zeichen";
+  document.getElementById("rule-number").textContent    = (checks.number   ? "✅" : "❌") + " Mindestens 1 Zahl";
+  document.getElementById("rule-uppercase").textContent = (checks.uppercase? "✅" : "❌") + " Mindestens 1 Großbuchstabe";
+  document.getElementById("rule-special").textContent   = (checks.special  ? "✅" : "❌") + " Mindestens 1 Sonderzeichen";
+
+  const score = Object.values(checks).filter(Boolean).length;
+  const pct = (score/4)*100;
+  pwBar.style.width = pct + "%";
+
+  const colors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#16a34a"];
+  const texts  = ["Sehr schwach", "Schwach", "Mittel", "Stark", "Sehr stark"];
+  pwBar.style.background = colors[score];
+  pwStrengthText.textContent = texts[score];
+  pwStrengthText.style.color = colors[score];
+}
+
+newPwd.addEventListener("focus", () => showPwHints(true));
+newPwd.addEventListener("blur",  () => { if(!newPwd.value) showPwHints(false); });
+newPwd.addEventListener("input", () => { showPwHints(true); updateRules(newPwd.value); });
+
+function openPwd() {
+  pwdModal.style.display = "flex";
+  setTimeout(() => pwdModal.classList.add("show"), 10);
+  setTimeout(() => currentPwd.focus(), 60);
+}
+function closePwd() {
+  pwdModal.classList.remove("show");
+  setTimeout(() => { pwdModal.style.display = "none"; }, 250);
+  currentPwd.value = ""; newPwd.value = ""; repeatPwd.value = "";
+  pwdMsg.textContent = ""; pwdMsg.removeAttribute("style");
+  showPwHints(false);
+  updateRules("");
+}
+changePasswordLink.addEventListener("click", openPwd);
+cancelPwd.addEventListener("click", closePwd);
+
+savePwdBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Kein Benutzer eingeloggt."; return; }
+
+  const cur = currentPwd.value.trim();
+  const neu = newPwd.value.trim();
+  const rep = repeatPwd.value.trim();
+
+  if (!cur) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Bitte aktuelles Passwort eingeben."; return; }
+  if (!strongPw(neu)) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Passwort erfüllt nicht die Anforderungen."; return; }
+  if (neu !== rep) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Die neuen Passwörter stimmen nicht überein."; return; }
+  if (cur === neu) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Neues Passwort darf nicht dem alten entsprechen."; return; }
+
+  try {
+    savePwdBtn.disabled = true;
+    savePwdBtn.innerHTML = "⏳ Speichern...";
+    const cred = EmailAuthProvider.credential(user.email, cur);
+    await reauthenticateWithCredential(user, cred);
+    await updatePassword(user, neu);
+    pwdMsg.style.color="green";
+    pwdMsg.textContent="✅ Passwort erfolgreich geändert.";
+    setTimeout(closePwd, 900);
+  } catch (err) {
+    console.error(err);
+    pwdMsg.style.color="red";
+    pwdMsg.textContent = "❌ " + (err?.code ? translateFirebaseError(err.code) : err?.message || "Unbekannter Fehler");
+  } finally {
+    savePwdBtn.disabled = false;
+    savePwdBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
   }
+});
 
-  newPwd.addEventListener("focus", () => showPwHints(true));
-  newPwd.addEventListener("blur",  () => { if(!newPwd.value) showPwHints(false); });
-  newPwd.addEventListener("input", () => { showPwHints(true); updateRules(newPwd.value); });
-
-  function openPwd() {
-    pwdModal.style.display = "flex";
-    setTimeout(() => pwdModal.classList.add("show"), 10);
-    setTimeout(() => currentPwd.focus(), 60);
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".toggle-eye");
+  if(!btn) return;
+  const targetId = btn.getAttribute("data-target");
+  const input = document.getElementById(targetId);
+  if(!input) return;
+  const icon = btn.querySelector("i");
+  if (input.type === "password") {
+    input.type = "text";
+    icon.classList.remove("bi-eye"); icon.classList.add("bi-eye-slash");
+    btn.setAttribute("aria-label","Passwort verbergen");
+  } else {
+    input.type = "password";
+    icon.classList.remove("bi-eye-slash"); icon.classList.add("bi-eye");
+    btn.setAttribute("aria-label","Passwort anzeigen");
   }
-  function closePwd() {
-    pwdModal.classList.remove("show");
-    setTimeout(() => { pwdModal.style.display = "none"; }, 250);
-    currentPwd.value = ""; newPwd.value = ""; repeatPwd.value = "";
-    pwdMsg.textContent = ""; pwdMsg.removeAttribute("style");
-    showPwHints(false);
-    updateRules("");
-  }
-  changePasswordLink.addEventListener("click", openPwd);
-  cancelPwd.addEventListener("click", closePwd);
-
-  savePwdBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Kein Benutzer eingeloggt."; return; }
-
-    const cur = currentPwd.value.trim();
-    const neu = newPwd.value.trim();
-    const rep = repeatPwd.value.trim();
-
-    if (!cur) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Bitte aktuelles Passwort eingeben."; return; }
-    if (!strongPw(neu)) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Passwort erfüllt nicht die Anforderungen."; return; }
-    if (neu !== rep) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Die neuen Passwörter stimmen nicht überein."; return; }
-    if (cur === neu) { pwdMsg.style.color="red"; pwdMsg.textContent="❌ Neues Passwort darf nicht dem alten entsprechen."; return; }
-
-    try {
-      savePwdBtn.disabled = true;
-      savePwdBtn.innerHTML = "⏳ Speichern...";
-      const cred = EmailAuthProvider.credential(user.email, cur);
-      await reauthenticateWithCredential(user, cred);
-      await updatePassword(user, neu);
-      pwdMsg.style.color="green";
-      pwdMsg.textContent="✅ Passwort erfolgreich geändert.";
-      setTimeout(closePwd, 900);
-    } catch (err) {
-      console.error(err);
-      pwdMsg.style.color="red";
-      pwdMsg.textContent = "❌ " + (err?.code ? translateFirebaseError(err.code) : err?.message || "Unbekannter Fehler");
-    } finally {
-      savePwdBtn.disabled = false;
-      savePwdBtn.innerHTML = '<i class="bi bi-save"></i> Speichern';
-    }
-  });
-
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".toggle-eye");
-    if(!btn) return;
-    const targetId = btn.getAttribute("data-target");
-    const input = document.getElementById(targetId);
-    if(!input) return;
-    const icon = btn.querySelector("i");
-    if (input.type === "password") {
-      input.type = "text";
-      icon.classList.remove("bi-eye"); icon.classList.add("bi-eye-slash");
-      btn.setAttribute("aria-label","Passwort verbergen");
-    } else {
-      input.type = "password";
-      icon.classList.remove("bi-eye-slash"); icon.classList.add("bi-eye");
-      btn.setAttribute("aria-label","Passwort anzeigen");
-    }
-  });
+});
   </script>
 </body>
 </html>
