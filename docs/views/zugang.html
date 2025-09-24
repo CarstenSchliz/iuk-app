@@ -312,6 +312,17 @@
     padding: 0;
     vertical-align: middle;
   }
+    .status-message i {
+    writing-mode: vertical-rl;  /* Vertikale Ausrichtung des ersten Buchstabens */
+    margin-right: 0.3rem;  /* Abstand zum restlichen Text */
+  }
+  /* Vertikale Ausrichtung für den ersten Buchstaben der Überschriften und Statusnachrichten */
+  h3::first-letter, .status-message i {
+    writing-mode: vertical-rl;  /* Vertikale Ausrichtung */
+    margin-right: 0.3rem;       /* Abstand zum Text */
+    font-size: 1.5rem;          /* Größerer Buchstabe für den ersten Buchstaben */
+    font-weight: bold;          /* Fetterer Buchstabe für bessere Sichtbarkeit */
+  }
   </style> 
 </head> 
 <body> 
