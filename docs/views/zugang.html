@@ -306,6 +306,33 @@
   .feather-hourglass { 
     color: var(--dunkelblau); 
   }
+
+  /* Vertikale Ausrichtung für den ersten Buchstaben der Überschriften und Statusnachrichten */
+  h3::first-letter, .status-message i {
+    display: flex;
+    flex-direction: column; /* Um den Text vertikal anzuzeigen */
+    align-items: center;    /* Zentriert den Buchstaben */
+    font-size: 1.5rem;      /* Größerer Buchstabe für den ersten Buchstaben */
+    font-weight: bold;      /* Fetterer Buchstabe für bessere Sichtbarkeit */
+    writing-mode: vertical-rl; /* Vertikale Ausrichtung */
+    margin-right: 0.3rem;   /* Abstand zum restlichen Text */
+  }
+
+  /* Spezifische Anpassung für den Freigabestatus auf mobilen Geräten */
+  @media(max-width: 768px) {
+    .status-message {
+      flex-direction: row; /* Zeilenweise Anordnung */
+      gap: 1rem; /* Etwas Abstand zwischen Icon und Text */
+    }
+
+    /* Verhindert das Umfließen der Statusnachricht in mehrere Spalten */
+    .status-message .status-ok,
+    .status-message .status-bad,
+    .status-message .status-pending {
+      display: inline-flex; /* Sicherstellen, dass der Status in einer Linie bleibt */
+    }
+  }
+  /* Weitere CSS-Regeln */
 </style>
 </head> 
 <body> 
