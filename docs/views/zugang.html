@@ -83,6 +83,84 @@
   } 
 
   .progress-bar { 
+    height: 100%; <style>
+  :root { 
+    --softrot: rgb(228,100,80); 
+    --drk-gruen: rgb(0,150,80); 
+    --dunkelblau: rgb(0,45,85); 
+    --hellblau: rgb(100,160,220); 
+    --mittelgrau: rgb(180,180,180); 
+    --hellgruene-progress: #a1d88f; /* Kräftigeres Hellgrün für 80% */ 
+  } 
+
+  .page-title { 
+    color: var(--softrot); 
+    margin-bottom: 1rem; 
+    font-size: 1.4rem; 
+  } 
+
+  .zugang-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 1.5rem; 
+  } 
+
+  @media(max-width: 768px){ 
+    .zugang-grid { 
+      grid-template-columns: 1fr; 
+    } 
+  } 
+
+  .card { 
+    background: #fff; 
+    padding: 1.5rem; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+    border: 1px solid #eef2f7; 
+  } 
+
+  .card h3 { 
+    color: var(--hellblau); 
+    margin-top: 0; 
+    margin-bottom: 1rem; 
+    display:flex; 
+    align-items:center; 
+    gap:0.5rem; 
+    font-size: 1.05rem; 
+  } 
+
+  .checklist { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+  } 
+
+  .checklist li { 
+    margin: 0.6rem 0; 
+    display:flex; 
+    align-items:center; 
+    gap:0.5rem; 
+    font-size:1rem; 
+  } 
+
+  /* ✅ Standard-Checkboxen */ 
+  .checklist input[type="checkbox"] { 
+    appearance: auto; 
+    -webkit-appearance: auto; 
+    width: 1.2rem; 
+    height: 1.2rem; 
+    cursor: pointer; 
+  } 
+
+  .progress { 
+    height: 22px; 
+    background-color: #e9ecef; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    margin-bottom: 1rem; 
+  } 
+
+  .progress-bar { 
     height: 100%; 
     text-align: center; 
     font-size: 0.85rem; 
@@ -332,6 +410,7 @@
       display: inline-flex; /* Sicherstellen, dass der Status in einer Linie bleibt */
     }
   }
+
   /* Weitere CSS-Regeln */
 </style>
 </head> 
