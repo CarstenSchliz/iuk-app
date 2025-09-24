@@ -306,25 +306,6 @@
   .feather-hourglass { 
     color: var(--dunkelblau); 
   }
-
-  /* Vertikale Ausrichtung für den ersten Buchstaben der Überschriften und Statusnachrichten */
-  h3::first-letter, .status-message i {
-    display: flex;
-    flex-direction: column; /* Um den Text vertikal anzuzeigen */
-    align-items: center;    /* Zentriert den Buchstaben */
-    font-size: 1.5rem;      /* Größerer Buchstabe für den ersten Buchstaben */
-    font-weight: bold;      /* Fetterer Buchstabe für bessere Sichtbarkeit */
-    writing-mode: vertical-rl; /* Vertikale Ausrichtung */
-    margin-right: 0.3rem;   /* Abstand zum restlichen Text */
-  }
-
-  /* Sicherstellen, dass die Ausrichtung auf mobilen Geräten funktioniert */
-  @media(max-width: 768px) {
-    h3::first-letter, .status-message i {
-      font-size: 1.8rem;  /* Größerer Buchstabe auf mobilen Geräten */
-      margin-right: 0.5rem; /* Etwas mehr Abstand zum Text */
-    }
-  }
 </style>
 </head> 
 <body> 
