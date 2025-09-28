@@ -75,23 +75,43 @@
     // --- Daten ---
     const categories = {
       "Fahrzeugkunde": [
-        "IT","Hardware","Bedienung","KFZ","Funk","Material im Heck",
-        "Notstromaggregat","Mastbedienung und Funktionen","CO","Messgerät","Kaffeemaschine"
+        "IT-Hardware",
+        "Bedienung KFZ",
+        "Funk-Hardware",
+        "Material im Heck",
+        "Notstromaggregat",
+        "Mastbedienung-Funktionen",
+        "CO-Messgerät",
+        "Kaffeemaschine"
       ],
       "Software": [
-        "HDMI-Switch","DECT-Telefonie","LARDIS","GSM","Mobilfunk","Voice-over-IP","Linkus","EDP"
+        "HDMI-Switch",
+        "DECT-Telefonie",
+        "LARDIS",
+        "GSM-Mobilfunk-Voiceover-IP",
+        "Linkus",
+        "EDP"
       ],
       "LARDIS": [
-        "Startvorgang","Manuell","Neustart","LARDIS Desktop","Desktop-Symbol","Wahlgruppe","Kanal",
-        "Headset","Ja","Nein","Lautstärkemöglichkeiten","PTT-Möglichkeit",
-        "Schnellwahl am Schwanenhals","Status melden","Zurücksetzen auf Standard",
-        "Pegeln","Mikrofon","Headset"
+        "Startvorgang manuell / Neustart LARDIS Desktop Symbol",
+        "Wahl der Gruppe / Kanal",
+        "Headset Ja / Nein Lautstärke-Möglichkeiten",
+        "PTT-Möglichkeiten",
+        "Schnellwahl am Schwanenhals",
+        "Status melden",
+        "Zurücksetzen auf Standard",
+        "Pegeln Mikrofon / Headset"
       ],
       "Einsatztaktik": [
-        "Ticketsystem","MANF-Konzept","Nutzung","Direktruf","Tetra SDS","Externe Internet-Einspeisung",
-        "Verhalten im Alarmfall","SOP","Einsatzbeginn","Ende","Führungskräfte-Kennzeichnung",
-        "Funktionsträger im ELW","Schulung aller Standard-Einsatzregeln","Kenntnisse",
-        "Kliniken","Funkrufnamen","Einsatzmittel und ihre Möglichkeiten"
+        "Ticket-System-MANV-Konzept",
+        "Nutzung Direktruf-Tetra-SDS",
+        "Externe Internet-Einspeisung",
+        "Verhalten im Alarmfall",
+        "SOP-Einsatzbeginn-Ende",
+        "Führungskräfte-Kennzeichnung",
+        "Funktionsträger im ELW",
+        "Schulung aller Standardeinsatzregeln",
+        "Kenntnisse von Kliniken-Funkrufnamen-Einsatzmitteln"
       ]
     };
 
@@ -101,14 +121,14 @@
       span.className = 'category-icon';
       if(name === "Fahrzeugkunde"){ 
         const i = document.createElement('i');
-        i.className = "bi bi-truck-front"; // Fahrzeug ähnlich Rettungswagen
+        i.className = "bi bi-truck-front"; 
         i.style.fontSize = "1.4rem";
         span.appendChild(i);
         return span;
       }
       if(name === "Einsatztaktik"){ 
         const i = document.createElement('i');
-        i.className = "bi bi-diagram-3"; // Symbol für Führung/Organisation
+        i.className = "bi bi-diagram-3"; 
         i.style.fontSize = "1.4rem";
         span.appendChild(i);
         return span;
