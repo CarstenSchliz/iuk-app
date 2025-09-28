@@ -64,193 +64,236 @@
     /* Darkmode */
     body.dark .module-card{ background:#1a1a1a; color:#f5f5f5; }
     body.dark .module-card h4{ color:var(--hellblau); }
+
+    /* Nutzer-Auswahl */
+    .card { 
+      background: #fff; 
+      padding: 1rem; 
+      border-radius: 12px; 
+      box-shadow: 0 2px 6px rgba(0,0,0,.1);
+      border: 1px solid #eef2f7; 
+      margin-bottom: 1.5rem;
+    }
+    .card h3 { 
+      color: var(--hellblau); 
+      margin: 0 0 .8rem 0; 
+      display:flex; 
+      align-items:center; 
+      gap:.5rem; 
+    }
+    select { 
+      width: 100%; 
+      padding: 0.6rem; 
+      border-radius: 8px; 
+      border: 1px solid var(--dunkelblau); 
+      background: #fff; 
+      font-size: 1rem; 
+      color: var(--dunkelblau); 
+      cursor: pointer; 
+    }
+    .selected-user { 
+      margin-top:.5rem; 
+      font-weight:bold; 
+      color: var(--dunkelblau); 
+    }
   </style>
 </head>
 <body>
   <h2 class="page-title">Lernmodule</h2>
 
+  <!-- Nutzer-Auswahl für Admin/GL -->
+  <div class="card" id="selectUserCard" style="display:none;">
+    <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
+    <select id="userSelect">
+      <option value="">-- bitte wählen --</option>
+    </select>
+    <div id="selectedUser" class="selected-user"></div>
+  </div>
+
   <div id="modulesContainer"></div>
 
-  <script>
-    // --- Daten ---
+  <script type="module">
+    /***********************
+     * Firebase & Firestore
+     ***********************/
+    import { auth, db, observeAuthState, getUserRoles } from "./js/firebase.js";
+    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
+
+    async function apiFetch(endpoint, options = {}) {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Nicht eingeloggt");
+      const token = await user.getIdToken();
+      const headers = { ...(options.headers || {}), "Authorization": `Bearer ${token}`, "Content-Type": "application/json" };
+      return fetch(API_BASE + endpoint, { ...options, headers });
+    }
+
+    /***********************
+     * Kategorien / Module
+     ***********************/
     const categories = {
       "Fahrzeugkunde": [
-        "IT-Hardware",
-        "Bedienung KFZ",
-        "Funk-Hardware",
-        "Material im Heck",
-        "Notstromaggregat",
-        "Mastbedienung / Funktionen",
-        "CO-Messgerät",
-        "Kaffeemaschine"
+        "IT-Hardware","Bedienung KFZ","Funk-Hardware","Material im Heck","Notstromaggregat","Mastbedienung-Funktionen","CO-Messgerät","Kaffeemaschine"
       ],
       "Software": [
-        "HDMI-Switch",
-        "DECT Telefonie",
-        "LARDIS",
-        "GSM/Mobilfunk/VoIP",
-        "Linkus",
-        "EDP"
+        "HDMI-Switch","DECT-Telefonie","LARDIS","GSM-Mobilfunk-Voiceover-IP","Linkus","EDP"
       ],
       "LARDIS": [
-        "Startvorgang manuell / Neustart LARDIS",
-        "Wahl der Gruppe / Kanal",
-        "Headset Ja / Nein Lautstärke Möglichkeiten",
-        "PTT Möglichkeiten",
-        "Schnellwahl am Schwanenhals",
-        "Status melden",
-        "Zurücksetzen auf Standard",
-        "Pegeln Mikrofon / Headset"
+        "Startvorgang manuell / Neustart LARDIS Desktop Symbol","Wahl der Gruppe / Kanal","Headset Ja / Nein Lautstärke-Möglichkeiten","PTT-Möglichkeiten","Schnellwahl am Schwanenhals","Status melden","Zurücksetzen auf Standard","Pegeln Mikrofon / Headset"
       ],
       "Einsatztaktik": [
-        "Ticketsystem MANV-Konzept",
-        "Nutzung Direktruf / Tetra-SDS",
-        "Externe Interneteinspeisung",
-        "Verhalten im Alarmfall",
-        "SOP Einsatzbeginn / Ende",
-        "Führungskräftekennzeichnung",
-        "Funktionsträger im ELW",
-        "Schulung aller Standardeinsatzregeln (SER)",
-        "Kenntnisse von Kliniken / Funkrufnamen / Einsatzmitteln"
+        "Ticket-System-MANV-Konzept","Nutzung Direktruf-Tetra-SDS","Externe Internet-Einspeisung","Verhalten im Alarmfall","SOP-Einsatzbeginn-Ende","Führungskräfte-Kennzeichnung","Funktionsträger im ELW","Schulung aller Standardeinsatzregeln","Kenntnisse von Kliniken-Funkrufnamen-Einsatzmitteln"
       ]
     };
 
-    // --- Icons ---
+    /***********************
+     * Firestore-Helper
+     ***********************/
+    async function loadProgress(userId) {
+      const ref = doc(db, "users", userId);
+      const snap = await getDoc(ref);
+      return snap.exists() ? (snap.data().lernmodule || {}) : {};
+    }
+    async function saveProgress(userId, cat, sub, values) {
+      const ref = doc(db, "users", userId);
+      await setDoc(ref, { lernmodule: { [cat]: { [sub]: values } } }, { merge: true });
+    }
+
+    /***********************
+     * Icons & Farben
+     ***********************/
     function getCategoryIconEl(name){
       const span = document.createElement('span');
       span.className = 'category-icon';
-      if(name === "Fahrzeugkunde"){ 
-        const i = document.createElement('i');
-        i.className = "bi bi-truck-front"; 
-        i.style.fontSize = "1.4rem";
-        span.appendChild(i);
-        return span;
-      }
-      if(name === "Einsatztaktik"){ 
-        const i = document.createElement('i');
-        i.className = "bi bi-diagram-3"; 
-        i.style.fontSize = "1.4rem";
-        span.appendChild(i);
-        return span;
-      }
-      const i = document.createElement('i');
-      i.className = (name === "Software") ? "bi bi-cpu" : "bi bi-display";
-      i.style.fontSize = "1.4rem";
-      span.appendChild(i);
+      if(name === "Fahrzeugkunde"){ span.innerHTML = `<i class="bi bi-truck-front" style="font-size:1.4rem"></i>`; return span; }
+      if(name === "Einsatztaktik"){ span.innerHTML = `<i class="bi bi-diagram-3" style="font-size:1.4rem"></i>`; return span; }
+      span.innerHTML = `<i class="${(name === "Software") ? "bi bi-cpu" : "bi bi-display"}" style="font-size:1.4rem"></i>`;
       return span;
     }
-
-    // --- Farblogik ---
     function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-    function subColor(p){
-      if(p === 25) return getCSS("--rot");
-      if(p === 50) return getCSS("--gelb");
-      if(p === 75) return getCSS("--hellgruen");
-      if(p === 100) return getCSS("--dunkelgruen");
-      return "#e9ecef";
-    }
-    function catColor(p){
-      if(p === 0) return "#e9ecef";
-      if(p <= 25) return getCSS("--rot");
-      if(p <= 50) return getCSS("--gelb");
-      if(p <= 75) return getCSS("--hellgruen");
-      return getCSS("--dunkelgruen");
-    }
+    function subColor(p){ if(p===25)return getCSS("--rot"); if(p===50)return getCSS("--gelb"); if(p===75)return getCSS("--hellgruen"); if(p===100)return getCSS("--dunkelgruen"); return "#e9ecef";}
+    function catColor(p){ if(p===0)return "#e9ecef"; if(p<=25)return getCSS("--rot"); if(p<=50)return getCSS("--gelb"); if(p<=75)return getCSS("--hellgruen"); return getCSS("--dunkelgruen");}
 
+    /***********************
+     * Rendering Module
+     ***********************/
     const container = document.getElementById("modulesContainer");
+    async function renderModules(uid, editable) {
+      container.innerHTML = "";
+      const progressData = await loadProgress(uid);
 
-    Object.keys(categories).forEach(catName=>{
-      const section = document.createElement('div'); section.className = 'category';
+      Object.keys(categories).forEach(catName=>{
+        const section = document.createElement('div'); section.className = 'category';
 
-      // Header
-      const header = document.createElement('div'); header.className = 'category-header';
-      const iconEl = getCategoryIconEl(catName);
-      const title = document.createElement('h3'); title.textContent = catName;
-      const toggle = document.createElement('i'); toggle.className = 'bi bi-plus-circle toggle-btn';
-      header.append(iconEl, title, toggle);
-      section.appendChild(header);
+        const header = document.createElement('div'); header.className = 'category-header';
+        const iconEl = getCategoryIconEl(catName);
+        const title = document.createElement('h3'); title.textContent = catName;
+        const toggle = document.createElement('i'); toggle.className = 'bi bi-plus-circle toggle-btn';
+        header.append(iconEl, title, toggle);
+        section.appendChild(header);
 
-      // Querstrich
-      const sep = document.createElement('hr');
-      sep.className = "category-separator";
-      section.appendChild(sep);
+        const sep = document.createElement('hr'); sep.className="category-separator"; section.appendChild(sep);
 
-      // Kategorie-Fortschritt
-      const catProgWrap = document.createElement('div'); catProgWrap.className = 'progress';
-      catProgWrap.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
-      const catProgBar = catProgWrap.querySelector('.progress-bar');
-      section.appendChild(catProgWrap);
+        const catProgWrap = document.createElement('div'); catProgWrap.className = 'progress';
+        catProgWrap.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
+        const catProgBar = catProgWrap.querySelector('.progress-bar');
+        section.appendChild(catProgWrap);
 
-      // Subcontainer
-      const subWrap = document.createElement('div'); subWrap.className = 'subcategory-container'; subWrap.style.display = 'none';
+        const subWrap = document.createElement('div'); subWrap.className = 'subcategory-container'; subWrap.style.display='none';
 
-      // Kategorie-Update
-      function updateCategory(){
-        const subs = subWrap.querySelectorAll('.module-card .progress-bar');
-        if(!subs.length){ catProgBar.style.width = '0%'; catProgBar.style.background = catColor(0); catProgBar.textContent = ''; return; }
-        const vals = Array.from(subs).map(el => parseInt(el.dataset.percent || '0', 10));
-        const avg = Math.round(vals.reduce((a,b)=>a+b,0) / vals.length);
-        catProgBar.style.width = avg + '%';
-        catProgBar.style.background = catColor(avg);
-        catProgBar.textContent = avg > 0 ? (avg + '%') : '';
+        function updateCategory(){
+          const subs = subWrap.querySelectorAll('.module-card .progress-bar');
+          if(!subs.length){ catProgBar.style.width='0%'; catProgBar.style.background=catColor(0); catProgBar.textContent=''; return; }
+          const vals = Array.from(subs).map(el=>parseInt(el.dataset.percent||'0',10));
+          const avg = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+          catProgBar.style.width=avg+'%'; catProgBar.style.background=catColor(avg);
+          catProgBar.textContent = avg>0 ? (avg+'%') : '';
+        }
+
+        categories[catName].forEach(sub=>{
+          const card=document.createElement('div'); card.className='module-card';
+          card.innerHTML=`
+            <h4>${sub}</h4>
+            <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
+            <ul class="levels">
+              <li><label><input type="checkbox" data-step="1"> gelernt</label></li>
+              <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
+              <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
+              <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
+            </ul>`;
+          subWrap.appendChild(card);
+
+          const cb=card.querySelectorAll('input[type="checkbox"]');
+          const pb=card.querySelector('.progress-bar');
+          const saved=progressData?.[catName]?.[sub]||[false,false,false,false];
+          cb.forEach((c,i)=>c.checked=saved[i]);
+
+          function enforce(){
+            cb[0].disabled=!editable; 
+            cb[1].disabled=!editable||!cb[0].checked; if(cb[1].disabled) cb[1].checked=false;
+            cb[2].disabled=!editable||!cb[1].checked; if(cb[2].disabled) cb[2].checked=false;
+            cb[3].disabled=!editable||!cb[2].checked; if(cb[3].disabled) cb[3].checked=false;
+          }
+          function percent(){ if(cb[3].checked)return 100; if(cb[2].checked)return 75; if(cb[1].checked)return 50; if(cb[0].checked)return 25; return 0; }
+          function updateSub(){
+            const p=percent();
+            pb.style.width=p+'%'; pb.style.background=subColor(p); pb.textContent=p>0?(p+'%'):'';
+            pb.dataset.percent=p; updateCategory();
+            if(editable){ const values=Array.from(cb).map(c=>c.checked); saveProgress(uid,catName,sub,values); }
+          }
+          enforce(); updateSub();
+          cb.forEach(c=>c.addEventListener('change',()=>{ enforce(); updateSub(); }));
+        });
+
+        section.appendChild(subWrap); container.appendChild(section);
+        header.addEventListener('click',()=>{ const open=subWrap.style.display==='block'; subWrap.style.display=open?'none':'block'; toggle.classList.toggle('bi-plus-circle',open); toggle.classList.toggle('bi-dash-circle',!open); });
+        updateCategory();
+      });
+    }
+
+    /***********************
+     * Userliste laden (für Admin/GL)
+     ***********************/
+    async function loadUsersViaFunction() {
+      const res = await apiFetch("/listUsers",{method:"GET"});
+      if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      const data = await res.json();
+      userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
+      (data.users||[]).forEach(u=>{
+        const label=u.displayName||u.email||u.uid;
+        userSelect.innerHTML += `<option value="${u.uid}">${label}</option>`;
+      });
+    }
+
+    /***********************
+     * Auth & Rollen
+     ***********************/
+    const userSelect=document.getElementById("userSelect");
+    const selectUserCard=document.getElementById("selectUserCard");
+    const selectedUser=document.getElementById("selectedUser");
+
+    observeAuthState(async(user)=>{
+      if(!user)return;
+      const uid=user.uid;
+      const roles=await getUserRoles(uid);
+
+      if(roles.includes("admin")||roles.includes("gruppenleiter")){
+        selectUserCard.style.display="block";
+        try{ await loadUsersViaFunction(); }catch(e){ console.error("Userliste Fehler",e); }
+        userSelect.addEventListener("change",async()=>{
+          if(userSelect.value){
+            selectedUser.textContent="Ausgewählt: "+userSelect.options[userSelect.selectedIndex].text;
+            await renderModules(userSelect.value,true);
+          } else {
+            container.innerHTML="";
+            selectedUser.textContent="";
+          }
+        });
+      } else {
+        selectUserCard.style.display="none";
+        renderModules(uid,false);
       }
-
-      // Subkarten
-      categories[catName].forEach(sub=>{
-        const card = document.createElement('div'); card.className = 'module-card';
-        card.innerHTML = `
-          <h4>${sub}</h4>
-          <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
-          <ul class="levels">
-            <li><label><input type="checkbox" data-step="1"> gelernt</label></li>
-            <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
-            <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
-            <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
-          </ul>
-        `;
-        subWrap.appendChild(card);
-
-        const cb = card.querySelectorAll('input[type="checkbox"]');
-        const pb = card.querySelector('.progress-bar');
-
-        function enforce(){
-          cb[0].disabled = false;
-          cb[1].disabled = !cb[0].checked; if(cb[1].disabled) cb[1].checked = false;
-          cb[2].disabled = !cb[1].checked; if(cb[2].disabled) cb[2].checked = false;
-          cb[3].disabled = !cb[2].checked; if(cb[3].disabled) cb[3].checked = false;
-        }
-        function percent(){
-          if(cb[3].checked) return 100;
-          if(cb[2].checked) return 75;
-          if(cb[1].checked) return 50;
-          if(cb[0].checked) return 25;
-          return 0;
-        }
-        function updateSub(){
-          const p = percent();
-          pb.style.width = p + '%';
-          pb.style.background = subColor(p);
-          pb.textContent = p > 0 ? (p + '%') : '';
-          pb.dataset.percent = p;
-          updateCategory();
-        }
-
-        enforce(); updateSub();
-        cb.forEach(c => c.addEventListener('change', ()=>{ enforce(); updateSub(); }));
-      });
-
-      section.appendChild(subWrap);
-      container.appendChild(section);
-
-      // Toggle
-      header.addEventListener('click', ()=>{
-        const open = subWrap.style.display === 'block';
-        subWrap.style.display = open ? 'none' : 'block';
-        toggle.classList.toggle('bi-plus-circle', open);
-        toggle.classList.toggle('bi-dash-circle', !open);
-      });
-
-      updateCategory();
     });
   </script>
 </body>
