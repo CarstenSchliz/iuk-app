@@ -290,9 +290,14 @@
   /* Flexbox Layout für Icons und Texte nebeneinander */ 
   .status-message { 
     display: flex; 
-    align-items: center; 
-    gap: 0.5rem; /* Abstand zwischen Icon und Text */ 
+    align-items: flex-start;          /* Icon oben ausrichten, Text bündig */ 
+    gap: 0.75rem;                     /* etwas größerer Abstand Icon ↔ Text */ 
   } 
+  .status-message i {
+    flex-shrink: 0;                   /* Icon behält Breite, Text bricht daneben */
+    font-size: 1.2rem;
+    line-height: 1.4;
+  }
 
   /* Feather Icons */ 
   .feather-check-circle { 
@@ -307,6 +312,11 @@
     color: var(--dunkelblau); 
   }
 
+  /* Abstand nur für die Statusliste erhöhen (nicht global alle Checklisten ändern) */
+  #statusList li {
+    gap: 0.75rem;
+  }
+
   /* Vertikale Ausrichtung nur für den ersten Buchstaben der Überschriften */
   h3::first-letter {
     font-size: 1.5rem;      /* Größerer Buchstabe */
@@ -317,10 +327,10 @@
   /* Spezifische Anpassung für den Freigabestatus auf mobilen Geräten */
   @media(max-width: 768px) {
     .status-message {
-      display: flex; /* Flexbox für horizontale Anordnung */
-      flex-direction: row; /* Zeilenweise Anordnung */
-      gap: 1rem; /* Etwas Abstand zwischen Icon und Text */
-      align-items: center; /* Stellt sicher, dass das Icon und der Text in einer Zeile sind */
+      display: flex;         /* Flexbox für horizontale Anordnung */
+      flex-direction: row;   /* Zeilenweise Anordnung */
+      gap: 1rem;             /* Etwas größerer Abstand zwischen Icon und Text */
+      align-items: center;   /* Icon/Text in einer Zeile ausrichten */
     }
 
     /* Sicherstellen, dass der Status in einer Zeile bleibt */
@@ -333,7 +343,6 @@
 </style>
 </head> 
 <body> 
-
   <h2 class="page-title">Zugangsvoraussetzungen</h2> 
   <!-- Nutzer-Auswahl (Admin/GL) --> 
   <div class="card select-user" id="selectUserCard" style="margin-bottom:1.5rem; display:none;"> 
@@ -439,7 +448,6 @@
     * API (Cloud Functions) – wie Benutzerverwaltung 
     ***********************/ 
     const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net"; 
-    
     async function apiFetch(endpoint, options = {}) { 
       const user = auth.currentUser; 
       if (!user) throw new Error("Nicht eingeloggt"); 
@@ -528,7 +536,6 @@
         else if (percent <= 60) bar.style.backgroundColor = "gold"; 
         else if (percent <= 80) bar.style.backgroundColor = "var(--hellgruene-progress)"; 
         else bar.style.backgroundColor = "var(--drk-gruen)"; 
-        
         bar.textContent = percent + "%"; 
       } 
     } 
@@ -621,23 +628,23 @@
       document.getElementById("statusGrund").innerHTML = grundErfüllt ? 
         `<div class="status-message"><i class="bi bi-check-circle status-ok"></i></div>` : 
         `<div class="status-message"><i class="bi bi-x-circle status-bad"></i></div>`; 
-        
+          
       // Optionale Voraussetzungen Status 
       const optionalErfüllt = Array.from(verlaufBoxes).every(b => b.checked); 
       document.getElementById("statusOptional").innerHTML = optionalErfüllt ? 
         `<div class="status-message"><i class="bi bi-check-circle status-ok"></i></div>` : 
         `<div class="status-message"><i class="bi bi-x-circle status-bad"></i></div>`; 
-        
+          
       // Freigabe/Ablehnung Status (dritte Zeile) 
       let statusText = ''; 
       if (status === "freigeben") { 
-        statusText = `<div class="status-message"><i class="bi bi-check-circle status-ok"></i> Du wurdest für den aktiven Dienst <span class="text-green">freigegeben.</span> Herzlichen Glückwunsch!</div>`;
+        statusText = `<div class="status-message"><i class="bi bi-check-circle status-ok"></i><span>Du wurdest für den aktiven Dienst <span class="text-green">freigegeben.</span> Herzlichen Glückwunsch!</span></div>`;
       } else if (status === "ablehnen") { 
-       statusText = `<div class="status-message" style="display: inline;"><i class="bi bi-x-circle status-bad"></i> Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt.</span> Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</div>`;
+       statusText = `<div class="status-message"><i class="bi bi-x-circle status-bad"></i><span>Du wurdest für den aktiven Dienst <span class="text-red">abgelehnt.</span> Bei Rückfragen wende dich bitte an deinen Gruppenleiter!</span></div>`;
       } else { 
-     statusText = `<div class="status-message" style="display: inline;"><i class="bi bi-hourglass status-pending"></i> Freigabestatus: noch offen</div>`;
+        statusText = `<div class="status-message"><i class="bi bi-hourglass status-pending"></i><span>Freigabestatus: noch offen</span></div>`;
       } 
-        
+          
       document.getElementById("statusReject").innerHTML = statusText; 
     } 
     
@@ -652,7 +659,7 @@
         selectUserCard.style.display = "block"; 
         confirmAdminSection.style.display = "block"; 
         confirmUserSection.style.display = "none"; 
-        
+          
         // Admin/GL dürfen Checkboxen erst nach Auswahl bedienen 
         grundBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; }); 
         verlaufBoxes.forEach(cb => { cb.disabled = true; cb.checked = false; }); 
@@ -661,12 +668,12 @@
         chkOptional.disabled = true; 
         chkOptional.checked = false; 
         chkReject.checked = false; 
-        
+          
         // Buttons einklappen 
         document.getElementById("grundActions").style.display = "none"; 
         document.getElementById("optionalActions").style.display = "none"; 
         document.getElementById("rejectActions").style.display = "none"; 
-        
+          
         // Nutzer vom Backend (Function) laden 
         try { 
           await loadUsersViaFunction(); 
@@ -679,14 +686,14 @@
         confirmUserSection.style.display = "block"; 
         confirmAdminSection.style.display = "none"; 
         confirmText.textContent = "Dein eigener Status"; 
-        
+          
         // Eigene Daten laden, aber nicht änderbar 
         grundBoxes.forEach(cb => cb.disabled = true); 
         verlaufBoxes.forEach(cb => cb.disabled = true); 
         chkGrund.disabled = true; 
         chkOptional.disabled = true; 
         chkReject.disabled = true; 
-        
+          
         await loadProgress(user.uid); 
       } 
     }); 
@@ -751,7 +758,7 @@
         if (action === "freigeben") showToast("Mitglied freigegeben"); 
         if (action === "mail") showToast("Mail gesendet"); 
         if (action === "ablehnen") showToast("Mitglied abgelehnt"); 
-        
+          
         // Speichern in Firestore: freigabeStatus 
         if ((action === "freigeben" || action === "ablehnen") && userSelect.value) { 
           try { 
@@ -779,22 +786,22 @@
         confirmText.textContent = "Bestätigung für: " + name; 
         confirmAdminSection.style.display = "block"; 
         confirmUserSection.style.display = "none"; 
-        
+          
         // Für Admin/GL: Checkboxen aktivieren 
         grundBoxes.forEach(cb => cb.disabled = false); 
         verlaufBoxes.forEach(cb => cb.disabled = false); 
-        
+          
         // Checkboxes zurücksetzen, Buttons einklappen 
         chkGrund.disabled = true; 
         chkGrund.checked = false; 
         chkOptional.disabled = true; 
         chkOptional.checked = false; 
         chkReject.checked = false; 
-        
+          
         document.getElementById("grundActions").style.display = "none"; 
         document.getElementById("optionalActions").style.display = "none"; 
         document.getElementById("rejectActions").style.display = "none"; 
-        
+          
         await loadProgress(userSelect.value); 
       } else { 
         selectedUser.textContent = ""; 
@@ -814,4 +821,4 @@
     }); 
   </script> 
 </body> 
-</html>
+</html> 
