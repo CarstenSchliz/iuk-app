@@ -307,14 +307,10 @@
     color: var(--dunkelblau); 
   }
 
-  /* Vertikale Ausrichtung für den ersten Buchstaben der Überschriften und Statusnachrichten */
-  h3::first-letter, .status-message i {
-    display: flex;
-    flex-direction: column; /* Um den Text vertikal anzuzeigen */
-    align-items: center;    /* Zentriert den Buchstaben */
-    font-size: 1.5rem;      /* Größerer Buchstabe für den ersten Buchstaben */
-    font-weight: bold;      /* Fetterer Buchstabe für bessere Sichtbarkeit */
-    writing-mode: vertical-rl; /* Vertikale Ausrichtung */
+  /* Vertikale Ausrichtung nur für den ersten Buchstaben der Überschriften */
+  h3::first-letter {
+    font-size: 1.5rem;      /* Größerer Buchstabe */
+    font-weight: bold;      /* Fetter */
     margin-right: 0.3rem;   /* Abstand zum restlichen Text */
   }
 
@@ -337,6 +333,7 @@
 </style>
 </head> 
 <body> 
+
   <h2 class="page-title">Zugangsvoraussetzungen</h2> 
   <!-- Nutzer-Auswahl (Admin/GL) --> 
   <div class="card select-user" id="selectUserCard" style="margin-bottom:1.5rem; display:none;"> 
