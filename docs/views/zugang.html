@@ -288,16 +288,17 @@
   } 
 
   /* Flexbox Layout für Icons und Texte nebeneinander */ 
-  .status-message { 
-    display: flex; 
-    align-items: flex-start;          /* Icon oben ausrichten, Text bündig */ 
-    gap: 0.75rem;                     /* etwas größerer Abstand Icon ↔ Text */ 
-  } 
-  .status-message i {
-    flex-shrink: 0;                   /* Icon behält Breite, Text bricht daneben */
-    font-size: 1.2rem;
-    line-height: 1.4;
-  }
+.status-message {
+  display: flex;
+  align-items: center;   /* ✅ Text auf Mitte des Icons ausrichten */
+  gap: 0.75rem;          /* Abstand Icon ↔ Text */
+}
+
+.status-message i {
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  line-height: 1.2;      /* sorgt für sauberes vertikales Zentrum */
+}
 
   /* Feather Icons */ 
   .feather-check-circle { 
