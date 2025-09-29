@@ -6,65 +6,128 @@
   <title>Lernmodule</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    :root{
-      --softrot: rgb(228,100,80);
-      --dunkelblau: rgb(0,45,85);
-      --hellblau: rgb(100,160,220);
-      --mittelgrau: rgb(180,180,180);
-      --rot:#dc3545;
-      --gelb:#ffc107;
-      --hellgruen:#28a745;
-      --dunkelgruen:#155724;
+    :root {
+      --softrot: rgb(228, 100, 80);
+      --dunkelblau: rgb(0, 45, 85);
+      --hellblau: rgb(100, 160, 220);
+      --mittelgrau: rgb(180, 180, 180);
+      --rot: #dc3545;
+      --gelb: #ffc107;
+      --hellgruen: #28a745;
+      --dunkelgruen: #155724;
     }
 
     .page-title { color: var(--softrot); margin-bottom: 1rem; }
 
     .category { margin-bottom: 2rem; }
 
-    .category-header{
-      display:flex; align-items:center; gap:.75rem; cursor:pointer; user-select:none;
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      cursor: pointer;
+      user-select: none;
     }
-    .category-header h3{
-      margin:.25rem 0; color:var(--dunkelblau); flex:1;
+
+    .category-header h3 {
+      margin: .25rem 0;
+      color: var(--dunkelblau);
+      flex: 1;
     }
-    .category-icon{
-      width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;
-      color:var(--dunkelblau);
+
+    .category-icon {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dunkelblau);
     }
-    .toggle-btn{ font-size:1.4rem; color:var(--dunkelblau); }
 
-    .category-separator { border:none; border-top:2px solid var(--mittelgrau); margin:.3rem 0 .8rem 0; }
+    .toggle-btn { font-size: 1.4rem; color: var(--dunkelblau); }
 
-    .progress{ height:22px; background:#e9ecef; border-radius:12px; overflow:hidden; margin:.5rem 0 1rem 0; }
-    .progress-bar{ height:100%; display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:bold; color:#fff; transition:width .3s ease, background-color .2s ease; }
-
-    .subcategory-container{ margin-top:.5rem; }
-
-    .module-card{
-      background:#fff; padding:1.2rem 1.5rem; border-radius:12px;
-      box-shadow:0 4px 18px rgba(0,0,0,0.1); margin-bottom:1.2rem;
+    .category-separator {
+      border: none;
+      border-top: 2px solid var(--mittelgrau);
+      margin: 0.3rem 0 0.8rem 0;
     }
-    .module-card h4{ margin:0 0 .8rem 0; color:var(--hellblau); }
 
-    .levels{ list-style:none; padding:0; margin:0; }
-    .levels li{ margin:.5rem 0; }
-    .levels li label{ display:flex; align-items:center; gap:.5rem; cursor:pointer; }
-    .levels input[type="checkbox"]{ width:1.1rem; height:1.1rem; cursor:pointer; }
-    .levels input[disabled]{ cursor:not-allowed; opacity:.6; }
+    .progress {
+      height: 22px;
+      background: #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: .5rem 0 1rem 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .85rem;
+      font-weight: bold;
+      color: #fff;
+      transition: width .3s ease, background-color .2s ease;
+    }
+
+    .subcategory-container { margin-top: .5rem; }
+
+    .module-card {
+      background: #fff;
+      padding: 1.2rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.2rem;
+    }
+
+    .module-card h4 { margin: 0 0 .8rem 0; color: var(--hellblau); }
+
+    .levels { list-style: none; padding: 0; margin: 0; }
+
+    .levels li { margin: .5rem 0; }
+
+    .levels li label {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      cursor: pointer;
+    }
+
+    .levels input[type="checkbox"] {
+      width: 1.1rem;
+      height: 1.1rem;
+      cursor: pointer;
+    }
+
+    .levels input[disabled] {
+      cursor: not-allowed;
+      opacity: .6;
+    }
 
     /* Darkmode */
-    body.dark .module-card{ background:#1a1a1a; color:#f5f5f5; }
-    body.dark .module-card h4{ color:var(--hellblau); }
+    body.dark .module-card {
+      background: #1a1a1a;
+      color: #f5f5f5;
+    }
+
+    body.dark .module-card h4 { color: var(--hellblau); }
 
     /* Nutzer-Auswahl exakt wie Beispielseite */
     .select-user { margin-bottom: 1rem; }
-    .selected-user { font-weight: bold; color: var(--dunkelblau); font-size: 1.05rem; margin-top: 1rem; }
+
+    .selected-user {
+      font-weight: bold;
+      color: var(--dunkelblau);
+      font-size: 1.05rem;
+      margin-top: 1rem;
+    }
 
     .card {
       background: #fff;
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
       border: 1px solid #eef2f7;
     }
 
@@ -72,9 +135,9 @@
       color: var(--hellblau);
       margin-top: 0;
       margin-bottom: 1rem;
-      display:flex;
-      align-items:center;
-      gap:0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       font-size: 1.05rem;
     }
 
@@ -92,8 +155,11 @@
       background-repeat: no-repeat;
       background-position: right 10px center;
     }
+
     select:focus { outline: none; border-color: var(--dunkelblau); box-shadow: none; }
-    @media(min-width: 769px){ .select-user select { max-width: 300px; } }
+    @media(min-width: 769px) {
+      .select-user select { max-width: 300px; }
+    }
   </style>
 </head>
 <body>
@@ -125,82 +191,91 @@
 
     const categories = {
       "Fahrzeugkunde": [
-        "IT-Hardware","Bedienung KFZ","Funk-Hardware","Material im Heck","Notstromaggregat","Mastbedienung-Funktionen","CO-Messgerät","Kaffeemaschine"
+        "IT-Hardware", "Bedienung KFZ", "Funk-Hardware", "Material im Heck", "Notstromaggregat", "Mastbedienung-Funktionen", "CO-Messgerät", "Kaffeemaschine"
       ],
       "Software": [
-        "HDMI-Switch","DECT-Telefonie","LARDIS","GSM-Mobilfunk-Voiceover-IP","Linkus","EDP"
+        "HDMI-Switch", "DECT-Telefonie", "LARDIS", "GSM-Mobilfunk-Voiceover-IP", "Linkus", "EDP"
       ],
       "LARDIS": [
-        "Startvorgang manuell / Neustart LARDIS Desktop Symbol","Wahl der Gruppe / Kanal","Headset Ja / Nein Lautstärke-Möglichkeiten","PTT-Möglichkeiten","Schnellwahl am Schwanenhals","Status melden","Zurücksetzen auf Standard","Pegeln Mikrofon / Headset"
+        "Startvorgang manuell / Neustart LARDIS Desktop Symbol", "Wahl der Gruppe / Kanal", "Headset Ja / Nein Lautstärke-Möglichkeiten", "PTT-Möglichkeiten", "Schnellwahl am Schwanenhals", "Status melden", "Zurücksetzen auf Standard", "Pegeln Mikrofon / Headset"
       ],
       "Einsatztaktik": [
-        "Ticket-System-MANV-Konzept","Nutzung Direktruf-Tetra-SDS","Externe Internet-Einspeisung","Verhalten im Alarmfall","SOP-Einsatzbeginn-Ende","Führungskräfte-Kennzeichnung","Funktionsträger im ELW","Schulung aller Standardeinsatzregeln","Kenntnisse von Kliniken-Funkrufnamen-Einsatzmitteln"
+        "Ticket-System-MANV-Konzept", "Nutzung Direktruf-Tetra-SDS", "Externe Internet-Einspeisung", "Verhalten im Alarmfall", "SOP-Einsatzbeginn-Ende", "Führungskräfte-Kennzeichnung", "Funktionsträger im ELW", "Schulung aller Standardeinsatzregeln", "Kenntnisse von Kliniken-Funkrufnamen-Einsatzmitteln"
       ]
     };
-
-    let lastSavedKey = null;
 
     // Speichern der Fortschrittsdaten
     async function saveProgress(userId, cat, sub, values) {
       const ref = doc(db, "users", userId);
-      const key = `${cat}.${sub}`;
-      lastSavedKey = key; // merken
       await setDoc(ref, { [`lernmodule.${cat}.${sub}`]: values }, { merge: true });
     }
 
-    function getCategoryIconEl(name){
-      const span = document.createElement('span');
-      span.className = 'category-icon';
-      const i = document.createElement('i');
-      i.style.fontSize = "1.4rem";
-      if(name === "Fahrzeugkunde"){ i.className = "bi bi-truck-front"; }
-      else if(name === "Einsatztaktik"){ i.className = "bi bi-diagram-3"; }
-      else if(name === "Software"){ i.className = "bi bi-cpu"; }
-      else { i.className = "bi bi-display"; }
-      span.appendChild(i);
-      return span;
+    // Laden der Fortschrittsdaten
+    async function loadProgress(uid) {
+      const ref = doc(db, "users", uid);
+      const snap = await getDoc(ref);
+      return snap.exists() ? (snap.data().lernmodule || {}) : {};
     }
 
-    function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-    function subColor(p){ if(p===25)return getCSS("--rot"); if(p===50)return getCSS("--gelb"); if(p===75)return getCSS("--hellgruen"); if(p===100)return getCSS("--dunkelgruen"); return "#e9ecef";}
-    function catColor(p){ if(p===0)return "#e9ecef"; if(p<=25)return getCSS("--rot"); if(p<=50)return getCSS("--gelb"); if(p<=75)return getCSS("--hellgruen"); return getCSS("--dunkelgruen");}
-
-    const container = document.getElementById("modulesContainer");
-
+    // UI-Aufbau
     function buildUI(uid, editable, progressData) {
+      const container = document.getElementById("modulesContainer");
       container.innerHTML = "";
 
-      Object.keys(categories).forEach(catName=>{
-        const section = document.createElement('div'); section.className = 'category';
+      Object.keys(categories).forEach(catName => {
+        const section = document.createElement('div');
+        section.className = 'category';
 
-        const header = document.createElement('div'); header.className = 'category-header';
-        const iconEl = getCategoryIconEl(catName);
-        const title = document.createElement('h3'); title.textContent = catName;
-        const toggle = document.createElement('i'); toggle.className = 'bi bi-plus-circle toggle-btn';
+        // Header
+        const header = document.createElement('div');
+        header.className = 'category-header';
+        const iconEl = document.createElement('span');
+        iconEl.className = 'category-icon';
+        const i = document.createElement('i');
+        i.className = "bi bi-truck-front"; // Beispiel-Icon, kann dynamisch sein
+        iconEl.appendChild(i);
+        const title = document.createElement('h3');
+        title.textContent = catName;
+        const toggle = document.createElement('i');
+        toggle.className = 'bi bi-plus-circle toggle-btn';
         header.append(iconEl, title, toggle);
         section.appendChild(header);
 
-        const sep = document.createElement('hr'); sep.className="category-separator"; section.appendChild(sep);
+        const sep = document.createElement('hr');
+        sep.className = "category-separator";
+        section.appendChild(sep);
 
-        const catProgWrap = document.createElement('div'); catProgWrap.className = 'progress';
+        // Fortschritt
+        const catProgWrap = document.createElement('div');
+        catProgWrap.className = 'progress';
         catProgWrap.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
         const catProgBar = catProgWrap.querySelector('.progress-bar');
         section.appendChild(catProgWrap);
 
-        const subWrap = document.createElement('div'); subWrap.className = 'subcategory-container'; subWrap.style.display='none';
+        // Submodule
+        const subWrap = document.createElement('div');
+        subWrap.className = 'subcategory-container';
+        subWrap.style.display = 'none';
 
-        function updateCategory(){
+        function updateCategory() {
           const subs = subWrap.querySelectorAll('.module-card .progress-bar');
-          if(!subs.length){ catProgBar.style.width='0%'; catProgBar.style.background=catColor(0); catProgBar.textContent=''; return; }
-          const vals = Array.from(subs).map(el=>parseInt(el.dataset.percent||'0',10));
-          const avg = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
-          catProgBar.style.width=avg+'%'; catProgBar.style.background=catColor(avg);
-          catProgBar.textContent = avg>0 ? (avg+'%') : '';
+          if (!subs.length) {
+            catProgBar.style.width = '0%';
+            catProgBar.style.background = "#e9ecef";
+            catProgBar.textContent = '';
+            return;
+          }
+          const vals = Array.from(subs).map(el => parseInt(el.dataset.percent || '0', 10));
+          const avg = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+          catProgBar.style.width = avg + '%';
+          catProgBar.style.background = avg > 75 ? '#28a745' : avg > 50 ? '#ffc107' : '#dc3545';
+          catProgBar.textContent = avg > 0 ? (avg + '%') : '';
         }
 
-        categories[catName].forEach(sub=>{
-          const card=document.createElement('div'); card.className='module-card';
-          card.innerHTML=`
+        categories[catName].forEach(sub => {
+          const card = document.createElement('div');
+          card.className = 'module-card';
+          card.innerHTML = `
             <h4>${sub}</h4>
             <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
             <ul class="levels">
@@ -208,16 +283,17 @@
               <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
               <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
               <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
-            </ul>`;
+            </ul>
+          `;
           subWrap.appendChild(card);
 
-          const cb=card.querySelectorAll('input[type="checkbox"]');
-          const pb=card.querySelector('.progress-bar');
-          const saved=progressData?.[catName]?.[sub]||[false,false,false,false];
-          cb.forEach((c,i)=>c.checked=saved[i]);
+          const cb = card.querySelectorAll('input[type="checkbox"]');
+          const pb = card.querySelector('.progress-bar');
+          const saved = progressData?.[catName]?.[sub] || [false, false, false, false];
+          cb.forEach((c, i) => c.checked = saved[i]);
 
-          function enforce(){
-            if(editable){
+          function enforce() {
+            if (editable) {
               cb[0].disabled = false;
               cb[1].disabled = !cb[0].checked;
               cb[2].disabled = !cb[1].checked;
@@ -230,88 +306,99 @@
             }
           }
 
-          function percent(){ if(cb[3].checked)return 100; if(cb[2].checked)return 75; if(cb[1].checked)return 50; if(cb[0].checked)return 25; return 0; }
+          function percent() {
+            if (cb[3].checked) return 100;
+            if (cb[2].checked) return 75;
+            if (cb[1].checked) return 50;
+            if (cb[0].checked) return 25;
+            return 0;
+          }
 
-          function updateSub(event){
-            const p=percent();
-            pb.style.width=p+'%'; pb.style.background=subColor(p); pb.textContent=p>0?(p+'%'):'';
-            pb.dataset.percent=p; updateCategory();
+          function updateSub(event) {
+            const p = percent();
+            pb.style.width = p + '%';
+            pb.style.background = p === 100 ? '#28a745' : p >= 50 ? '#ffc107' : '#dc3545';
+            pb.textContent = p > 0 ? (p + '%') : '';
+            pb.dataset.percent = p;
+            updateCategory();
 
-            const isUserEditingStep1 = (!editable && event?.target === cb[0]);
-            if(editable || isUserEditingStep1){
-              const values=Array.from(cb).map(c=>c.checked);
-              saveProgress(uid,catName,sub,values);
+            // Wenn Admin, sofort speichern
+            if (editable || (!editable && event?.target === cb[0])) {
+              const values = Array.from(cb).map(c => c.checked);
+              saveProgress(uid, catName, sub, values);
             }
           }
 
-          enforce(); updateSub();
+          enforce();
+          updateSub();
 
-          cb.forEach(c=>c.addEventListener('change',(e)=>{
-            if(editable){
-              // Komfort: Wenn Admin z.B. Stufe 3 setzt, setze Stufen 1–3 automatisch.
+          cb.forEach(c => c.addEventListener('change', (e) => {
+            if (editable) {
               const idx = Array.from(cb).indexOf(e.target);
-              if(e.target.checked){
-                for(let j=0; j<=idx; j++) cb[j].checked = true;
-              }else{
-                for(let j=idx; j<cb.length; j++) cb[j].checked = false;
+              if (e.target.checked) {
+                for (let j = 0; j <= idx; j++) cb[j].checked = true;
+              } else {
+                for (let j = idx; j < cb.length; j++) cb[j].checked = false;
               }
-            } else {
-              // Normaler Nutzer: nur Stufe 1 ist anklickbar – Rest ignoriert (aber disabled)
             }
             enforce();
             updateSub(e);
           }));
         });
 
-        section.appendChild(subWrap); container.appendChild(section);
-        header.addEventListener('click',()=>{ const open=subWrap.style.display==='block'; subWrap.style.display=open?'none':'block'; toggle.classList.toggle('bi-plus-circle',open); toggle.classList.toggle('bi-dash-circle',!open); });
+        section.appendChild(subWrap);
+        container.appendChild(section);
+        header.addEventListener('click', () => {
+          const open = subWrap.style.display === 'block';
+          subWrap.style.display = open ? 'none' : 'block';
+          toggle.classList.toggle('bi-plus-circle', open);
+          toggle.classList.toggle('bi-dash-circle', !open);
+        });
+
         updateCategory();
       });
     }
 
-    async function loadProgress(uid) {
-      const ref = doc(db, "users", uid);
-      const snap = await getDoc(ref);
-      return snap.exists() ? (snap.data().lernmodule || {}) : {};
-    }
-
     async function loadUsersViaFunction() {
-      const res = await apiFetch("/listUsers",{method:"GET"});
-      if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      const res = await apiFetch("/listUsers", { method: "GET" });
+      if (!res.ok) {
+        const msg = `${res.status} ${res.statusText}`;
+        throw new Error(msg);
+      }
       const data = await res.json();
       userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
-      (data.users||[]).forEach(u=>{
-        const label=u.displayName||u.email||u.uid;
+      (data.users || []).forEach(u => {
+        const label = u.displayName || u.email || u.uid;
         userSelect.innerHTML += `<option value="${u.uid}">${label}</option>`;
       });
     }
 
-    const userSelect=document.getElementById("userSelect");
-    const selectUserCard=document.getElementById("selectUserCard");
-    const selectedUser=document.getElementById("selectedUser");
+    const userSelect = document.getElementById("userSelect");
+    const selectUserCard = document.getElementById("selectUserCard");
+    const selectedUser = document.getElementById("selectedUser");
 
-    observeAuthState(async(user)=>{
-      if(!user)return;
-      const uid=user.uid;
-      const roles=await getUserRoles(uid);
+    observeAuthState(async (user) => {
+      if (!user) return;
+      const uid = user.uid;
+      const roles = await getUserRoles(uid);
 
-      if(roles.includes("admin")||roles.includes("gruppenleiter")){
-        selectUserCard.style.display="block";
-        try{ await loadUsersViaFunction(); }catch(e){ console.error("Userliste Fehler",e); }
-        userSelect.addEventListener("change",async()=>{
-          if(userSelect.value){
-            selectedUser.textContent="Ausgewählt: "+userSelect.options[userSelect.selectedIndex].text;
+      if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+        selectUserCard.style.display = "block";
+        try { await loadUsersViaFunction(); } catch (e) { console.error("Userliste Fehler", e); }
+        userSelect.addEventListener("change", async () => {
+          if (userSelect.value) {
+            selectedUser.textContent = "Ausgewählt: " + userSelect.options[userSelect.selectedIndex].text;
             const progressData = await loadProgress(userSelect.value);
-            buildUI(userSelect.value,true, progressData);
+            buildUI(userSelect.value, true, progressData);
           } else {
-            container.innerHTML="";
-            selectedUser.textContent="";
+            container.innerHTML = "";
+            selectedUser.textContent = "";
           }
         });
       } else {
-        selectUserCard.style.display="none";
+        selectUserCard.style.display = "none";
         const progressData = await loadProgress(uid);
-        buildUI(uid,false,progressData);
+        buildUI(uid, false, progressData);
       }
     });
   </script>
