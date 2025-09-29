@@ -33,19 +33,10 @@
     }
     .toggle-btn{ font-size:1.4rem; color:var(--dunkelblau); }
 
-    .category-separator {
-      border: none;
-      border-top: 2px solid var(--mittelgrau);
-      margin: 0.3rem 0 0.8rem 0;
-    }
+    .category-separator { border:none; border-top:2px solid var(--mittelgrau); margin:.3rem 0 .8rem 0; }
 
-    .progress{
-      height:22px; background:#e9ecef; border-radius:12px; overflow:hidden; margin:.5rem 0 1rem 0;
-    }
-    .progress-bar{
-      height:100%; display:flex; align-items:center; justify-content:center;
-      font-size:.85rem; font-weight:bold; color:#fff; transition:width .3s ease, background-color .2s ease;
-    }
+    .progress{ height:22px; background:#e9ecef; border-radius:12px; overflow:hidden; margin:.5rem 0 1rem 0; }
+    .progress-bar{ height:100%; display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:bold; color:#fff; transition:width .3s ease, background-color .2s ease; }
 
     .subcategory-container{ margin-top:.5rem; }
 
@@ -66,55 +57,28 @@
     body.dark .module-card h4{ color:var(--hellblau); }
 
     /* Nutzer-Auswahl (wie Beispielseite) */
-    .select-user { 
-      margin-bottom: 1rem; 
-    }
-
-    .selected-user { 
-      font-weight: bold; 
-      color: var(--dunkelblau); 
-      font-size: 1.05rem; 
-      margin-top: 1rem; 
-    }
+    .select-user { margin-bottom: 1rem; }
+    .selected-user { font-weight: bold; color: var(--dunkelblau); font-size: 1.05rem; margin-top: 1rem; }
 
     select { 
-      width: 100%; 
-      padding: 0.6rem; 
-      border-radius: 8px; 
-      border: 1px solid var(--dunkelblau); 
-      background: #fff; 
-      font-size: 1rem; 
-      color: var(--dunkelblau); 
-      cursor: pointer; 
-      appearance: none; 
-      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>"); 
-      background-repeat: no-repeat; 
-      background-position: right 10px center; 
+      width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--dunkelblau);
+      background: #fff; font-size: 1rem; color: var(--dunkelblau); cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat; background-position: right 10px center;
     }
-
-    select:focus { 
-      outline: none; 
-      border-color: var(--dunkelblau); 
-      box-shadow: none; 
-    }
-
-    @media(min-width: 769px){ 
-      .select-user select { 
-        max-width: 300px; 
-      } 
-    }
+    select:focus { outline: none; border-color: var(--dunkelblau); box-shadow: none; }
+    @media(min-width: 769px){ .select-user select { max-width: 300px; } }
   </style>
 </head>
 <body>
   <h2 class="page-title">Lernmodule</h2>
 
-  <!-- Nutzer-Auswahl (Admin/GL) -->
+  <!-- Nutzer-Auswahl -->
   <div class="card select-user" id="selectUserCard" style="margin-bottom:1.5rem; display:none;">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
     <div>
-      <select id="userSelect">
-        <option value="">-- bitte wählen --</option>
-      </select>
+      <select id="userSelect"><option value="">-- bitte wählen --</option></select>
       <div id="selectedUser" class="selected-user"></div>
     </div>
   </div>
@@ -129,17 +93,16 @@
     import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
-
     async function apiFetch(endpoint, options = {}) {
       const user = auth.currentUser;
       if (!user) throw new Error("Nicht eingeloggt");
       const token = await user.getIdToken();
-      const headers = { ...(options.headers || {}), "Authorization": \`Bearer \${token}\`, "Content-Type": "application/json" };
+      const headers = { ...(options.headers || {}), "Authorization": `Bearer ${token}`, "Content-Type": "application/json" };
       return fetch(API_BASE + endpoint, { ...options, headers });
     }
 
     /***********************
-     * Kategorien / Module
+     * Kategorien
      ***********************/
     const categories = {
       "Fahrzeugkunde": [
@@ -157,7 +120,7 @@
     };
 
     /***********************
-     * Firestore-Helper
+     * Firestore Helpers
      ***********************/
     async function loadProgress(userId) {
       const ref = doc(db, "users", userId);
@@ -170,22 +133,30 @@
     }
 
     /***********************
-     * Icons & Farben
+     * Icon-Renderer (safe)
      ***********************/
     function getCategoryIconEl(name){
       const span = document.createElement('span');
       span.className = 'category-icon';
-      if(name === "Fahrzeugkunde"){ span.innerHTML = \`<i class="bi bi-truck-front" style="font-size:1.4rem"></i>\`; return span; }
-      if(name === "Einsatztaktik"){ span.innerHTML = \`<i class="bi bi-diagram-3" style="font-size:1.4rem"></i>\`; return span; }
-      span.innerHTML = \`<i class="\${(name === "Software") ? "bi bi-cpu" : "bi bi-display"}" style="font-size:1.4rem"></i>\`;
+      const i = document.createElement('i');
+      i.style.fontSize = "1.4rem";
+      if(name === "Fahrzeugkunde"){ i.className = "bi bi-truck-front"; }
+      else if(name === "Einsatztaktik"){ i.className = "bi bi-diagram-3"; }
+      else if(name === "Software"){ i.className = "bi bi-cpu"; }
+      else { i.className = "bi bi-display"; }
+      span.appendChild(i);
       return span;
     }
+
+    /***********************
+     * Farben
+     ***********************/
     function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
     function subColor(p){ if(p===25)return getCSS("--rot"); if(p===50)return getCSS("--gelb"); if(p===75)return getCSS("--hellgruen"); if(p===100)return getCSS("--dunkelgruen"); return "#e9ecef";}
     function catColor(p){ if(p===0)return "#e9ecef"; if(p<=25)return getCSS("--rot"); if(p<=50)return getCSS("--gelb"); if(p<=75)return getCSS("--hellgruen"); return getCSS("--dunkelgruen");}
 
     /***********************
-     * Rendering Module
+     * Rendering
      ***********************/
     const container = document.getElementById("modulesContainer");
     async function renderModules(uid, editable) {
@@ -205,7 +176,7 @@
         const sep = document.createElement('hr'); sep.className="category-separator"; section.appendChild(sep);
 
         const catProgWrap = document.createElement('div'); catProgWrap.className = 'progress';
-        catProgWrap.innerHTML = \`<div class="progress-bar" style="width:0%"></div>\`;
+        catProgWrap.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
         const catProgBar = catProgWrap.querySelector('.progress-bar');
         section.appendChild(catProgWrap);
 
@@ -222,15 +193,15 @@
 
         categories[catName].forEach(sub=>{
           const card=document.createElement('div'); card.className='module-card';
-          card.innerHTML=\`
-            <h4>\${sub}</h4>
+          card.innerHTML=`
+            <h4>${sub}</h4>
             <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
             <ul class="levels">
               <li><label><input type="checkbox" data-step="1"> gelernt</label></li>
               <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
               <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
               <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
-            </ul>\`;
+            </ul>`;
           subWrap.appendChild(card);
 
           const cb=card.querySelectorAll('input[type="checkbox"]');
@@ -262,16 +233,16 @@
     }
 
     /***********************
-     * Userliste laden (für Admin/GL)
+     * Userliste (Admin)
      ***********************/
     async function loadUsersViaFunction() {
       const res = await apiFetch("/listUsers",{method:"GET"});
-      if(!res.ok) throw new Error(\`\${res.status} \${res.statusText}\`);
+      if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
       const data = await res.json();
       userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
       (data.users||[]).forEach(u=>{
         const label=u.displayName||u.email||u.uid;
-        userSelect.innerHTML += `<option value="\${u.uid}">\${label}</option>`;
+        userSelect.innerHTML += `<option value="${u.uid}">${label}</option>`;
       });
     }
 
