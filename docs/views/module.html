@@ -65,22 +65,18 @@
     body.dark .module-card{ background:#1a1a1a; color:#f5f5f5; }
     body.dark .module-card h4{ color:var(--hellblau); }
 
-    /* Nutzer-Auswahl */
-    .card { 
-      background: #fff; 
-      padding: 1rem; 
-      border-radius: 12px; 
-      box-shadow: 0 2px 6px rgba(0,0,0,.1);
-      border: 1px solid #eef2f7; 
-      margin-bottom: 1.5rem;
+    /* Nutzer-Auswahl (wie Beispielseite) */
+    .select-user { 
+      margin-bottom: 1rem; 
     }
-    .card h3 { 
-      color: var(--hellblau); 
-      margin: 0 0 .8rem 0; 
-      display:flex; 
-      align-items:center; 
-      gap:.5rem; 
+
+    .selected-user { 
+      font-weight: bold; 
+      color: var(--dunkelblau); 
+      font-size: 1.05rem; 
+      margin-top: 1rem; 
     }
+
     select { 
       width: 100%; 
       padding: 0.6rem; 
@@ -90,24 +86,37 @@
       font-size: 1rem; 
       color: var(--dunkelblau); 
       cursor: pointer; 
+      appearance: none; 
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>"); 
+      background-repeat: no-repeat; 
+      background-position: right 10px center; 
     }
-    .selected-user { 
-      margin-top:.5rem; 
-      font-weight:bold; 
-      color: var(--dunkelblau); 
+
+    select:focus { 
+      outline: none; 
+      border-color: var(--dunkelblau); 
+      box-shadow: none; 
+    }
+
+    @media(min-width: 769px){ 
+      .select-user select { 
+        max-width: 300px; 
+      } 
     }
   </style>
 </head>
 <body>
   <h2 class="page-title">Lernmodule</h2>
 
-  <!-- Nutzer-Auswahl für Admin/GL -->
-  <div class="card" id="selectUserCard" style="display:none;">
+  <!-- Nutzer-Auswahl (Admin/GL) -->
+  <div class="card select-user" id="selectUserCard" style="margin-bottom:1.5rem; display:none;">
     <h3><i class="bi bi-people"></i> Nutzer auswählen</h3>
-    <select id="userSelect">
-      <option value="">-- bitte wählen --</option>
-    </select>
-    <div id="selectedUser" class="selected-user"></div>
+    <div>
+      <select id="userSelect">
+        <option value="">-- bitte wählen --</option>
+      </select>
+      <div id="selectedUser" class="selected-user"></div>
+    </div>
   </div>
 
   <div id="modulesContainer"></div>
@@ -125,7 +134,7 @@
       const user = auth.currentUser;
       if (!user) throw new Error("Nicht eingeloggt");
       const token = await user.getIdToken();
-      const headers = { ...(options.headers || {}), "Authorization": `Bearer ${token}`, "Content-Type": "application/json" };
+      const headers = { ...(options.headers || {}), "Authorization": \`Bearer \${token}\`, "Content-Type": "application/json" };
       return fetch(API_BASE + endpoint, { ...options, headers });
     }
 
@@ -166,9 +175,9 @@
     function getCategoryIconEl(name){
       const span = document.createElement('span');
       span.className = 'category-icon';
-      if(name === "Fahrzeugkunde"){ span.innerHTML = `<i class="bi bi-truck-front" style="font-size:1.4rem"></i>`; return span; }
-      if(name === "Einsatztaktik"){ span.innerHTML = `<i class="bi bi-diagram-3" style="font-size:1.4rem"></i>`; return span; }
-      span.innerHTML = `<i class="${(name === "Software") ? "bi bi-cpu" : "bi bi-display"}" style="font-size:1.4rem"></i>`;
+      if(name === "Fahrzeugkunde"){ span.innerHTML = \`<i class="bi bi-truck-front" style="font-size:1.4rem"></i>\`; return span; }
+      if(name === "Einsatztaktik"){ span.innerHTML = \`<i class="bi bi-diagram-3" style="font-size:1.4rem"></i>\`; return span; }
+      span.innerHTML = \`<i class="\${(name === "Software") ? "bi bi-cpu" : "bi bi-display"}" style="font-size:1.4rem"></i>\`;
       return span;
     }
     function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
@@ -196,7 +205,7 @@
         const sep = document.createElement('hr'); sep.className="category-separator"; section.appendChild(sep);
 
         const catProgWrap = document.createElement('div'); catProgWrap.className = 'progress';
-        catProgWrap.innerHTML = `<div class="progress-bar" style="width:0%"></div>`;
+        catProgWrap.innerHTML = \`<div class="progress-bar" style="width:0%"></div>\`;
         const catProgBar = catProgWrap.querySelector('.progress-bar');
         section.appendChild(catProgWrap);
 
@@ -213,15 +222,15 @@
 
         categories[catName].forEach(sub=>{
           const card=document.createElement('div'); card.className='module-card';
-          card.innerHTML=`
-            <h4>${sub}</h4>
+          card.innerHTML=\`
+            <h4>\${sub}</h4>
             <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
             <ul class="levels">
               <li><label><input type="checkbox" data-step="1"> gelernt</label></li>
               <li><label><input type="checkbox" data-step="2"> unter Aufsicht angewendet</label></li>
               <li><label><input type="checkbox" data-step="3"> selbstständig angewendet</label></li>
               <li><label><input type="checkbox" data-step="4"> sichere Anwendung</label></li>
-            </ul>`;
+            </ul>\`;
           subWrap.appendChild(card);
 
           const cb=card.querySelectorAll('input[type="checkbox"]');
@@ -257,12 +266,12 @@
      ***********************/
     async function loadUsersViaFunction() {
       const res = await apiFetch("/listUsers",{method:"GET"});
-      if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      if(!res.ok) throw new Error(\`\${res.status} \${res.statusText}\`);
       const data = await res.json();
       userSelect.innerHTML = `<option value="">-- bitte wählen --</option>`;
       (data.users||[]).forEach(u=>{
         const label=u.displayName||u.email||u.uid;
-        userSelect.innerHTML += `<option value="${u.uid}">${label}</option>`;
+        userSelect.innerHTML += `<option value="\${u.uid}">\${label}</option>`;
       });
     }
 
