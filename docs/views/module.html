@@ -145,6 +145,7 @@
       const ref = doc(db, "users", userId);
       const key = `${cat}.${sub}`;
       lastSavedKey = key; // merken
+      console.log(`Speichern: ${key} mit Werten: ${values}`);
       await setDoc(ref, { [`lernmodule.${cat}.${sub}`]: values }, { merge: true });
     }
 
