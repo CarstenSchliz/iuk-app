@@ -140,7 +140,7 @@
 
     let lastSavedKey = null;
 
-    // Speichern mit dot-notation: überschreibt nur das eine Submodul
+    // Speichern der Fortschrittsdaten
     async function saveProgress(userId, cat, sub, values) {
       const ref = doc(db, "users", userId);
       const key = `${cat}.${sub}`;
