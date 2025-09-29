@@ -112,7 +112,7 @@
 
   <script type="module">
     import { auth, db, observeAuthState, getUserRoles } from "./js/firebase.js";
-    import { doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
     async function apiFetch(endpoint, options = {}) {
@@ -269,19 +269,10 @@
       });
     }
 
-    let unsubscribeProgress = null;
-    function listenProgress(uid, editable) {
-      if (unsubscribeProgress) { unsubscribeProgress(); unsubscribeProgress = null; }
+    async function loadProgress(uid) {
       const ref = doc(db, "users", uid);
-      unsubscribeProgress = onSnapshot(ref, (snap) => {
-        const data = snap.exists() ? (snap.data().lernmodule || {}) : {};
-        // Wenn letzter Save gerade dieses Modul betrifft → nicht doppelt rendern
-        if (lastSavedKey && JSON.stringify(data).includes(lastSavedKey)) {
-          lastSavedKey = null;
-          return;
-        }
-        buildUI(uid, editable, data);
-      });
+      const snap = await getDoc(ref);
+      return snap.exists() ? (snap.data().lernmodule || {}) : {};
     }
 
     async function loadUsersViaFunction() {
@@ -310,16 +301,17 @@
         userSelect.addEventListener("change",async()=>{
           if(userSelect.value){
             selectedUser.textContent="Ausgewählt: "+userSelect.options[userSelect.selectedIndex].text;
-            listenProgress(userSelect.value,true);
+            const progressData = await loadProgress(userSelect.value);
+            buildUI(userSelect.value,true, progressData);
           } else {
-            if (unsubscribeProgress) { unsubscribeProgress(); unsubscribeProgress = null; }
             container.innerHTML="";
             selectedUser.textContent="";
           }
         });
       } else {
         selectUserCard.style.display="none";
-        listenProgress(uid,false);
+        const progressData = await loadProgress(uid);
+        buildUI(uid,false,progressData);
       }
     });
   </script>
