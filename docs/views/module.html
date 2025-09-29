@@ -112,7 +112,7 @@
 
   <script type="module">
     import { auth, db, observeAuthState, getUserRoles } from "./js/firebase.js";
-    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
     async function apiFetch(endpoint, options = {}) {
@@ -138,14 +138,9 @@
       ]
     };
 
-    async function loadProgress(userId) {
-      const ref = doc(db, "users", userId);
-      const snap = await getDoc(ref);
-      return snap.exists() ? (snap.data().lernmodule || {}) : {};
-    }
     async function saveProgress(userId, cat, sub, values) {
       const ref = doc(db, "users", userId);
-      await setDoc(ref, { lernmodule: { [cat]: { [sub]: values } } }, { merge: true });
+      await setDoc(ref, { [`lernmodule.${cat}.${sub}`]: values }, { merge: true });
     }
 
     function getCategoryIconEl(name){
@@ -166,9 +161,9 @@
     function catColor(p){ if(p===0)return "#e9ecef"; if(p<=25)return getCSS("--rot"); if(p<=50)return getCSS("--gelb"); if(p<=75)return getCSS("--hellgruen"); return getCSS("--dunkelgruen");}
 
     const container = document.getElementById("modulesContainer");
-    async function renderModules(uid, editable) {
+
+    function buildUI(uid, editable, progressData) {
       container.innerHTML = "";
-      const progressData = await loadProgress(uid);
 
       Object.keys(categories).forEach(catName=>{
         const section = document.createElement('div'); section.className = 'category';
@@ -217,25 +212,47 @@
           cb.forEach((c,i)=>c.checked=saved[i]);
 
           function enforce(){
-            cb[0].disabled=!editable; 
-            cb[1].disabled=!editable||!cb[0].checked; if(cb[1].disabled) cb[1].checked=false;
-            cb[2].disabled=!editable||!cb[1].checked; if(cb[2].disabled) cb[2].checked=false;
-            cb[3].disabled=!editable||!cb[2].checked; if(cb[3].disabled) cb[3].checked=false;
+            if(editable){
+              cb[0].disabled = false;
+              cb[1].disabled = !cb[0].checked;
+              cb[2].disabled = !cb[1].checked;
+              cb[3].disabled = !cb[2].checked;
+            } else {
+              // Nur "gelernt" darf selbst gesetzt werden
+              cb[0].disabled = false;
+              cb[1].disabled = true;
+              cb[2].disabled = true;
+              cb[3].disabled = true;
+            }
           }
+
           function percent(){ if(cb[3].checked)return 100; if(cb[2].checked)return 75; if(cb[1].checked)return 50; if(cb[0].checked)return 25; return 0; }
-          function updateSub(){
+
+          function updateSub(event){
             const p=percent();
             pb.style.width=p+'%'; pb.style.background=subColor(p); pb.textContent=p>0?(p+'%'):'';
             pb.dataset.percent=p; updateCategory();
-            if(editable){ const values=Array.from(cb).map(c=>c.checked); saveProgress(uid,catName,sub,values); }
+            if(editable || (!editable && event?.target === cb[0])){
+              const values=Array.from(cb).map(c=>c.checked);
+              saveProgress(uid,catName,sub,values);
+            }
           }
+
           enforce(); updateSub();
-          cb.forEach(c=>c.addEventListener('change',()=>{ enforce(); updateSub(); }));
+          cb.forEach(c=>c.addEventListener('change',(e)=>{ enforce(); updateSub(e); }));
         });
 
         section.appendChild(subWrap); container.appendChild(section);
         header.addEventListener('click',()=>{ const open=subWrap.style.display==='block'; subWrap.style.display=open?'none':'block'; toggle.classList.toggle('bi-plus-circle',open); toggle.classList.toggle('bi-dash-circle',!open); });
         updateCategory();
+      });
+    }
+
+    function listenProgress(uid, editable) {
+      const ref = doc(db, "users", uid);
+      return onSnapshot(ref, (snap) => {
+        const data = snap.exists() ? (snap.data().lernmodule || {}) : {};
+        buildUI(uid, editable, data);
       });
     }
 
@@ -265,7 +282,7 @@
         userSelect.addEventListener("change",async()=>{
           if(userSelect.value){
             selectedUser.textContent="Ausgewählt: "+userSelect.options[userSelect.selectedIndex].text;
-            await renderModules(userSelect.value,true);
+            listenProgress(userSelect.value,true);
           } else {
             container.innerHTML="";
             selectedUser.textContent="";
@@ -273,7 +290,7 @@
         });
       } else {
         selectUserCard.style.display="none";
-        renderModules(uid,false);
+        listenProgress(uid,false);
       }
     });
   </script>
