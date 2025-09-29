@@ -42,7 +42,7 @@
 
     .module-card{
       background:#fff; padding:1.2rem 1.5rem; border-radius:12px;
-      box-shadow:0 2px 6px rgba(0,0,0,.1); margin-bottom:1.2rem;
+      box-shadow:0 4px 18px rgba(0,0,0,0.1); margin-bottom:1.2rem;
     }
     .module-card h4{ margin:0 0 .8rem 0; color:var(--hellblau); }
 
@@ -78,19 +78,19 @@
       font-size: 1.05rem;
     }
 
-    select { 
-      width: 100%; 
-      padding: 0.6rem; 
-      border-radius: 8px; 
-      border: 1px solid var(--dunkelblau); 
-      background: #fff; 
-      font-size: 1rem; 
-      color: var(--dunkelblau); 
-      cursor: pointer; 
-      appearance: none; 
-      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>"); 
-      background-repeat: no-repeat; 
-      background-position: right 10px center; 
+    select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--dunkelblau);
+      background: #fff;
+      font-size: 1rem;
+      color: var(--dunkelblau);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%23002D55' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
     }
     select:focus { outline: none; border-color: var(--dunkelblau); box-shadow: none; }
     @media(min-width: 769px){ .select-user select { max-width: 300px; } }
@@ -138,6 +138,7 @@
       ]
     };
 
+    // Speichern mit dot-notation: überschreibt nur das eine Submodul
     async function saveProgress(userId, cat, sub, values) {
       const ref = doc(db, "users", userId);
       await setDoc(ref, { [`lernmodule.${cat}.${sub}`]: values }, { merge: true });
@@ -213,12 +214,13 @@
 
           function enforce(){
             if(editable){
+              // Admin/GL – alles editierbar, Kettenlogik bleibt
               cb[0].disabled = false;
               cb[1].disabled = !cb[0].checked;
               cb[2].disabled = !cb[1].checked;
               cb[3].disabled = !cb[2].checked;
             } else {
-              // Nur "gelernt" darf selbst gesetzt werden
+              // Normaler Nutzer – nur Stufe 1 („gelernt“) editierbar
               cb[0].disabled = false;
               cb[1].disabled = true;
               cb[2].disabled = true;
@@ -232,14 +234,32 @@
             const p=percent();
             pb.style.width=p+'%'; pb.style.background=subColor(p); pb.textContent=p>0?(p+'%'):'';
             pb.dataset.percent=p; updateCategory();
-            if(editable || (!editable && event?.target === cb[0])){
+
+            // Speichern: Admin/GL immer; Nutzer nur wenn er Checkbox 1 geändert hat
+            const isUserEditingStep1 = (!editable && event?.target === cb[0]);
+            if(editable || isUserEditingStep1){
               const values=Array.from(cb).map(c=>c.checked);
               saveProgress(uid,catName,sub,values);
             }
           }
 
           enforce(); updateSub();
-          cb.forEach(c=>c.addEventListener('change',(e)=>{ enforce(); updateSub(e); }));
+
+          cb.forEach(c=>c.addEventListener('change',(e)=>{
+            if(editable){
+              // Komfort: Wenn Admin z.B. Stufe 3 setzt, setze Stufen 1–3 automatisch.
+              const idx = Array.from(cb).indexOf(e.target);
+              if(e.target.checked){
+                for(let j=0; j<=idx; j++) cb[j].checked = true;
+              }else{
+                for(let j=idx; j<cb.length; j++) cb[j].checked = false;
+              }
+            } else {
+              // Normaler Nutzer: nur Stufe 1 ist anklickbar – Rest ignoriert (aber disabled)
+            }
+            enforce();
+            updateSub(e);
+          }));
         });
 
         section.appendChild(subWrap); container.appendChild(section);
@@ -248,9 +268,11 @@
       });
     }
 
+    let unsubscribeProgress = null;
     function listenProgress(uid, editable) {
+      if (unsubscribeProgress) { unsubscribeProgress(); unsubscribeProgress = null; }
       const ref = doc(db, "users", uid);
-      return onSnapshot(ref, (snap) => {
+      unsubscribeProgress = onSnapshot(ref, (snap) => {
         const data = snap.exists() ? (snap.data().lernmodule || {}) : {};
         buildUI(uid, editable, data);
       });
@@ -284,6 +306,7 @@
             selectedUser.textContent="Ausgewählt: "+userSelect.options[userSelect.selectedIndex].text;
             listenProgress(userSelect.value,true);
           } else {
+            if (unsubscribeProgress) { unsubscribeProgress(); unsubscribeProgress = null; }
             container.innerHTML="";
             selectedUser.textContent="";
           }
