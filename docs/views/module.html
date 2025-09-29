@@ -138,9 +138,13 @@
       ]
     };
 
+    let lastSavedKey = null;
+
     // Speichern mit dot-notation: überschreibt nur das eine Submodul
     async function saveProgress(userId, cat, sub, values) {
       const ref = doc(db, "users", userId);
+      const key = `${cat}.${sub}`;
+      lastSavedKey = key; // merken
       await setDoc(ref, { [`lernmodule.${cat}.${sub}`]: values }, { merge: true });
     }
 
@@ -214,13 +218,11 @@
 
           function enforce(){
             if(editable){
-              // Admin/GL – alles editierbar, Kettenlogik bleibt
               cb[0].disabled = false;
               cb[1].disabled = !cb[0].checked;
               cb[2].disabled = !cb[1].checked;
               cb[3].disabled = !cb[2].checked;
             } else {
-              // Normaler Nutzer – nur Stufe 1 („gelernt“) editierbar
               cb[0].disabled = false;
               cb[1].disabled = true;
               cb[2].disabled = true;
@@ -235,7 +237,6 @@
             pb.style.width=p+'%'; pb.style.background=subColor(p); pb.textContent=p>0?(p+'%'):'';
             pb.dataset.percent=p; updateCategory();
 
-            // Speichern: Admin/GL immer; Nutzer nur wenn er Checkbox 1 geändert hat
             const isUserEditingStep1 = (!editable && event?.target === cb[0]);
             if(editable || isUserEditingStep1){
               const values=Array.from(cb).map(c=>c.checked);
@@ -274,6 +275,11 @@
       const ref = doc(db, "users", uid);
       unsubscribeProgress = onSnapshot(ref, (snap) => {
         const data = snap.exists() ? (snap.data().lernmodule || {}) : {};
+        // Wenn letzter Save gerade dieses Modul betrifft → nicht doppelt rendern
+        if (lastSavedKey && JSON.stringify(data).includes(lastSavedKey)) {
+          lastSavedKey = null;
+          return;
+        }
         buildUI(uid, editable, data);
       });
     }
