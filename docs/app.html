@@ -6,149 +6,108 @@
   <title>IuK Lernwelt – App</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-  />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <style>
+    /* ================================ STANDARD-FARBEN ================================ */
     :root {
       --softrot: rgb(228, 100, 80);
       --dunkelblau: rgb(0, 45, 85);
-      --hellgrau: rgb(239, 238, 234);
-      --mittelgrau: rgb(180, 180, 180);
-      --blassblau: rgb(230, 240, 250);
-      --hoverblau: #cfe4f9;
+      --hellblau: rgb(100, 160, 220);
+      --bg: #f3f4f6;
+      --text: #1f2937;
+      --heading: #002d55;
+      --link: #e06862;
+
+      --card-bg: #ffffff;
+      --card-border: #e5e7eb;
+
+      --input-bg: #ffffff;
+      --input-fg: #111827;
+      --input-border: #d1d5db;
+      --input-readonly-bg: #f9fafb;
+      --input-readonly-fg: #555;
+
+      --button-secondary-bg: #eef2f7;
+      --button-secondary-fg: #111;
+
+      --modal-bg: #ffffff;
+      --modal-heading: #002d55;
     }
 
+    /* ================================ DARK MODE ================================ */
+    body.dark {
+      --bg: #000000;
+      --text: #f3f4f6;
+      --heading: #f3f4f6;
+      --link: #4da6ff;
+
+      --card-bg: #151515;
+      --card-border: #2c2c2c;
+
+      --input-bg: #222;
+      --input-fg: #f3f4f6;
+      --input-border: #3a3a3a;
+      --input-readonly-bg: #2a2a2a;
+      --input-readonly-fg: #bdbdbd;
+
+      --button-secondary-bg: #2b2b2b;
+      --button-secondary-fg: #e8e8e8;
+
+      --modal-bg: #1e1e1e;
+      --modal-heading: #f3f4f6;
+    }
+
+    /* ================================ ALLGEMEINE STILE ================================ */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      background: var(--hellgrau);
-      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      transition: background .2s ease, color .2s ease;
     }
 
-    /* Sidebar */
-    .sidebar {
-      background: #fff;
-      width: 340px;
-      display: flex;
-      flex-direction: column;
-      padding: 1.5rem 1rem;
-      box-sizing: border-box;
+    .sidebar, .content {
+      transition: background .2s ease, color .2s ease;
     }
 
-    .profile {
-      text-align: center;
-      margin-bottom: 2rem;
+    .card {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      padding: 1.5rem;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+      transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
     }
 
-    .profile img {
-      width: 100px;
-      aspect-ratio: 1/1;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #000;
-      display: block;
-      margin: 0 auto 0.8rem auto;
-      background: #ccc;
-      cursor: pointer;
-    }
-
-    .profile h2 {
-      margin: 0;
-      font-size: 1.2rem;
-      color: #000;
-    }
-
-    .profile p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #333;
-    }
-
-    .menu {
-      flex-grow: 1;
-    }
-
-    .menu button,
-    .logout {
-      position: relative;
-      display: block;
-      width: 100%;
-      padding: 0.75rem 1.25rem;
-      background: transparent;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-      text-align: left;
+    input, textarea {
+      background: var(--input-bg);
+      color: var(--input-fg);
+      border: 1px solid var(--input-border);
+      padding: 10px;
       border-radius: 8px;
-      margin-bottom: 0.5rem;
-      box-sizing: border-box;
-      transition: background-color 0.25s ease, color 0.25s ease;
-      white-space: normal;
-      overflow: visible;
     }
 
-    .menu button i {
-      color: inherit;
+    button {
+      background: var(--button-secondary-bg);
+      color: var(--button-secondary-fg);
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
-    .menu button:hover,
-    .logout:hover {
-      background: var(--hoverblau);
+    button:hover {
+      background: var(--button-secondary-bg);
     }
 
-    .menu button::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 0;
-      background: transparent;
-      border-radius: 4px 0 0 4px;
-      transition: width 0.25s ease, background-color 0.25s ease;
+    .modal {
+      background: var(--modal-bg);
+      color: var(--text);
     }
 
-    .menu button:hover::before {
-      width: 5px;
-      background: var(--hoverblau);
-    }
-
-    .menu button.active {
-      background: var(--blassblau);
-      font-weight: bold;
-      color: var(--dunkelblau);
-    }
-
-    .menu button.active::before {
-      width: 5px;
-      background: var(--dunkelblau);
-    }
-
-    .logout {
-      margin-top: auto;
-      margin-bottom: 0.8rem;
-    }
-
-    .version {
-      font-size: 0.8rem;
-      text-align: center;
-      color: #555;
-    }
-
-    /* Content */
-    .content {
-      flex-grow: 1;
-      background: var(--hellgrau);
-      padding: 2rem 3rem;
-      overflow-y: auto;
-    }
-
-    /* Menü-Button mobil */
+    /* ================================ MOBILE-DISPLAY ================================ */
     .menu-toggle {
       display: none;
     }
@@ -163,9 +122,11 @@
         transition: left 0.3s;
         z-index: 1000;
       }
+
       .sidebar.active {
         left: 0;
       }
+
       .menu-toggle {
         display: block;
         position: fixed;
@@ -180,54 +141,10 @@
         cursor: pointer;
         z-index: 1100;
       }
+
       .content {
         padding: 5rem 1.5rem 2rem 1.5rem;
       }
-    }
-
-    /* Darkmode */
-    body.dark {
-      --bg: #000;          /* Hintergrund komplett schwarz */
-      --text: #f5f5f5;     /* Standardtext hell */
-
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    body.dark .sidebar {
-      background: #1a1a1a; /* Sidebar leicht abgesetzt */
-      color: var(--text);
-    }
-
-    body.dark .content {
-      background: var(--bg);  /* wichtig: Content jetzt auch schwarz */
-      color: var(--text);
-    }
-
-    body.dark .menu button,
-    body.dark .logout {
-      color: var(--text);
-    }
-
-    body.dark .menu button:hover,
-    body.dark .logout:hover {
-      background: var(--hoverblau);
-      color: #000;
-    }
-
-    body.dark .menu button.active {
-      background: var(--blassblau);
-      font-weight: bold;
-      color: var(--dunkelblau);
-    }
-
-    body.dark .menu button.active::before {
-      background: var(--dunkelblau);
-    }
-
-    body.dark .profile h2,
-    body.dark .profile p {
-      color: var(--text);
     }
   </style>
 </head>
@@ -270,6 +187,70 @@
     <h1>Willkommen in deiner persönlichen IuK Lernwelt</h1>
     <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
   </div>
+
+    <script type="module">
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Funktion zum Abrufen des Dark Mode aus Firebase
+    async function getUserThemePreference(uid) {
+      const db = getFirestore();
+      const userDocRef = doc(db, "users", uid);
+      try {
+        const docSnap = await getDoc(userDocRef);
+        if (docSnap.exists()) {
+          const theme = docSnap.data().themePreference;
+          return theme || "light";  // Standardwert ist "light"
+        } else {
+          console.log("Kein Dokument für diesen Benutzer gefunden.");
+          return "light";  // Standardwert
+        }
+      } catch (error) {
+        console.error("Fehler beim Abrufen des Dark Modes:", error);
+        return "light";  // Standardwert
+      }
+    }
+
+    // Beim Laden der Seite den Dark Mode anwenden
+    document.addEventListener("DOMContentLoaded", async () => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const savedTheme = await getUserThemePreference(user.uid);  // Hole den Dark Mode-Status aus Firebase
+          if (savedTheme === "dark") {
+            document.body.classList.add("dark");
+          } else {
+            document.body.classList.remove("dark");
+          }
+        }
+      });
+    });
+
+    // Funktion zum Umschalten des Dark Modes
+    async function toggleDarkMode() {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        const currentTheme = document.body.classList.contains("dark") ? "dark" : "light";
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        // Speichern des neuen Themes in Firebase
+        await saveUserThemePreference(user.uid, newTheme);
+        // Anwenden des neuen Themes auf der Seite
+        document.body.classList.toggle("dark", newTheme === "dark");
+      }
+    }
+
+    // Funktion zum Speichern des Dark Mode Status in Firebase
+    async function saveUserThemePreference(uid, theme) {
+      const db = getFirestore();
+      const userDocRef = doc(db, "users", uid);
+      try {
+        await setDoc(userDocRef, { themePreference: theme }, { merge: true });
+        console.log("Dark Mode gespeichert:", theme);
+      } catch (error) {
+        console.error("Fehler beim Speichern des Dark Modes:", error);
+      }
+    }
 
   <!-- Firebase / Auth -->
   <script type="module">
