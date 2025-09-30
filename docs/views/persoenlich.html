@@ -435,6 +435,36 @@ const pwdMsg = document.getElementById("pwdMsg");
 const sidebarName = document.getElementById("userName");
 const sidebarRole = document.getElementById("userRole");
 
+// Zurück-Button (leitet zurück zur app.html-Seite im docs-Verzeichnis)
+backBtn.addEventListener("click", () => {
+  window.location.href = "app.html"; // app.html liegt direkt im docs-Verzeichnis
+});
+
+// Speichern-Button (speichert die Änderungen in Firebase)
+saveBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    profileMsg.textContent = "❌ Kein Benutzer eingeloggt.";
+    profileMsg.style.color = "red";
+    return;
+  }
+
+  const name = nameField.value.trim();
+  if (name !== user.displayName) {
+    try {
+      // Benutzername in Firebase aktualisieren
+      await updateUserProfile(user, { displayName: name });
+      profileMsg.textContent = "✅ Profil erfolgreich gespeichert.";
+      profileMsg.style.color = "green";
+      // Sidebar aktualisieren (falls vorhanden)
+      if (sidebarName) sidebarName.textContent = name;
+    } catch (error) {
+      profileMsg.textContent = `❌ Fehler beim Speichern: ${error.message}`;
+      profileMsg.style.color = "red";
+    }
+  }
+});
+
 // Passwort-UI
 const passRules = document.getElementById("pass-rules");
 const pwMeter = document.getElementById("pwMeter");
