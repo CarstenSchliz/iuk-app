@@ -6,69 +6,91 @@
   <title>IuK Lernwelt – App</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  
   <style>
-    /* ================================ STANDARD-FARBEN ================================ */
     :root {
       --softrot: rgb(228, 100, 80);
       --dunkelblau: rgb(0, 45, 85);
-      --hellblau: rgb(100, 160, 220);
+      --hellgrau: rgb(239, 238, 234);
+      --mittelgrau: rgb(180, 180, 180);
+      --blassblau: rgb(230, 240, 250);
+      --hoverblau: #cfe4f9;
+
       --bg: #f3f4f6;
       --text: #1f2937;
       --heading: #002d55;
       --link: #e06862;
-
       --card-bg: #ffffff;
       --card-border: #e5e7eb;
-
       --input-bg: #ffffff;
       --input-fg: #111827;
       --input-border: #d1d5db;
       --input-readonly-bg: #f9fafb;
       --input-readonly-fg: #555;
-
       --button-secondary-bg: #eef2f7;
       --button-secondary-fg: #111;
-
       --modal-bg: #ffffff;
       --modal-heading: #002d55;
+      --blassblau: rgb(230, 240, 250);
     }
 
-    /* ================================ DARK MODE ================================ */
+    /* Darkmode */
     body.dark {
-      --bg: #000000;
+      --bg: #1a1a1a;
       --text: #f3f4f6;
       --heading: #f3f4f6;
       --link: #4da6ff;
-
       --card-bg: #151515;
       --card-border: #2c2c2c;
-
       --input-bg: #222;
       --input-fg: #f3f4f6;
       --input-border: #3a3a3a;
       --input-readonly-bg: #2a2a2a;
       --input-readonly-fg: #bdbdbd;
-
       --button-secondary-bg: #2b2b2b;
       --button-secondary-fg: #e8e8e8;
-
       --modal-bg: #1e1e1e;
       --modal-heading: #f3f4f6;
     }
 
-    /* ================================ ALLGEMEINE STILE ================================ */
-    body {
+    html, body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
+      padding: 0;
+      height: 100%;
+      background: var(--bg) !important;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
       color: var(--text);
       transition: background .2s ease, color .2s ease;
     }
 
-    .sidebar, .content {
-      transition: background .2s ease, color .2s ease;
+    .settings-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .page-title {
+      color: var(--softrot);
+      margin: 0 0 1rem;
+      padding: 1rem 0;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+
+    @media (max-width: 768px) {
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .card {
@@ -78,89 +100,57 @@
       padding: 1.5rem;
       border-radius: 14px;
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+      margin: 0;
       transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+      box-sizing: border-box;
+      width: 100%;
     }
 
-    input, textarea {
-      background: var(--input-bg);
-      color: var(--input-fg);
-      border: 1px solid var(--input-border);
-      padding: 10px;
-      border-radius: 8px;
+    body.dark .card {
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
     }
 
-    button {
-      background: var(--button-secondary-bg);
-      color: var(--button-secondary-fg);
-      padding: 10px 15px;
+    .btn {
+      padding: .6rem 1rem;
+      border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      font-size: .95rem;
+      min-height: 44px;
+      min-width: 140px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      transition: filter .15s ease, background .2s ease, color .2s ease;
     }
 
-    button:hover {
-      background: var(--button-secondary-bg);
+    body.dark .btn {
+      background: var(--dunkelblau);
+      color: white;
     }
 
-    .modal {
-      background: var(--modal-bg);
-      color: var(--text);
+    body.dark .btn:hover {
+      background: var(--hellblau);
     }
 
-    /* ================================ MOBILE-DISPLAY ================================ */
-    .menu-toggle {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        position: fixed;
-        left: -300px;
-        top: 0;
-        height: 100%;
-        width: 300px;
-        transition: left 0.3s;
-        z-index: 1000;
-      }
-
-      .sidebar.active {
-        left: 0;
-      }
-
-      .menu-toggle {
-        display: block;
-        position: fixed;
-        top: 1rem;
-        left: 1rem;
-        font-size: 1.5rem;
-        background: var(--dunkelblau);
-        color: white;
-        border: none;
-        padding: 0.5rem 0.8rem;
-        border-radius: 8px;
-        cursor: pointer;
-        z-index: 1100;
-      }
-
-      .content {
-        padding: 5rem 1.5rem 2rem 1.5rem;
-      }
-    }
   </style>
 </head>
 
 <body>
+  <!-- Mobile Menu Button -->
   <button class="menu-toggle" id="menuToggle">
     <i class="bi bi-list"></i>
   </button>
 
+  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile">
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg" />
       <input type="file" id="profileUpload" accept="image/*" style="display: none" />
       <h2 id="userName">Lädt...</h2>
-      <p id="userRoles"></p>
-      <p id="userHighestRole" style="color: var(--dunkelblau);"></p>
+      <p id="userRoles"></p> <!-- Hier werden jetzt keine Rollen angezeigt -->
+      <p id="userHighestRole" style="color: var(--dunkelblau);"></p> <!-- Nur die höchste Rolle anzeigen -->
     </div>
 
     <div class="menu">
@@ -169,7 +159,10 @@
       <button data-page="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
       <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
       <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
-      <button data-page="benutzer" id="nav-users" style="display: none"><i class="bi bi-people"></i> Benutzerverwaltung</button>
+      <!-- Benutzerverwaltung nur sichtbar für Admins / Gruppenleiter -->
+      <button data-page="benutzer" id="nav-users" style="display: none">
+        <i class="bi bi-people"></i> Benutzerverwaltung
+      </button>
     </div>
 
     <button class="logout" id="logoutBtn">
@@ -178,106 +171,40 @@
     <div class="version">Version 1.0.0</div>
   </div>
 
+  <!-- Content -->
   <div class="content" id="content">
     <h1>Willkommen in deiner persönlichen IuK Lernwelt</h1>
     <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
   </div>
 
   <script type="module">
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    // Funktion zum Abrufen des Dark Mode aus Firebase
-    async function getUserThemePreference(uid) {
-      const db = getFirestore();
-      const userDocRef = doc(db, "users", uid);
-      try {
-        const docSnap = await getDoc(userDocRef);
-        if (docSnap.exists()) {
-          const theme = docSnap.data().themePreference;
-          return theme || "light";  // Standardwert ist "light"
-        } else {
-          console.log("Kein Dokument für diesen Benutzer gefunden.");
-          return "light";  // Standardwert
-        }
-      } catch (error) {
-        console.error("Fehler beim Abrufen des Dark Modes:", error);
-        return "light";  // Standardwert
-      }
-    }
-
-    // Beim Laden der Seite den Dark Mode anwenden
-    document.addEventListener("DOMContentLoaded", async () => {
-      const auth = getAuth();
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          const savedTheme = await getUserThemePreference(user.uid);  // Hole den Dark Mode-Status aus Firebase
-          if (savedTheme === "dark") {
-            document.body.classList.add("dark");
-          } else {
-            document.body.classList.remove("dark");
-          }
-        }
-      });
-    });
-
-    // Funktion zum Umschalten des Dark Modes
-    async function toggleDarkMode() {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (user) {
-        const currentTheme = document.body.classList.contains("dark") ? "dark" : "light";
-        const newTheme = currentTheme === "dark" ? "light" : "dark";
-        // Speichern des neuen Themes in Firebase
-        await saveUserThemePreference(user.uid, newTheme);
-        // Anwenden des neuen Themes auf der Seite
-        document.body.classList.toggle("dark", newTheme === "dark");
-      }
-    }
-
-    // Funktion zum Speichern des Dark Mode Status in Firebase
-    async function saveUserThemePreference(uid, theme) {
-      const db = getFirestore();
-      const userDocRef = doc(db, "users", uid);
-      try {
-        await setDoc(userDocRef, { themePreference: theme }, { merge: true });
-        console.log("Dark Mode gespeichert:", theme);
-      } catch (error) {
-        console.error("Fehler beim Speichern des Dark Modes:", error);
-      }
-    }
+    import { auth, logout, uploadProfileImage, getUserRoles } from "./js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
-    if (menuToggle) {
-      menuToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("active");
-      });
-    }
+    menuToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+    });
 
     // Seitenwechsel
     const content = document.getElementById("content");
     const buttons = document.querySelectorAll(".menu button");
 
     async function loadPage(page) {
-      try {
-        const res = await fetch(`views/${page}.html`);
-        if (!res.ok) throw new Error("Seite nicht gefunden");
-        const html = await res.text();
-        content.innerHTML = html;
+      const res = await fetch(`views/${page}.html`);
+      if (!res.ok) throw new Error("Seite nicht gefunden");
+      const html = await res.text();
+      content.innerHTML = html;
 
-        // eingebettete Scripts neu laden
-        content.querySelectorAll("script").forEach((oldScript) => {
-          const newScript = document.createElement("script");
-          if (oldScript.type) newScript.type = oldScript.type;
-          if (oldScript.src) newScript.src = oldScript.src;
-          else newScript.textContent = oldScript.textContent;
-          content.appendChild(newScript);
-        });
-      } catch (err) {
-        content.innerHTML = `<h2>Fehler</h2><p>${err.message}</p>`;
-      }
+      content.querySelectorAll("script").forEach((oldScript) => {
+        const newScript = document.createElement("script");
+        if (oldScript.type) newScript.type = oldScript.type;
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        content.appendChild(newScript);
+      });
     }
 
     buttons.forEach((btn) => {
@@ -293,20 +220,15 @@
     // Profilbild Upload
     const profileImg = document.getElementById("profileImg");
     const profileUpload = document.getElementById("profileUpload");
-
     profileImg.addEventListener("click", () => profileUpload.click());
 
     profileUpload.addEventListener("change", async (event) => {
       const file = event.target.files[0];
       const user = auth.currentUser;
       if (file && user) {
-        try {
-          const url = await uploadProfileImage(user, file);
-          profileImg.src = url;
-          alert("✅ Profilbild aktualisiert!");
-        } catch (err) {
-          alert("❌ Fehler beim Hochladen: " + err.message);
-        }
+        const url = await uploadProfileImage(user, file);
+        profileImg.src = url;
+        alert("✅ Profilbild aktualisiert!");
       }
     });
 
@@ -327,35 +249,24 @@
           profileImg.src = "assets/avatar-default.png";
         }
 
-        // 🔑 Rollen aus Firestore prüfen
         const roles = await getUserRoles(user.uid);
-
-        // Debugging: Rollen im Konsolen-Log anzeigen
         console.log("Benutzerrollen:", roles);
 
-        // Definiere die Reihenfolge der Rollen: admin muss die höchste Rolle sein
         const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
-
-        // Manuelle Bestimmung der höchsten Rolle
-        let highestRole = "Keine Rolle zugewiesen"; // Standardwert
+        let highestRole = "Keine Rolle zugewiesen";
         for (let role of roleOrder) {
           if (roles.includes(role)) {
-            highestRole = role; // Wähle die erste Rolle, die im roleOrder-Array erscheint
+            highestRole = role;
             break;
           }
         }
 
-        console.log("Höchste Rolle:", highestRole);  // Debugging: Zeigt die höchste Rolle im Log an
-
-        // Setze die höchste Rolle unter dem Benutzernamen
         const highestRoleElement = document.getElementById("userHighestRole");
-        highestRoleElement.textContent = `${capitalizeFirstLetter(highestRole)}`;
+        highestRoleElement.textContent = capitalizeFirstLetter(highestRole);
 
-        // Keine weiteren Rollen im Profil anzeigen
         const userRolesElement = document.getElementById("userRoles");
         userRolesElement.textContent = "";
 
-        // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
         const navUsers = document.getElementById("nav-users");
         if (roles.includes("admin") || roles.includes("gruppenleiter")) {
           if (navUsers) {
@@ -367,7 +278,6 @@
       }
     });
 
-    // Funktion, um den ersten Buchstaben der Rolle groß zu machen und den Rest klein
     function capitalizeFirstLetter(str) {
       if (str) {
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
