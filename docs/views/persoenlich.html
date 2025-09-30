@@ -452,10 +452,17 @@ saveBtn.addEventListener("click", async () => {
   const name = nameField.value.trim();
   if (name !== user.displayName) {
     try {
-      // Benutzername in Firebase aktualisieren
-      await updateUserProfile(user, { displayName: name });
+      // Benutzernamen in Firebase Authentifizierung aktualisieren
+      await updateProfile(user, { displayName: name });
+
+      // Optional: Zusätzliche Daten in Firestore aktualisieren (falls benötigt)
+      const userDocRef = doc(db, "users", user.uid);
+      await setDoc(userDocRef, { displayName: name }, { merge: true });
+
+      // Erfolgreiche Nachricht
       profileMsg.textContent = "✅ Profil erfolgreich gespeichert.";
       profileMsg.style.color = "green";
+
       // Sidebar aktualisieren (falls vorhanden)
       if (sidebarName) sidebarName.textContent = name;
     } catch (error) {
