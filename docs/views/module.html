@@ -240,23 +240,31 @@
             return 0;
           }
 
-          function updateSub(event) {
-            const p = percent();
-            pb.style.width = p + '%';
-            pb.style.background = subColor(p);
-            pb.textContent = p > 0 ? (p + '%') : '';
-            pb.dataset.percent = p;
-            updateCategory();
+         function updateSub(event) {
+  const p = percent();  // Berechnet den Fortschritt (z.B. 25%, 50%, 75%, 100%)
+  pb.style.width = p + '%';
+  pb.style.background = subColor(p);  // Setzt die Hintergrundfarbe basierend auf dem Fortschritt
+  pb.textContent = p > 0 ? (p + '%') : '';
+  pb.dataset.percent = p;
+  updateCategory();  // Aktualisiert den Fortschritt der gesamten Kategorie
 
-            const isUserEditingStep1 = (!editable && event?.target === cb[0]);
+  const isUserEditingStep1 = (!editable && event?.target === cb[0]);
 
-            // Sicherstellen, dass der Fortschritt gespeichert wird
-            if (editable || isUserEditingStep1) {
-              const values = Array.from(cb).map(c => c.checked);
-              saveProgress(uid, catName, sub, values);  // Hier wird der Fortschritt gespeichert
-            }
-          }
+  // Hier kommt das Debugging rein
+  console.log("updateSub aufgerufen:", {
+    uid,           // Benutzer-ID
+    catName,       // Kategoriename
+    sub,           // Subkategorie
+    values: Array.from(cb).map(c => c.checked)  // Checkbox-Werte
+  });
 
+  // Fortschritt nur für den ersten Schritt speichern, wenn der Benutzer ein normaler Nutzer ist
+  if (editable || isUserEditingStep1) {
+    const values = Array.from(cb).map(c => c.checked);
+    console.log("Speichern von Werten:", values);  // Debugging-Ausgabe
+    saveProgress(uid, catName, sub, values);  // Speichert den Fortschritt in Firebase
+  }
+}
           enforce(); updateSub();
 
           cb.forEach(c => c.addEventListener('change', (e) => {
