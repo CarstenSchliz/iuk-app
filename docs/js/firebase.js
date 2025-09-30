@@ -167,28 +167,3 @@ export async function changePassword(user, currentPwd, newPwd) {
   // Neues Passwort setzen
   await fbUpdatePassword(user, newPwd);
 }
-import { setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-/**
- * Speichert den Fortschritt eines Benutzers in Firestore.
- * 
- * @param {string} userId - Die UID des Benutzers
- * @param {string} category - Die Kategorie des Lernmoduls (z.B. "Fahrzeugkunde")
- * @param {string} subcategory - Die Subkategorie des Lernmoduls (z.B. "IT-Hardware")
- * @param {boolean[]} progressData - Ein Array der Fortschrittsdaten (Checkboxen)
- */
-export async function saveProgress(userId, category, subcategory, progressData) {
-  const userRef = doc(db, "users", userId);
-  const key = `lernmodule.${category}.${subcategory}`;
-
-  try {
-    // Die Daten im Dokument des Benutzers aktualisieren
-    await setDoc(userRef, {
-      [key]: progressData // Fortschrittsdaten für die angegebene Kategorie und Subkategorie speichern
-    }, { merge: true }); // merge: true stellt sicher, dass nur die angegebenen Daten überschrieben werden
-    console.log("Fortschritt erfolgreich gespeichert!");
-  } catch (error) {
-    console.error("Fehler beim Speichern des Fortschritts:", error);
-  }
-}
-
