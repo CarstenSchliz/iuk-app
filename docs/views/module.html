@@ -112,9 +112,10 @@
 
   <script type="module">
     import { auth, db, observeAuthState, getUserRoles } from "./js/firebase.js";
-    import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const API_BASE = "https://europe-west3-iuk-app.cloudfunctions.net";
+    
     async function apiFetch(endpoint, options = {}) {
       const user = auth.currentUser;
       if (!user) throw new Error("Nicht eingeloggt");
@@ -125,16 +126,16 @@
 
     const categories = {
       "Fahrzeugkunde": [
-        "IT-Hardware","Bedienung KFZ","Funk-Hardware","Material im Heck","Notstromaggregat","Mastbedienung-Funktionen","CO-Messgerät","Kaffeemaschine"
+        "IT-Hardware", "Bedienung KFZ", "Funk-Hardware", "Material im Heck", "Notstromaggregat", "Mastbedienung-Funktionen", "CO-Messgerät", "Kaffeemaschine"
       ],
       "Software": [
-        "HDMI-Switch","DECT-Telefonie","LARDIS","GSM-Mobilfunk-Voiceover-IP","Linkus","EDP"
+        "HDMI-Switch", "DECT-Telefonie", "LARDIS", "GSM-Mobilfunk-Voiceover-IP", "Linkus", "EDP"
       ],
       "LARDIS": [
-        "Startvorgang manuell / Neustart LARDIS Desktop Symbol","Wahl der Gruppe / Kanal","Headset Ja / Nein Lautstärke-Möglichkeiten","PTT-Möglichkeiten","Schnellwahl am Schwanenhals","Status melden","Zurücksetzen auf Standard","Pegeln Mikrofon / Headset"
+        "Startvorgang manuell / Neustart LARDIS Desktop Symbol", "Wahl der Gruppe / Kanal", "Headset Ja / Nein Lautstärke-Möglichkeiten", "PTT-Möglichkeiten", "Schnellwahl am Schwanenhals", "Status melden", "Zurücksetzen auf Standard", "Pegeln Mikrofon / Headset"
       ],
       "Einsatztaktik": [
-        "Ticket-System-MANV-Konzept","Nutzung Direktruf-Tetra-SDS","Externe Internet-Einspeisung","Verhalten im Alarmfall","SOP-Einsatzbeginn-Ende","Führungskräfte-Kennzeichnung","Funktionsträger im ELW","Schulung aller Standardeinsatzregeln","Kenntnisse von Kliniken-Funkrufnamen-Einsatzmitteln"
+        "Ticket-System-MANV-Konzept", "Nutzung Direktruf-Tetra-SDS", "Externe Internet-Einspeisung", "Verhalten im Alarmfall", "SOP-Einsatzbeginn-Ende", "Führungskräfte-Kennzeichnung", "Funktionsträger im ELW", "Schulung aller Standardeinsatzregeln", "Kenntnisse von Kliniken-Funkrufnamen-Einsatzmitteln"
       ]
     };
 
@@ -145,7 +146,7 @@
       const ref = doc(db, "users", userId);
       const key = `${cat}.${sub}`;
       lastSavedKey = key; // merken
-      await setDoc(ref, { [`lernmodule.${cat}.${sub}`]: values }, { merge: true });
+      await updateDoc(ref, { [`lernmodule.${cat}.${sub}`]: values });
     }
 
     function getCategoryIconEl(name){
@@ -240,44 +241,34 @@
             return 0;
           }
 
-         function updateSub(event) {
-  const p = percent();  // Berechnet den Fortschritt (z.B. 25%, 50%, 75%, 100%)
-  pb.style.width = p + '%';
-  pb.style.background = subColor(p);  // Setzt die Hintergrundfarbe basierend auf dem Fortschritt
-  pb.textContent = p > 0 ? (p + '%') : '';
-  pb.dataset.percent = p;
-  updateCategory();  // Aktualisiert den Fortschritt der gesamten Kategorie
+          function updateSub(event) {
+            const p = percent();  // Berechnet den Fortschritt (z.B. 25%, 50%, 75%, 100%)
+            pb.style.width = p + '%';
+            pb.style.background = subColor(p);  // Setzt die Hintergrundfarbe basierend auf dem Fortschritt
+            pb.textContent = p > 0 ? (p + '%') : '';
+            pb.dataset.percent = p;
+            updateCategory();  // Aktualisiert den Fortschritt der gesamten Kategorie
 
-  const isUserEditingStep1 = (!editable && event?.target === cb[0]);
+            const isUserEditingStep1 = (!editable && event?.target === cb[0]);
 
-  // Hier kommt das Debugging rein
-  console.log("updateSub aufgerufen:", {
-    uid,           // Benutzer-ID
-    catName,       // Kategoriename
-    sub,           // Subkategorie
-    values: Array.from(cb).map(c => c.checked)  // Checkbox-Werte
-  });
+            // Fortschritt nur für den ersten Schritt speichern, wenn der Benutzer ein normaler Nutzer ist
+            if (editable || isUserEditingStep1) {
+              const values = Array.from(cb).map(c => c.checked);
+              console.log("Speichern von Werten:", values);  // Debugging-Ausgabe
+              saveProgress(uid, catName, sub, values);  // Speichert den Fortschritt in Firebase
+            }
+          }
 
-  // Fortschritt nur für den ersten Schritt speichern, wenn der Benutzer ein normaler Nutzer ist
-  if (editable || isUserEditingStep1) {
-    const values = Array.from(cb).map(c => c.checked);
-    console.log("Speichern von Werten:", values);  // Debugging-Ausgabe
-    saveProgress(uid, catName, sub, values);  // Speichert den Fortschritt in Firebase
-  }
-}
           enforce(); updateSub();
 
           cb.forEach(c => c.addEventListener('change', (e) => {
             if (editable) {
-              // Komfort: Wenn Admin z.B. Stufe 3 setzt, setze Stufen 1–3 automatisch.
               const idx = Array.from(cb).indexOf(e.target);
               if (e.target.checked) {
                 for (let j = 0; j <= idx; j++) cb[j].checked = true;
               } else {
                 for (let j = idx; j < cb.length; j++) cb[j].checked = false;
               }
-            } else {
-              // Normaler Nutzer: nur Stufe 1 ist anklickbar – Rest ignoriert (aber disabled)
             }
             enforce();
             updateSub(e);
