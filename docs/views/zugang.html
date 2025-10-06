@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
   <title>Zugangsvoraussetzungen</title> 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"> 
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.19.3/dist/xlsx.full.min.js"></script>
 <style>
   :root { 
     --softrot: rgb(228,100,80); 
@@ -341,6 +342,15 @@
       display: inline-flex; /* Text und Icon in einer Linie */
     }
   }
+  #btnExcelExport {
+  background: linear-gradient(135deg, var(--hellblau), var(--dunkelblau));
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  transition: all 0.15s ease;
+}
+#btnExcelExport:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
 </style>
 </head> 
 <body> 
@@ -425,6 +435,16 @@
       <p class="muted">Hinweis: Die Bestätigung kann nur von Gruppenleiter:innen oder Administrator:innen vorgenommen werden.</p> 
     </div> 
   </div> 
+  <!-- 💾 Excel-Export -->
+<div class="card" id="exportCard" style="margin-top:1.5rem;">
+  <h3><i class="bi bi-file-earmark-excel"></i> Excel-Export</h3>
+  <button id="btnExcelExport" class="btn-confirm btn-blue" style="width:auto;">
+    <i class="bi bi-download"></i> Excel exportieren
+  </button>
+  <p class="muted" id="exportHint" style="margin-top:0.5rem;">
+    Exportiert deine eigenen Daten (Gruppenleiter/Admin: alle Nutzer, jeweils auf einem eigenen Tabellenblatt)
+  </p>
+</div>
   <div id="toast"></div> 
 
   <!-- Modal --> 
@@ -820,6 +840,141 @@
         updateProgress(verlaufBoxes, verlaufProgress, chkOptional); 
       } 
     }); 
+    /***********************
+ * Excel-Export (Rollenspezifisch)
+ ***********************/
+import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const btnExcelExport = document.getElementById("btnExcelExport");
+const exportHint = document.getElementById("exportHint");
+
+let currentUser = null;
+let currentRoles = [];
+
+// Auth-Status beobachten
+observeAuthState(async (user) => {
+  if (!user) return;
+  currentUser = user;
+  currentRoles = await getUserRoles(user.uid);
+
+  // Hinweistext anpassen
+  if (currentRoles.includes("admin") || currentRoles.includes("gruppenleiter")) {
+    exportHint.textContent = "Exportiert alle Nutzer – jeweils auf einem eigenen Tabellenblatt.";
+  } else {
+    exportHint.textContent = "Exportiert deine eigenen Zugangsdaten.";
+  }
+});
+
+// Klick-Event für den Button
+btnExcelExport.addEventListener("click", async () => {
+  showToast("Excel wird erstellt...");
+
+  try {
+    const isAdmin = currentRoles.includes("admin") || currentRoles.includes("gruppenleiter");
+    const wb = XLSX.utils.book_new();
+
+    if (isAdmin) {
+      // 🔹 Alle Nutzer exportieren – je ein Sheet
+      const snapshot = await getDocs(collection(db, "users"));
+      const docs = snapshot.docs;
+
+      if (!docs.length) {
+        showToast("Keine Nutzerdaten gefunden");
+        return;
+      }
+
+      for (const docSnap of docs) {
+        const d = docSnap.data();
+        const name = (d.displayName || d.email || "Unbekannt").substring(0, 28); // Blattnamen begrenzen
+
+        const data = formatUserForSheet(d);
+        const ws = XLSX.utils.json_to_sheet(data.rows);
+        styleSheet(ws);
+
+        XLSX.utils.book_append_sheet(wb, ws, name);
+      }
+
+      XLSX.writeFile(wb, `Zugangsvoraussetzungen_alle_${new Date().toISOString().split("T")[0]}.xlsx`);
+      showToast("Excel mit allen Nutzern exportiert!");
+    } else {
+      // 🔹 Nur eigene Daten exportieren
+      const ref = doc(db, "users", currentUser.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        showToast("Keine Daten gefunden");
+        return;
+      }
+      const d = snap.data();
+
+      const ws = XLSX.utils.json_to_sheet(formatUserForSheet(d).rows);
+      styleSheet(ws);
+      XLSX.utils.book_append_sheet(wb, ws, "Eigene Daten");
+
+      XLSX.writeFile(wb, `Zugangsvoraussetzungen_${currentUser.uid}_${new Date().toISOString().split("T")[0]}.xlsx`);
+      showToast("Deine Daten wurden exportiert!");
+    }
+
+  } catch (err) {
+    console.error("Excel-Export-Fehler:", err);
+    showToast("Fehler beim Export");
+  }
+});
+
+/***********************
+ * Hilfsfunktionen
+ ***********************/
+
+// Daten vorbereiten für das Excel-Format
+function formatUserForSheet(d) {
+  const grundPercent = Array.isArray(d.grund) ? Math.round((d.grund.filter(Boolean).length / d.grund.length) * 100) : 0;
+  const optPercent = Array.isArray(d.optional) ? Math.round((d.optional.filter(Boolean).length / d.optional.length) * 100) : 0;
+  const status = d.freigabeStatus || "offen";
+
+  const rows = [
+    { Feld: "Name", Wert: d.displayName || "(kein Name)" },
+    { Feld: "E-Mail", Wert: d.email || "" },
+    { Feld: "Grundvoraussetzungen erfüllt", Wert: `${grundPercent}%` },
+    { Feld: "Optionale Voraussetzungen erfüllt", Wert: `${optPercent}%` },
+    { Feld: "Freigabe-Status", Wert: status },
+    {},
+    { Feld: "Datum des Exports", Wert: new Date().toLocaleString("de-DE") },
+  ];
+
+  return { rows };
+}
+
+// Design-Styling für das Excel-Blatt
+function styleSheet(ws) {
+  const range = XLSX.utils.decode_range(ws["!ref"]);
+  ws["!cols"] = [{ wch: 40 }, { wch: 40 }];
+
+  // Kopfzeile fett + farbig
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const headerCell = ws[XLSX.utils.encode_cell({ r: 0, c: C })];
+    if (headerCell) {
+      headerCell.s = {
+        font: { bold: true, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "003366" } },
+        alignment: { horizontal: "center", vertical: "center" },
+      };
+    }
+  }
+
+  // Farbmarkierungen für Status
+  for (let R = 1; R <= range.e.r; R++) {
+    const fieldCell = ws[`A${R + 1}`];
+    const valueCell = ws[`B${R + 1}`];
+    if (!fieldCell || !valueCell) continue;
+
+    // Status einfärben
+    if (fieldCell.v === "Freigabe-Status") {
+      const val = String(valueCell.v).toLowerCase();
+      if (val.includes("freigeben")) valueCell.s = { font: { color: { rgb: "008000" }, bold: true } };
+      else if (val.includes("ablehnen")) valueCell.s = { font: { color: { rgb: "C00000" }, bold: true } };
+      else valueCell.s = { font: { color: { rgb: "1F4E79" }, italic: true } };
+    }
+  }
+}
   </script> 
 </body> 
 </html> 
