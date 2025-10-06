@@ -340,15 +340,20 @@
 
 /* Buttons nebeneinander anzeigen */
 .export-container button {
-  width: 200px;  /* Gleiche Breite wie die anderen Buttons */
+  width: 220px;  /* Gleiche Breite wie die anderen Buttons */
   height: 45px;  /* Gleiche Höhe wie die anderen Buttons */
-  font-weight: normal;
+  font-weight: normal;  /* Normalgewicht für den Text */
   font-size: 1rem; /* Gleiche Schriftgröße wie bei anderen Buttons */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   margin-right: 10px; /* Abstand zwischen den Buttons */
+}
+
+/* Text in den Buttons fett */
+.export-container button strong {
+  font-weight: bold;
 }
 
 /* Überschrift des Excel-Export Containers */
@@ -512,14 +517,14 @@
 <div id="exportContainer" class="export-container">
   <h3><i class="bi bi-file-earmark-excel"></i> Excel-Export</h3>
   
-  <!-- Button für den aktuellen Nutzer -->
+  <!-- Button für den eigenen Nutzer -->
   <button id="btnExportCurrentUser" class="btn-confirm btn-blue">
-    <i class="bi bi-download"></i> Aktuellen Nutzer exportieren
+    <i class="bi bi-download"></i> <strong>Eigenen Nutzer</strong> exportieren
   </button>
   
   <!-- Button für alle Nutzer -->
-  <button id="btnExportAllUsers" class="btn-confirm btn-blue" style="display: none;">
-    <i class="bi bi-download"></i> Alle Nutzer exportieren
+  <button id="btnExportAllUsers" class="btn-confirm btn-blue">
+    <i class="bi bi-download"></i> <strong>Alle Nutzer</strong> exportieren
   </button>
 </div>
 
