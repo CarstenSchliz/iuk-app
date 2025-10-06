@@ -326,36 +326,33 @@
           display: inline-flex;
         }
       }
-   /* Excel-Export Container */
+  /* Excel-Export Container */
 .export-container {
   background-color: #fff;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 700px; /* Breite gleich wie die von 'Grundvoraussetzungen' */
-  margin: 0 auto;
-  position: relative;
-  bottom: 0;
+  max-width: 700px; /* Breite gleich wie 'Grundvoraussetzungen' */
   margin-top: 1.5rem;
 }
 
-.export-header {
+.export-container h3 {
+  color: var(--hellblau);
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 1.2rem;
-  color: var(--dunkelblau);
   margin-bottom: 1rem;
 }
 
-.export-header i {
-  font-size: 1.6rem;
+.export-container h3 i {
+  font-size: 1.5rem;
 }
 
 .export-container button {
-  width: 200px; /* Button wird weniger breit */
-  height: 50px; /* Button wird höher */
+  width: 220px;  /* Der Button ist schmaler und etwas höher */
+  height: 45px;
   font-weight: bold;
   font-size: 1rem;
   display: flex;
@@ -365,7 +362,12 @@
 }
 
 .export-container button i {
-  font-size: 1.2rem;
+  font-size: 1.3rem; /* Passende Größe für das Download-Icon */
+}
+
+/* Position des Excel-Export Containers */
+#exportContainer {
+  margin-top: 1.5rem; /* Abgleich des Abstands mit den anderen Boxen */
 }
     </style>
   </head>
@@ -388,13 +390,10 @@
     </div>
     
 <!-- Excel-Export-Container -->
-<div id="exportContainer" class="export-container">
-  <div class="export-header">
-    <i class="bi bi-file-earmark-excel"></i>
-    <span>Excel-Export</span>
-  </div>
+<div id="exportContainer" class="export-container" style="display: none;">
+  <h3><i class="bi bi-cloud-download"></i> Excel-Export</h3>
   <button id="btnExportExcel" class="btn-confirm btn-blue">
-    <i class="bi bi-arrow-down-circle"></i> Exportieren
+    <i class="bi bi-download"></i> Exportieren
   </button>
 </div>
 
