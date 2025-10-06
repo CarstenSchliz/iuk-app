@@ -326,9 +326,8 @@
           display: inline-flex;
         }
       }
-   
 
-   /* Excel-Export Container */
+ /* Excel-Export Container */
 .export-container {
   background-color: #fff;
   padding: 1.5rem;
@@ -353,13 +352,13 @@
   margin-bottom: 0; /* Kein zusätzlicher Abstand nach der Überschrift */
 }
 
-/* Buttons nebeneinander anzeigen, unter der Überschrift */
+/* Button-Wrapper, der die Buttons nebeneinander anordnet */
 .export-container .button-wrapper {
-  display: flex; /* Stellt sicher, dass die Buttons nebeneinander stehen */
+  display: flex; /* Flexbox sorgt für nebeneinander anordnen */
   gap: 1rem;  /* Abstand zwischen den Buttons */
   justify-content: flex-start; /* Links ausgerichtet */
-  flex-wrap: wrap; /* Ermöglicht Umbruch, falls der Platz nicht ausreicht */
-  width: 100%; /* Sicherstellen, dass die Buttons den gesamten Platz nutzen */
+  flex-wrap: nowrap; /* Verhindert den Umbruch der Buttons in eine neue Zeile */
+  width: 100%; /* Verwendet die gesamte Breite des Containers */
 }
 
 /* Anpassung der Button-Stile */
