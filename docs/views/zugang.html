@@ -326,6 +326,47 @@
           display: inline-flex;
         }
       }
+   /* Excel-Export Container */
+.export-container {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 700px; /* Breite gleich wie die von 'Grundvoraussetzungen' */
+  margin: 0 auto;
+  position: relative;
+  bottom: 0;
+  margin-top: 1.5rem;
+}
+
+.export-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  color: var(--dunkelblau);
+  margin-bottom: 1rem;
+}
+
+.export-header i {
+  font-size: 1.6rem;
+}
+
+.export-container button {
+  width: 200px; /* Button wird weniger breit */
+  height: 50px; /* Button wird höher */
+  font-weight: bold;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.export-container button i {
+  font-size: 1.2rem;
+}
     </style>
   </head>
   <body>
@@ -346,10 +387,14 @@
       </div>
     </div>
     
-    <!-- Excel-Export-Button -->
-<div id="exportContainer" style="margin-bottom:1.5rem;">
+<!-- Excel-Export-Container -->
+<div id="exportContainer" class="export-container">
+  <div class="export-header">
+    <i class="bi bi-file-earmark-excel"></i>
+    <span>Excel-Export</span>
+  </div>
   <button id="btnExportExcel" class="btn-confirm btn-blue">
-    <i class="bi bi-file-earmark-excel"></i> Excel-Export
+    <i class="bi bi-arrow-down-circle"></i> Exportieren
   </button>
 </div>
 
