@@ -334,7 +334,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28); /* Schatten anpassen */
   width: 100%;
-  max-width: 800px; /* Gleiche Breite wie Grundvoraussetzungen */
+  max-width: 700px; /* Gleiche Breite wie Grundvoraussetzungen */
   margin-top: 1.5rem; /* Gleicher Abstand wie bei anderen Boxen */
   display: flex;
   flex-direction: column; /* Buttons unter der Überschrift */
@@ -359,7 +359,7 @@
   justify-content: flex-start; /* Links ausgerichtet */
   flex-wrap: nowrap; /* Kein Umbruch */
   width: 100%; /* Verwendet die gesamte Breite des Containers */
-  overflow: hidden; /* Verhindert, dass die Buttons aus dem Container herausragen */
+  box-sizing: border-box; /* Sorgt dafür, dass der Platz richtig berechnet wird */
 }
 
 /* Anpassung der Button-Stile */
@@ -376,8 +376,8 @@
   padding-right: 1rem; /* Gleichmäßiger Abstand auf der rechten Seite */
   margin: 0;  /* Kein zusätzlicher Abstand zwischen den Buttons */
   box-sizing: border-box; /* Stellt sicher, dass die Buttons den gesamten Raum korrekt nutzen */
+  flex-shrink: 0; /* Verhindert das Schrumpfen der Buttons */
   min-width: 250px;  /* Verhindert, dass der Button zu schmal wird */
-  flex-shrink: 0; /* Verhindert das Schrumpfen der Buttons bei wenig Platz */
 }
 
 /* Icon-Größe im Button anpassen */
