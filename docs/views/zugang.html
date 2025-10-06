@@ -331,19 +331,20 @@
   background-color: #fff;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28); /* Gleich wie die anderen Boxen */
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28); /* Schatten anpassen */
   width: 100%;
-  max-width: 700px; /* Gleiche Breite wie 'Grundvoraussetzungen' */
-  margin-top: 1.5rem; /* Gleicher Abstand wie andere Boxen */
+  max-width: 700px; /* Gleiche Breite wie Grundvoraussetzungen */
+  margin-top: 1.5rem; /* Gleicher Abstand wie bei anderen Boxen */
 }
 
-/* Überschrift des Export-Containers */
+/* Überschrift des Excel-Export Containers */
 .export-container h3 {
-  color: var(--hellblau); /* Gleiche Farbe wie bei den anderen Überschriften */
+  color: var(--hellblau); /* Gleiche Farbe wie bei anderen Überschriften */
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 1.05rem; /* Gleiche Schriftgröße wie bei anderen Überschriften */
+  margin-top: 0; /* Überschrift wird höher gesetzt */
   margin-bottom: 1rem;
 }
 
@@ -351,10 +352,10 @@
   font-size: 1.5rem; /* Passende Icon-Größe */
 }
 
-/* Button-Anpassungen */
+/* Button für den Excel-Export */
 .export-container button {
-  width: 260px;  /* Gleiche Breite wie die anderen Buttons */
-  height: 45px; /* Gleiche Höhe wie die anderen Buttons */
+  width: 220px;  /* Button schmaler */
+  height: 45px;  /* Buttonhöhe anpassen */
   font-weight: bold;
   font-size: 1rem; /* Gleiche Schriftgröße wie bei anderen Buttons */
   display: flex;
@@ -364,7 +365,7 @@
 }
 
 .export-container button i {
-  font-size: 1.3rem; /* Download-Icon in passender Größe */
+  font-size: 1.2rem; /* Download-Icon in passender Größe */
 }
     </style>
   </head>
@@ -493,7 +494,7 @@
       </div>
     </div>
    
-   <!-- Excel-Export-Container -->
+<!-- Excel-Export-Container -->
 <div id="exportContainer" class="export-container">
   <h3><i class="bi bi-file-earmark-excel"></i> Excel-Export</h3>
   <button id="btnExportExcel" class="btn-confirm btn-blue">
