@@ -279,8 +279,7 @@
 
   <!-- Firebase / Auth -->
   <script type="module">
-    import { auth, logout, uploadProfileImage, getUserRoles, } from "./js/firebase.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { auth, logout, uploadProfileImage, getUserRoles, observeAuthState } from "./js/firebase.js";
 
     // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
@@ -356,7 +355,7 @@
     });
 
     // Login-Check + Userdaten + Rollen
-    onAuthStateChanged(auth, async (user) => {
+    observeAuthState(auth, async (user) => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
         if (user.photoURL) {
