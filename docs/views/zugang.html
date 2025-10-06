@@ -353,15 +353,6 @@
 }
 
 /* Buttons nebeneinander anzeigen, unter der Überschrift */
-.export-container {
-  display: flex;
-  flex-direction: row;  /* Zeigt die Buttons nebeneinander */
-  justify-content: flex-start; /* Links ausgerichtet */
-  gap: 1rem;  /* Abstand zwischen den Buttons */
-  flex-wrap: wrap;  /* Stellt sicher, dass die Buttons umbrechen, wenn der Platz nicht ausreicht */
-}
-
-/* Anpassung der Button-Stile */
 .export-container button {
   width: auto; /* Breite der Buttons automatisch anpassen, damit der Text reinpasst */
   height: 45px;  /* Gleiche Höhe wie die anderen Buttons */
@@ -376,16 +367,16 @@
   margin: 0;  /* Kein zusätzlicher Abstand zwischen den Buttons */
 }
 
-/* Text in den Buttons fett */
-.export-container button strong {
-  font-weight: bold;
-  white-space: nowrap;  /* Verhindert den Umbruch von Text in "Eigenen Nutzer" */
+/* Buttons nebeneinander ausrichten, wenn genügend Platz vorhanden ist */
+.export-container button {
+  margin-top: 1rem; /* Abstand zu Überschrift */
 }
 
 /* Icon-Größe im Button anpassen */
 .export-container button i {
   font-size: 0.9rem; /* Icon-Größe auf 0.9rem reduziert */
 }
+
     </style>
   </head>
   <body>
