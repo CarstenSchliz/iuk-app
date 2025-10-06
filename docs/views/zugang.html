@@ -327,7 +327,7 @@
         }
       }
 
- /* Excel-Export Container */
+   /* Excel-Export Container */
 .export-container {
   background-color: #fff;
   padding: 1.5rem;
@@ -357,8 +357,9 @@
   display: flex; /* Flexbox sorgt für nebeneinander anordnen */
   gap: 1rem;  /* Abstand zwischen den Buttons */
   justify-content: flex-start; /* Links ausgerichtet */
-  flex-wrap: nowrap; /* Verhindert den Umbruch der Buttons in eine neue Zeile */
+  flex-wrap: nowrap; /* Kein Umbruch */
   width: 100%; /* Verwendet die gesamte Breite des Containers */
+  overflow: hidden; /* Verhindert, dass die Buttons aus dem Container herausragen */
 }
 
 /* Anpassung der Button-Stile */
@@ -374,6 +375,7 @@
   padding-left: 0.75rem;  /* Symmetrischer Abstand des Icons zur Kante */
   padding-right: 1rem; /* Gleichmäßiger Abstand auf der rechten Seite */
   margin: 0;  /* Kein zusätzlicher Abstand zwischen den Buttons */
+  box-sizing: border-box; /* Stellt sicher, dass die Buttons den gesamten Raum korrekt nutzen */
 }
 
 /* Icon-Größe im Button anpassen */
