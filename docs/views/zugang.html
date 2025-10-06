@@ -7,6 +7,7 @@
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     />
     <style>
       :root {
@@ -344,6 +345,13 @@
         <div id="selectedUser" class="selected-user"></div>
       </div>
     </div>
+    
+    <!-- Excel-Export-Button -->
+<div id="exportContainer" style="margin-bottom: 1.5rem; display:none">
+  <button id="btnExportExcel" class="btn-confirm btn-blue">
+    <i class="bi bi-file-earmark-excel"></i> Excel-Export
+  </button>
+</div>
 
     <div class="zugang-grid">
       <!-- Grundvoraussetzungen -->
@@ -861,6 +869,52 @@
           updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
         }
       });
+      /***********************
+ * Excel-Export
+ ***********************/
+document.getElementById("btnExportExcel").addEventListener("click", async () => {
+  try {
+    const res = await apiFetch("/listUsers", { method: "GET" });
+    if (!res.ok) throw new Error("Fehler beim Abrufen der Benutzerdaten");
+    const data = await res.json();
+
+    const rows = [["Name / Email", "Grundvoraussetzungen (%)", "Optionale Voraussetzungen (%)", "Freigabe-Status"]];
+
+    for (const u of data.users || []) {
+      const ref = doc(db, "users", u.uid);
+      const snap = await getDoc(ref);
+      let grundPct = 0, optPct = 0, status = "";
+      if (snap.exists()) {
+        const d = snap.data();
+        if (Array.isArray(d.grund))
+          grundPct = Math.round(
+            (d.grund.filter(Boolean).length / d.grund.length) * 100
+          );
+        if (Array.isArray(d.optional))
+          optPct = Math.round(
+            (d.optional.filter(Boolean).length / d.optional.length) * 100
+          );
+        status = d.freigabeStatus || "offen";
+      }
+      rows.push([
+        u.displayName || u.email || u.uid,
+        grundPct + "%",
+        optPct + "%",
+        status,
+      ]);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Zugangsvoraussetzungen");
+    XLSX.writeFile(wb, "zugangsvoraussetzungen.xlsx");
+
+    showToast("Excel-Datei erfolgreich erstellt!");
+  } catch (err) {
+    console.error(err);
+    showToast("Fehler beim Export");
+  }
+});
     </script>
   </body>
 </html>
