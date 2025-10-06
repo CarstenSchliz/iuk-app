@@ -338,20 +338,40 @@
   margin-top: 1.5rem; /* Gleicher Abstand wie bei anderen Boxen */
   display: flex;
   flex-direction: column; /* Buttons unter der Überschrift */
-  gap: 1.5rem; /* Abstand zwischen Überschrift und Buttons */
+  gap: 0.8rem; /* Reduzierter Abstand zwischen Überschrift und Buttons */
 }
 
-/* Buttons nebeneinander anzeigen */
+/* Überschrift des Excel-Export Containers */
+.export-container h3 {
+  color: var(--hellblau); /* Gleiche Farbe wie bei anderen Überschriften */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem; /* Gleiche Schriftgröße wie bei anderen Überschriften */
+  margin-top: 0; /* Keine zusätzliche Margen */
+  margin-bottom: 0; /* Kein zusätzlicher Abstand nach der Überschrift */
+}
+
+/* Buttons nebeneinander anzeigen, unter der Überschrift */
+.export-container {
+  display: flex;
+  flex-direction: row;  /* Zeigt die Buttons nebeneinander */
+  justify-content: flex-start; /* Links ausgerichtet */
+  gap: 1rem;  /* Abstand zwischen den Buttons */
+}
+
 .export-container button {
   width: 220px;  /* Gleiche Breite wie die anderen Buttons */
   height: 45px;  /* Gleiche Höhe wie die anderen Buttons */
   font-weight: normal;  /* Normalgewicht für den Text */
-  font-size: 1rem; /* Gleiche Schriftgröße wie bei anderen Buttons */
+  font-size: 0.9rem; /* Gleiche Schriftgröße wie bei anderen Buttons */
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 0;  /* Kein zusätzlicher Abstand */
+  justify-content: flex-start;  /* Icons linksbündig ausrichten */
+  gap: 0.6rem; /* Abstand zwischen dem Icon und dem Text */
+  padding-left: 0.75rem;  /* Symmetrischer Abstand des Icons zur Kante */
+  padding-right: 1rem; /* Gleichmäßiger Abstand auf der rechten Seite */
+  margin: 0;  /* Kein zusätzlicher Abstand zwischen den Buttons */
 }
 
 /* Text in den Buttons fett */
@@ -362,37 +382,6 @@
 
 .export-container button i {
   font-size: 1.2rem; /* Passende Icon-Größe */
-}
-
-/* Überschrift des Excel-Export Containers */
-.export-container h3 {
-  color: var(--hellblau); /* Gleiche Farbe wie bei anderen Überschriften */
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.05rem; /* Gleiche Schriftgröße wie bei anderen Überschriften */
-  margin-top: 0; /* Überschrift wird höher gesetzt */
-  margin-bottom: 1rem;
-}
-
-.export-container h3 i {
-  font-size: 1.05rem; /* Passende Icon-Größe */
-}
-
-/* Button für den Excel-Export */
-.export-container button {
-  width: 250px;  /* Button schmaler */
-  height: 45px;  /* Buttonhöhe anpassen */
-  font-weight: normal;
-  font-size: 0.9rem; /* Gleiche Schriftgröße wie bei anderen Buttons */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.export-container button i {
-  font-size: 1.0rem; /* Download-Icon in passender Größe */
 }
     </style>
   </head>
