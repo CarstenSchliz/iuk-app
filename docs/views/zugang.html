@@ -338,7 +338,7 @@
   margin-top: 1.5rem; /* Gleicher Abstand wie bei anderen Boxen */
   display: flex;
   flex-direction: column; /* Buttons unter der Überschrift */
-  gap: 1rem; /* Abstand zwischen Überschrift und Buttons */
+  gap: 1.5rem; /* Abstand zwischen Überschrift und Buttons */
 }
 
 /* Überschrift des Excel-Export Containers */
@@ -353,8 +353,16 @@
 }
 
 /* Buttons nebeneinander anzeigen, unter der Überschrift */
+.export-container .button-wrapper {
+  display: flex; /* Stellt sicher, dass die Buttons nebeneinander stehen */
+  gap: 1rem;  /* Abstand zwischen den Buttons */
+  justify-content: flex-start; /* Links ausgerichtet */
+  width: 100%; /* Sicherstellen, dass die Buttons den gesamten Platz nutzen */
+}
+
+/* Anpassung der Button-Stile */
 .export-container button {
-  width: 220px; /* Breite der Buttons automatisch anpassen, damit der Text reinpasst */
+  width: 250px; /* Breite der Buttons automatisch anpassen, damit der Text reinpasst */
   height: 45px;  /* Gleiche Höhe wie die anderen Buttons */
   font-weight: normal;  /* Normalgewicht für den Text */
   font-size: 0.9rem; /* Textgröße auf 0.9rem gesetzt */
@@ -365,11 +373,6 @@
   padding-left: 0.75rem;  /* Symmetrischer Abstand des Icons zur Kante */
   padding-right: 1rem; /* Gleichmäßiger Abstand auf der rechten Seite */
   margin: 0;  /* Kein zusätzlicher Abstand zwischen den Buttons */
-}
-
-/* Buttons nebeneinander ausrichten, wenn genügend Platz vorhanden ist */
-.export-container button {
-  margin-top: 1rem; /* Abstand zu Überschrift */
 }
 
 /* Icon-Größe im Button anpassen */
