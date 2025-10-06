@@ -334,17 +334,20 @@
   border-radius: 12px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28); /* Schatten anpassen */
   width: 100%;
-  max-width: 600px; /* Gleiche Breite wie Grundvoraussetzungen */
   margin-top: 1.5rem; /* Gleicher Abstand wie bei anderen Boxen */
+  display: flex; /* Hinzugefügt: Flexbox aktivieren */
+  gap: 1rem; /* Abstand zwischen den Buttons */
+  flex-direction: row; /* Buttons nebeneinander anzeigen */
+  justify-content: flex-start; /* Buttons nach links ausrichten */
 }
 
 /* Buttons nebeneinander anzeigen */
 .export-container button {
-  width: 220px;  /* Gleiche Breite wie die anderen Buttons */
+  width: auto;  /* Der Button nimmt nur so viel Platz ein, wie er benötigt */
   height: 45px;  /* Gleiche Höhe wie die anderen Buttons */
   font-weight: normal;  /* Normalgewicht für den Text */
   font-size: 1rem; /* Gleiche Schriftgröße wie bei anderen Buttons */
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
@@ -354,6 +357,10 @@
 /* Text in den Buttons fett */
 .export-container button strong {
   font-weight: bold;
+}
+
+.export-container button i {
+  font-size: 1.2rem; /* Download-Icon in passender Größe */
 }
 
 /* Überschrift des Excel-Export Containers */
@@ -373,7 +380,7 @@
 
 /* Button für den Excel-Export */
 .export-container button {
-  width: 200px;  /* Button schmaler */
+  width: 250px;  /* Button schmaler */
   height: 45px;  /* Buttonhöhe anpassen */
   font-weight: normal;
   font-size: 1rem; /* Gleiche Schriftgröße wie bei anderen Buttons */
