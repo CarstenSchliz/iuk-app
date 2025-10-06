@@ -327,7 +327,8 @@
         }
       }
    
-/* Excel-Export Container */
+
+   /* Excel-Export Container */
 .export-container {
   background-color: #fff;
   padding: 1.5rem;
@@ -357,12 +358,13 @@
   display: flex; /* Stellt sicher, dass die Buttons nebeneinander stehen */
   gap: 1rem;  /* Abstand zwischen den Buttons */
   justify-content: flex-start; /* Links ausgerichtet */
+  flex-wrap: wrap; /* Ermöglicht Umbruch, falls der Platz nicht ausreicht */
   width: 100%; /* Sicherstellen, dass die Buttons den gesamten Platz nutzen */
 }
 
 /* Anpassung der Button-Stile */
 .export-container button {
-  width: 250px; /* Breite der Buttons automatisch anpassen, damit der Text reinpasst */
+  width: 250px;  /* Feste Breite der Buttons */
   height: 45px;  /* Gleiche Höhe wie die anderen Buttons */
   font-weight: normal;  /* Normalgewicht für den Text */
   font-size: 0.9rem; /* Textgröße auf 0.9rem gesetzt */
@@ -379,7 +381,6 @@
 .export-container button i {
   font-size: 0.9rem; /* Icon-Größe auf 0.9rem reduziert */
 }
-
     </style>
   </head>
   <body>
