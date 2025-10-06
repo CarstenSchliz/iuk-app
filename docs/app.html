@@ -6,10 +6,8 @@
   <title>IuK Lernwelt – App</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#002D55" />
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-  />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
   <style>
     :root {
       --softrot: rgb(228, 100, 80);
@@ -236,6 +234,7 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Mobile Menu Button -->
   <button class="menu-toggle" id="menuToggle">
@@ -248,8 +247,10 @@
       <img src="assets/avatar-default.png" alt="Profilbild" id="profileImg" />
       <input type="file" id="profileUpload" accept="image/*" style="display: none" />
       <h2 id="userName">Lädt...</h2>
-      <p id="userRoles"></p> <!-- Hier werden jetzt keine Rollen angezeigt -->
-      <p id="userHighestRole" style="color: var(--dunkelblau);"></p> <!-- Nur die höchste Rolle anzeigen -->
+      <p id="userRoles"></p>
+      <!-- Hier werden jetzt keine Rollen angezeigt -->
+      <p id="userHighestRole" style="color: var(--dunkelblau);"></p>
+      <!-- Nur die höchste Rolle anzeigen -->
     </div>
 
     <div class="menu">
@@ -258,6 +259,7 @@
       <button data-page="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</button>
       <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
       <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
+
       <!-- Benutzerverwaltung nur sichtbar für Admins / Gruppenleiter -->
       <button data-page="benutzer" id="nav-users" style="display: none">
         <i class="bi bi-people"></i> Benutzerverwaltung
@@ -279,12 +281,17 @@
 
   <!-- Firebase / Auth -->
   <script type="module">
-    import { auth, logout, uploadProfileImage, getUserRoles, observeAuthState } from "./js/firebase.js";
+    import {
+      auth,
+      logout,
+      uploadProfileImage,
+      getUserRoles,
+    } from "./js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
-
     if (menuToggle) {
       menuToggle.addEventListener("click", () => {
         sidebar.classList.toggle("active");
@@ -334,7 +341,6 @@
     profileUpload.addEventListener("change", async (event) => {
       const file = event.target.files[0];
       const user = auth.currentUser;
-
       if (file && user) {
         try {
           const url = await uploadProfileImage(user, file);
@@ -348,14 +354,13 @@
 
     // Logout
     const logoutBtn = document.getElementById("logoutBtn");
-
     logoutBtn.addEventListener("click", async () => {
       await logout();
       window.location.href = "index.html";
     });
 
     // Login-Check + Userdaten + Rollen
-    observeAuthState(auth, async (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
         if (user.photoURL) {
@@ -366,28 +371,22 @@
 
         // 🔑 Rollen aus Firestore prüfen
         const roles = await getUserRoles(user.uid);
-        // Debugging: Rollen im Konsolen-Log anzeigen
         console.log("Benutzerrollen:", roles);
 
-        // Definiere die Reihenfolge der Rollen: admin muss die höchste Rolle sein
+        // Definiere die Reihenfolge der Rollen
         const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
-
-        // Manuelle Bestimmung der höchsten Rolle
-        let highestRole = "Keine Rolle zugewiesen"; // Standardwert
+        let highestRole = "Keine Rolle zugewiesen";
         for (let role of roleOrder) {
           if (roles.includes(role)) {
-            highestRole = role; // Wähle die erste Rolle, die im roleOrder-Array erscheint
+            highestRole = role;
             break;
           }
         }
 
-        console.log("Höchste Rolle:", highestRole); // Debugging: Zeigt die höchste Rolle im Log an
-
-        // Setze die höchste Rolle unter dem Benutzernamen
+        console.log("Höchste Rolle:", highestRole);
         const highestRoleElement = document.getElementById("userHighestRole");
         highestRoleElement.textContent = `${capitalizeFirstLetter(highestRole)}`;
 
-        // Keine weiteren Rollen im Profil anzeigen
         const userRolesElement = document.getElementById("userRoles");
         userRolesElement.textContent = "";
 
@@ -403,7 +402,7 @@
       }
     });
 
-    // Funktion, um den ersten Buchstaben der Rolle groß zu machen und den Rest klein
+    // Funktion, um den ersten Buchstaben der Rolle groß zu machen
     function capitalizeFirstLetter(str) {
       if (str) {
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
