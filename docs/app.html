@@ -288,34 +288,7 @@
       getUserRoles,
     } from "./js/firebase.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const db = getFirestore();
-
-// 🔹 Funktion: Theme aus Firestore abrufen
-async function getUserTheme(uid) {
-  try {
-    const ref = doc(db, "users", uid);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      const data = snap.data();
-      return data.themePreference || "light";
-    }
-  } catch (err) {
-    console.error("Fehler beim Laden des Themes:", err);
-  }
-  return "light";
-}
-
-// 🔹 Darkmode anwenden
-function applyTheme(theme) {
-  if (theme === "dark") {
-    document.body.classList.add("dark");
-  } else {
-    document.body.classList.remove("dark");
-  }
-}
-
+    
     // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
