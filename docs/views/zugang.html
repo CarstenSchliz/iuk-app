@@ -326,35 +326,35 @@
           display: inline-flex;
         }
       }
-  /* Excel-Export Container */
+/* Excel-Export Container */
 .export-container {
   background-color: #fff;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 700px; /* Breite gleich wie 'Grundvoraussetzungen' */
-  margin-top: 1.5rem;
+  max-width: 700px; /* Gleiche Breite wie andere Boxen */
+  margin-top: 1.5rem; /* Gleicher Abstand wie andere Boxen */
 }
 
 .export-container h3 {
-  color: var(--hellblau);
+  color: var(--hellblau); /* Gleiche Farbe wie andere Box-Überschriften */
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.2rem;
+  font-size: 1.2rem; /* Gleiche Schriftgröße wie bei anderen Überschriften */
   margin-bottom: 1rem;
 }
 
 .export-container h3 i {
-  font-size: 1.5rem;
+  font-size: 1.5rem; /* Passende Größe für das Excel-Icon */
 }
 
 .export-container button {
-  width: 220px;  /* Der Button ist schmaler und etwas höher */
-  height: 45px;
+  width: 100%;  /* Gleiche Breite wie die anderen Buttons */
+  height: 45px; /* Gleiche Höhe wie die anderen Buttons */
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1rem; /* Gleiche Schriftgröße wie bei den anderen Buttons */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -362,12 +362,7 @@
 }
 
 .export-container button i {
-  font-size: 1.3rem; /* Passende Größe für das Download-Icon */
-}
-
-/* Position des Excel-Export Containers */
-#exportContainer {
-  margin-top: 1.5rem; /* Abgleich des Abstands mit den anderen Boxen */
+  font-size: 1.2rem; /* Download-Icon in passender Größe */
 }
     </style>
   </head>
@@ -388,15 +383,6 @@
         <div id="selectedUser" class="selected-user"></div>
       </div>
     </div>
-    
-<!-- Excel-Export-Container -->
-<div id="exportContainer" class="export-container">
-  <h3><i class="bi bi-cloud-download"></i> Excel-Export</h3>
-  <button id="btnExportExcel" class="btn-confirm btn-blue">
-    <i class="bi bi-download"></i> Exportieren
-  </button>
-</div>
-
     <div class="zugang-grid">
       <!-- Grundvoraussetzungen -->
       <div class="card">
@@ -504,6 +490,14 @@
         </p>
       </div>
     </div>
+   
+   <!-- Excel-Export-Container -->
+<div id="exportContainer" class="export-container">
+  <h3><i class="bi bi-file-earmark-excel"></i> Excel-Export</h3>
+  <button id="btnExportExcel" class="btn-confirm btn-blue">
+    <i class="bi bi-download"></i> Exportieren
+  </button>
+</div>
 
     <div id="toast"></div>
 
