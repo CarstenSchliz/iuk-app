@@ -326,6 +326,7 @@
           display: inline-flex;
         }
       }
+   
 /* Excel-Export Container */
 .export-container {
   background-color: #fff;
@@ -333,8 +334,21 @@
   border-radius: 12px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28); /* Schatten anpassen */
   width: 100%;
-  max-width: 400px; /* Gleiche Breite wie Grundvoraussetzungen */
+  max-width: 500px; /* Gleiche Breite wie Grundvoraussetzungen */
   margin-top: 1.5rem; /* Gleicher Abstand wie bei anderen Boxen */
+}
+
+/* Buttons nebeneinander anzeigen */
+.export-container button {
+  width: 180px;  /* Gleiche Breite wie die anderen Buttons */
+  height: 40px;  /* Gleiche Höhe wie die anderen Buttons */
+  font-weight: normal;
+  font-size: 1rem; /* Gleiche Schriftgröße wie bei anderen Buttons */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-right: 10px; /* Abstand zwischen den Buttons */
 }
 
 /* Überschrift des Excel-Export Containers */
@@ -497,8 +511,15 @@
 <!-- Excel-Export-Container -->
 <div id="exportContainer" class="export-container">
   <h3><i class="bi bi-file-earmark-excel"></i> Excel-Export</h3>
-  <button id="btnExportExcel" class="btn-confirm btn-blue">
-    <i class="bi bi-download"></i> Exportieren
+  
+  <!-- Button für den aktuellen Nutzer -->
+  <button id="btnExportCurrentUser" class="btn-confirm btn-blue">
+    <i class="bi bi-download"></i> Aktuellen Nutzer exportieren
+  </button>
+  
+  <!-- Button für alle Nutzer -->
+  <button id="btnExportAllUsers" class="btn-confirm btn-blue" style="display: none;">
+    <i class="bi bi-download"></i> Alle Nutzer exportieren
   </button>
 </div>
 
@@ -956,6 +977,32 @@ document.getElementById("btnExportExcel").addEventListener("click", async () => 
     showToast("Fehler beim Export");
   }
 });
+     
+/***********************
+ * Zeige Buttons je nach Rolle an
+ ***********************/
+async function checkUserRole() {
+  const user = auth.currentUser;
+  if (!user) return; // Wenn kein Nutzer eingeloggt, abbrechen
+
+  const roles = await getUserRoles(user.uid);
+  
+  // Zeige den Button für "Alle Nutzer exportieren" nur, wenn der Nutzer Admin oder Gruppenleiter ist
+  const exportAllButton = document.getElementById("btnExportAllUsers");
+  const exportCurrentButton = document.getElementById("btnExportCurrentUser");
+
+  if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+    exportAllButton.style.display = "inline-flex";  // Zeige den "Alle Nutzer exportieren"-Button
+  } else {
+    exportAllButton.style.display = "none";  // Verstecke den Button für "Alle Nutzer exportieren"
+  }
+
+  // Der Button für den aktuellen Nutzer ist für alle sichtbar
+  exportCurrentButton.style.display = "inline-flex";  // Zeige den "Aktuellen Nutzer exportieren"-Button
+}
+
+// Rufe die Funktion auf, wenn die Seite geladen wird
+checkUserRole();
     </script>
   </body>
 </html>
