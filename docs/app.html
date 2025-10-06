@@ -288,6 +288,17 @@
       getUserRoles,
     } from "./js/firebase.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { auth, getUserTheme } from "./js/firebase.js"; // getUserTheme = deine Funktion, die das Theme liest
+  
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const darkMode = await getUserTheme(user.uid);
+      document.body.classList.toggle("dark", darkMode);
+    } else {
+      const localDark = localStorage.getItem("darkmode") === "true";
+      document.body.classList.toggle("dark", localDark);
+    }
+  });
     
     // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
