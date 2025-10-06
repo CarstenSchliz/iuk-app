@@ -336,6 +336,9 @@
   width: 100%;
   max-width: 700px; /* Gleiche Breite wie Grundvoraussetzungen */
   margin-top: 1.5rem; /* Gleicher Abstand wie bei anderen Boxen */
+  display: flex;
+  gap: 10px; /* Abstand zwischen den Buttons */
+  justify-content: space-between; /* Buttons nebeneinander ausrichten */
 }
 
 /* Buttons nebeneinander anzeigen */
@@ -348,16 +351,17 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-right: 10px; /* Abstand zwischen den Buttons */
+  margin: 0;  /* Kein zusätzlicher Abstand */
 }
 
 /* Text in den Buttons fett */
 .export-container button strong {
   font-weight: bold;
+  white-space: nowrap;  /* Verhindert den Umbruch von Text in "Eigenen Nutzer" */
 }
 
 .export-container button i {
-  font-size: 1.2rem; /* Download-Icon in passender Größe */
+  font-size: 1.2rem; /* Passende Icon-Größe */
 }
 
 /* Überschrift des Excel-Export Containers */
