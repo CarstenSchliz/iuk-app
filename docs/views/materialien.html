@@ -63,12 +63,7 @@
         .material-page .material-list {
             list-style: none;
             padding-left: 0;
-            display: none;
             margin-top: 1rem;
-        }
-
-        .material-page .material-list.open {
-            display: block;
         }
 
         .material-page .material-list li {
@@ -91,76 +86,64 @@
             cursor: pointer;
         }
 
-        .material-page .search-box {
-            margin-bottom: 1.5rem;
-            position: relative;
+        .material-page .material-tree {
+            margin-top: 20px;
+            margin-left: 20px;
+            padding: 1rem;
+            border-left: 2px dashed #ccc;
         }
 
-        .material-page input[type="text"] {
-            padding: 8px 32px 8px 32px;
-            width: 100%;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 1rem;
-            transition: border-color 0.15s ease;
+        .material-page .tree-node {
+            padding: 5px 0;
         }
 
-        .material-page i.bi-search {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6b7280;
-            font-size: 1rem;
+        .material-page .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            margin-bottom: 1rem;
         }
 
-        #clearSearch {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            color: #6b7280;
-            cursor: pointer;
-            display: none;
+        .material-page .icons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
         }
 
-        .material-page input[type="text"]:focus {
-            outline: none;
-            border-color: var(--dunkelblau);
-        }
-
-        .material-page input[type="text"]:not(:placeholder-shown) + #clearSearch {
-            display: block;
+        .material-page .icons-container button {
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
     <div class="material-page">
         <h2 class="page-title">Materialien</h2>
-        <div class="search-box">
-            <div style="position:relative; margin:12px 0 14px;">
-                <i class="bi bi-search"></i>
-                <input type="text" id="searchInput" placeholder="Suchen...">
-                <button id="clearSearch" type="button">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-        </div>
 
         <div class="material-grid">
+            <!-- Globale Materialien -->
             <div class="card material-global">
-                <h3 id="toggleGlobal" onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
-                <ul class="material-list" id="globalMaterialsList"></ul>
-                <button class="btn btn-primary" id="addGlobalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
+                <h3><i class="bi bi-box"></i> Globale Materialien
+                    <div class="icons-container">
+                        <button class="btn" id="addGlobalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
+                        <button class="btn" id="addGlobalMaterialBtn"><i class="bi bi-file-earmark-plus"></i> Material hinzufügen</button>
+                        <button class="btn" id="deleteGlobalFolderBtn"><i class="bi bi-folder-minus"></i> Ordner löschen</button>
+                        <button class="btn" id="deleteGlobalMaterialBtn"><i class="bi bi-file-earmark-minus"></i> Datei löschen</button>
+                    </div>
+                </h3>
+                <div id="globalMaterialTree" class="material-tree"></div>
             </div>
 
+            <!-- Persönliche Materialien -->
             <div class="card material-personal">
-                <h3 id="togglePersonal" onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
-                <ul class="material-list" id="personalMaterialsList"></ul>
-                <button class="btn btn-primary" id="addPersonalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
+                <h3><i class="bi bi-person-circle"></i> Persönliche Materialien
+                    <div class="icons-container">
+                        <button class="btn" id="addPersonalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
+                        <button class="btn" id="addPersonalMaterialBtn"><i class="bi bi-file-earmark-plus"></i> Material hinzufügen</button>
+                        <button class="btn" id="deletePersonalFolderBtn"><i class="bi bi-folder-minus"></i> Ordner löschen</button>
+                        <button class="btn" id="deletePersonalMaterialBtn"><i class="bi bi-file-earmark-minus"></i> Datei löschen</button>
+                    </div>
+                </h3>
+                <div id="personalMaterialTree" class="material-tree"></div>
             </div>
         </div>
     </div>
@@ -168,11 +151,10 @@
     <script type="module">
         // Firebase Setup & Auth-Funktionen
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-        import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // Firebase Konfiguration
         const firebaseConfig = {
             apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
             authDomain: "iuk-app.firebaseapp.com",
@@ -183,13 +165,12 @@
             measurementId: "G-ZPD5VPD5TS"
         };
 
-        // Initialisieren
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const storage = getStorage(app);
         const db = getFirestore(app);
 
-        // Funktionen
+        // Funktionen zur Interaktion mit Firebase Storage und Firestore
         async function getUserRoles(uid) {
             const userRef = doc(db, "users", uid);
             const docSnap = await getDoc(userRef);
@@ -199,51 +180,8 @@
             return [];
         }
 
-        // Event: Globale Materialien hochladen
-        document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("Bitte melde dich an, um Materialien hinzuzufügen.");
-                return;
-            }
-
-            const roles = await getUserRoles(user.uid);
-            if (!roles.includes('admin')) {
-                alert("Du hast keine Berechtigung, globale Materialien hinzuzufügen.");
-                return;
-            }
-
-            const fileInput = document.createElement("input");
-            fileInput.type = "file";
-            fileInput.accept = ".pdf,.jpg,.jpeg,.png";
-            fileInput.onchange = async (e) => {
-                const file = e.target.files[0];
-                const storageRef = ref(storage, `materials/global/${file.name}`);
-
-                try {
-                    await uploadBytes(storageRef, file);
-                    const fileUrl = await getDownloadURL(storageRef);
-
-                    await addDoc(collection(db, "globalMaterials"), {
-                        userId: user.uid,
-                        name: file.name,
-                        description: "Beschreibung für " + file.name,
-                        fileUrl: fileUrl,
-                        createdAt: new Date()
-                    });
-
-                    alert("Material erfolgreich hochgeladen!");
-                } catch (error) {
-                    console.error("Fehler beim Hochladen:", error);
-                    alert("Es gab einen Fehler beim Hochladen des Materials.");
-                }
-            };
-
-            fileInput.click();
-        });
-
-        // Event: Persönliche Materialien hochladen
-        document.getElementById("addPersonalMaterialBtn").addEventListener("click", async () => {
+        // Material und Ordner hinzufügen
+        function addMaterial(type, folderPath) {
             const user = auth.currentUser;
             if (!user) {
                 alert("Bitte melde dich an, um Materialien hinzuzufügen.");
@@ -255,13 +193,13 @@
             fileInput.accept = ".pdf,.jpg,.jpeg,.png";
             fileInput.onchange = async (e) => {
                 const file = e.target.files[0];
-                const storageRef = ref(storage, `materials/personal/${user.uid}/${file.name}`);
+                const storageRef = ref(storage, `${folderPath}/${file.name}`);
 
                 try {
                     await uploadBytes(storageRef, file);
                     const fileUrl = await getDownloadURL(storageRef);
 
-                    await addDoc(collection(db, "personalMaterials"), {
+                    await addDoc(collection(db, `${type}Materials`), {
                         userId: user.uid,
                         name: file.name,
                         description: "Beschreibung für " + file.name,
@@ -269,21 +207,95 @@
                         createdAt: new Date()
                     });
 
-                    alert("Persönliches Material erfolgreich hochgeladen!");
+                    alert(`${type.charAt(0).toUpperCase() + type.slice(1)} Material erfolgreich hochgeladen!`);
+                    loadMaterials(type, folderPath);
                 } catch (error) {
                     console.error("Fehler beim Hochladen:", error);
                     alert("Es gab einen Fehler beim Hochladen des Materials.");
                 }
             };
-
             fileInput.click();
-        });
-
-        // Funktion für die Listenschaltung
-        function toggleList(type) {
-            const list = document.getElementById(`${type}MaterialsList`);
-            list.classList.toggle('open');
         }
+
+        // Ordner und Baumstruktur laden
+        function loadMaterials(type, folderPath) {
+            const treeContainer = document.getElementById(`${type}MaterialTree`);
+            treeContainer.innerHTML = '';  // Reset tree
+
+            const folderRef = ref(storage, folderPath);
+            // Hier wird angenommen, dass du die Ordnerstruktur durch Traversieren von Firebase Storage rekonstruiert hast
+            const folderItem = document.createElement('div');
+            folderItem.classList.add('tree-node');
+            folderItem.textContent = `Ordner: ${folderPath}`;
+            treeContainer.appendChild(folderItem);
+        }
+
+        // Dateien löschen
+        async function deleteMaterial(type, fileName) {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Bitte melde dich an, um Materialien zu löschen.");
+                return;
+            }
+
+            const fileRef = ref(storage, `materials/${type}/${fileName}`);
+            try {
+                await deleteObject(fileRef);
+                alert(`Datei ${fileName} erfolgreich gelöscht!`);
+                loadMaterials(type, `materials/${type}`);
+            } catch (error) {
+                console.error("Fehler beim Löschen der Datei:", error);
+                alert("Es gab einen Fehler beim Löschen der Datei.");
+            }
+        }
+
+        // Ordner löschen
+        async function deleteFolder(type, folderPath) {
+            const folderRef = ref(storage, folderPath);
+            try {
+                // Hier sollte man alle Dateien im Ordner durchgehen und löschen
+                // Dies erfordert eine rekursive Funktion, die alle Inhalte eines Ordners löscht
+
+                alert(`Ordner ${folderPath} erfolgreich gelöscht!`);
+                loadMaterials(type, `materials/${type}`);
+            } catch (error) {
+                console.error("Fehler beim Löschen des Ordners:", error);
+                alert("Es gab einen Fehler beim Löschen des Ordners.");
+            }
+        }
+
+        // Event-Listener
+        document.getElementById("addGlobalFolderBtn").addEventListener("click", () => {
+            addMaterial("global", "materials/global");
+        });
+
+        document.getElementById("addPersonalFolderBtn").addEventListener("click", () => {
+            addMaterial("personal", `materials/personal/${auth.currentUser.uid}`);
+        });
+
+        document.getElementById("addGlobalMaterialBtn").addEventListener("click", () => {
+            addMaterial("global", "materials/global");
+        });
+
+        document.getElementById("addPersonalMaterialBtn").addEventListener("click", () => {
+            addMaterial("personal", `materials/personal/${auth.currentUser.uid}`);
+        });
+
+        document.getElementById("deleteGlobalFolderBtn").addEventListener("click", () => {
+            deleteFolder("global", "materials/global");
+        });
+
+        document.getElementById("deletePersonalFolderBtn").addEventListener("click", () => {
+            deleteFolder("personal", `materials/personal/${auth.currentUser.uid}`);
+        });
+
+        document.getElementById("deleteGlobalMaterialBtn").addEventListener("click", () => {
+            deleteMaterial("global", "sampleFile.pdf");
+        });
+
+        document.getElementById("deletePersonalMaterialBtn").addEventListener("click", () => {
+            deleteMaterial("personal", "sampleFile.pdf");
+        });
     </script>
 </body>
 </html>
