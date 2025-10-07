@@ -56,33 +56,21 @@
             font-size: 1.2rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
+            gap: 10px; /* Abstand zwischen Icon und Text */
         }
 
-        .material-page .material-list {
-            list-style: none;
-            padding-left: 0;
-            margin-top: 1rem;
+        .material-page .icons-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 0.5rem;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
-        .material-page .material-list li {
-            padding: 0.8rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .material-page .material-list li:hover {
-            background: var(--blassblau);
-        }
-
-        .material-page .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 10px;
-            background: var(--dunkelblau);
-            color: white;
-            font-size: 1rem;
+        .material-page .icons-container i {
+            font-size: 2rem;
+            color: var(--dunkelblau);
             cursor: pointer;
         }
 
@@ -96,23 +84,6 @@
         .material-page .tree-node {
             padding: 5px 0;
         }
-
-        .material-page .btn-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            margin-bottom: 1rem;
-        }
-
-        .material-page .icons-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-        }
-
-        .material-page .icons-container button {
-            margin-left: 10px;
-        }
     </style>
 </head>
 <body>
@@ -124,10 +95,10 @@
             <div class="card material-global">
                 <h3><i class="bi bi-box"></i> Globale Materialien
                     <div class="icons-container">
-                        <button class="btn" id="addGlobalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
-                        <button class="btn" id="addGlobalMaterialBtn"><i class="bi bi-file-earmark-plus"></i> Material hinzufügen</button>
-                        <button class="btn" id="deleteGlobalFolderBtn"><i class="bi bi-folder-minus"></i> Ordner löschen</button>
-                        <button class="btn" id="deleteGlobalMaterialBtn"><i class="bi bi-file-earmark-minus"></i> Datei löschen</button>
+                        <i class="bi bi-folder-plus" id="addGlobalFolderBtn" title="Ordner hinzufügen"></i>
+                        <i class="bi bi-file-earmark-plus" id="addGlobalMaterialBtn" title="Material hinzufügen"></i>
+                        <i class="bi bi-folder-minus" id="deleteGlobalFolderBtn" title="Ordner löschen"></i>
+                        <i class="bi bi-file-earmark-minus" id="deleteGlobalMaterialBtn" title="Datei löschen"></i>
                     </div>
                 </h3>
                 <div id="globalMaterialTree" class="material-tree"></div>
@@ -137,10 +108,10 @@
             <div class="card material-personal">
                 <h3><i class="bi bi-person-circle"></i> Persönliche Materialien
                     <div class="icons-container">
-                        <button class="btn" id="addPersonalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
-                        <button class="btn" id="addPersonalMaterialBtn"><i class="bi bi-file-earmark-plus"></i> Material hinzufügen</button>
-                        <button class="btn" id="deletePersonalFolderBtn"><i class="bi bi-folder-minus"></i> Ordner löschen</button>
-                        <button class="btn" id="deletePersonalMaterialBtn"><i class="bi bi-file-earmark-minus"></i> Datei löschen</button>
+                        <i class="bi bi-folder-plus" id="addPersonalFolderBtn" title="Ordner hinzufügen"></i>
+                        <i class="bi bi-file-earmark-plus" id="addPersonalMaterialBtn" title="Material hinzufügen"></i>
+                        <i class="bi bi-folder-minus" id="deletePersonalFolderBtn" title="Ordner löschen"></i>
+                        <i class="bi bi-file-earmark-minus" id="deletePersonalMaterialBtn" title="Datei löschen"></i>
                     </div>
                 </h3>
                 <div id="personalMaterialTree" class="material-tree"></div>
