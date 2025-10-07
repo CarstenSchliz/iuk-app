@@ -331,7 +331,7 @@
 .data-export-container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;  /* Mehr Abstand zwischen den Text-Links */
   margin-top: 1rem;
 }
 
@@ -346,6 +346,7 @@
   display: flex;
   align-items: center;
   max-width: fit-content;  /* Textgesteuerte Breite */
+  padding-left: 1rem; /* Gleicher Abstand wie beim "Daten Export"-Link */
 }
 
 /* Verhindere Unterstreichung bei Hover */
@@ -362,8 +363,10 @@
 }
 
 /* Dreieck-Icon (verhindert Unterstreichung des Textes) */
-#dataExportLink i {
-  margin-right: 0.5rem;
+#dataExportLink i,
+#exportOwn i,
+#exportAll i {
+  margin-right: 0.5rem; /* Abstand zwischen Icon und Text */
 }
 
 /* Dropdown-Menü */
@@ -387,7 +390,6 @@
   cursor: pointer;
   text-align: left;
 }
-
 
     </style>
   </head>
