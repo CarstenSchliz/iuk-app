@@ -326,63 +326,6 @@
           display: inline-flex;
         }
       }
-
-/* Excel-Export Container */
-.export-container {
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28); /* Schatten anpassen */
-  width: 100%;
-  max-width: 400px; /* Gleiche Breite wie Grundvoraussetzungen */
-  margin-top: 1.5rem; /* Gleicher Abstand wie bei anderen Boxen */
-  display: flex;
-  flex-direction: column; /* Buttons unter der Überschrift */
-  gap: 1.5rem; /* Abstand zwischen Überschrift und Buttons */
-}
-
-/* Überschrift des Excel-Export Containers */
-.export-container h3 {
-  color: var(--hellblau); /* Gleiche Farbe wie bei anderen Überschriften */
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.05rem; /* Gleiche Schriftgröße wie bei anderen Überschriften */
-  margin-top: 0; /* Keine zusätzliche Margen */
-  margin-bottom: 0; /* Kein zusätzlicher Abstand nach der Überschrift */
-}
-
-/* Button-Wrapper, der die Buttons nebeneinander anordnet */
-.export-container .button-wrapper {
-  display: flex; /* Flexbox sorgt für nebeneinander anordnen */
-  gap: 1rem;  /* Abstand zwischen den Buttons */
-  justify-content: flex-start; /* Links ausgerichtet */
-  width: 100%; /* Verwendet die gesamte Breite des Containers */
-  flex-wrap: nowrap; /* Kein Umbruch */
-}
-
-/* Anpassung der Button-Stile */
-.export-container button {
-  width: 250px;  /* Feste Breite der Buttons */
-  height: 45px;  /* Gleiche Höhe wie die anderen Buttons */
-  font-weight: normal;  /* Normalgewicht für den Text */
-  font-size: 0.9rem; /* Textgröße auf 0.9rem gesetzt */
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;  /* Icons linksbündig ausrichten */
-  gap: 0.6rem; /* Abstand zwischen dem Icon und dem Text */
-  padding-left: 0.75rem;  /* Symmetrischer Abstand des Icons zur Kante */
-  padding-right: 1rem; /* Gleichmäßiger Abstand auf der rechten Seite */
-  margin: 0;  /* Kein zusätzlicher Abstand zwischen den Buttons */
-  box-sizing: border-box; /* Stellt sicher, dass die Buttons den gesamten Raum korrekt nutzen */
-  flex-shrink: 0; /* Verhindert das Schrumpfen der Buttons */
-}
-
-/* Icon-Größe im Button anpassen */
-.export-container button i {
-  font-size: 0.9rem; /* Icon-Größe auf 0.9rem reduziert */
-}
-
     </style>
   </head>
   <body>
@@ -509,21 +452,6 @@
         </p>
       </div>
     </div>
-   
-<!-- Excel-Export-Container -->
-<div id="exportContainer" class="export-container">
-  <h3><i class="bi bi-file-earmark-excel"></i> Excel-Export</h3>
-  
-  <!-- Button für den eigenen Nutzer -->
-  <button id="btnExportCurrentUser" class="btn-confirm btn-blue">
-    <i class="bi bi-download"></i> <strong>Eigenen Nutzer</strong> exportieren
-  </button>
-  
-  <!-- Button für alle Nutzer -->
-  <button id="btnExportAllUsers" class="btn-confirm btn-blue">
-    <i class="bi bi-download"></i> <strong>Alle Nutzer</strong> exportieren
-  </button>
-</div>
 
     <div id="toast"></div>
 
@@ -933,100 +861,7 @@
           updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
         }
       });
-  /***********************
- * Excel-Export
- ***********************/
-// Funktion für den Export des aktuellen Nutzers
-document.getElementById("btnExportCurrentUser").addEventListener("click", async () => {
-  try {
-    const user = auth.currentUser;
-    if (!user) {
-      showToast("Kein Nutzer eingeloggt!");
-      return;
-    }
-
-    const userData = await getDoc(doc(db, "users", user.uid));
-    const rows = [
-      ["Name / Email", "Grundvoraussetzungen (%)", "Optionale Voraussetzungen (%)", "Freigabe-Status"]
-    ];
-
-    if (userData.exists()) {
-      const data = userData.data();
-      const grundPct = Math.round((data.grund.filter(Boolean).length / data.grund.length) * 100);
-      const optPct = Math.round((data.optional.filter(Boolean).length / data.optional.length) * 100);
-      const status = data.freigabeStatus || "offen";
-
-      rows.push([user.displayName || user.email || user.uid, grundPct + "%", optPct + "%", status]);
-
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Zugangsvoraussetzungen");
-      XLSX.writeFile(wb, "aktuell_nutzer_zugang.xlsx");
-
-      showToast("Excel-Datei für den aktuellen Nutzer erfolgreich erstellt!");
-    } else {
-      showToast("Fehler beim Abrufen der Nutzerdaten.");
-    }
-  } catch (err) {
-    console.error(err);
-    showToast("Fehler beim Export");
-  }
-});
-
-// Funktion für den Export aller Nutzer
-document.getElementById("btnExportAllUsers").addEventListener("click", async () => {
-  try {
-    const res = await apiFetch("/listUsers", { method: "GET" });
-    if (!res.ok) throw new Error("Fehler beim Abrufen der Benutzerdaten");
-    const data = await res.json();
-
-    const rows = [["Name / Email", "Grundvoraussetzungen (%)", "Optionale Voraussetzungen (%)", "Freigabe-Status"]];
-
-    for (const u of data.users || []) {
-      const ref = doc(db, "users", u.uid);
-      const snap = await getDoc(ref);
-      let grundPct = 0, optPct = 0, status = "";
-      if (snap.exists()) {
-        const d = snap.data();
-        if (Array.isArray(d.grund)) grundPct = Math.round((d.grund.filter(Boolean).length / d.grund.length) * 100);
-        if (Array.isArray(d.optional)) optPct = Math.round((d.optional.filter(Boolean).length / d.optional.length) * 100);
-        status = d.freigabeStatus || "offen";
-      }
-      rows.push([u.displayName || u.email || u.uid, grundPct + "%", optPct + "%", status]);
-    }
-
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Zugangsvoraussetzungen");
-    XLSX.writeFile(wb, "alle_nutzer_zugang.xlsx");
-
-    showToast("Excel-Datei für alle Nutzer erfolgreich erstellt!");
-  } catch (err) {
-    console.error(err);
-    showToast("Fehler beim Export");
-  }
-});
-
-/***********************
- * Zeige Buttons je nach Rolle an
- ***********************/
-async function checkUserRole() {
-  const user = auth.currentUser;
-  if (!user) return; // Wenn kein Nutzer eingeloggt, abbrechen
-
-  const roles = await getUserRoles(user.uid);
-  
-  // Zeige den Button für "Alle Nutzer exportieren" nur, wenn der Nutzer Admin oder Gruppenleiter ist
-  const exportAllButton = document.getElementById("btnExportAllUsers");
-
-  if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-    exportAllButton.style.display = "inline-flex";  // Zeige den "Alle Nutzer exportieren"-Button
-  } else {
-    exportAllButton.style.display = "none";  // Verstecke den Button für "Alle Nutzer exportieren"
-  }
-}
-
-// Rufe die Funktion auf, wenn die Seite geladen wird
+ // Rufe die Funktion auf, wenn die Seite geladen wird
 checkUserRole();
     </script>
   </body>
