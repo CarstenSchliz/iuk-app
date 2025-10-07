@@ -986,7 +986,6 @@ const dropdownIcon = document.getElementById("dropdownIcon");
 const exportOwnButton = document.getElementById("exportOwn");
 const exportAllButton = document.getElementById("exportAll");
 
-// Beim Klick auf den Datenexport-Link das Menü ein- oder ausblenden
 dataExportLink.addEventListener("click", (event) => {
   event.preventDefault();
   
@@ -994,8 +993,12 @@ dataExportLink.addEventListener("click", (event) => {
   dropdownIcon.classList.toggle("bi-caret-down-fill");
   dropdownIcon.classList.toggle("bi-caret-right-fill");
 
-  // Dropdown-Menü ein- oder ausblenden
-  dataExportMenu.classList.toggle("active");
+  // Dropdown-Menü explizit ein- oder ausblenden
+  if (dataExportMenu.style.display === "block") {
+    dataExportMenu.style.display = "none"; // Wenn sichtbar, ausblenden
+  } else {
+    dataExportMenu.style.display = "block"; // Wenn unsichtbar, anzeigen
+  }
 });
 
 // Benutzerberechtigungen überprüfen und den "Alle Nutzer exportieren"-Button ausblenden
