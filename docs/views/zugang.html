@@ -333,11 +333,18 @@
   color: white;
   font-weight: normal; /* Keine fette Schrift */
   margin-right: 1rem;
+  border-radius: 8px; /* Abgerundete Ecken */
+  padding: 0.8rem 1.5rem; /* Mehr Abstand im Button */
+  width: auto; /* Breite passt sich an den Text an */
 }
 
 #closeModal {
   background-color: #eef2f7; /* Weißer Hintergrund für Abbrechen */
   color: #003d73; /* Dunkelblau für den Abbrechen-Button */
+  border-radius: 8px; /* Abgerundete Ecken */
+  padding: 0.8rem 1.5rem; /* Mehr Abstand im Button */
+  width: auto; /* Breite passt sich an den Text an */
+  margin-top: 1.5rem; /* Mehr Abstand nach den Export-Buttons */
 }
 
 /* Styling für den klickbaren Datenexport-Link */
@@ -346,6 +353,8 @@
   color: #003d73;
   font-weight: normal; /* Keine fette Schrift */
   text-decoration: none;
+  display: flex;
+  align-items: center;
 }
 
 #dataExportLink i {
@@ -382,9 +391,20 @@
   }
 }
 
+/* Styling für die Buttons untereinander (auf mobilen Geräten) */
 .modal-actions button {
   margin-top: 1rem;
+  width: 100%; /* Die Buttons nehmen nun die volle Breite ein */
 }
+
+/* Abstände und Styling für die Buttons innerhalb des Popups */
+@media (max-width: 768px) {
+  .modal-actions button {
+    margin-top: 1.2rem;
+    width: 100%; /* Buttons füllen nun den verfügbaren Raum */
+  }
+}
+   
     </style>
   </head>
   <body>
@@ -949,8 +969,7 @@
           updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
         }
       });
-     
-// Funktion zum Exportieren der Nutzerdaten
+     // Funktion zum Exportieren der Nutzerdaten
 async function generateExcelExport(exportType) {
   const data = exportType === "allUsers" ? await fetchAllUsersData() : await fetchOwnUserData();
 
@@ -1010,7 +1029,7 @@ async function fetchOwnUserData() {
   return [userData];
 }
 
-// Öffnen des Popups beim Klick auf den Text
+// Öffnen des Popups beim Klick auf den Link
 const dataExportLink = document.getElementById("dataExportLink");
 const dataExportModal = document.getElementById("dataExportModal");
 const exportAllButton = document.getElementById("exportAll");
