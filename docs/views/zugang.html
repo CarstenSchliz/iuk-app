@@ -532,31 +532,26 @@
       </div>
     </div>
 
- <!-- Weitere Funktionen -->
+<!-- Weitere Funktionen -->
 <div class="card" style="margin-top: 1.5rem">
   <h3><i class="bi bi-file-earmark-spreadsheet"></i> Weitere Funktionen</h3>
   <div class="checklist">
-    <!-- Klickbarer Text für Datenexport -->
-    <a href="#" id="dataExportLink">
-      <i class="bi bi-file-earmark-excel"></i> Daten Export
-    </a>
-  </div>
-</div>
+    <!-- Klickbarer Text für Datenexport mit Dropdown -->
+    <div class="data-export-container">
+      <a href="#" id="dataExportLink">
+        <i class="bi bi-file-earmark-excel"></i> Daten Export <i class="bi bi-caret-down-fill"></i>
+      </a>
 
-<!-- Daten Export Popup -->
-<div id="dataExportModal" class="modal" style="display: none;">
-  <div class="modal-card">
-    <h4>Wählen Sie den Typ für den Datenexport</h4>
-    <div class="modal-actions">
-      <button id="exportAll" class="btn btn-primary">
-        <i class="bi bi-download"></i> Alle Nutzer exportieren
-      </button>
-      <button id="exportOwn" class="btn btn-primary">
-        <i class="bi bi-download"></i> Eigenen Nutzer exportieren
-      </button>
-      <button id="closeModal" class="btn btn-secondary">
-        <i class="bi bi-x-lg"></i> Abbrechen
-      </button>
+      <!-- Dropdown-Menü, das beim Klicken erscheint -->
+      <div id="dataExportMenu" class="dropdown-menu">
+        <!-- Optionen für den Export -->
+        <div id="exportOwn" class="dropdown-option">
+          <i class="bi bi-download"></i> Eigenen Nutzer exportieren
+        </div>
+        <div id="exportAll" class="dropdown-option" style="display: none;">
+          <i class="bi bi-download"></i> Alle Nutzer exportieren
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -969,101 +964,57 @@
           updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
         }
       });
-     // Funktion zum Exportieren der Nutzerdaten
-async function generateExcelExport(exportType) {
-  const data = exportType === "allUsers" ? await fetchAllUsersData() : await fetchOwnUserData();
+     
+   // Funktion, um das Dropdown-Menü anzuzeigen oder zu verbergen
+const dataExportLink = document.getElementById("dataExportLink");
+const dataExportMenu = document.getElementById("dataExportMenu");
+const exportOwnButton = document.getElementById("exportOwn");
+const exportAllButton = document.getElementById("exportAll");
 
-  // Überprüfen, ob tatsächlich Daten vorhanden sind
-  if (data.length === 0) {
+// Beim Klick auf den Datenexport-Link das Menü ein- oder ausblenden
+dataExportLink.addEventListener("click", (event) => {
+  event.preventDefault();
+  dataExportLink.classList.toggle("active"); // Menü ein-/ausblenden
+});
+
+// Benutzerberechtigungen überprüfen und den "Alle Nutzer exportieren"-Button ausblenden
+observeAuthState(async (user) => {
+  const roles = await getUserRoles(user.uid);
+
+  // Überprüfen, ob der Nutzer Admin oder Gruppenleiter ist
+  if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+    exportAllButton.style.display = "block"; // "Alle Nutzer exportieren"-Button anzeigen
+  } else {
+    exportAllButton.style.display = "none"; // Button für nicht berechtigte Nutzer ausblenden
+  }
+});
+
+// Funktion zum Exportieren der Daten
+function generateExcelExport(exportType) {
+  const data = exportType === "allUsers" ? fetchAllUsersData() : fetchOwnUserData();
+
+  if (!data || data.length === 0) {
     alert("Es sind keine Daten zum Export vorhanden.");
     return;
   }
 
-  // Excel-Datei erstellen mit xlsx.js
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Export");
 
-  // Export starten
   XLSX.writeFile(wb, `${exportType === "allUsers" ? "alle_nutzer" : "eigene_daten"}_export.xlsx`);
 }
 
-// Funktion, um alle Nutzerdaten aus der Seite zu holen
-async function fetchAllUsersData() {
-  const allUsersData = [];
-
-  // Schleife über alle Nutzer auf der Seite und Extraktion der Daten
-  const users = document.querySelectorAll('.user');  // Anpassung je nach Struktur auf der Seite
-  users.forEach((userElement) => {
-    const userName = userElement.querySelector('.user-name').textContent;  // Angenommener Selektor
-    const grundProgress = userElement.querySelector('#grund-progress');  // Fortschritt der Grundvoraussetzungen
-    const verlaufProgress = userElement.querySelector('#verlauf-progress');  // Fortschritt der optionalen Voraussetzungen
-    
-    // Extrahieren des Fortschritts als Prozentwert
-    const grundPercent = parseInt(grundProgress.style.width);
-    const verlaufPercent = parseInt(verlaufProgress.style.width);
-
-    // Beispiel-Daten für den Export
-    allUsersData.push({
-      Name: userName,
-      Grundvoraussetzungen: `${grundPercent}%`,
-      Optionale_Voraussetzungen: `${verlaufPercent}%`,
-      Status: grundPercent === 100 && verlaufPercent === 100 ? "Abgeschlossen" : "Nicht abgeschlossen"
-    });
-  });
-
-  return allUsersData;
-}
-
-// Funktion, um die eigenen Nutzerdaten zu holen
-async function fetchOwnUserData() {
-  const user = auth.currentUser;  // Angenommen, du verwendest Firebase Auth
-  const userId = user.uid;
-  const userData = {};  // Hier holen wir die Daten des Nutzers
-  
-  // Beispiel-Daten, ersetze sie durch echte Daten, z.B. aus Firestore
-  userData.Name = user.displayName;
-  userData.Fortschritt = "80%";  // Hier durch echte Daten ersetzen
-  userData.Status = "Aktiv";  // Beispiel für Status
-
-  return [userData];
-}
-
-// Öffnen des Popups beim Klick auf den Link
-const dataExportLink = document.getElementById("dataExportLink");
-const dataExportModal = document.getElementById("dataExportModal");
-const exportAllButton = document.getElementById("exportAll");
-const exportOwnButton = document.getElementById("exportOwn");
-const closeModalButton = document.getElementById("closeModal");
-
-// Klick auf den Link öffnet das Popup
-dataExportLink.addEventListener("click", (event) => {
-  event.preventDefault(); // Verhindert das Standardverhalten des Links
-  dataExportModal.style.display = "flex";
-});
-
-// Schließen des Popups
-closeModalButton.addEventListener("click", () => {
-  dataExportModal.style.display = "none";
-});
-
-// Export aller Nutzer
-exportAllButton.addEventListener("click", () => {
-  // Nur sichtbar für Gruppenleiter/Admin
-  observeAuthState(async (user) => {
-    const roles = await getUserRoles(user.uid);
-    if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-      generateExcelExport("allUsers");
-    } else {
-      alert("Sie haben nicht die Berechtigung, alle Nutzer zu exportieren.");
-    }
-  });
-});
-
-// Export eigener Nutzerdaten
+// Event Listener für Export von eigenem Nutzer
 exportOwnButton.addEventListener("click", () => {
   generateExcelExport("ownUser");
 });
+
+// Event Listener für Export aller Nutzer
+exportAllButton.addEventListener("click", () => {
+  generateExcelExport("allUsers");
+});
+
     </script>
   </body>
 </html>
