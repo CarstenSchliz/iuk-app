@@ -326,6 +326,56 @@
           display: inline-flex;
         }
       }
+   
+   /* Styling für die Buttons im Popup */
+#exportAll, #exportOwn {
+  background-color: #003d73; /* Dunkelblau */
+  color: white;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+#closeModal {
+  background-color: #eef2f7; /* Weißer Hintergrund für Abbrechen */
+  color: #003d73; /* Dunkelblau für den Abbrechen-Button */
+}
+
+#dataExportLink {
+  cursor: pointer;
+  color: #003d73;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#dataExportLink i {
+  margin-right: 0.5rem;
+}
+
+/* Styling für das Popup */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: #fff;
+  color: #111;
+  border-radius: 14px;
+  width: min(520px, 96vw);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.modal-actions button {
+  margin-top: 1rem;
+}
+
     </style>
   </head>
   <body>
@@ -453,30 +503,34 @@
       </div>
     </div>
 
-   <!-- Weitere Funktionen -->
+ <!-- Weitere Funktionen -->
 <div class="card" style="margin-top: 1.5rem">
   <h3><i class="bi bi-file-earmark-spreadsheet"></i> Weitere Funktionen</h3>
   <div class="checklist">
-    <label>
-      <input type="checkbox" id="dataExportToggle" />
-      Daten Export
-    </label>
+    <!-- Klickbarer Text für Datenexport -->
+    <a href="#" id="dataExportLink">
+      <i class="bi bi-file-earmark-excel"></i> Daten Export
+    </a>
   </div>
 </div>
 
 <!-- Daten Export Popup -->
 <div id="dataExportModal" class="modal" style="display: none;">
   <div class="modal-card">
-    <h4>Wählen Sie den Export-Typ</h4>
-    <p>Wählen Sie aus, ob Sie alle Nutzer oder nur Ihre eigenen Daten exportieren möchten.</p>
+    <h4>Wählen Sie den Typ für den Datenexport</h4>
     <div class="modal-actions">
-      <button id="exportAll" class="btn btn-primary">Alle Nutzer exportieren</button>
-      <button id="exportOwn" class="btn btn-secondary">Eigenen Nutzer exportieren</button>
-      <button id="closeModal" class="btn btn-secondary">Abbrechen</button>
+      <button id="exportAll" class="btn btn-primary">
+        <i class="bi bi-download"></i> Alle Nutzer exportieren
+      </button>
+      <button id="exportOwn" class="btn btn-primary">
+        <i class="bi bi-download"></i> Eigenen Nutzer exportieren
+      </button>
+      <button id="closeModal" class="btn btn-secondary">
+        <i class="bi bi-x-lg"></i> Abbrechen
+      </button>
     </div>
   </div>
 </div>
-
 
     <div id="toast"></div>
 
@@ -891,6 +945,12 @@
 async function generateExcelExport(exportType) {
   const data = exportType === "allUsers" ? await fetchAllUsersData() : await fetchOwnUserData();
 
+  // Überprüfen, ob tatsächlich Daten vorhanden sind
+  if (data.length === 0) {
+    alert("Es sind keine Daten zum Export vorhanden.");
+    return;
+  }
+
   // Excel-Datei erstellen mit xlsx.js
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
@@ -904,18 +964,18 @@ async function generateExcelExport(exportType) {
 async function fetchAllUsersData() {
   const allUsersData = [];
 
-  // Schleife über alle Nutzer auf der Seite (nehmen wir an, dass sie in einer Liste oder Tabelle sind)
-  const users = document.querySelectorAll('.user');  // Du musst die Selektoren anpassen, je nach HTML-Struktur
+  // Schleife über alle Nutzer auf der Seite und Extraktion der Daten
+  const users = document.querySelectorAll('.user');  // Anpassung je nach Struktur auf der Seite
   users.forEach((userElement) => {
     const userName = userElement.querySelector('.user-name').textContent;  // Angenommener Selektor
     const grundProgress = userElement.querySelector('#grund-progress');  // Fortschritt der Grundvoraussetzungen
     const verlaufProgress = userElement.querySelector('#verlauf-progress');  // Fortschritt der optionalen Voraussetzungen
     
-    // Hier extrahieren wir den Fortschritt als Prozentwert (kannst du nach Bedarf anpassen)
+    // Extrahieren des Fortschritts als Prozentwert
     const grundPercent = parseInt(grundProgress.style.width);
     const verlaufPercent = parseInt(verlaufProgress.style.width);
 
-    // Beispiel-Daten, die exportiert werden sollen
+    // Beispiel-Daten für den Export
     allUsersData.push({
       Name: userName,
       Grundvoraussetzungen: `${grundPercent}%`,
@@ -929,33 +989,29 @@ async function fetchAllUsersData() {
 
 // Funktion, um die eigenen Nutzerdaten zu holen
 async function fetchOwnUserData() {
-  const user = auth.currentUser;  // Annahme, dass du Firebase Auth verwendest
+  const user = auth.currentUser;  // Angenommen, du verwendest Firebase Auth
   const userId = user.uid;
   const userData = {};  // Hier holen wir die Daten des Nutzers
   
-  // Angenommen, du kannst die Daten des Nutzers aus Firestore oder anderen Quellen holen
-  // Hier als Beispiel
+  // Beispiel-Daten, ersetze sie durch echte Daten, z.B. aus Firestore
   userData.Name = user.displayName;
-  userData.Fortschritt = "80%";  // Hier noch durch echte Daten ersetzen
+  userData.Fortschritt = "80%";  // Hier durch echte Daten ersetzen
   userData.Status = "Aktiv";  // Beispiel für Status
 
   return [userData];
 }
 
-// Funktion zum Anzeigen des Datenexport-Popups
-const dataExportToggle = document.getElementById("dataExportToggle");
+// Öffnen des Popups beim Klick auf den Text
+const dataExportLink = document.getElementById("dataExportLink");
 const dataExportModal = document.getElementById("dataExportModal");
 const exportAllButton = document.getElementById("exportAll");
 const exportOwnButton = document.getElementById("exportOwn");
 const closeModalButton = document.getElementById("closeModal");
 
-// Daten Export anzeigen
-dataExportToggle.addEventListener("change", () => {
-  if (dataExportToggle.checked) {
-    dataExportModal.style.display = "flex";
-  } else {
-    dataExportModal.style.display = "none";
-  }
+// Klick auf den Link öffnet das Popup
+dataExportLink.addEventListener("click", (event) => {
+  event.preventDefault(); // Verhindert das Standardverhalten des Links
+  dataExportModal.style.display = "flex";
 });
 
 // Schließen des Popups
@@ -976,7 +1032,7 @@ exportAllButton.addEventListener("click", () => {
   });
 });
 
-// Export eigenen Nutzers
+// Export eigener Nutzerdaten
 exportOwnButton.addEventListener("click", () => {
   generateExcelExport("ownUser");
 });
