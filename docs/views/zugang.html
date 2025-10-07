@@ -983,16 +983,54 @@ observeAuthState(async (user) => {
 });
 
 
-// Funktion zum Exportieren der Daten
+// Funktionen zum Abrufen der Nutzerdaten
+async function fetchAllUsersData() {
+  try {
+    const usersRef = collection(db, "users");
+    const snapshot = await getDocs(usersRef);
+
+    if (snapshot.empty) {
+      console.log("Keine Nutzerdaten gefunden.");
+      return [];
+    }
+
+    const data = snapshot.docs.map(doc => doc.data());
+    return data;
+  } catch (error) {
+    console.error("Fehler beim Abrufen der Nutzerdaten:", error);
+  }
+}
+
+async function fetchOwnUserData() {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      console.log("Kein Benutzer eingeloggt.");
+      return null;
+    }
+
+    const userRef = doc(db, "users", user.uid);
+    const docSnapshot = await getDoc(userRef);
+
+    if (!docSnapshot.exists()) {
+      console.log("Benutzerdaten nicht gefunden.");
+      return null;
+    }
+
+    return docSnapshot.data();
+  } catch (error) {
+    console.error("Fehler beim Abrufen der eigenen Nutzerdaten:", error);
+  }
+}
+
+// Excel-Export-Funktion
 function generateExcelExport(exportType) {
   let data = [];
 
   if (exportType === "allUsers") {
-    // Hier musst du die Funktion anpassen, um alle Nutzerdaten abzurufen
-    data = fetchAllUsersData(); // Diese Funktion musst du nach deinem Bedarf definieren
+    data = fetchAllUsersData();
   } else if (exportType === "ownUser") {
-    // Hier nur den eigenen Nutzerdaten abrufen
-    data = fetchOwnUserData(); // Diese Funktion musst du nach deinem Bedarf definieren
+    data = fetchOwnUserData();
   }
 
   if (!data || data.length === 0) {
@@ -1000,21 +1038,18 @@ function generateExcelExport(exportType) {
     return;
   }
 
-  // Wir erstellen das Arbeitsblatt und fügen die Daten hinzu
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Export");
 
-  // Excel-Datei erstellen und zum Download anbieten
   XLSX.writeFile(wb, `${exportType === "allUsers" ? "alle_nutzer" : "eigene_daten"}_export.xlsx`);
 }
 
-// Event Listener für Export von eigenem Nutzer
+// Event Listener für den Export
 exportOwnButton.addEventListener("click", () => {
   generateExcelExport("ownUser");
 });
 
-// Event Listener für Export aller Nutzer
 exportAllButton.addEventListener("click", () => {
   generateExcelExport("allUsers");
 });
