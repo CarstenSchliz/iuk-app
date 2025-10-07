@@ -453,6 +453,31 @@
       </div>
     </div>
 
+   <!-- Weitere Funktionen -->
+<div class="card" style="margin-top: 1.5rem">
+  <h3><i class="bi bi-file-earmark-spreadsheet"></i> Weitere Funktionen</h3>
+  <div class="checklist">
+    <label>
+      <input type="checkbox" id="dataExportToggle" />
+      Daten Export
+    </label>
+  </div>
+</div>
+
+<!-- Daten Export Popup -->
+<div id="dataExportModal" class="modal" style="display: none;">
+  <div class="modal-card">
+    <h4>Wählen Sie den Export-Typ</h4>
+    <p>Wählen Sie aus, ob Sie alle Nutzer oder nur Ihre eigenen Daten exportieren möchten.</p>
+    <div class="modal-actions">
+      <button id="exportAll" class="btn btn-primary">Alle Nutzer exportieren</button>
+      <button id="exportOwn" class="btn btn-secondary">Eigenen Nutzer exportieren</button>
+      <button id="closeModal" class="btn btn-secondary">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+
     <div id="toast"></div>
 
     <!-- Modal -->
@@ -861,8 +886,100 @@
           updateProgress(verlaufBoxes, verlaufProgress, chkOptional);
         }
       });
- // Rufe die Funktion auf, wenn die Seite geladen wird
-checkUserRole();
+     
+// Funktion zum Exportieren der Nutzerdaten
+async function generateExcelExport(exportType) {
+  const data = exportType === "allUsers" ? await fetchAllUsersData() : await fetchOwnUserData();
+
+  // Excel-Datei erstellen mit xlsx.js
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Export");
+
+  // Export starten
+  XLSX.writeFile(wb, `${exportType === "allUsers" ? "alle_nutzer" : "eigene_daten"}_export.xlsx`);
+}
+
+// Funktion, um alle Nutzerdaten aus der Seite zu holen
+async function fetchAllUsersData() {
+  const allUsersData = [];
+
+  // Schleife über alle Nutzer auf der Seite (nehmen wir an, dass sie in einer Liste oder Tabelle sind)
+  const users = document.querySelectorAll('.user');  // Du musst die Selektoren anpassen, je nach HTML-Struktur
+  users.forEach((userElement) => {
+    const userName = userElement.querySelector('.user-name').textContent;  // Angenommener Selektor
+    const grundProgress = userElement.querySelector('#grund-progress');  // Fortschritt der Grundvoraussetzungen
+    const verlaufProgress = userElement.querySelector('#verlauf-progress');  // Fortschritt der optionalen Voraussetzungen
+    
+    // Hier extrahieren wir den Fortschritt als Prozentwert (kannst du nach Bedarf anpassen)
+    const grundPercent = parseInt(grundProgress.style.width);
+    const verlaufPercent = parseInt(verlaufProgress.style.width);
+
+    // Beispiel-Daten, die exportiert werden sollen
+    allUsersData.push({
+      Name: userName,
+      Grundvoraussetzungen: `${grundPercent}%`,
+      Optionale_Voraussetzungen: `${verlaufPercent}%`,
+      Status: grundPercent === 100 && verlaufPercent === 100 ? "Abgeschlossen" : "Nicht abgeschlossen"
+    });
+  });
+
+  return allUsersData;
+}
+
+// Funktion, um die eigenen Nutzerdaten zu holen
+async function fetchOwnUserData() {
+  const user = auth.currentUser;  // Annahme, dass du Firebase Auth verwendest
+  const userId = user.uid;
+  const userData = {};  // Hier holen wir die Daten des Nutzers
+  
+  // Angenommen, du kannst die Daten des Nutzers aus Firestore oder anderen Quellen holen
+  // Hier als Beispiel
+  userData.Name = user.displayName;
+  userData.Fortschritt = "80%";  // Hier noch durch echte Daten ersetzen
+  userData.Status = "Aktiv";  // Beispiel für Status
+
+  return [userData];
+}
+
+// Funktion zum Anzeigen des Datenexport-Popups
+const dataExportToggle = document.getElementById("dataExportToggle");
+const dataExportModal = document.getElementById("dataExportModal");
+const exportAllButton = document.getElementById("exportAll");
+const exportOwnButton = document.getElementById("exportOwn");
+const closeModalButton = document.getElementById("closeModal");
+
+// Daten Export anzeigen
+dataExportToggle.addEventListener("change", () => {
+  if (dataExportToggle.checked) {
+    dataExportModal.style.display = "flex";
+  } else {
+    dataExportModal.style.display = "none";
+  }
+});
+
+// Schließen des Popups
+closeModalButton.addEventListener("click", () => {
+  dataExportModal.style.display = "none";
+});
+
+// Export aller Nutzer
+exportAllButton.addEventListener("click", () => {
+  // Nur sichtbar für Gruppenleiter/Admin
+  observeAuthState(async (user) => {
+    const roles = await getUserRoles(user.uid);
+    if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+      generateExcelExport("allUsers");
+    } else {
+      alert("Sie haben nicht die Berechtigung, alle Nutzer zu exportieren.");
+    }
+  });
+});
+
+// Export eigenen Nutzers
+exportOwnButton.addEventListener("click", () => {
+  generateExcelExport("ownUser");
+});
     </script>
   </body>
 </html>
