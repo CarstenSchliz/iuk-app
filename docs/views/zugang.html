@@ -327,98 +327,61 @@
         }
       }
    
-/* Container für den Datenexport-Link */
+/* Container für den Datenexport-Link (anpassen für Textlinks) */
 .data-export-container {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
-/* Daten Export Link */
-#dataExportLink {
-  cursor: pointer;
+/* Textlinks für den Export */
+#dataExportLink,
+#exportOwn,
+#exportAll {
   color: #003d73;
   font-weight: normal; /* Keine fette Schrift */
+  cursor: pointer;
   text-decoration: none;
   display: flex;
   align-items: center;
 }
 
-#dataExportLink i {
+#dataExportLink i,
+#exportOwn i,
+#exportAll i {
   margin-right: 0.5rem;
 }
 
-/* Dreieck, das sich dreht, wenn das Dropdown-Menü angezeigt wird */
-#dropdownIcon {
-  transition: transform 0.3s ease;
+/* Hover-Effekt für die Links */
+#dataExportLink:hover,
+#exportOwn:hover,
+#exportAll:hover {
+  text-decoration: underline;
 }
 
-/* Dropdown-Menü, das standardmäßig verborgen ist */
-.dropdown-menu {
-  display: none; /* Menüs standardmäßig ausblenden */
-  position: absolute;
-  left: 0;
-  top: 100%;
-  background-color: #fff;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
-  z-index: 1000;
-  width: 100%; /* Breite an den Container anpassen */
-  max-width: 300px;
-  border-radius: 8px;
+/* Anpassung für Dropdown (Textlinks) */
+#dataExportMenu {
+  display: none;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
   border: 1px solid #e5e7eb;
-  padding: 0.5rem 0; /* Etwas Padding für die Buttons */
+  border-radius: 8px;
+  background-color: #fff;
 }
 
-/* Dropdown-Optionen */
-.dropdown-option {
-  padding: 10px;
-  cursor: pointer;
-  display: block; /* Zeilenweise untereinander */
-  width: 100%; /* Button nimmt die gesamte Breite ein */
-}
-
-.dropdown-option:hover {
-  background-color: #f1f1f1; /* Hover-Effekt */
-}
-
-.dropdown-option i {
-  margin-right: 8px;
-}
-
-/* Anzeigen des Dropdown-Menüs, wenn aktiviert */
-#dataExportLink.active + .dropdown-menu {
+#dataExportMenu.active {
   display: block;
 }
 
-/* Styling für die Buttons im Dropdown */
-#exportOwn, #exportAll {
-  background-color: #003d73; /* Dunkelblau */
-  color: white;
-  font-weight: normal; /* Keine fette Schrift */
-  margin-top: 0.5rem; /* Abstand zwischen den Buttons */
-  border-radius: 8px; /* Abgerundete Ecken */
-  padding: 0.8rem 1.5rem; /* Mehr Abstand im Button */
+#exportOwn,
+#exportAll {
+  padding: 10px;
+  font-size: 1rem;
   cursor: pointer;
-  display: block; /* Buttons untereinander */
-  width: 100%; /* Buttons füllen den Container */
+  text-align: left;
 }
 
-/* Styling für den klickbaren Datenexport-Link */
-#dataExportLink {
-  cursor: pointer;
-  color: #003d73;
-  font-weight: normal; /* Keine fette Schrift */
-  text-decoration: none;
-}
-
-/* Für mobile Ansicht: Popup schmaler machen */
-@media (max-width: 768px) {
-  .dropdown-menu {
-    width: 100%; /* Auf mobilen Geräten breiter */
-    max-width: 400px; /* Maximale Breite */
-  }
-}
-   
     </style>
   </head>
   <body>
@@ -986,6 +949,7 @@ const dropdownIcon = document.getElementById("dropdownIcon");
 const exportOwnButton = document.getElementById("exportOwn");
 const exportAllButton = document.getElementById("exportAll");
 
+// Beim Klick auf den Datenexport-Link das Menü ein- oder ausblenden
 dataExportLink.addEventListener("click", (event) => {
   event.preventDefault();
   
@@ -993,24 +957,8 @@ dataExportLink.addEventListener("click", (event) => {
   dropdownIcon.classList.toggle("bi-caret-down-fill");
   dropdownIcon.classList.toggle("bi-caret-right-fill");
 
-  // Dropdown-Menü explizit ein- oder ausblenden
-  if (dataExportMenu.style.display === "block") {
-    dataExportMenu.style.display = "none"; // Wenn sichtbar, ausblenden
-  } else {
-    dataExportMenu.style.display = "block"; // Wenn unsichtbar, anzeigen
-  }
-});
-
-// Benutzerberechtigungen überprüfen und den "Alle Nutzer exportieren"-Button ausblenden
-observeAuthState(async (user) => {
-  const roles = await getUserRoles(user.uid);
-
-  // Überprüfen, ob der Nutzer Admin oder Gruppenleiter ist
-  if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-    exportAllButton.style.display = "block"; // "Alle Nutzer exportieren"-Button anzeigen
-  } else {
-    exportAllButton.style.display = "none"; // Button für nicht berechtigte Nutzer ausblenden
-  }
+  // Dropdown-Menü ein- oder ausblenden
+  dataExportMenu.classList.toggle("active");
 });
 
 // Funktion zum Exportieren der Daten
