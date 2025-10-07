@@ -53,10 +53,10 @@
         .material-page .card h3 {
             color: var(--hellblau);
             margin: 0 0 1rem;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 10px; /* Abstand zwischen Icon und Text */
+            gap: 10px;
         }
 
         .material-page .icons-container {
@@ -66,12 +66,21 @@
             align-items: center;
             justify-content: flex-end;
             flex-wrap: wrap;
+            position: absolute; /* Positioniert die Icons innerhalb der Karte */
+            right: 20px;  /* Positioniert sie ganz rechts */
+            top: 0;  /* Damit die Icons direkt oben neben der Überschrift sind */
         }
 
         .material-page .icons-container i {
-            font-size: 1.5rem;
+            font-size: 2rem;
             color: var(--dunkelblau);
             cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        .material-page .icons-container i:hover {
+            transform: scale(1.1);  /* Vergrößert das Icon leicht */
+            color: var(--softrot); /* Ändert die Farbe des Icons bei Hover */
         }
 
         .material-page .material-tree {
@@ -151,25 +160,56 @@
             return [];
         }
 
-        // Material und Ordner hinzufügen
-        function addMaterial(type, folderPath) {
+        // Ordner erstellen
+        async function createFolder(type, folderName) {
             const user = auth.currentUser;
             if (!user) {
-                alert("Bitte melde dich an, um Materialien hinzuzufügen.");
+                alert("Bitte melde dich an, um einen Ordner zu erstellen.");
+                return;
+            }
+
+            // Ordner-Pfad erstellen
+            const folderPath = `${type === 'global' ? 'materials/global' : `materials/personal/${user.uid}`}/${folderName}/dummy.txt`;
+
+            const folderRef = ref(storage, folderPath);
+
+            try {
+                // Erstelle eine leere Datei im Ordner, um den Ordner zu simulieren
+                const dummyFile = new Blob([], { type: 'application/octet-stream' });
+                await uploadBytes(folderRef, dummyFile);
+
+                alert(`Ordner '${folderName}' wurde erfolgreich erstellt!`);
+                loadMaterials(type, folderPath);  // Materialien im neuen Ordner anzeigen
+            } catch (error) {
+                console.error("Fehler beim Erstellen des Ordners:", error);
+                alert("Es gab einen Fehler beim Erstellen des Ordners.");
+            }
+        }
+
+        // Datei hochladen
+        async function uploadFile(type, folderPath) {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Bitte melde dich an, um eine Datei hochzuladen.");
                 return;
             }
 
             const fileInput = document.createElement("input");
             fileInput.type = "file";
             fileInput.accept = ".pdf,.jpg,.jpeg,.png";
+
             fileInput.onchange = async (e) => {
                 const file = e.target.files[0];
-                const storageRef = ref(storage, `${folderPath}/${file.name}`);
+                const filePath = `${folderPath}/${file.name}`;
+
+                const fileRef = ref(storage, filePath);
 
                 try {
-                    await uploadBytes(storageRef, file);
-                    const fileUrl = await getDownloadURL(storageRef);
+                    // Datei in den angegebenen Ordner hochladen
+                    await uploadBytes(fileRef, file);
+                    const fileUrl = await getDownloadURL(fileRef);
 
+                    // Datei-Informationen in Firestore speichern (optional)
                     await addDoc(collection(db, `${type}Materials`), {
                         userId: user.uid,
                         name: file.name,
@@ -178,17 +218,18 @@
                         createdAt: new Date()
                     });
 
-                    alert(`${type.charAt(0).toUpperCase() + type.slice(1)} Material erfolgreich hochgeladen!`);
-                    loadMaterials(type, folderPath);
+                    alert(`${file.name} wurde erfolgreich hochgeladen!`);
+                    loadMaterials(type, folderPath);  // Materialien im Ordner anzeigen
                 } catch (error) {
-                    console.error("Fehler beim Hochladen:", error);
-                    alert("Es gab einen Fehler beim Hochladen des Materials.");
+                    console.error("Fehler beim Hochladen der Datei:", error);
+                    alert("Es gab einen Fehler beim Hochladen der Datei.");
                 }
             };
+
             fileInput.click();
         }
 
-        // Ordner und Baumstruktur laden
+        // Materialien laden
         function loadMaterials(type, folderPath) {
             const treeContainer = document.getElementById(`${type}MaterialTree`);
             treeContainer.innerHTML = '';  // Reset tree
@@ -237,35 +278,27 @@
 
         // Event-Listener
         document.getElementById("addGlobalFolderBtn").addEventListener("click", () => {
-            addMaterial("global", "materials/global");
+            const folderName = prompt("Gib den Namen des neuen Ordners ein:");
+            if (folderName) {
+                createFolder("global", folderName);
+            }
         });
 
         document.getElementById("addPersonalFolderBtn").addEventListener("click", () => {
-            addMaterial("personal", `materials/personal/${auth.currentUser.uid}`);
+            const folderName = prompt("Gib den Namen des neuen Ordners ein:");
+            if (folderName) {
+                createFolder("personal", folderName);
+            }
         });
 
         document.getElementById("addGlobalMaterialBtn").addEventListener("click", () => {
-            addMaterial("global", "materials/global");
+            const folderPath = "materials/global";  // Ordnerpfad für globale Materialien
+            uploadFile("global", folderPath);
         });
 
         document.getElementById("addPersonalMaterialBtn").addEventListener("click", () => {
-            addMaterial("personal", `materials/personal/${auth.currentUser.uid}`);
-        });
-
-        document.getElementById("deleteGlobalFolderBtn").addEventListener("click", () => {
-            deleteFolder("global", "materials/global");
-        });
-
-        document.getElementById("deletePersonalFolderBtn").addEventListener("click", () => {
-            deleteFolder("personal", `materials/personal/${auth.currentUser.uid}`);
-        });
-
-        document.getElementById("deleteGlobalMaterialBtn").addEventListener("click", () => {
-            deleteMaterial("global", "sampleFile.pdf");
-        });
-
-        document.getElementById("deletePersonalMaterialBtn").addEventListener("click", () => {
-            deleteMaterial("personal", "sampleFile.pdf");
+            const folderPath = `materials/personal/${auth.currentUser.uid}`;  // Ordnerpfad für persönliche Materialien
+            uploadFile("personal", folderPath);
         });
     </script>
 </body>
