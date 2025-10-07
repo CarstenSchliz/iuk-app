@@ -348,6 +348,11 @@
   margin-right: 0.5rem;
 }
 
+/* Dreieck, das sich dreht, wenn das Dropdown-Menü angezeigt wird */
+#dropdownIcon {
+  transition: transform 0.3s ease;
+}
+
 /* Dropdown-Menü, das standardmäßig verborgen ist */
 .dropdown-menu {
   display: none;
@@ -357,18 +362,19 @@
   background-color: #fff;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
   z-index: 1000;
-  width: 100%;
+  width: 100%; /* Breite an den Container anpassen */
   max-width: 300px;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
+  padding: 0.5rem 0; /* Etwas Padding für die Buttons */
 }
 
 /* Dropdown-Optionen */
 .dropdown-option {
   padding: 10px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
+  display: block; /* Zeilenweise untereinander */
+  width: 100%; /* Button nimmt die gesamte Breite ein */
 }
 
 .dropdown-option:hover {
@@ -392,8 +398,9 @@
   margin-top: 0.5rem; /* Abstand zwischen den Buttons */
   border-radius: 8px; /* Abgerundete Ecken */
   padding: 0.8rem 1.5rem; /* Mehr Abstand im Button */
-  width: auto; /* Breite passt sich an den Text an */
   cursor: pointer;
+  display: block; /* Buttons untereinander */
+  width: 100%; /* Buttons füllen den Container */
 }
 
 /* Styling für den klickbaren Datenexport-Link */
@@ -404,7 +411,7 @@
   text-decoration: none;
 }
 
-/* Abstände und Styling für die Buttons innerhalb des Popups */
+/* Für mobile Ansicht: Popup schmaler machen */
 @media (max-width: 768px) {
   .dropdown-menu {
     width: 100%; /* Auf mobilen Geräten breiter */
@@ -546,7 +553,7 @@
     <!-- Klickbarer Text für Datenexport mit Dropdown -->
     <div class="data-export-container">
       <a href="#" id="dataExportLink">
-        <i class="bi bi-file-earmark-excel"></i> Daten Export <i class="bi bi-caret-down-fill"></i>
+        <i class="bi bi-file-earmark-excel"></i> Daten Export <i class="bi bi-caret-right-fill" id="dropdownIcon"></i>
       </a>
 
       <!-- Dropdown-Menü, das beim Klicken erscheint -->
@@ -562,7 +569,6 @@
     </div>
   </div>
 </div>
-
 
     <div id="toast"></div>
 
@@ -973,17 +979,23 @@
         }
       });
      
-  // Funktion, um das Dropdown-Menü anzuzeigen oder zu verbergen
+// Funktion, um das Dropdown-Menü anzuzeigen oder zu verbergen
 const dataExportLink = document.getElementById("dataExportLink");
 const dataExportMenu = document.getElementById("dataExportMenu");
+const dropdownIcon = document.getElementById("dropdownIcon");
 const exportOwnButton = document.getElementById("exportOwn");
 const exportAllButton = document.getElementById("exportAll");
 
 // Beim Klick auf den Datenexport-Link das Menü ein- oder ausblenden
 dataExportLink.addEventListener("click", (event) => {
   event.preventDefault();
-  dataExportLink.classList.toggle("active"); // Menü ein-/ausblenden
-  dataExportMenu.classList.toggle("active"); // Menü sichtbar machen
+  
+  // Dreieck umdrehen (von rechts nach unten)
+  dropdownIcon.classList.toggle("bi-caret-down-fill");
+  dropdownIcon.classList.toggle("bi-caret-right-fill");
+
+  // Dropdown-Menü ein- oder ausblenden
+  dataExportMenu.classList.toggle("active");
 });
 
 // Benutzerberechtigungen überprüfen und den "Alle Nutzer exportieren"-Button ausblenden
@@ -1000,17 +1012,28 @@ observeAuthState(async (user) => {
 
 // Funktion zum Exportieren der Daten
 function generateExcelExport(exportType) {
-  const data = exportType === "allUsers" ? fetchAllUsersData() : fetchOwnUserData();
+  // Hier simulieren wir den Abruf der Nutzerdaten. Du kannst diese Daten nach Bedarf anpassen
+  let data = [];
+  
+  if (exportType === "allUsers") {
+    // Holen alle Nutzerdaten (z. B. aus der Firebase oder einer anderen Quelle)
+    data = fetchAllUsersData(); // Diese Funktion musst du nach deinem Bedarf definieren
+  } else if (exportType === "ownUser") {
+    // Holen nur den eigenen Nutzerdaten (z. B. aus der Firebase oder einer anderen Quelle)
+    data = fetchOwnUserData(); // Diese Funktion musst du nach deinem Bedarf definieren
+  }
 
   if (!data || data.length === 0) {
     alert("Es sind keine Daten zum Export vorhanden.");
     return;
   }
 
+  // Wir erstellen das Arbeitsblatt und fügen die Daten hinzu
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Export");
 
+  // Excel-Datei erstellen und zum Download anbieten
   XLSX.writeFile(wb, `${exportType === "allUsers" ? "alle_nutzer" : "eigene_daten"}_export.xlsx`);
 }
 
