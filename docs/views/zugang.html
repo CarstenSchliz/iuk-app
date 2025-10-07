@@ -327,11 +327,11 @@
         }
       }
    
-   /* Styling für die Buttons im Popup */
+/* Styling für die Buttons im Popup */
 #exportAll, #exportOwn {
   background-color: #003d73; /* Dunkelblau */
   color: white;
-  font-weight: bold;
+  font-weight: normal; /* Keine fette Schrift */
   margin-right: 1rem;
 }
 
@@ -340,15 +340,17 @@
   color: #003d73; /* Dunkelblau für den Abbrechen-Button */
 }
 
+/* Styling für den klickbaren Datenexport-Link */
 #dataExportLink {
   cursor: pointer;
   color: #003d73;
-  font-weight: bold;
+  font-weight: normal; /* Keine fette Schrift */
   text-decoration: none;
 }
 
 #dataExportLink i {
   margin-right: 0.5rem;
+  font-weight: normal; /* Keine fette Schrift */
 }
 
 /* Styling für das Popup */
@@ -366,16 +368,23 @@
   background: #fff;
   color: #111;
   border-radius: 14px;
-  width: min(520px, 96vw);
+  width: min(520px, 96vw); /* Breite für größere Bildschirme */
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
   padding: 1rem;
   border: 1px solid #e5e7eb;
 }
 
+/* Für mobile Ansicht: Popup schmaler machen */
+@media (max-width: 768px) {
+  .modal-card {
+    width: 90%; /* Reduziert die Breite auf mobilen Geräten */
+    max-width: 400px; /* Maximale Breite für kleine Bildschirme */
+  }
+}
+
 .modal-actions button {
   margin-top: 1rem;
 }
-
     </style>
   </head>
   <body>
