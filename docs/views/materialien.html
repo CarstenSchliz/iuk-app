@@ -13,19 +13,6 @@
             --blassblau: rgb(230,240,250);
             --text: #1f2937;
             --hellblau: rgb(100,160,220);
-            /* Rollenfarben */
-            --role-admin-bg: #ffe8e6;
-            --role-admin-bd: #ffcdc6;
-            --role-admin-fg: #9e1b1b;
-            --role-gl-bg: #fff6db;
-            --role-gl-bd: #fde8a6;
-            --role-gl-fg: #8a6b00;
-            --role-hf-bg: #e8f6ec;
-            --role-hf-bd: #c7efd5;
-            --role-hf-fg: #0f6b2b;
-            --role-an-bg: #e6f0ff;
-            --role-an-bd: #cfe1ff;
-            --role-an-fg: #0d3b8a;
         }
 
         * {
@@ -104,10 +91,6 @@
             cursor: pointer;
         }
 
-        .material-page .btn-primary {
-            background: var(--dunkelblau);
-        }
-
         .material-page .search-box {
             margin-bottom: 1.5rem;
             position: relative;
@@ -172,52 +155,84 @@
                 <h3 id="toggleGlobal" onclick="toggleList('global')"><i class="bi bi-box"></i> Globale Materialien</h3>
                 <ul class="material-list" id="globalMaterialsList"></ul>
                 <button class="btn btn-primary" id="addGlobalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
-                <button class="btn btn-primary" id="addGlobalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
             </div>
 
             <div class="card material-personal">
                 <h3 id="togglePersonal" onclick="toggleList('personal')"><i class="bi bi-person-circle"></i> Persönliche Materialien</h3>
                 <ul class="material-list" id="personalMaterialsList"></ul>
                 <button class="btn btn-primary" id="addPersonalMaterialBtn"><i class="bi bi-plus-circle"></i> Material hinzufügen</button>
-                <button class="btn btn-primary" id="addPersonalFolderBtn"><i class="bi bi-folder-plus"></i> Ordner hinzufügen</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase und deine eigene firebase.js einbinden -->
     <script type="module">
-        import { auth, db, functions, storage } from "./js/firebase.js";  // `storage` wurde ebenfalls importiert
+        // Firebase Setup & Auth-Funktionen
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+        import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // Hier kannst du nun auf Firebase-Dienste zugreifen
-        const loadMaterials = async () => {
-            const globalSnapshot = await db.collection("globalMaterials").get();
-            globalSnapshot.forEach(doc => {
-                console.log(doc.data());
-            });
+        // Firebase Konfiguration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDIuKwYoKQDyzy6qpmY2LGahJofZx6qnuw",
+            authDomain: "iuk-app.firebaseapp.com",
+            projectId: "iuk-app",
+            storageBucket: "iuk-app.firebasestorage.app",
+            messagingSenderId: "759014128178",
+            appId: "1:759014128178:web:09c3690cd95b402c8ada2b",
+            measurementId: "G-ZPD5VPD5TS"
+        };
+
+        // Initialisieren
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+        const db = getFirestore(app);
+
+        // Funktionen
+        async function getUserRoles(uid) {
+            const userRef = doc(db, "users", uid);
+            const docSnap = await getDoc(userRef);
+            if (docSnap.exists()) {
+                return docSnap.data().roles || [];
+            }
+            return [];
         }
 
-        // Event-Listener für das Hinzufügen von Material
+        // Event: Globale Materialien hochladen
         document.getElementById("addGlobalMaterialBtn").addEventListener("click", async () => {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Bitte melde dich an, um Materialien hinzuzufügen.");
+                return;
+            }
+
+            const roles = await getUserRoles(user.uid);
+            if (!roles.includes('admin')) {
+                alert("Du hast keine Berechtigung, globale Materialien hinzuzufügen.");
+                return;
+            }
+
             const fileInput = document.createElement("input");
             fileInput.type = "file";
             fileInput.accept = ".pdf,.jpg,.jpeg,.png";
-
             fileInput.onchange = async (e) => {
                 const file = e.target.files[0];
-                const storageRef = storage.ref().child(`materials/${file.name}`);
+                const storageRef = ref(storage, `materials/global/${file.name}`);
 
                 try {
-                    await storageRef.put(file);
-                    const fileUrl = await storageRef.getDownloadURL();
+                    await uploadBytes(storageRef, file);
+                    const fileUrl = await getDownloadURL(storageRef);
 
-                    await db.collection("globalMaterials").add({
+                    await addDoc(collection(db, "globalMaterials"), {
+                        userId: user.uid,
                         name: file.name,
                         description: "Beschreibung für " + file.name,
-                        fileUrl: fileUrl
+                        fileUrl: fileUrl,
+                        createdAt: new Date()
                     });
 
                     alert("Material erfolgreich hochgeladen!");
-                    loadMaterials();
                 } catch (error) {
                     console.error("Fehler beim Hochladen:", error);
                     alert("Es gab einen Fehler beim Hochladen des Materials.");
@@ -227,26 +242,44 @@
             fileInput.click();
         });
 
-        // Event-Listener für das Hinzufügen von Ordnern
-        document.getElementById("addGlobalFolderBtn").addEventListener("click", async () => {
-            const folderName = prompt("Bitte geben Sie den Ordnernamen ein:");
-            if (folderName) {
-                const folderRef = storage.ref().child(`materials/${folderName}/`);
+        // Event: Persönliche Materialien hochladen
+        document.getElementById("addPersonalMaterialBtn").addEventListener("click", async () => {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Bitte melde dich an, um Materialien hinzuzufügen.");
+                return;
+            }
+
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = ".pdf,.jpg,.jpeg,.png";
+            fileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                const storageRef = ref(storage, `materials/personal/${user.uid}/${file.name}`);
 
                 try {
-                    const dummyFile = new Blob([], { type: 'application/octet-stream' });
-                    const dummyFileRef = folderRef.child("dummy.txt");
-                    await dummyFileRef.put(dummyFile);
+                    await uploadBytes(storageRef, file);
+                    const fileUrl = await getDownloadURL(storageRef);
 
-                    alert(`Ordner '${folderName}' erfolgreich erstellt!`);
+                    await addDoc(collection(db, "personalMaterials"), {
+                        userId: user.uid,
+                        name: file.name,
+                        description: "Beschreibung für " + file.name,
+                        fileUrl: fileUrl,
+                        createdAt: new Date()
+                    });
+
+                    alert("Persönliches Material erfolgreich hochgeladen!");
                 } catch (error) {
-                    console.error("Fehler beim Erstellen des Ordners:", error);
-                    alert("Es gab einen Fehler beim Erstellen des Ordners.");
+                    console.error("Fehler beim Hochladen:", error);
+                    alert("Es gab einen Fehler beim Hochladen des Materials.");
                 }
-            }
+            };
+
+            fileInput.click();
         });
 
-        // Funktion zum Umschalten der Listenansicht
+        // Funktion für die Listenschaltung
         function toggleList(type) {
             const list = document.getElementById(`${type}MaterialsList`);
             list.classList.toggle('open');
@@ -254,4 +287,3 @@
     </script>
 </body>
 </html>
-
