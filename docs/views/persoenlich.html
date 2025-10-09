@@ -35,26 +35,6 @@
       }
     }
 
-    .card {
-      background: var(--card-bg);
-      color: var(--text);
-      border: 1px solid var(--card-border);
-      padding: 1.5rem;
-      border-radius: 14px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.28);
-      margin: 0;
-      transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
-      box-sizing: border-box;
-      width: 100%;
-    }
-    body.dark .card { box-shadow: 0 10px 24px rgba(0,0,0,0.45); }
-    .card h3 {
-      color: var(--hellblau);
-      margin: 0 0 1rem;
-      font-size: 1.1rem;
-      display: flex; align-items: center; gap: .5rem;
-    }
-
     .form-group.floating { position: relative; margin-bottom: 1.2rem; }
     .form-group.floating input,
     .form-group.floating textarea {
@@ -90,12 +70,6 @@
       cursor: not-allowed;
     }
 
-    body:not(.dark) .form-group.floating input:not(:placeholder-shown):not([readonly]),
-    body:not(.dark) .form-group.floating textarea:not(:placeholder-shown):not([readonly]) {
-      background: var(--blassblau);
-      border-color: var(--dunkelblau);
-    }
-
     .form-group.floating textarea#roles,
     .form-group.floating textarea#uid {
       resize: none;
@@ -121,36 +95,17 @@
       display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
       transition: filter .15s ease, background .2s ease, color .2s ease;
     }
-    .btn-primary { background: var(--dunkelblau); color: #fff; }
-    .btn-primary:hover { filter: brightness(1.03); }
-    .btn-secondary { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
-    .btn-secondary:hover { filter: none; background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
-    .btn-accent { background: var(--dunkelblau); color: #fff; }
+
     .form-msg { margin-top:.5rem; font-weight:600; }
 
     .list { list-style:none; margin:0; padding:0; }
     .list li { padding:.6rem 0; border-bottom:1px solid var(--card-border); cursor:pointer; display:flex; align-items:center; gap:.5rem; }
 
-    .modal {
-      position: fixed; inset: 0; display: none; justify-content: center; align-items: center;
-      background: rgba(0,0,0,0.5); z-index: 1000; opacity: 0; transition: opacity .3s ease;
-    }
-    .modal.show { display:flex; opacity:1; }
-    .modal-content {
-      background: var(--modal-bg); color: var(--text);
-      padding: 2rem; border-radius: 16px; box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      width: 92%; max-width: 520px; box-sizing: border-box; transform: scale(.97);
-      transition: transform .25s ease, opacity .25s ease, background .2s ease, color .2s ease;
-      opacity: 1;
-    }
-    .modal.show .modal-content { transform: scale(1); }
-    .modal-content h2 {
-      color: var(--modal-heading); font-size: 1.4rem; margin: .3rem 0 1.1rem; text-align: center;
-    }
     .modal-actions { display:flex; gap:1rem; margin-top:1rem; }
     .modal-actions button {
       flex:1; padding:.7rem; border:none; border-radius:6px; font-size:.95rem; font-weight:bold; cursor:pointer; min-height:44px;
     }
+    
     .modal-actions .primary { background: var(--dunkelblau); color: #fff; }
     .modal-actions .close { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
 
@@ -183,14 +138,6 @@
       transition: transform .35s cubic-bezier(.22,.61,.36,1), background .25s ease;
       z-index: 2;
     }
-    body.dark .theme-switch .thumb { transform: translateX(calc(var(--w) - var(--h))); }
-
-    .theme-switch::before, .theme-switch::after {
-      content: "★"; position: absolute; color: var(--toggle-star); font-size: 12px; opacity: .0; transform: translateY(-2px); transition: opacity .25s ease;
-    }
-    .theme-switch::before { right: 26px; top: 8px; }
-    .theme-switch::after  { right: 14px; bottom: 8px; font-size: 10px; }
-    body.dark .theme-switch::before, body.dark .theme-switch::after { opacity: 1; }
 
     @keyframes sunSpinOnce { from{transform: translateY(-50%) rotate(0);} to{transform: translateY(-50%) rotate(360deg);} }
     @keyframes moonPulse { 0%,100%{ filter:drop-shadow(0 0 0 rgba(255,216,77,0)); } 50%{ filter:drop-shadow(0 0 8px rgba(255,216,77,.9)); } }
