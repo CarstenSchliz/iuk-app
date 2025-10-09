@@ -410,6 +410,7 @@ import { auth, updateUserProfile, observeAuthState, getUserRoles, translateFireb
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { Theme } from "./js/theme.js";
 
 const db = getFirestore();
 
@@ -496,7 +497,6 @@ const strongPw = (p) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(p
 function showProfileMsg(text, color) { profileMsg.textContent = text; profileMsg.style.color = color; }
 
 // ================== THEME: zentral über theme.js ==================
-import { Theme } from "./js/theme.js";
 themeSwitch.addEventListener("click", () => Theme.toggle());
 themeSwitch.addEventListener("keydown", (e) => {
   if (e.key === " " || e.key === "Enter") {
@@ -524,6 +524,7 @@ observeAuthState(async (user) => {
     rolesField.value = "—";
     console.warn("Rollen konnten nicht geladen werden:", e);
   }
+  });
 
 /*********** Passwort ändern ***********/
 function showPwHints(show) {
