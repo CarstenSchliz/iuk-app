@@ -1,253 +1,62 @@
-/* ==============================================
-   THEME: Einheitliche Light/Dark Farbdefinitionen
-   Basierend auf deiner aktuellen persoenlich.html
-   ============================================== */
+/* ======================
+   DARK MODE STYLES ONLY
+   ====================== */
 
-/* ---------- LIGHT MODE (Standard) ---------- */
-:root {
-  --softrot: rgb(228,100,80);
-  --dunkelblau: rgb(0,45,85);
-  --hellblau: rgb(100,160,220);
-  --blassblau: rgb(230,240,250);
-
-  --bg: #f3f4f6;
-  --text: #1f2937;
-  --heading: #002d55;
-  --link: #e06862;
-
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-
-  --input-bg: #ffffff;
-  --input-fg: #111827;
-  --input-border: #d1d5db;
-  --input-readonly-bg: #f9fafb;
-  --input-readonly-fg: #555;
-
-  --button-secondary-bg: #eef2f7;
-  --button-secondary-fg: #111;
-
-  --modal-bg: #ffffff;
-  --modal-heading: #002d55;
-
-  --toggle-track: #0f2030;
-  --toggle-border: #e5e7eb;
-  --toggle-star: #ffd84d;
-  --toggle-knob: #ffffff;
+/* Grundfarben */
+body.dark {
+  background-color: #000;
+  color: #f3f4f6;
 }
 
-/* ---------- DARK MODE ---------- */
-.dark {
-  --bg: #000000;
-  --text: #f3f4f6;
-  --heading: #f3f4f6;
-  --link: #4da6ff;
-
-  --card-bg: #151515;
-  --card-border: #2c2c2c;
-
-  --input-bg: #222;
-  --input-fg: #f3f4f6;
-  --input-border: #3a3a3a;
-  --input-readonly-bg: #2a2a2a;
-  --input-readonly-fg: #bdbdbd;
-
-  --button-secondary-bg: #2b2b2b;
-  --button-secondary-fg: #e8e8e8;
-
-  --modal-bg: #1e1e1e;
-  --modal-heading: #f3f4f6;
-
-  --toggle-track: #061018;
-  --toggle-border: #2a2f35;
-  --toggle-star: #ffd84d;
-  --toggle-knob: #e9eef7;
+/* Karten */
+body.dark .card {
+  background-color: #151515;
+  border-color: #2c2c2c;
+  color: #f3f4f6;
 }
 
-/* ==============================================
-   GRUNDLAYOUT
-   ============================================== */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
-  transition: background .2s ease, color .2s ease;
+/* Eingabefelder */
+body.dark input,
+body.dark textarea {
+  background-color: #222;
+  border-color: #3a3a3a;
+  color: #f3f4f6;
 }
 
-/* ==============================================
-   KARTEN
-   ============================================== */
-.card {
-  background: var(--card-bg);
-  color: var(--text);
-  border: 1px solid var(--card-border);
-  border-radius: 14px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.28);
-  margin: 0;
-  transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
-  box-sizing: border-box;
-  width: 100%;
-}
-.dark .card {
-  box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+body.dark input[readonly],
+body.dark textarea[readonly] {
+  background-color: #2a2a2a !important;
+  color: #bdbdbd;
 }
 
-/* ==============================================
-   FORM ELEMENTE
-   ============================================== */
-input, textarea, select {
-  background: var(--input-bg);
-  color: var(--input-fg);
-  border: 1px solid var(--input-border);
-  border-radius: 10px;
-  font-size: 1rem;
-  padding: 0.7rem 0.75rem;
-  font-family: inherit;
-  transition: border-color .15s ease, background .15s ease, color .15s ease;
-  min-height: 44px;
-  box-sizing: border-box;
-}
-
-input[readonly],
-textarea[readonly] {
-  background: var(--input-readonly-bg) !important;
-  color: var(--input-readonly-fg);
-  cursor: not-allowed;
-}
-
-input:not(:placeholder-shown):not([readonly]),
-textarea:not(:placeholder-shown):not([readonly]) {
-  background: var(--blassblau);
-  border-color: var(--dunkelblau);
-}
-.dark input:not(:placeholder-shown):not([readonly]),
-.dark textarea:not(:placeholder-shown):not([readonly]) {
-  background: var(--input-bg);
-  border-color: var(--input-border);
-}
-
-/* ==============================================
-   BUTTONS
-   ============================================== */
-button, .btn {
-  padding: .6rem 1rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: .95rem;
-  min-height: 44px;
-  min-width: 140px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  transition: filter .15s ease, background .2s ease, color .2s ease;
-}
-
-.btn-primary {
-  background: var(--dunkelblau);
+/* Buttons */
+body.dark .btn-primary {
+  background-color: #0050a0;
   color: #fff;
 }
-.btn-primary:hover {
-  filter: brightness(1.03);
+body.dark .btn-secondary {
+  background-color: #2b2b2b;
+  color: #e8e8e8;
 }
 
-.btn-secondary {
-  background: var(--button-secondary-bg);
-  color: var(--button-secondary-fg);
-}
-.btn-secondary:hover {
-  filter: none;
-  background: var(--button-secondary-bg);
-  color: var(--button-secondary-fg);
+/* Überschriften */
+body.dark h2,
+body.dark h3 {
+  color: #f3f4f6;
 }
 
-/* ==============================================
-   MODAL
-   ============================================== */
-.modal-content {
-  background: var(--modal-bg);
-  color: var(--text);
-}
-.modal-content h2 {
-  color: var(--modal-heading);
+/* Modale Fenster */
+body.dark .modal-content {
+  background-color: #1e1e1e;
+  color: #f3f4f6;
 }
 
-/* ==============================================
-   TOGGLE SWITCH
-   ============================================== */
-.theme-switch {
-  --w: 80px;
-  --h: 40px;
-  position: relative;
-  width: var(--w);
-  height: var(--h);
-  border-radius: 999px;
-  border: 2px solid var(--toggle-border);
-  background: var(--toggle-track);
-  cursor: pointer;
-  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
-  overflow: hidden;
-  display: block;
+/* Theme-Schalter (wenn vorhanden) */
+body.dark .theme-switch {
+  background: #061018;
+  border-color: #2a2f35;
 }
-.theme-switch .icon {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  width: 22px;
-  height: 22px;
-  pointer-events: none;
-  opacity: .9;
-  z-index: 1;
-}
-.theme-switch .sun {
-  left: 10px;
-  color: #ffda65;
-}
-.theme-switch .moon {
-  right: 10px;
-  color: #ffd84d;
-}
-.theme-switch .thumb {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  width: calc(var(--h) - 8px);
-  height: calc(var(--h) - 8px);
-  border-radius: 50%;
-  background: var(--toggle-knob);
-  box-shadow: 0 2px 6px rgba(0,0,0,.25);
-  transition: transform .35s cubic-bezier(.22,.61,.36,1), background .25s ease;
-  z-index: 2;
-}
-.dark .theme-switch .thumb {
+body.dark .theme-switch .thumb {
+  background: #e9eef7;
   transform: translateX(calc(var(--w) - var(--h)));
-}
-.theme-switch::before,
-.theme-switch::after {
-  content: "★";
-  position: absolute;
-  color: var(--toggle-star);
-  font-size: 12px;
-  opacity: 0;
-  transform: translateY(-2px);
-  transition: opacity .25s ease;
-}
-.theme-switch::before {
-  right: 26px;
-  top: 8px;
-}
-.theme-switch::after {
-  right: 14px;
-  bottom: 8px;
-  font-size: 10px;
-}
-.dark .theme-switch::before,
-.dark .theme-switch::after {
-  opacity: 1;
 }
