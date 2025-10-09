@@ -524,6 +524,8 @@ observeAuthState(async (user) => {
     rolesField.value = "—";
     console.warn("Rollen konnten nicht geladen werden:", e);
   }
+    // Wende das gespeicherte Theme an (dynamisch aus Firestore)
+  await Theme.init();  // Achtung: Das hier ist die Schlüsselzeile, die das Theme lädt
   });
 
 /*********** Passwort ändern ***********/
