@@ -4,24 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Persönliche Einstellungen</title>
+
+  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <!-- Zentrales Farb-Theme -->
   <link rel="stylesheet" href="../assets/theme.css">
 
   <style>
+    /* ==========================================
+       SEITEN-LAYOUT UND STRUKTUR
+       (Farben kommen aus theme.css)
+    =========================================== */
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--bg);
+    }
+
     body {
       font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
       color: var(--text);
       transition: background .2s ease, color .2s ease;
     }
 
-    /* Zentrierter Seiten-Wrapper */
     .settings-page {
       max-width: 900px;
       margin: 0 auto;
       padding: 0 1rem;
     }
 
-    .page-title { color: var(--softrot); margin: 0 0 1rem; padding: 1rem 0; }
+    .page-title {
+      color: var(--softrot);
+      margin: 0 0 1rem;
+      padding: 1rem 0;
+    }
 
     .settings-grid {
       display: grid;
@@ -29,13 +48,43 @@
       gap: 1.5rem;
       align-items: stretch;
     }
+
     @media (max-width: 768px) {
       .settings-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .form-group.floating { position: relative; margin-bottom: 1.2rem; }
+    /* Karten-Container */
+    .card {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+      transition: all .2s ease;
+    }
+
+    body.dark .card {
+      box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+    }
+
+    .card h3 {
+      color: var(--hellblau);
+      margin: 0 0 1rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    /* Formularfelder */
+    .form-group.floating {
+      position: relative;
+      margin-bottom: 1.2rem;
+    }
+
     .form-group.floating input,
     .form-group.floating textarea {
       width: 100%;
@@ -48,123 +97,147 @@
       transition: border-color .15s ease, background .15s ease, color .15s ease;
       min-height: 44px;
       box-sizing: border-box;
-      font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
+      font-family: inherit;
     }
+
     .form-group.floating label {
       position: absolute;
-      top: 50%; left: .75rem; transform: translateY(-50%);
-      color: #b0b6bf; font-size: .95rem; transition: all .15s;
-      pointer-events: none; background: var(--card-bg); padding: 0 .25rem;
+      top: 50%;
+      left: .75rem;
+      transform: translateY(-50%);
+      color: #b0b6bf;
+      font-size: .95rem;
+      transition: all .15s;
+      pointer-events: none;
+      background: var(--card-bg);
+      padding: 0 .25rem;
     }
+
     .form-group.floating input:focus + label,
     .form-group.floating input:not(:placeholder-shown) + label,
     .form-group.floating textarea:focus + label,
     .form-group.floating textarea:not(:placeholder-shown) + label {
-      top: .1rem; left: .6rem; font-size: .78rem; color: var(--heading);
+      top: .1rem;
+      left: .6rem;
+      font-size: .78rem;
+      color: var(--heading);
     }
 
-    .form-group.floating input[readonly],
-    .form-group.floating textarea[readonly] {
-      background: var(--input-readonly-bg) !important;
-      color: var(--input-readonly-fg);
-      cursor: not-allowed;
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
     }
 
-    .form-group.floating textarea#roles,
-    .form-group.floating textarea#uid {
-      resize: none;
-      height: 44px;
-      line-height: normal;
-      padding-top: 1rem;
-      padding-bottom: .3rem;
-      font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
-      font-size: 1rem;
+    .form-msg {
+      margin-top: .5rem;
+      font-weight: 600;
     }
 
-    .form-group.floating textarea {
-      resize: none;
-      line-height: 1.4;
-      white-space: normal;
-      overflow: auto;
+    /* Listen */
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
     }
 
-    .form-actions { display:flex; gap:1rem; margin-top:1rem; }
-    .btn {
-      padding:.6rem 1rem; border:none; border-radius:10px; cursor:pointer;
-      font-size:.95rem; min-height:44px; min-width:140px;
-      display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
-      transition: filter .15s ease, background .2s ease, color .2s ease;
+    .list li {
+      padding: .6rem 0;
+      border-bottom: 1px solid var(--card-border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
     }
 
-    .form-msg { margin-top:.5rem; font-weight:600; }
+    /* Passwort-Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
 
-    .list { list-style:none; margin:0; padding:0; }
-    .list li { padding:.6rem 0; border-bottom:1px solid var(--card-border); cursor:pointer; display:flex; align-items:center; gap:.5rem; }
+    .modal.show {
+      display: flex;
+      opacity: 1;
+    }
 
-    .modal-actions { display:flex; gap:1rem; margin-top:1rem; }
+    .modal-content {
+      background: var(--modal-bg);
+      color: var(--text);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      width: 92%;
+      max-width: 520px;
+      transform: scale(.97);
+      transition: transform .25s ease, opacity .25s ease;
+    }
+
+    .modal.show .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-content h2 {
+      color: var(--modal-heading);
+      font-size: 1.4rem;
+      margin: .3rem 0 1.1rem;
+      text-align: center;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
     .modal-actions button {
-      flex:1; padding:.7rem; border:none; border-radius:6px; font-size:.95rem; font-weight:bold; cursor:pointer; min-height:44px;
-    }
-    
-    .modal-actions .primary { background: var(--dunkelblau); color: #fff; }
-    .modal-actions .close { background: var(--button-secondary-bg); color: var(--button-secondary-fg); }
-
-    #pass-rules { font-size:.85rem; text-align:left; margin: 6px 0 12px 2px; line-height: 1.35; display: none; }
-
-    .pw-meter { height: 8px; border-radius: 999px; background: var(--card-border); margin: 6px 2px 6px; overflow: hidden; display: none; }
-    .pw-meter-bar { height: 100%; width: 0%; border-radius: 999px; transition: width .2s ease, background .2s ease; }
-    .pw-strength { display:none; margin: 0 2px 10px; font-size: .86rem; font-weight: 700; }
-
-    .theme-switch {
-      --w: 80px; --h: 40px;
-      position: relative; width: var(--w); height: var(--h);
-      border-radius: 999px; border: 2px solid var(--toggle-border);
-      background: var(--toggle-track); cursor: pointer; user-select: none;
-      transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04); overflow: hidden; display: block;
-    }
-    .theme-switch .icon {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      font-size: 18px; width: 22px; height: 22px; pointer-events: none; opacity: .9; z-index: 1;
-    }
-    .theme-switch .sun { left: 10px; color: #ffda65; }
-    .theme-switch .moon { right: 10px; color: #ffd84d; }
-
-    .theme-switch .thumb {
-      position: absolute; top: 4px; left: 4px;
-      width: calc(var(--h) - 8px); height: calc(var(--h) - 8px);
-      border-radius: 50%; background: var(--toggle-knob);
-      box-shadow: 0 2px 6px rgba(0,0,0,.25);
-      transition: transform .35s cubic-bezier(.22,.61,.36,1), background .25s ease;
-      z-index: 2;
+      flex: 1;
+      padding: .7rem;
+      border: none;
+      border-radius: 6px;
+      font-size: .95rem;
+      font-weight: bold;
+      cursor: pointer;
+      min-height: 44px;
     }
 
+    .input-with-eye {
+      position: relative;
+    }
+
+    .toggle-eye {
+      position: absolute;
+      right: .5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      padding: .25rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      color: var(--input-fg);
+    }
+
+    .toggle-eye:focus {
+      outline: 2px solid var(--input-border);
+    }
+
+    /* Animationen für Theme-Switch */
     @keyframes sunSpinOnce { from{transform: translateY(-50%) rotate(0);} to{transform: translateY(-50%) rotate(360deg);} }
     @keyframes moonPulse { 0%,100%{ filter:drop-shadow(0 0 0 rgba(255,216,77,0)); } 50%{ filter:drop-shadow(0 0 8px rgba(255,216,77,.9)); } }
     body:not(.dark) .theme-switch .sun.burst { animation: sunSpinOnce .6s ease; }
     body.dark .theme-switch .moon { animation: moonPulse 1.6s ease-in-out infinite; }
 
-    .theme-switch .sun::after, .theme-switch .moon::after {
-      content:""; position:absolute; inset:-6px; border-radius:50%;
-      background: radial-gradient(circle, rgba(255,220,120,.6) 0%, rgba(255,220,120,0) 60%);
-      opacity:0; transform: scale(.6); transition: opacity .25s ease, transform .25s ease; z-index: -1;
-    }
-    body:not(.dark) .theme-switch .sun.burst::after { opacity:1; transform: scale(1.1); }
-    body.dark .theme-switch .moon.burst::after { opacity:1; transform: scale(1.1); }
-
-    .input-with-eye { position: relative; }
-    .toggle-eye {
-      position: absolute; right: .5rem; top: 50%; transform: translateY(-50%);
-      border: 0; background: transparent; cursor: pointer; padding: .25rem;
-      line-height: 1; display: inline-flex; align-items: center; justify-content: center;
-      border-radius: 8px; color: var(--input-fg);
-    }
-    .toggle-eye:focus { outline: 2px solid var(--input-border); }
-
-    body.dark .menu button.active { background: #fff; color: #000; font-weight: bold; }
-    body.dark .menu button.active::before { background: #fff; }
-
-    /* >>> NEU: Abstand zwischen Karten innerhalb einer Spalte <<< */
     .settings-grid > div > .card:not(:last-child) {
       margin-bottom: 1.5rem;
     }
