@@ -185,62 +185,6 @@
       }
     }
 
-    .news-feed {
-  margin-top: 20px;
-}
-
-.news-creation textarea {
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid var(--mittelgrau);
-  border-radius: 8px;
-}
-
-.news-creation button {
-  padding: 10px 20px;
-  background-color: var(--dunkelblau);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.news-list .news-item {
-  padding: 15px;
-  background: white;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.news-item h3 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.news-item p {
-  margin: 5px 0;
-  font-size: 1rem;
-}
-
-.news-item .meta {
-  font-size: 0.8rem;
-  color: var(--mittelgrau);
-}
-
-.news-item .reaction {
-  margin-top: 10px;
-}
-
-.news-item .reaction button {
-  padding: 5px 10px;
-  margin-right: 10px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
     /* Darkmode */
     body.dark {
       --bg: #000;
@@ -335,16 +279,6 @@
 <h1 id="greeting">Willkommen in deiner persönlichen IuK Lernwelt</h1>
     <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
   </div>
-
-  <div class="news-feed" id="newsFeed">
-  <h2>Neuigkeiten</h2>
-  <div class="news-creation">
-    <textarea id="newsTitle" placeholder="Titel eingeben"></textarea>
-    <textarea id="newsContent" placeholder="Inhalt eingeben"></textarea>
-    <button id="submitNewsBtn">Beitrag erstellen</button>
-  </div>
-  <div class="news-list" id="newsList"></div>
-</div>
 
   <!-- Firebase / Auth -->
   <script type="module">
@@ -478,89 +412,6 @@
       }
       return str;
     }
-
-    import { db, auth } from "./js/firebase.js"; // Firebase Firestore und Auth
-
-// Lade News-Feed
-async function loadNewsFeed() {
-  const newsList = document.getElementById("newsList");
-  newsList.innerHTML = ''; // Reset der News-Items
-
-  const newsSnapshot = await db.collection("news").orderBy("createdAt", "desc").get();
-  newsSnapshot.forEach(doc => {
-    const data = doc.data();
-    const newsItem = document.createElement("div");
-    newsItem.classList.add("news-item");
-
-    newsItem.innerHTML = `
-      <h3>${data.title}</h3>
-      <p>${data.content}</p>
-      <div class="meta">Erstellt von ${data.createdBy} am ${new Date(data.createdAt.seconds * 1000).toLocaleString()}</div>
-      <div class="reaction">
-        <button class="likeBtn" data-id="${doc.id}">👍 ${data.likes || 0}</button>
-        <button class="dislikeBtn" data-id="${doc.id}">👎 ${data.dislikes || 0}</button>
-        <button class="commentBtn" data-id="${doc.id}">Kommentar</button>
-      </div>
-    `;
-    newsList.appendChild(newsItem);
-  });
-}
-
-// Beitrag erstellen (für Admins/ Gruppenleiter)
-const submitNewsBtn = document.getElementById("submitNewsBtn");
-
-submitNewsBtn.addEventListener("click", async () => {
-  const title = document.getElementById("newsTitle").value;
-  const content = document.getElementById("newsContent").value;
-
-  if (!title || !content) {
-    alert("Bitte fülle alle Felder aus.");
-    return;
-  }
-
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Du musst angemeldet sein, um einen Beitrag zu erstellen.");
-    return;
-  }
-
-  try {
-    await db.collection("news").add({
-      title: title,
-      content: content,
-      createdBy: user.displayName || user.email,
-      createdAt: new Date(),
-      likes: 0,
-      dislikes: 0,
-    });
-    alert("Beitrag erfolgreich erstellt!");
-    loadNewsFeed(); // Newsfeed neu laden
-  } catch (error) {
-    alert("Fehler beim Erstellen des Beitrags: " + error.message);
-  }
-});
-
-// Reaktionen (Gefällt mir / Gefällt mir nicht)
-document.getElementById("newsList").addEventListener("click", async (event) => {
-  const newsId = event.target.getAttribute("data-id");
-  if (!newsId) return;
-
-  const newsRef = db.collection("news").doc(newsId);
-  if (event.target.classList.contains("likeBtn")) {
-    await newsRef.update({
-      likes: firebase.firestore.FieldValue.increment(1),
-    });
-  } else if (event.target.classList.contains("dislikeBtn")) {
-    await newsRef.update({
-      dislikes: firebase.firestore.FieldValue.increment(1),
-    });
-  }
-  loadNewsFeed(); // Newsfeed neu laden, um die Reaktionen anzuzeigen
-});
-
-// Lade News-Feed beim Start
-loadNewsFeed();
-
   </script>
 </body>
 </html>
