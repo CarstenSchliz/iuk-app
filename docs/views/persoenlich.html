@@ -497,81 +497,17 @@ const highestRole = (roles = []) => {
 const strongPw = (p) => /^(?=.*[0-9])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/.test(p);
 function showProfileMsg(text, color) { profileMsg.textContent = text; profileMsg.style.color = color; }
 
-/*********** Speichern des Themas in Firestore ***********/
-async function setUserThemePreference(uid, theme) {
-  const userDocRef = doc(db, "users", uid);  // Wir speichern das Theme für die UID
-  try {
-    await setDoc(userDocRef, { themePreference: theme }, { merge: true });  // Merkt sich das Theme im Benutzer-Dokument
-    console.log(`Theme für UID ${uid} gespeichert: ${theme}`);
-  } catch (error) {
-    console.error("Fehler beim Speichern des Themas:", error);
-  }
-}
+// ================== THEME: zentral über theme.js ==================
+import { Theme } from "../js/theme.js";
 
-/*********** Thema aus Firestore abrufen ***********/
-async function getUserThemePreference(uid) {
-  const docRef = doc(db, "users", uid);  // Hole das Dokument für die UID des Benutzers
-  try {
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-      const theme = docSnap.data().themePreference;
-      console.log(`Thema für UID ${uid} abgerufen: ${theme}`);  // Logge das Thema zur Überprüfung
-      return theme || "light";  // Standardwert auf "light" setzen
-    } else {
-      console.log(`Kein Dokument für UID ${uid} gefunden.`);
-      return "light";  // Standardwert
-    }
-  } catch (error) {
-    console.error("Fehler beim Abrufen des Themas:", error);
-    return "light";  // Im Fehlerfall Standardwert zurückgeben
-  }
-}
-
-/*********** Theme-Toggle ***********/
-function setTheme(mode) {
-  const user = auth.currentUser;
-  if (user) {
-    // Speichern des Themas in Firestore für die UID
-    setUserThemePreference(user.uid, mode);
-  }
-
-  if (mode === "dark") {
-    document.body.classList.add("dark");
-    themeLabel.textContent = "Dunkel";
-    themeSwitch.setAttribute("aria-checked", "true");
-    moonIcon.classList.add("burst");
-    setTimeout(() => moonIcon.classList.remove("burst"), 300);
-  } else {
-    document.body.classList.remove("dark");
-    themeLabel.textContent = "Hell";
-    themeSwitch.setAttribute("aria-checked", "false");
-    sunIcon.classList.add("burst");
-    setTimeout(() => sunIcon.classList.remove("burst"), 600);
-  }
-}
-
-/*********** Beim Laden der Seite das gespeicherte Theme sofort anwenden ***********/
-document.addEventListener("DOMContentLoaded", async () => {
-  const user = auth.currentUser;
-  if (user) {
-    console.log("Benutzer eingeloggt:", user.uid);
-    const savedTheme = await getUserThemePreference(user.uid);  // Hole das gespeicherte Theme für die UID
-    setTheme(savedTheme);  // Wende das gespeicherte Theme sofort an
-  } else {
-    console.log("Kein Benutzer eingeloggt.");
-  }
-});
-
-// Event-Listener für den Theme-Switch
-themeSwitch.addEventListener("click", () => {
-  setTheme(document.body.classList.contains("dark") ? "light" : "dark");
-});
+themeSwitch.addEventListener("click", () => Theme.toggle());
 themeSwitch.addEventListener("keydown", (e) => {
-  if (e.key === " " || e.key === "Enter") { e.preventDefault(); setTheme(document.body.classList.contains("dark") ? "light" : "dark"); }
+  if (e.key === " " || e.key === "Enter") {
+    e.preventDefault();
+    Theme.toggle();
+  }
 });
-themeSwitch.setAttribute("tabindex", "0");
-
+ 
 /*********** Daten laden ***********/
 observeAuthState(async (user) => {
   if (!user) return;
