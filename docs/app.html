@@ -365,15 +365,17 @@
       window.location.href = "index.html";
     });
 
-    // Login-Check + Userdaten + Rollen
-    onAuthStateChanged(auth, async (user) => {
+ // Login-Check + Userdaten + Rollen
+onAuthStateChanged(auth, async (user) => {
+  const greetingElement = document.getElementById("greeting");
+
   if (user) {
     // Benutzername setzen
     const userName = user.displayName || user.email.split("@")[0];
-    const greetingElement = document.getElementById("greeting");
     greetingElement.innerHTML = `Willkommen lieber ${userName}, in deiner persönlichen IuK Lernwelt`;
 
     // Profilbild aktualisieren
+    const profileImg = document.getElementById("profileImg");
     if (user.photoURL) {
       profileImg.src = user.photoURL;
     } else {
@@ -409,7 +411,7 @@
       }
     }
   } else {
-    window.location.href = "index.html";
+    window.location.href = "index.html"; // Bei keinem User zurück zur Login-Seite
   }
 });
 
