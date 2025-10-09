@@ -53,26 +53,48 @@ body.dark .card h3 {
 /* Eingabefelder */
 body.dark input,
 body.dark textarea {
-  background-color: #333333; /* Dunkles Grau für Eingabefelder */
+  background-color: #444444; /* Hellgrau für Eingabefelder */
   border-color: #555555; /* Dunklerer Rahmen für Eingabefelder */
   color: #ffffff; /* Weiße Schrift in den Eingabefeldern */
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 body.dark input:focus,
 body.dark textarea:focus {
-  background-color: #444444; /* Helleres Grau für den Fokus */
+  background-color: #555555; /* Helleres Grau für den Fokus */
   border-color: #777777; /* Hellerer Rahmen bei Fokus */
 }
 
 body.dark input[readonly],
 body.dark textarea[readonly] {
-  background-color: #444444; /* Noch dunkleres Grau für schreibgeschützte Felder */
+  background-color: #555555; /* Noch dunkleres Grau für schreibgeschützte Felder */
   color: #888888; /* Helle Schriftfarbe für schreibgeschützte Felder */
+}
+
+/* Bereinigung der Begriffe über den Eingabefeldern */
+body.dark .form-group.floating label {
+  position: absolute;
+  top: -8px; /* Labels erscheinen über den Feldern */
+  left: 12px;
+  color: #bbb; /* Hellgraue Farbe für die Labels */
+  font-size: 0.875rem;
+  transition: top 0.2s, font-size 0.2s;
+}
+
+/* Wenn das Eingabefeld fokussiert oder ausgefüllt ist */
+body.dark input:focus + label,
+body.dark input:not(:placeholder-shown) + label,
+body.dark textarea:focus + label,
+body.dark textarea:not(:placeholder-shown) + label {
+  top: -20px;
+  font-size: 0.75rem;
+  color: #ffffff; /* Weiße Farbe für die Labels */
 }
 
 /* Buttons */
 body.dark .btn-primary {
-  background-color: #007bff; /* Blau für den primären Button */
+  background-color: #007bff; /* Dunkelblau für den primären Button */
   color: #ffffff; /* Weiße Schrift auf Buttons */
 }
 
@@ -131,19 +153,21 @@ body.dark a:hover {
   color: #ffffff; /* Weiße Farbe für Links im Hover-Zustand */
 }
 
-/* Bereinigung der Begriffe über den Eingabefeldern */
-body.dark .form-group.floating label {
-  font-size: 1rem; /* Größere Schrift für Labels */
-  color: #bbb; /* Hellgraue Farbe für die Labels */
-  transform: translateY(0); /* Label ohne eckige Kanten */
-}
-
-/* Buttons in Modal Popup */
-body.dark .modal-content .btn {
-  background-color: #007bff; /* Beibehalten der blauen Buttons im Popup */
-  color: #ffffff; /* Weiße Schrift im Popup-Button */
-}
-
+/* Popup - Zurück-Button */
 body.dark .modal-content .btn-secondary {
-  background-color: #555555; /* Dunkles Grau für Popup-Zurück-Button */
+  background-color: #555555; /* Dunkles Grau für den Zurück-Button im Popup */
+}
+
+/* Popup - Eingabefelder im Modal */
+body.dark .modal-content input,
+body.dark .modal-content textarea {
+  background-color: #444444; /* Hellgrau für Eingabefelder im Modal */
+  border-color: #555555; /* Dunklerer Rahmen für Eingabefelder im Modal */
+  color: #ffffff; /* Weiße Schrift in den Eingabefeldern */
+}
+
+body.dark .modal-content input:focus,
+body.dark .modal-content textarea:focus {
+  background-color: #555555; /* Helleres Grau für den Fokus */
+  border-color: #777777; /* Hellerer Rahmen bei Fokus */
 }
