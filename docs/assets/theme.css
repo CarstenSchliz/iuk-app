@@ -1,173 +1,113 @@
-/* ====================== DARK MODE OPTIMIERUNG ====================== */
-
-/* Allgemeine Textfarbe */
+/* Body */
 body.dark {
-  background-color: #121212; /* Sehr dunkles Grau statt Schwarz */
-  color: #e0e0e0; /* Sehr helles Grau für Text */
+  background-color: #181818; /* Deeper, dark grey */
+  color: #e0e0e0; /* Light grey text for readability */
 }
 
 /* Sidebar */
 body.dark .sidebar {
-  background-color: #1f1f1f; /* Sehr dunkles Grau für die Sidebar */
-  color: #e0e0e0; /* Helle Schriftfarbe in der Sidebar */
+  background-color: #1f1f1f; /* Darker background for the sidebar */
+  color: #e0e0e0;
 }
 
+/* Sidebar Links */
 body.dark .sidebar a {
-  color: #e0e0e0; /* Weiße Farbe für Sidebar Links */
+  color: #e0e0e0;
+  transition: color 0.3s ease-in-out; /* Smooth hover transition */
 }
 
 body.dark .sidebar a:hover {
-  background-color: #333333; /* Dunkelgrau für Hover-Effekt */
-  color: #ffffff; /* Weißer Text bei Hover */
+  background-color: #333333; /* Soft hover effect */
+  color: #ffffff; /* White text on hover */
 }
 
-/* Aktiver Menüpunkt */
+/* Active Sidebar Item */
 body.dark .sidebar .active {
-  background-color: #333333; /* Dunkelgrau für den aktiven Menüpunkt */
-  color: #ffffff; /* Weißer Text für den aktiven Menüpunkt */
+  background-color: #444444; /* Darker active menu item */
+  color: #ffffff;
 }
 
-/* Menü-Icons */
+/* Icons */
 body.dark .sidebar .bi {
-  color: #e0e0e0; /* Weiße Farbe für Icons in der Sidebar */
+  color: #e0e0e0;
 }
 
-/* Name und Rolle im Menü */
-body.dark #userName,
-body.dark #userRole {
-  color: #ffffff; /* Weiße Schrift für Name und Rolle */
-}
-
-/* Karten */
+/* Card Components */
 body.dark .card {
-  background-color: #1e1e1e; /* Etwas helleres Dunkelgrau für Karten */
-  border-color: #333333; /* Dunklerer Rahmen für Karten */
-  color: #ffffff; /* Weiße Schrift auf den Karten */
+  background-color: #222222; /* Slightly lighter grey */
+  color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #333333; /* More defined card borders */
 }
 
-/* Karten Überschriften */
 body.dark .card h3 {
-  color: #ffffff; /* Weiße Überschrift */
+  color: #ffffff;
 }
 
-/* Eingabefelder */
-body.dark input,
-body.dark textarea {
-  background-color: #444444; /* Hellgrau für Eingabefelder */
-  border-color: #555555; /* Dunklerer Rahmen für Eingabefelder */
-  color: #ffffff; /* Weiße Schrift in den Eingabefeldern */
-  padding-left: 12px;
-  padding-right: 12px;
+/* Form Inputs */
+body.dark input, body.dark textarea {
+  background-color: #333333; /* Subtle grey background for inputs */
+  border: 1px solid #444444; /* Softer border */
+  color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 5px;
 }
 
-body.dark input:focus,
-body.dark textarea:focus {
-  background-color: #555555; /* Helleres Grau für den Fokus */
-  border-color: #777777; /* Hellerer Rahmen bei Fokus */
+/* Input Focus */
+body.dark input:focus, body.dark textarea:focus {
+  background-color: #444444;
+  border-color: #777777;
 }
 
-body.dark input[readonly],
-body.dark textarea[readonly] {
-  background-color: #555555; /* Noch dunkleres Grau für schreibgeschützte Felder */
-  color: #888888; /* Helle Schriftfarbe für schreibgeschützte Felder */
-}
-
-/* Bereinigung der Begriffe über den Eingabefeldern */
-body.dark .form-group.floating label {
-  position: absolute;
-  top: -8px; /* Labels erscheinen über den Feldern */
-  left: 12px;
-  color: #bbb; /* Hellgraue Farbe für die Labels */
-  font-size: 0.875rem;
-  transition: top 0.2s, font-size 0.2s;
-}
-
-/* Wenn das Eingabefeld fokussiert oder ausgefüllt ist */
-body.dark input:focus + label,
-body.dark input:not(:placeholder-shown) + label,
-body.dark textarea:focus + label,
-body.dark textarea:not(:placeholder-shown) + label {
-  top: -20px;
-  font-size: 0.75rem;
-  color: #ffffff; /* Weiße Farbe für die Labels */
+/* Readonly Fields */
+body.dark input[readonly], body.dark textarea[readonly] {
+  background-color: #555555;
+  color: #888888;
 }
 
 /* Buttons */
 body.dark .btn-primary {
-  background-color: #007bff; /* Dunkelblau für den primären Button */
-  color: #ffffff; /* Weiße Schrift auf Buttons */
+  background-color: #007bff;
+  color: #ffffff;
+  border-radius: 5px;
 }
 
 body.dark .btn-primary:hover {
-  background-color: #0056b3; /* Dunkleres Blau für Hover-Effekt */
+  background-color: #0056b3;
 }
 
 body.dark .btn-secondary {
-  background-color: #555555; /* Dunkles Grau für sekundäre Buttons */
-  color: #ffffff; /* Weiße Schrift auf sekundären Buttons */
+  background-color: #555555;
+  color: #ffffff;
+  border-radius: 5px;
 }
 
 body.dark .btn-secondary:hover {
-  background-color: #666666; /* Helleres Grau für Hover-Effekt */
+  background-color: #666666;
 }
 
-/* Überschriften */
-body.dark h2,
-body.dark h3 {
-  color: #ffffff; /* Weiße Schrift für Überschriften */
-}
-
-/* Modale Fenster */
+/* Modal Window */
 body.dark .modal-content {
-  background-color: #2a2a2a; /* Dunkles Grau für das Modal-Fenster */
-  color: #e0e0e0; /* Helle Schrift im Modal */
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border-radius: 8px;
 }
 
-/* Versionierungsnummer */
-body.dark .version {
-  color: #ffffff; /* Weiße Schrift für die Versionierungsnummer */
-}
-
-/* Theme-Schalter */
+/* Theme Switcher */
 body.dark .theme-switch {
-  background: #444444; /* Dunkles Grau für den Theme-Schalter */
-  border-color: #666666; /* Hellerer Rahmen für den Theme-Schalter */
+  background: #444444;
+  border-color: #666666;
 }
 
 body.dark .theme-switch .thumb {
-  background: #ffffff; /* Heller Schieberegler für den Dark Mode */
+  background: #ffffff;
 }
 
-/* Verbesserung der Lesbarkeit für Text und Icons */
-body.dark .icon,
-body.dark .bi {
-  color: #f5f5f5; /* Weiße Farbe für Icons */
-}
-
-/* Anpassung für Links */
+/* Link Colors */
 body.dark a {
-  color: #4da6ff; /* Helles Blau für Links */
+  color: #66aaff; /* Softer blue for links */
 }
 
 body.dark a:hover {
-  color: #ffffff; /* Weiße Farbe für Links im Hover-Zustand */
-}
-
-/* Popup - Zurück-Button */
-body.dark .modal-content .btn-secondary {
-  background-color: #555555; /* Dunkles Grau für den Zurück-Button im Popup */
-}
-
-/* Popup - Eingabefelder im Modal */
-body.dark .modal-content input,
-body.dark .modal-content textarea {
-  background-color: #444444; /* Hellgrau für Eingabefelder im Modal */
-  border-color: #555555; /* Dunklerer Rahmen für Eingabefelder im Modal */
-  color: #ffffff; /* Weiße Schrift in den Eingabefeldern */
-}
-
-body.dark .modal-content input:focus,
-body.dark .modal-content textarea:focus {
-  background-color: #555555; /* Helleres Grau für den Fokus */
-  border-color: #777777; /* Hellerer Rahmen bei Fokus */
+  color: #ffffff;
 }
