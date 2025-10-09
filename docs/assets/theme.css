@@ -55,7 +55,7 @@ body.dark input, body.dark textarea {
   border-radius: 5px;
 }
 
-/* Special input fields: Name (white background, black text) */
+/* Name-Feld (weiß mit schwarzer Schrift) */
 body.dark input[name="name"] {
   background-color: #ffffff; /* White background */
   color: #000000; /* Black text */
@@ -66,9 +66,9 @@ body.dark input[name="name"]:focus {
   color: #000000; /* Keep text black */
 }
 
-/* Other input fields: E-Mail, Roles, UID (gray background, white text) */
+/* E-Mail, Rollen, UID (grauer Hintergrund mit weißer Schrift) */
 body.dark input:not([name="name"]), body.dark textarea {
-  background-color: #444444; /* Light grey background for other fields */
+  background-color: #444444; /* Light grey background for these fields */
   border: 1px solid #555555; /* Slightly darker border */
   color: #ffffff; /* White text */
 }
@@ -86,23 +86,23 @@ body.dark .form-group.floating label {
 
 /* Buttons */
 body.dark .btn-primary {
-  background-color: #007bff; /* Dark blue for primary button */
+  background-color: #66aaff; /* Hellblau für den Speichern-Button */
   color: #ffffff;
   border-radius: 5px;
 }
 
 body.dark .btn-primary:hover {
-  background-color: #0056b3; /* Darker blue for hover */
+  background-color: #3388cc; /* Dunkleres Blau für den Hover-Effekt */
 }
 
 body.dark .btn-secondary {
-  background-color: #555555; /* Dark grey for secondary buttons */
+  background-color: #555555; /* Dunkelgrau für den Zurück-Button */
   color: #ffffff;
   border-radius: 5px;
 }
 
 body.dark .btn-secondary:hover {
-  background-color: #666666; /* Lighter grey for hover */
+  background-color: #666666; /* Helleres Grau für Hover */
 }
 
 /* Modal Window */
@@ -113,36 +113,30 @@ body.dark .modal-content {
   border: 1px solid #333333; /* Matching border for modals */
 }
 
-/* Modal Header and Footer */
-body.dark .modal-header,
-body.dark .modal-footer {
-  background-color: #222222; /* Dark grey background for modal header/footer */
-}
-
-/* Modal Title */
+/* Modal Header */
 body.dark .modal-title {
   color: #ffffff; /* White title in modal */
 }
 
 /* Modal Buttons (matching normal buttons) */
 body.dark .modal-content .btn-primary {
-  background-color: #007bff; /* Dark blue for primary button */
+  background-color: #66aaff; /* Hellblau für den Speichern-Button im Modal */
   color: #ffffff;
   border-radius: 5px;
 }
 
 body.dark .modal-content .btn-primary:hover {
-  background-color: #0056b3; /* Darker blue for hover */
+  background-color: #3388cc; /* Dunkleres Blau für den Hover-Effekt */
 }
 
 body.dark .modal-content .btn-secondary {
-  background-color: #555555; /* Dark grey for secondary buttons */
+  background-color: #555555; /* Dunkelgrau für den Zurück-Button im Modal */
   color: #ffffff;
   border-radius: 5px;
 }
 
 body.dark .modal-content .btn-secondary:hover {
-  background-color: #666666; /* Lighter grey for hover */
+  background-color: #666666; /* Helleres Grau für Hover */
 }
 
 /* Modal Input Fields */
