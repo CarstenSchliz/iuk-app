@@ -21,6 +21,7 @@ body.dark .sidebar a:hover {
   color: #ffffff; /* Weißer Text bei Hover */
 }
 
+/* Aktiver Menüpunkt */
 body.dark .sidebar .active {
   background-color: #333333; /* Dunkelgrau für den aktiven Menüpunkt */
   color: #ffffff; /* Weißer Text für den aktiven Menüpunkt */
@@ -29,6 +30,12 @@ body.dark .sidebar .active {
 /* Menü-Icons */
 body.dark .sidebar .bi {
   color: #e0e0e0; /* Weiße Farbe für Icons in der Sidebar */
+}
+
+/* Name und Rolle im Menü */
+body.dark #userName,
+body.dark #userRole {
+  color: #ffffff; /* Weiße Schrift für Name und Rolle */
 }
 
 /* Karten */
@@ -51,6 +58,12 @@ body.dark textarea {
   color: #ffffff; /* Weiße Schrift in den Eingabefeldern */
 }
 
+body.dark input:focus,
+body.dark textarea:focus {
+  background-color: #444444; /* Helleres Grau für den Fokus */
+  border-color: #777777; /* Hellerer Rahmen bei Fokus */
+}
+
 body.dark input[readonly],
 body.dark textarea[readonly] {
   background-color: #444444; /* Noch dunkleres Grau für schreibgeschützte Felder */
@@ -59,12 +72,12 @@ body.dark textarea[readonly] {
 
 /* Buttons */
 body.dark .btn-primary {
-  background-color: #3e8e41; /* Grüne Farbe für den primären Button */
+  background-color: #007bff; /* Blau für den primären Button */
   color: #ffffff; /* Weiße Schrift auf Buttons */
 }
 
 body.dark .btn-primary:hover {
-  background-color: #2c6e2c; /* Dunkleres Grün für Hover-Effekt */
+  background-color: #0056b3; /* Dunkleres Blau für Hover-Effekt */
 }
 
 body.dark .btn-secondary {
@@ -93,11 +106,6 @@ body.dark .version {
   color: #ffffff; /* Weiße Schrift für die Versionierungsnummer */
 }
 
-/* Rolle unter Admin User */
-body.dark #userRole {
-  color: #ffffff; /* Weiße Schrift für die Rolle des Benutzers */
-}
-
 /* Theme-Schalter */
 body.dark .theme-switch {
   background: #444444; /* Dunkles Grau für den Theme-Schalter */
@@ -121,4 +129,21 @@ body.dark a {
 
 body.dark a:hover {
   color: #ffffff; /* Weiße Farbe für Links im Hover-Zustand */
+}
+
+/* Bereinigung der Begriffe über den Eingabefeldern */
+body.dark .form-group.floating label {
+  font-size: 1rem; /* Größere Schrift für Labels */
+  color: #bbb; /* Hellgraue Farbe für die Labels */
+  transform: translateY(0); /* Label ohne eckige Kanten */
+}
+
+/* Buttons in Modal Popup */
+body.dark .modal-content .btn {
+  background-color: #007bff; /* Beibehalten der blauen Buttons im Popup */
+  color: #ffffff; /* Weiße Schrift im Popup-Button */
+}
+
+body.dark .modal-content .btn-secondary {
+  background-color: #555555; /* Dunkles Grau für Popup-Zurück-Button */
 }
