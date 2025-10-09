@@ -342,7 +342,6 @@
     profileUpload.addEventListener("change", async (event) => {
       const file = event.target.files[0];
       const user = auth.currentUser;
-      greetingElement.innerHTML = `Willkommen lieber ${userName}, in deiner persönlichen IuK Lernwelt`;
       if (file && user) {
         try {
           const url = await uploadProfileImage(user, file);
@@ -365,6 +364,8 @@
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
+    const greetingElement = document.getElementById("greeting");
+    greetingElement.innerHTML = `Willkommen lieber ${userName}, in deiner persönlichen IuK Lernwelt`;
         if (user.photoURL) {
           profileImg.src = user.photoURL;
         } else {
