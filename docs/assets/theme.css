@@ -1,125 +1,222 @@
-/* ====================== DARK MODE OPTIMIERUNG ====================== */
+/* ================================ DARK MODE STYLES ================================ */
 
-/* Allgemeine Textfarbe */
+:root {
+  --bg-light: #f3f4f6;
+  --text-light: #1f2937;
+  --card-bg-light: #ffffff;
+  --card-border-light: #e5e7eb;
+  --input-bg-light: #ffffff;
+  --input-fg-light: #111827;
+  --input-border-light: #d1d5db;
+  --btn-primary-light: #0050a0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
+}
+
 body.dark {
-  background-color: #121212; /* Sehr dunkles Grau statt Schwarz */
-  color: #e0e0e0; /* Sehr helles Grau für Text */
+  background-color: #181818;
+  color: #f3f4f6;
 }
 
-/* Sidebar */
-body.dark .sidebar {
-  background-color: #1f1f1f; /* Sehr dunkles Grau für die Sidebar */
-  color: #e0e0e0; /* Helle Schriftfarbe in der Sidebar */
-}
-
-body.dark .sidebar a {
-  color: #e0e0e0; /* Weiße Farbe für Sidebar Links */
-}
-
-body.dark .sidebar a:hover {
-  background-color: #333333; /* Dunkelgrau für Hover-Effekt */
-  color: #ffffff; /* Weißer Text bei Hover */
-}
-
-body.dark .sidebar .active {
-  background-color: #333333; /* Dunkelgrau für den aktiven Menüpunkt */
-  color: #ffffff; /* Weißer Text für den aktiven Menüpunkt */
-}
-
-/* Menü-Icons */
-body.dark .sidebar .bi {
-  color: #e0e0e0; /* Weiße Farbe für Icons in der Sidebar */
-}
-
-/* Karten */
 body.dark .card {
-  background-color: #1e1e1e; /* Etwas helleres Dunkelgrau für Karten */
-  border-color: #333333; /* Dunklerer Rahmen für Karten */
-  color: #ffffff; /* Weiße Schrift auf den Karten */
+  background-color: #2c2c2c;
+  border-color: #444;
+  color: #f3f4f6;
 }
 
-/* Karten Überschriften */
-body.dark .card h3 {
-  color: #ffffff; /* Weiße Überschrift */
-}
-
-/* Eingabefelder */
 body.dark input,
 body.dark textarea {
-  background-color: #333333; /* Dunkles Grau für Eingabefelder */
-  border-color: #555555; /* Dunklerer Rahmen für Eingabefelder */
-  color: #ffffff; /* Weiße Schrift in den Eingabefeldern */
+  background-color: #333;
+  border-color: #555;
+  color: #f3f4f6;
 }
 
 body.dark input[readonly],
 body.dark textarea[readonly] {
-  background-color: #444444; /* Noch dunkleres Grau für schreibgeschützte Felder */
-  color: #888888; /* Helle Schriftfarbe für schreibgeschützte Felder */
+  background-color: #555 !important;
+  color: #bbb;
 }
 
-/* Buttons */
 body.dark .btn-primary {
-  background-color: #3e8e41; /* Grüne Farbe für den primären Button */
-  color: #ffffff; /* Weiße Schrift auf Buttons */
-}
-
-body.dark .btn-primary:hover {
-  background-color: #2c6e2c; /* Dunkleres Grün für Hover-Effekt */
+  background-color: #0050a0;
+  color: white;
 }
 
 body.dark .btn-secondary {
-  background-color: #555555; /* Dunkles Grau für sekundäre Buttons */
-  color: #ffffff; /* Weiße Schrift auf sekundären Buttons */
+  background-color: #2b2b2b;
+  color: #e8e8e8;
 }
 
-body.dark .btn-secondary:hover {
-  background-color: #666666; /* Helleres Grau für Hover-Effekt */
-}
-
-/* Überschriften */
 body.dark h2,
 body.dark h3 {
-  color: #ffffff; /* Weiße Schrift für Überschriften */
+  color: #fff;
 }
 
-/* Modale Fenster */
-body.dark .modal-content {
-  background-color: #2a2a2a; /* Dunkles Grau für das Modal-Fenster */
-  color: #e0e0e0; /* Helle Schrift im Modal */
+body.dark .form-group.floating input,
+body.dark .form-group.floating textarea {
+  background: #333;
+  border-color: #555;
+  color: #f3f4f6;
 }
 
-/* Versionierungsnummer */
-body.dark .version {
-  color: #ffffff; /* Weiße Schrift für die Versionierungsnummer */
+body.dark .form-group.floating label {
+  color: #bbb;
 }
 
-/* Rolle unter Admin User */
-body.dark #userRole {
-  color: #ffffff; /* Weiße Schrift für die Rolle des Benutzers */
+body.dark .settings-grid {
+  background-color: #181818;
 }
 
-/* Theme-Schalter */
 body.dark .theme-switch {
-  background: #444444; /* Dunkles Grau für den Theme-Schalter */
-  border-color: #666666; /* Hellerer Rahmen für den Theme-Schalter */
+  background: #444;
+  border-color: #555;
 }
 
 body.dark .theme-switch .thumb {
-  background: #ffffff; /* Heller Schieberegler für den Dark Mode */
+  background: #f3f4f6;
 }
 
-/* Verbesserung der Lesbarkeit für Text und Icons */
-body.dark .icon,
+body.dark .sidebar-menu {
+  background-color: #222;
+}
+
+body.dark .sidebar-menu a {
+  color: #f3f4f6;
+}
+
+body.dark .sidebar-menu a.active {
+  background-color: #444;
+}
+
+body.dark .page-title {
+  color: #ff6f61;
+}
+
+body.dark .version {
+  color: #fff;
+}
+
+body.dark .modal-content {
+  background: #2c2c2c;
+  color: #f3f4f6;
+}
+
+body.dark .modal-actions button {
+  background: #444;
+  color: #f3f4f6;
+}
+
+/* Custom Input styles */
+body.dark .form-group.floating input,
+body.dark .form-group.floating textarea {
+  border-radius: 8px;
+}
+
+body.dark .form-group.floating input:not(:placeholder-shown),
+body.dark .form-group.floating textarea:not(:placeholder-shown) {
+  background: #444;
+}
+
+body.dark .form-group.floating input:focus + label,
+body.dark .form-group.floating textarea:focus + label {
+  color: #fff;
+}
+
+body.dark .form-group.floating input:focus,
+body.dark .form-group.floating textarea:focus {
+  border-color: #0076FF;
+}
+
+body.dark .toggle-eye i {
+  color: #f3f4f6;
+}
+
+body.dark .theme-switch .thumb {
+  background: #f3f4f6;
+  transform: translateX(40px);
+}
+
+/* Add custom icon color adjustments */
 body.dark .bi {
-  color: #f5f5f5; /* Weiße Farbe für Icons */
+  color: #f3f4f6;
 }
 
-/* Anpassung für Links */
-body.dark a {
-  color: #4da6ff; /* Helles Blau für Links */
+body.dark .btn-primary:hover,
+body.dark .btn-secondary:hover {
+  filter: brightness(1.1);
 }
 
-body.dark a:hover {
-  color: #ffffff; /* Weiße Farbe für Links im Hover-Zustand */
+body.dark .sidebar-menu a.active {
+  background-color: #444;
 }
 
+/* Button styles */
+body.dark .btn {
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+}
+
+/* Adjust menu sidebar */
+body.dark .sidebar-menu {
+  background-color: #222;
+}
+
+body.dark .sidebar-menu a {
+  color: #f3f4f6;
+}
+
+/* Highlight sidebar menu item when active */
+body.dark .sidebar-menu a.active {
+  background-color: #444;
+}
+
+/* Adjust labels for better contrast */
+body.dark .form-group.floating label {
+  color: #bbb;
+}
+
+/* Inputs and text areas */
+body.dark .form-group.floating input,
+body.dark .form-group.floating textarea {
+  background-color: #333;
+  color: #f3f4f6;
+  border-color: #555;
+  border-radius: 12px;
+}
+
+/* Modal background */
+body.dark .modal-content {
+  background-color: #2c2c2c;
+  color: #f3f4f6;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+body.dark .btn-primary {
+  background-color: #0050a0;
+  color: white;
+}
+
+body.dark .btn-primary:hover {
+  background-color: #00407c;
+}
+
+/* Dark mode on hover for menu buttons */
+body.dark .sidebar-menu a:hover {
+  background-color: #444;
+}
+
+body.dark .sidebar-menu a.active {
+  background-color: #222;
+}
+  </style>
+</head>
+
+<body class="dark">
+  <!-- Your HTML content here -->
+</body>
+</html>
