@@ -232,46 +232,6 @@
     body.dark .profile p {
       color: var(--text);
     }
-
-    /* News Feed */
-    .news-feed {
-      margin-top: 2rem;
-    }
-
-    .news-feed h2 {
-      color: var(--dunkelblau);
-    }
-
-    .news-item {
-      background: var(--blassblau);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-    }
-
-    .news-item p {
-      margin: 0;
-    }
-
-    #newsEditor {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: var(--hellgrau);
-      border-radius: 8px;
-    }
-
-    #submitNews {
-      background: var(--dunkelblau);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #submitNews:hover {
-      background: var(--hoverblau);
-    }
   </style>
 </head>
 
@@ -288,7 +248,9 @@
       <input type="file" id="profileUpload" accept="image/*" style="display: none" />
       <h2 id="userName">Lädt...</h2>
       <p id="userRoles"></p>
+      <!-- Hier werden jetzt keine Rollen angezeigt -->
       <p id="userHighestRole" style="color: var(--dunkelblau);"></p>
+      <!-- Nur die höchste Rolle anzeigen -->
     </div>
 
     <div class="menu">
@@ -298,6 +260,8 @@
       <button data-page="zugang"><i class="bi bi-key"></i> Zugangsvoraussetzungen</button>
       <button data-page="module"><i class="bi bi-journal"></i> Lernmodule</button>
       <button data-page="materialien"><i class="bi bi-folder2"></i> Lernmaterialien</button>
+
+      <!-- Benutzerverwaltung nur sichtbar für Admins / Gruppenleiter -->
       <button data-page="benutzer" id="nav-users" style="display: none">
         <i class="bi bi-people"></i> Benutzerverwaltung
       </button>
@@ -312,38 +276,23 @@
 
   <!-- Content -->
   <div class="content" id="content">
-    <h1 id="greeting">Willkommen in deiner persönlichen IuK Lernwelt</h1>
+<h1 id="greeting">Willkommen in deiner persönlichen IuK Lernwelt</h1>
     <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
-
-    <!-- News Feed -->
-    <div id="newsFeed" class="news-feed">
-      <h2>Aktuelle News</h2>
-      <div id="newsList"></div>
-      <!-- Only for admins and group leaders -->
-      <div id="newsEditor" style="display: none;">
-        <h3>News hinzufügen</h3>
-        <textarea id="newsInput" placeholder="Gib hier die News ein..." rows="4" style="width: 100%;"></textarea>
-        <button id="submitNews">News hinzufügen</button>
-      </div>
-    </div>
   </div>
 
   <!-- Firebase / Auth -->
   <script type="module">
-    import { auth, logout, uploadProfileImage, getUserRoles } from "./js/firebase.js";
-    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    const db = getFirestore();
+    import {
+      auth,
+      logout,
+      uploadProfileImage,
+      getUserRoles,
+    } from "./js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     
+    // Sidebar Toggle (mobil)
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
-    const content = document.getElementById("content");
-    const buttons = document.querySelectorAll(".menu button");
-    const newsList = document.getElementById("newsList");
-    const newsEditor = document.getElementById("newsEditor");
-    const newsInput = document.getElementById("newsInput");
-    const submitNewsButton = document.getElementById("submitNews");
-
-    // Sidebar Toggle (mobil)
     if (menuToggle) {
       menuToggle.addEventListener("click", () => {
         sidebar.classList.toggle("active");
@@ -351,6 +300,9 @@
     }
 
     // Seitenwechsel
+    const content = document.getElementById("content");
+    const buttons = document.querySelectorAll(".menu button");
+
     async function loadPage(page) {
       try {
         const res = await fetch(`views/${page}.html`);
@@ -412,8 +364,8 @@
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         userName.textContent = user.displayName || user.email.split("@")[0];
-        const greetingElement = document.getElementById("greeting");
-        greetingElement.innerHTML = `Willkommen lieber ${userName.textContent}, in deiner persönlichen IuK Lernwelt`;
+    const greetingElement = document.getElementById("greeting");
+  greetingElement.innerHTML = `Willkommen lieber ${userName.textContent}, in deiner persönlichen IuK Lernwelt`;
         if (user.photoURL) {
           profileImg.src = user.photoURL;
         } else {
@@ -446,12 +398,8 @@
         if (roles.includes("admin") || roles.includes("gruppenleiter")) {
           if (navUsers) {
             navUsers.style.display = "block";
-            newsEditor.style.display = "block"; // Zeige News Editor für Admins/Gruppeleiter
           }
         }
-
-        // Lade News
-        loadNews();
       } else {
         window.location.href = "index.html";
       }
@@ -464,55 +412,6 @@
       }
       return str;
     }
-
-    // News Feed laden
-    async function loadNews() {
-      try {
-        const newsCollection = collection(db, "news");
-        const newsSnapshot = await getDocs(newsCollection);
-        const newsData = newsSnapshot.docs.map(doc => doc.data());
-
-        newsList.innerHTML = ''; // Clear existing news
-        newsData.forEach(news => {
-          const newsItem = document.createElement('div');
-          newsItem.classList.add('news-item');
-          newsItem.innerHTML = `<p>${news.content}</p>`;
-          newsList.appendChild(newsItem);
-        });
-      } catch (err) {
-        console.error("Fehler beim Laden der News:", err);
-      }
-    }
-
-    // News hinzufügen
-    submitNewsButton.addEventListener('click', async () => {
-      const newNews = newsInput.value.trim();
-      if (newNews) {
-        try {
-          const user = auth.currentUser;
-          if (user) {
-            // Check if the user has a valid role to add news
-            const roles = await getUserRoles(user.uid);
-            if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-              // Add news to Firestore
-              await addDoc(collection(db, "news"), {
-                content: newNews,
-                timestamp: new Date()
-              });
-
-              newsInput.value = ""; // Clear input
-              loadNews(); // Reload news
-            } else {
-              alert("Du hast keine Berechtigung, News hinzuzufügen.");
-            }
-          }
-        } catch (err) {
-          console.error("Fehler beim Hinzufügen der News:", err);
-        }
-      } else {
-        alert("Bitte gib einen News-Text ein.");
-      }
-    });
   </script>
 </body>
 </html>
