@@ -2,83 +2,100 @@
 
 /* Allgemeine Textfarbe */
 body.dark {
-  background-color: #1a1a1a; /* Dunklerer Hintergrund für den gesamten Body */
-  color: #e1e1e1; /* Helle Schriftfarbe für besseren Kontrast */
+  background-color: #121212; /* Sehr dunkles Grau statt Schwarz */
+  color: #e0e0e0; /* Sehr helles Grau für Text */
 }
 
 /* Karten */
 body.dark .card {
-  background-color: #333; /* Dunklerer Hintergrund für die Karten */
-  border-color: #444; /* Etwas dunklerer Rahmen */
-  color: #e1e1e1; /* Helle Schriftfarbe auf Karten */
+  background-color: #1e1e1e; /* Etwas helleres Dunkelgrau für Karten */
+  border-color: #333333; /* Dunklerer Rahmen für Karten */
+  color: #e0e0e0; /* Helle Schriftfarbe auf Karten */
 }
 
 /* Eingabefelder */
 body.dark input,
 body.dark textarea {
-  background-color: #444; /* Dunklerer Hintergrund für Eingabefelder */
-  border-color: #666; /* Hellerer Rahmen für Eingabefelder */
-  color: #f3f4f6; /* Helle Schriftfarbe für die Eingaben */
+  background-color: #333333; /* Dunkles Grau für Eingabefelder */
+  border-color: #555555; /* Dunklerer Rahmen für Eingabefelder */
+  color: #f5f5f5; /* Helle Schriftfarbe in Eingabefeldern */
 }
 
 body.dark input[readonly],
 body.dark textarea[readonly] {
-  background-color: #555; /* Noch dunklerer Hintergrund für schreibgeschützte Felder */
-  color: #bbb; /* Etwas hellere Schriftfarbe */
+  background-color: #444444; /* Noch dunkleres Grau für schreibgeschützte Felder */
+  color: #888888; /* Helle Schriftfarbe für schreibgeschützte Felder */
 }
 
 /* Buttons */
 body.dark .btn-primary {
-  background-color: #007bff; /* Blau für primäre Buttons */
-  color: #fff; /* Weiße Schrift auf Buttons */
+  background-color: #3e8e41; /* Grüne Farbe für den primären Button */
+  color: #ffffff; /* Weiße Schrift auf Buttons */
 }
 
 body.dark .btn-primary:hover {
-  background-color: #0056b3; /* Dunklerer Blau für Hover-Effekte */
+  background-color: #2c6e2c; /* Dunkleres Grün für Hover-Effekt */
 }
 
 body.dark .btn-secondary {
-  background-color: #555; /* Dunklerer Hintergrund für sekundäre Buttons */
-  color: #fff; /* Weiße Schrift auf sekundären Buttons */
+  background-color: #555555; /* Dunkles Grau für sekundäre Buttons */
+  color: #ffffff; /* Weiße Schrift auf sekundären Buttons */
 }
 
 body.dark .btn-secondary:hover {
-  background-color: #666; /* Etwas hellere Sekundärfarbe für Hover */
+  background-color: #666666; /* Helleres Grau für Hover-Effekt */
 }
 
 /* Überschriften */
 body.dark h2,
 body.dark h3 {
-  color: #e1e1e1; /* Helle Schriftfarbe für Überschriften */
+  color: #ffffff; /* Weiße Schrift für Überschriften */
 }
 
 /* Modale Fenster */
 body.dark .modal-content {
-  background-color: #2c2c2c; /* Dunkler Hintergrund für Modalfenster */
-  color: #fff; /* Weiße Schrift im Modal */
+  background-color: #2a2a2a; /* Dunkles Grau für das Modal-Fenster */
+  color: #e0e0e0; /* Helle Schrift im Modal */
 }
 
 /* Theme-Schalter */
 body.dark .theme-switch {
-  background: #555; /* Dunkler Hintergrund für den Theme-Schalter */
-  border-color: #777; /* Hellerer Rand für den Theme-Schalter */
+  background: #444444; /* Dunkles Grau für den Theme-Schalter */
+  border-color: #666666; /* Hellerer Rahmen für den Theme-Schalter */
 }
 
 body.dark .theme-switch .thumb {
-  background: #e9eef7; /* Helle Farbe für den Schieberegler */
+  background: #ffffff; /* Heller Schieberegler für den Dark Mode */
 }
 
-/* Leiste am Seitenrand */
+/* Sidebar */
 body.dark .sidebar {
-  background-color: #222; /* Dunkler Hintergrund für die Sidebar */
-  color: #fff; /* Weiße Schrift auf der Sidebar */
+  background-color: #1f1f1f; /* Sehr dunkles Grau für die Sidebar */
+  color: #e0e0e0; /* Helle Schriftfarbe in der Sidebar */
 }
 
-/* Weitere Anpassungen für verbesserte Lesbarkeit */
+/* Links */
 body.dark a {
-  color: #4da6ff; /* Helle Farbe für Links */
+  color: #4da6ff; /* Helle Blau für Links */
 }
 
 body.dark a:hover {
-  color: #fff; /* Weiße Farbe für Links im Hover-Zustand */
+  color: #ffffff; /* Weiße Farbe für Links im Hover-Zustand */
+}
+
+/* Verbesserte Lesbarkeit für Text und Icons */
+body.dark .icon,
+body.dark .bi {
+  color: #f5f5f5; /* Weiße Farbe für Icons */
+}
+
+/* Weitere Anpassungen für verbesserte Lesbarkeit */
+body.dark .form-group.floating input,
+body.dark .form-group.floating textarea {
+  background-color: #2d2d2d; /* Dunkles Grau für Eingabefelder */
+  border-color: #555555; /* Hellerer Rahmen für Eingabefelder */
+}
+
+body.dark .form-group.floating label {
+  color: #b0b6bf; /* Helle Grautöne für Label */
 }
