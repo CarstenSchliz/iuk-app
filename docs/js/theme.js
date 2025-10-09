@@ -1,44 +1,40 @@
-// docs/js/theme.js
-import { auth } from "./firebase.js";
+// Datei: docs/js/theme.js
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { auth } from "./firebase.js";
 
 const db = getFirestore();
 
 export const Theme = {
+  // Initialisiere das Theme basierend auf der gespeicherten Firebase-Einstellung
   async init() {
-    auth.onAuthStateChanged(async (user) => {
-      if (!user) return;
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        const pref = userDoc.exists() ? userDoc.data().themePreference : "light";
-        this.apply(pref || "light");
-      } catch (err) {
-        console.error("Theme laden fehlgeschlagen:", err);
-        this.apply("light");
-      }
-    });
-  },
-
-  apply(mode) {
-    document.body.classList.toggle("dark", mode === "dark");
-    const label = document.getElementById("themeLabel");
-    if (label) label.textContent = mode === "dark" ? "Dunkel" : "Hell";
-  },
-
-  async toggle() {
-    const mode = document.body.classList.contains("dark") ? "light" : "dark";
-    this.apply(mode);
     const user = auth.currentUser;
-    if (user) {
-      try {
-        await setDoc(doc(db, "users", user.uid), { themePreference: mode }, { merge: true });
-        console.log("Theme gespeichert:", mode);
-      } catch (err) {
-        console.error("Theme speichern fehlgeschlagen:", err);
-      }
-    }
-  }
-};
+    if (!user) return;
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+    const theme = snap.exists() ? snap.data().theme || "light" : "light";  // Standard auf "light"
+    this.apply(theme);  // Anwenden des gespeicherten Themes
+  },
 
-// Starte das Theme-System automatisch
-Theme.init();
+  // Wendet das angegebene Theme an
+  apply(theme) {
+    document.body.classList.toggle("dark", theme === "dark");
+    const themeLabel = document.getElementById("themeLabel");
+    if (themeLabel) themeLabel.textContent = theme === "dark" ? "Dunkel" : "Hell";
+  },
+
+  // Wechselt zwischen Dark und Light Mode und speichert die Änderung
+  async toggle() {
+    const user = auth.currentUser;
+    if (!user) return;
+    const isDark = document.body.classList.toggle("dark");  // Dark Mode aktivieren/deaktivieren
+    const theme = isDark ? "dark" : "light";  // Bestimme das neue Theme
+
+    // Speichern des neuen Themes in Firestore
+    const ref = doc(db, "users", user.uid);
+    await setDoc(ref, { theme }, { merge: true });
+
+    // Label aktualisieren
+    const themeLabel = document.getElementById("themeLabel");
+    if (themeLabel) themeLabel.textContent = isDark ? "Dunkel" : "Hell";
+  },
+};
