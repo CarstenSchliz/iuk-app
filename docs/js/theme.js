@@ -1,64 +1,44 @@
 // docs/js/theme.js
+import { auth } from "./firebase.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// -------------------------------
-// Zentraler Dark Mode Controller
-// -------------------------------
+const db = getFirestore();
 
-// Theme anwenden auf <html>
-function applyTheme(theme) {
-  const root = document.documentElement;
-  if (theme === "dark") {
-    root.classList.add("dark");
-  } else {
-    root.classList.remove("dark");
-  }
-}
+export const Theme = {
+  async init() {
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) return;
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const pref = userDoc.exists() ? userDoc.data().themePreference : "light";
+        this.apply(pref || "light");
+      } catch (err) {
+        console.error("Theme laden fehlgeschlagen:", err);
+        this.apply("light");
+      }
+    });
+  },
 
-// Theme in Firebase speichern
-async function saveThemeToFirebase(userId, theme) {
-  try {
-    await firebase.firestore().collection("users").doc(userId).set({ theme }, { merge: true });
-  } catch (err) {
-    console.error("Fehler beim Speichern des Themes:", err);
-  }
-}
+  apply(mode) {
+    document.body.classList.toggle("dark", mode === "dark");
+    const label = document.getElementById("themeLabel");
+    if (label) label.textContent = mode === "dark" ? "Dunkel" : "Hell";
+  },
 
-// Theme aus Firebase laden
-async function loadThemeFromFirebase(userId) {
-  try {
-    const doc = await firebase.firestore().collection("users").doc(userId).get();
-    if (doc.exists && doc.data().theme) {
-      applyTheme(doc.data().theme);
-      return doc.data().theme;
-    } else {
-      // Standardmäßig Light Mode, falls kein Eintrag existiert
-      applyTheme("light");
-      return "light";
+  async toggle() {
+    const mode = document.body.classList.contains("dark") ? "light" : "dark";
+    this.apply(mode);
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        await setDoc(doc(db, "users", user.uid), { themePreference: mode }, { merge: true });
+        console.log("Theme gespeichert:", mode);
+      } catch (err) {
+        console.error("Theme speichern fehlgeschlagen:", err);
+      }
     }
-  } catch (err) {
-    console.error("Fehler beim Laden des Themes:", err);
-    applyTheme("light");
-    return "light";
   }
-}
+};
 
-// Theme umschalten
-async function toggleTheme(userId) {
-  const currentTheme = document.documentElement.classList.contains("dark") ? "dark" : "light";
-  const newTheme = currentTheme === "dark" ? "light" : "dark";
-  applyTheme(newTheme);
-  await saveThemeToFirebase(userId, newTheme);
-}
-
-// -------------------------------
-// Initialisierung
-// -------------------------------
-firebase.auth().onAuthStateChanged(async (user) => {
-  if (user) {
-    await loadThemeFromFirebase(user.uid);
-  } else {
-    // Nicht eingeloggt: Standard-Theme
-    applyTheme("light");
-  }
-});
-
+// Starte das Theme-System automatisch
+Theme.init();
