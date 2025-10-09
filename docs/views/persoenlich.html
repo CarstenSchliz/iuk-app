@@ -370,13 +370,29 @@
 
   <script type="module">
     
-    document.addEventListener("DOMContentLoaded", () => {
-  // Stelle sicher, dass der Dark Mode deaktiviert ist
-  document.body.classList.remove('dark');  // Entfernt den Dark Mode, falls vorhanden
+<script type="module">
+  document.addEventListener("DOMContentLoaded", () => {
+    // Verhindere den Dark Mode
+    document.body.classList.remove('dark');  // Entfernt die Dark Mode Klasse
 
-  // Deaktiviere den Schieberegler
-  themeSwitch.setAttribute('disabled', 'true');  // Schieberegler wird deaktiviert
-});
+    // Deaktiviere den Schieberegler
+    const themeSwitch = document.getElementById("themeToggle");
+    if (themeSwitch) {
+      themeSwitch.setAttribute('disabled', 'true');  // Deaktiviert den Schieberegler
+    }
+  });
+
+  /*********** Firebase ***********/
+  import { auth, updateUserProfile, observeAuthState, getUserRoles, translateFirebaseError } from "./js/firebase.js";
+  import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { Theme } from "./js/theme.js";
+  
+  const db = getFirestore();
+  // Der Rest deines Codes bleibt unverändert...
+</script>
+
     
 /*********** Firebase ***********/
 import { auth, updateUserProfile, observeAuthState, getUserRoles, translateFirebaseError } from "./js/firebase.js";
