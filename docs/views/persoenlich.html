@@ -289,6 +289,49 @@
   </style>
 </head>
 
+<!-- 🔥 Zentrale Scripts -->
+<script src="../js/firebase.js"></script>
+<script src="../js/theme.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const themeSwitch = document.getElementById("themeToggle");
+    const themeLabel = document.getElementById("themeLabel");
+    const sunIcon = themeSwitch.querySelector(".sun");
+    const moonIcon = themeSwitch.querySelector(".moon");
+
+    // Funktion zum visuell aktualisieren der UI anhand der aktiven Klasse
+    const updateUI = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      themeLabel.textContent = isDark ? "Dunkel" : "Hell";
+      themeSwitch.setAttribute("aria-checked", isDark ? "true" : "false");
+
+      if (isDark) {
+        moonIcon.classList.add("burst");
+        setTimeout(() => moonIcon.classList.remove("burst"), 300);
+      } else {
+        sunIcon.classList.add("burst");
+        setTimeout(() => sunIcon.classList.remove("burst"), 600);
+      }
+    };
+
+    // Beim Start und bei jeder Änderung der Klasse dark → UI updaten
+    const obs = new MutationObserver(updateUI);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    updateUI();
+
+    // Klick & Tastatur steuern zentralen Theme-Toggle (in theme.js)
+    const handleToggle = () => Theme.toggle();
+    themeSwitch.addEventListener("click", handleToggle);
+    themeSwitch.addEventListener("keydown", e => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        handleToggle();
+      }
+    });
+  });
+</script>
+
 <body>
   <h2 class="page-title">Einstellungen</h2>
 
