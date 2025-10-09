@@ -281,7 +281,7 @@
 
   <!-- Content -->
   <div class="content" id="content">
-    <h1>Willkommen in deiner persönlichen IuK Lernwelt</h1>
+<h1 id="greeting">Willkommen in deiner persönlichen IuK Lernwelt</h1>
     <p>Bitte wähle links einen Menüpunkt aus, um zu starten.</p>
   </div>
 
@@ -367,46 +367,51 @@
 
     // Login-Check + Userdaten + Rollen
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        userName.textContent = user.displayName || user.email.split("@")[0];
-        if (user.photoURL) {
-          profileImg.src = user.photoURL;
-        } else {
-          profileImg.src = "assets/avatar-default.png";
-        }
+  if (user) {
+    // Benutzername setzen
+    const userName = user.displayName || user.email.split("@")[0];
+    const greetingElement = document.getElementById("greeting");
+    greetingElement.innerHTML = `Willkommen lieber ${userName}, in deiner persönlichen IuK Lernwelt`;
 
-        // 🔑 Rollen aus Firestore prüfen
-        const roles = await getUserRoles(user.uid);
-        console.log("Benutzerrollen:", roles);
+    // Profilbild aktualisieren
+    if (user.photoURL) {
+      profileImg.src = user.photoURL;
+    } else {
+      profileImg.src = "assets/avatar-default.png";
+    }
 
-        // Definiere die Reihenfolge der Rollen
-        const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
-        let highestRole = "Keine Rolle zugewiesen";
-        for (let role of roleOrder) {
-          if (roles.includes(role)) {
-            highestRole = role;
-            break;
-          }
-        }
+    // 🔑 Rollen aus Firestore prüfen
+    const roles = await getUserRoles(user.uid);
+    console.log("Benutzerrollen:", roles);
 
-        console.log("Höchste Rolle:", highestRole);
-        const highestRoleElement = document.getElementById("userHighestRole");
-        highestRoleElement.textContent = `${capitalizeFirstLetter(highestRole)}`;
-
-        const userRolesElement = document.getElementById("userRoles");
-        userRolesElement.textContent = "";
-
-        // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
-        const navUsers = document.getElementById("nav-users");
-        if (roles.includes("admin") || roles.includes("gruppenleiter")) {
-          if (navUsers) {
-            navUsers.style.display = "block";
-          }
-        }
-      } else {
-        window.location.href = "index.html";
+    // Definiere die Reihenfolge der Rollen
+    const roleOrder = ["admin", "gruppenleiter", "helfer", "anwaerter"];
+    let highestRole = "Keine Rolle zugewiesen";
+    for (let role of roleOrder) {
+      if (roles.includes(role)) {
+        highestRole = role;
+        break;
       }
-    });
+    }
+
+    console.log("Höchste Rolle:", highestRole);
+    const highestRoleElement = document.getElementById("userHighestRole");
+    highestRoleElement.textContent = `${capitalizeFirstLetter(highestRole)}`;
+
+    const userRolesElement = document.getElementById("userRoles");
+    userRolesElement.textContent = "";
+
+    // Benutzerverwaltung nur für Admins und Gruppenleiter anzeigen
+    const navUsers = document.getElementById("nav-users");
+    if (roles.includes("admin") || roles.includes("gruppenleiter")) {
+      if (navUsers) {
+        navUsers.style.display = "block";
+      }
+    }
+  } else {
+    window.location.href = "index.html";
+  }
+});
 
     // Funktion, um den ersten Buchstaben der Rolle groß zu machen
     function capitalizeFirstLetter(str) {
