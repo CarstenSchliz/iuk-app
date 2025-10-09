@@ -1,4 +1,6 @@
-/* Body */
+/* ====================== DARK MODE OPTIMIERUNG ====================== */
+
+/* Allgemeine Textfarbe */
 body.dark {
   background-color: #181818; /* Deeper, dark grey */
   color: #e0e0e0; /* Light grey text for readability */
@@ -48,66 +50,167 @@ body.dark .card h3 {
 body.dark input, body.dark textarea {
   background-color: #333333; /* Subtle grey background for inputs */
   border: 1px solid #444444; /* Softer border */
-  color: #ffffff;
+  color: #ffffff; /* White text */
   padding: 10px 15px;
   border-radius: 5px;
 }
 
 /* Input Focus */
 body.dark input:focus, body.dark textarea:focus {
-  background-color: #444444;
-  border-color: #777777;
+  background-color: #444444; /* Lighter grey on focus */
+  border-color: #777777; /* Lighter border on focus */
 }
 
 /* Readonly Fields */
 body.dark input[readonly], body.dark textarea[readonly] {
-  background-color: #555555;
-  color: #888888;
+  background-color: #555555; /* Darker grey for readonly fields */
+  color: #888888; /* Light grey text for readonly fields */
 }
 
 /* Buttons */
 body.dark .btn-primary {
-  background-color: #007bff;
+  background-color: #007bff; /* Dark blue for primary button */
   color: #ffffff;
   border-radius: 5px;
 }
 
 body.dark .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #0056b3; /* Darker blue for hover */
 }
 
 body.dark .btn-secondary {
-  background-color: #555555;
+  background-color: #555555; /* Dark grey for secondary buttons */
   color: #ffffff;
   border-radius: 5px;
 }
 
 body.dark .btn-secondary:hover {
-  background-color: #666666;
+  background-color: #666666; /* Lighter grey for hover */
 }
 
 /* Modal Window */
 body.dark .modal-content {
-  background-color: #2a2a2a;
-  color: #e0e0e0;
+  background-color: #2a2a2a; /* Dark grey for the modal */
+  color: #e0e0e0; /* Light grey text */
   border-radius: 8px;
+  border: 1px solid #333333; /* Matching border for modals */
+}
+
+/* Modal Header and Footer */
+body.dark .modal-header,
+body.dark .modal-footer {
+  background-color: #222222; /* Darker background for header/footer */
+}
+
+/* Modal Title */
+body.dark .modal-title {
+  color: #ffffff; /* White title text */
+}
+
+/* Modal Buttons (matching normal buttons) */
+body.dark .modal-content .btn-primary {
+  background-color: #007bff; /* Dark blue for primary button */
+  color: #ffffff;
+  border-radius: 5px;
+}
+
+body.dark .modal-content .btn-primary:hover {
+  background-color: #0056b3; /* Darker blue for hover */
+}
+
+body.dark .modal-content .btn-secondary {
+  background-color: #555555; /* Dark grey for secondary buttons */
+  color: #ffffff;
+  border-radius: 5px;
+}
+
+body.dark .modal-content .btn-secondary:hover {
+  background-color: #666666; /* Lighter grey for hover */
+}
+
+/* Modal Input Fields */
+body.dark .modal-content input,
+body.dark .modal-content textarea {
+  background-color: #333333; /* Grey background for inputs */
+  border: 1px solid #444444; /* Matching border */
+  color: #ffffff; /* White text */
+  padding: 10px 15px;
+  border-radius: 5px;
+}
+
+/* Modal Input Focus */
+body.dark .modal-content input:focus,
+body.dark .modal-content textarea:focus {
+  background-color: #444444; /* Lighter grey on focus */
+  border-color: #777777; /* Lighter border on focus */
+}
+
+/* Modal Readonly Fields */
+body.dark .modal-content input[readonly],
+body.dark .modal-content textarea[readonly] {
+  background-color: #555555; /* Darker grey for readonly fields */
+  color: #888888; /* Light grey text for readonly fields */
+}
+
+/* Input Focus and Label */
+body.dark input:focus,
+body.dark textarea:focus {
+  background-color: #444444; /* Lighter grey on focus */
+  border-color: #777777; /* Lighter border on focus */
+  color: #ffffff; /* White text */
+}
+
+/* Focused or Filled Fields Label */
+body.dark input:focus + label,
+body.dark input:not(:placeholder-shown) + label,
+body.dark textarea:focus + label,
+body.dark textarea:not(:placeholder-shown) + label {
+  top: -20px;
+  font-size: 0.75rem;
+  color: #ffffff; /* White label text when focused or filled */
+}
+
+/* Non-editable Fields (readonly) */
+body.dark input[readonly],
+body.dark textarea[readonly] {
+  background-color: #555555; /* Darker background for readonly fields */
+  color: #888888; /* Light grey text for readonly fields */
+}
+
+/* Links */
+body.dark a {
+  color: #66aaff; /* Soft blue for links */
+}
+
+body.dark a:hover {
+  color: #ffffff; /* White color for hover state */
 }
 
 /* Theme Switcher */
 body.dark .theme-switch {
-  background: #444444;
-  border-color: #666666;
+  background: #444444; /* Dark grey for theme switcher */
+  border-color: #666666; /* Lighter border for theme switcher */
 }
 
 body.dark .theme-switch .thumb {
-  background: #ffffff;
+  background: #ffffff; /* Light slider for dark mode switcher */
 }
 
-/* Link Colors */
-body.dark a {
-  color: #66aaff; /* Softer blue for links */
+/* Popup - Back Button */
+body.dark .modal-content .btn-secondary {
+  background-color: #555555; /* Dark grey for the back button in modals */
 }
 
-body.dark a:hover {
-  color: #ffffff;
+/* Popup - Input Fields in Modal */
+body.dark .modal-content input,
+body.dark .modal-content textarea {
+  background-color: #444444; /* Lighter grey for modal input fields */
+  border-color: #555555; /* Darker border for modal inputs */
+  color: #ffffff; /* White text */
+}
+
+body.dark .modal-content input:focus,
+body.dark .modal-content textarea:focus {
+  background-color: #555555; /* Even lighter grey for focus state */
+  border-color: #777777; /* Lighter border on focus */
 }
