@@ -1,1 +1,149 @@
+/* ===========================
+   ZENTRALES THEME
+   =========================== */
+
+/* ----- Light Theme (Standard) ----- */
+:root {
+  /* Grundfarben */
+  --bg: #f3f4f6;
+  --text: #1f2937;
+  --heading: #002d55;
+  --link: #e06862;
+
+  /* Firmenfarben / Akzente */
+  --softrot: rgb(228,100,80);
+  --dunkelblau: rgb(0,45,85);
+  --hellblau: rgb(100,160,220);
+  --blassblau: rgb(230,240,250);
+
+  /* Karten & Oberflächen */
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --border: #e5e7eb;
+
+  /* Eingaben */
+  --input-bg: #ffffff;
+  --input-fg: #111827;
+  --input-border: #d1d5db;
+  --input-readonly-bg: #f9fafb;
+  --input-readonly-fg: #555;
+
+  /* Buttons */
+  --button-primary-bg: var(--dunkelblau);
+  --button-primary-fg: #ffffff;
+  --button-secondary-bg: #eef2f7;
+  --button-secondary-fg: #111;
+
+  /* Modal */
+  --modal-bg: #ffffff;
+  --modal-heading: var(--heading);
+
+  /* Toggle Switch */
+  --toggle-track: #0f2030;
+  --toggle-border: #e5e7eb;
+  --toggle-star: #ffd84d;
+  --toggle-knob: #ffffff;
+}
+
+/* ----- Dark Theme ----- */
+.dark {
+  --bg: #000000;
+  --text: #f3f4f6;
+  --heading: #f3f4f6;
+  --link: #4da6ff;
+
+  --card-bg: #151515;
+  --card-border: #2c2c2c;
+  --border: #2a2a2a;
+
+  --input-bg: #222;
+  --input-fg: #f3f4f6;
+  --input-border: #3a3a3a;
+  --input-readonly-bg: #2a2a2a;
+  --input-readonly-fg: #bdbdbd;
+
+  --button-primary-bg: #004080;
+  --button-primary-fg: #ffffff;
+  --button-secondary-bg: #2b2b2b;
+  --button-secondary-fg: #e8e8e8;
+
+  --modal-bg: #1e1e1e;
+  --modal-heading: #f3f4f6;
+
+  --toggle-track: #061018;
+  --toggle-border: #2a2f35;
+  --toggle-star: #ffd84d;
+  --toggle-knob: #e9eef7;
+}
+
+/* ===========================
+   GRUNDLAYOUT & ELEMENTE
+   =========================== */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Karten */
+.card {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+
+/* Eingabefelder */
+input, textarea, select {
+  background: var(--input-bg);
+  color: var(--input-fg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  box-sizing: border-box;
+}
+input[readonly], textarea[readonly] {
+  background: var(--input-readonly-bg);
+  color: var(--input-readonly-fg);
+}
+
+/* Buttons */
+button, .btn {
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-fg);
+  border: none;
+  border-radius: 10px;
+  padding: .6rem 1rem;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, filter .15s ease;
+}
+.btn-primary {
+  background: var(--button-primary-bg);
+  color: var(--button-primary-fg);
+}
+.btn-secondary {
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-fg);
+}
+
+/* Modal */
+.modal-content {
+  background: var(--modal-bg);
+  color: var(--text);
+}
+
+/* Toggle-Schalter */
+.theme-switch {
+  border-color: var(--toggle-border);
+  background: var(--toggle-track);
+}
+.theme-switch .thumb {
+  background: var(--toggle-knob);
+}
 
